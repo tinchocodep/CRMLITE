@@ -39,11 +39,11 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
 
     return (
         <div
-            className="group relative bg-white/60 dark:bg-slate-800/90 backdrop-blur-md border border-white/60 dark:border-slate-700 rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group relative bg-white/60 dark:bg-slate-800/90 backdrop-blur-md border border-white/60 dark:border-slate-700 rounded-2xl p-3 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
         >
 
             {/* Header: Date & Status */}
-            <div className="flex justify-between items-start mb-3">
+            <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
                     <button
                         onClick={(e) => {
@@ -73,7 +73,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
             {/* Main Content */}
             <div
                 onClick={() => onEdit(prospect)}
-                className="space-y-2 mb-4 cursor-pointer"
+                className="space-y-2 mb-3 cursor-pointer"
             >
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">
