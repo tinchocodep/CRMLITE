@@ -112,16 +112,20 @@ const Dashboard = () => {
                 </motion.div>
 
                 {/* Action Buttons - Right */}
-                <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
+                <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
                     <button
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             navigate('/agenda');
                         }}
+                        onTouchStart={(e) => {
+                            e.stopPropagation();
+                        }}
                         className="w-10 h-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 transition-all shadow-lg border border-red-100 dark:border-slate-600 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
                         title="Ir a Agenda"
                         type="button"
+                        aria-label="Ir a Agenda"
                     >
                         <Calendar className="w-5 h-5 text-slate-700 dark:text-slate-200 pointer-events-none" />
                     </button>
@@ -131,9 +135,13 @@ const Dashboard = () => {
                             e.stopPropagation();
                             alert('Notificaciones: Esta función estará disponible próximamente');
                         }}
+                        onTouchStart={(e) => {
+                            e.stopPropagation();
+                        }}
                         className="relative w-10 h-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-white dark:hover:bg-slate-700 transition-all shadow-lg border border-red-100 dark:border-slate-600 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
                         title="Notificaciones"
                         type="button"
+                        aria-label="Notificaciones"
                     >
                         <Bell className="w-5 h-5 text-slate-700 dark:text-slate-200 pointer-events-none" />
                         <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse pointer-events-none"></span>
@@ -144,9 +152,13 @@ const Dashboard = () => {
                             e.stopPropagation();
                             handleLogout();
                         }}
+                        onTouchStart={(e) => {
+                            e.stopPropagation();
+                        }}
                         className="w-10 h-10 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-lg border border-red-100 dark:border-slate-600 hover:scale-105 active:scale-95 group cursor-pointer touch-manipulation"
                         title="Cerrar Sesión"
                         type="button"
+                        aria-label="Cerrar Sesión"
                     >
                         <LogOut className="w-5 h-5 text-slate-700 dark:text-slate-200 group-hover:text-white pointer-events-none" />
                     </button>
