@@ -540,6 +540,23 @@ const MainLayout = () => {
 
                                 {/* Navigation Grid */}
                                 <div className="px-4 pb-6 grid grid-cols-3 gap-3">
+                                    {/* Dashboard */}
+                                    <NavLink
+                                        to="/dashboard"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <LayoutDashboard className={`w-6 h-6 mb-2 ${isActive ? 'text-indigo-600' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-indigo-600' : 'text-slate-800'}`}>Dashboard</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
                                     {/* Ficha 360 */}
                                     <NavLink
                                         to="/ficha-360"
