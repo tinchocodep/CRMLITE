@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus } from 'lucide-react';
+import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 import { mockContacts } from '../../data/mockContacts';
 import ContactModal from '../contacts/ContactModal';
@@ -262,17 +262,49 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                                     )}
                                                                 </div>
                                                                 <div className="text-xs text-slate-600 font-semibold mb-1">{contact.role}</div>
-                                                                <div className="flex flex-col gap-1 text-xs text-slate-500">
-                                                                    {contact.email && (
-                                                                        <a href={`mailto:${contact.email}`} className="hover:text-brand-red flex items-center gap-1">
-                                                                            <Mail size={12} /> {contact.email}
-                                                                        </a>
-                                                                    )}
+
+                                                                {/* Quick Actions */}
+                                                                <div className="flex items-center gap-1 mt-2">
                                                                     {contact.phone && (
-                                                                        <a href={`tel:${contact.phone}`} className="hover:text-brand-red flex items-center gap-1">
-                                                                            <Phone size={12} /> {contact.phone}
+                                                                        <>
+                                                                            <a
+                                                                                href={`tel:${contact.phone}`}
+                                                                                className="p-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                title="Llamar"
+                                                                            >
+                                                                                <Phone size={12} />
+                                                                            </a>
+                                                                            <a
+                                                                                href={`sms:${contact.phone}`}
+                                                                                className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                title="Enviar mensaje"
+                                                                            >
+                                                                                <MessageSquare size={12} />
+                                                                            </a>
+                                                                        </>
+                                                                    )}
+                                                                    {contact.email && (
+                                                                        <a
+                                                                            href={`mailto:${contact.email}`}
+                                                                            className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                            title="Enviar email"
+                                                                        >
+                                                                            <Mail size={12} />
                                                                         </a>
                                                                     )}
+                                                                    <button
+                                                                        onClick={() => alert('Agendar reunión con ' + contact.firstName)}
+                                                                        className="p-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                        title="Agendar reunión"
+                                                                    >
+                                                                        <Calendar size={12} />
+                                                                    </button>
+                                                                </div>
+
+                                                                {/* Contact Info (smaller, below actions) */}
+                                                                <div className="flex flex-col gap-0.5 text-[10px] text-slate-400 mt-2">
+                                                                    {contact.email && <span>{contact.email}</span>}
+                                                                    {contact.phone && <span>{contact.phone}</span>}
                                                                 </div>
                                                             </div>
                                                             <button
