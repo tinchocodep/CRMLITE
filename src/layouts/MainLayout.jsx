@@ -396,9 +396,17 @@ const MainLayout = () => {
                                 </div>
 
                                 {/* Header */}
-                                <div className="px-6 pb-4">
-                                    <h3 className="text-lg font-bold text-slate-800">Acciones Rápidas</h3>
-                                    <p className="text-xs text-slate-500 mt-1">Selecciona una acción para comenzar</p>
+                                <div className="px-6 pb-4 flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-slate-800">Acciones Rápidas</h3>
+                                        <p className="text-xs text-slate-500 mt-1">Selecciona una acción para comenzar</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                                    >
+                                        <X className="w-4 h-4 text-slate-600" />
+                                    </button>
                                 </div>
 
                                 {/* Actions Grid */}
@@ -533,9 +541,17 @@ const MainLayout = () => {
                                 </div>
 
                                 {/* Header */}
-                                <div className="px-6 pb-4">
-                                    <h3 className="text-lg font-bold text-slate-800">Menú de Navegación</h3>
-                                    <p className="text-xs text-slate-500 mt-1">Accede a todas las secciones del CRM</p>
+                                <div className="px-6 pb-4 flex items-center justify-between">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-slate-800">Menú de Navegación</h3>
+                                        <p className="text-xs text-slate-500 mt-1">Accede a todas las secciones del CRM</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                                    >
+                                        <X className="w-4 h-4 text-slate-600" />
+                                    </button>
                                 </div>
 
                                 {/* Navigation Grid */}
@@ -546,13 +562,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <LayoutDashboard className={`w-6 h-6 mb-2 ${isActive ? 'text-indigo-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-indigo-600' : 'text-slate-800'}`}>Dashboard</span>
+                                                <LayoutDashboard className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Dashboard</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -580,13 +596,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Calendar className={`w-6 h-6 mb-2 ${isActive ? 'text-blue-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-blue-600' : 'text-slate-800'}`}>Agenda</span>
+                                                <Calendar className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Agenda</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -597,13 +613,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-purple-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-purple-600' : 'text-slate-800'}`}>Legajo</span>
+                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Legajo</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -614,13 +630,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-teal-50 to-teal-100 border-teal-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-teal-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-teal-600' : 'text-slate-800'}`}>Contactos</span>
+                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Contactos</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -631,13 +647,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-amber-50 to-amber-100 border-amber-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-amber-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-amber-600' : 'text-slate-800'}`}>Visitas</span>
+                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Visitas</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -648,13 +664,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-green-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Target className={`w-6 h-6 mb-2 ${isActive ? 'text-green-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-green-600' : 'text-slate-800'}`}>Objetivos</span>
+                                                <Target className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Objetivos</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -665,13 +681,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-indigo-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-indigo-600' : 'text-slate-800'}`}>Territorios</span>
+                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Territorios</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -682,13 +698,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-500 shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <AlertCircle className={`w-6 h-6 mb-2 ${isActive ? 'text-orange-600' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-orange-600' : 'text-slate-800'}`}>Reclamos</span>
+                                                <AlertCircle className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Reclamos</span>
                                             </>
                                         )}
                                     </NavLink>
