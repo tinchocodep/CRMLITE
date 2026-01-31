@@ -83,35 +83,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
 
                     {activeTab === 'details' && (
                         <div className="space-y-6">
-                            {/* Status Selector */}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Estado Actual</label>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                    {statusOptions.map(option => (
-                                        <button
-                                            key={option.id}
-                                            onClick={() => setFormData({ ...formData, status: option.id })}
-                                            className={`
-                                                relative flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all
-                                                ${formData.status === option.id
-                                                    ? `${option.color.replace('text-', 'border-').replace('bg-', 'bg-opacity-20 ')} bg-opacity-20 ring-1 ring-offset-1`
-                                                    : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200'
-                                                }
-                                            `}
-                                        >
-                                            <img src={option.logo} alt={option.label} className="w-8 h-8 object-contain" />
-                                            <span className="text-xs font-bold">{option.label}</span>
-                                            {formData.status === option.id && (
-                                                <div className="absolute top-2 right-2 text-brand-red">
-                                                    <Check size={14} strokeWidth={4} />
-                                                </div>
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Company Info */}
+                            {/* Company Info - FIRST */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Nombre Comercial</label>
@@ -168,6 +140,34 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
                                     />
                                 </div>
                             </div>
+
+                            {/* Status Selector - COMPACT & BELOW */}
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Estado Actual</label>
+                                <div className="flex gap-3">
+                                    {statusOptions.map(option => (
+                                        <button
+                                            key={option.id}
+                                            onClick={() => setFormData({ ...formData, status: option.id })}
+                                            className={`
+                                                flex-1 relative cursor-pointer rounded-xl p-3 border-2 transition-all duration-200 flex items-center gap-2 justify-center
+                                                ${formData.status === option.id
+                                                    ? `${option.color.replace('text-', 'border-').replace('bg-', 'bg-opacity-20 ')} bg-opacity-20 ring-2 ring-offset-1`
+                                                    : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200'
+                                                }
+                                            `}
+                                        >
+                                            <img src={option.logo} alt={option.label} className={`w-6 h-6 object-contain transition-transform ${formData.status === option.id ? 'scale-110' : 'grayscale-[0.3]'}`} />
+                                            <span className={`text-sm font-bold ${formData.status === option.id ? 'text-slate-900' : 'text-slate-600'}`}>
+                                                {option.label}
+                                            </span>
+                                            {formData.status === option.id && (
+                                                <Check size={14} strokeWidth={3} className="text-brand-red absolute top-2 right-2" />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -210,6 +210,23 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
                         </div>
                     )}
 
+                    {/* Convert to Client Button - At end of scrollable area */}
+                    {prospect.id && (
+                        <div className="pt-6 border-t border-slate-200">
+                            <button
+                                onClick={() => {
+                                    if (window.confirm(`¿Convertir "${formData.tradeName || formData.companyName}" a Cliente?`)) {
+                                        alert('Funcionalidad de conversión a cliente pendiente de implementación');
+                                    }
+                                }}
+                                className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-emerald-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                            >
+                                <Check size={20} strokeWidth={2.5} />
+                                Convertir a Cliente
+                            </button>
+                        </div>
+                    )}
+
                 </div>
 
                 {/* Footer */}
@@ -225,7 +242,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
                         className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-brand-red text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         <Save size={18} />
-                        Guardar Cambios
+                        Guardar
                     </button>
                 </div>
             </div>
