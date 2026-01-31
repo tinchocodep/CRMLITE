@@ -248,55 +248,63 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                             {/* List of linked contacts */}
                                             {linkedContacts.length > 0 ? (
                                                 <div className="space-y-2">
-                                                    {linkedContacts.map((contact) => (
-                                                        <div key={contact.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start justify-between">
-                                                            <div className="flex-1">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="font-bold text-sm text-slate-800">
-                                                                        {contact.firstName} {contact.lastName}
-                                                                    </span>
-                                                                    {contact.isPrimary && (
-                                                                        <span className="px-2 py-0.5 bg-yellow-100 border border-yellow-300 text-yellow-700 rounded-md text-[10px] font-bold flex items-center gap-1">
-                                                                            <Star size={10} fill="currentColor" /> PRINCIPAL
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                                <div className="text-xs text-slate-600 font-semibold mb-1">{contact.role}</div>
+                                                    {linkedContacts.map((contact) => {
+                                                        const [isContactExpanded, setIsContactExpanded] = React.useState(false);
 
-                                                                {/* Quick Actions */}
-                                                                <div className="flex items-center gap-1 mt-2">
-                                                                    {contact.phone && (
-                                                                        <>
-                                                                            <a
-                                                                                href={`tel:${contact.phone}`}
-                                                                                className="p-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
-                                                                                title="Llamar"
-                                                                            >
-                                                                                <Phone size={12} />
-                                                                            </a>
-                                                                            <a
-                                                                                href={`sms:${contact.phone}`}
-                                                                                className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
-                                                                                title="Enviar mensaje"
-                                                                            >
-                                                                                <MessageSquare size={12} />
-                                                                            </a>
-                                                                        </>
-                                                                    )}
-                                                                    {contact.email && (
-                                                                        <a
-                                                                            href={`mailto:${contact.email}`}
-                                                                            className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
-                                                                            title="Enviar email"
-                                                                        >
-                                                                            <Mail size={12} />
-                                                                        </a>
-                                                                    )}
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            // Generate vCard
-                                                                            const vCard = `BEGIN:VCARD
+                                                        return (
+                                                            <div key={contact.id} className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                                                                {/* Main Contact Card - Clickable */}
+                                                                <div
+                                                                    className="p-4 flex items-start justify-between cursor-pointer hover:bg-slate-100 transition-colors"
+                                                                    onClick={() => setIsContactExpanded(!isContactExpanded)}
+                                                                >
+                                                                    <div className="flex-1">
+                                                                        <div className="flex items-center gap-2 mb-1">
+                                                                            <span className="font-bold text-sm text-slate-800">
+                                                                                {contact.firstName} {contact.lastName}
+                                                                            </span>
+                                                                            {contact.isPrimary && (
+                                                                                <span className="px-2 py-0.5 bg-yellow-100 border border-yellow-300 text-yellow-700 rounded-md text-[10px] font-bold flex items-center gap-1">
+                                                                                    <Star size={10} fill="currentColor" /> PRINCIPAL
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="text-xs text-slate-600 font-semibold mb-1">{contact.role}</div>
+
+                                                                        {/* Quick Actions */}
+                                                                        <div className="flex items-center gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
+                                                                            {contact.phone && (
+                                                                                <>
+                                                                                    <a
+                                                                                        href={`tel:${contact.phone}`}
+                                                                                        className="p-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                        title="Llamar"
+                                                                                    >
+                                                                                        <Phone size={12} />
+                                                                                    </a>
+                                                                                    <a
+                                                                                        href={`sms:${contact.phone}`}
+                                                                                        className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                        title="Enviar mensaje"
+                                                                                    >
+                                                                                        <MessageSquare size={12} />
+                                                                                    </a>
+                                                                                </>
+                                                                            )}
+                                                                            {contact.email && (
+                                                                                <a
+                                                                                    href={`mailto:${contact.email}`}
+                                                                                    className="p-1.5 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                    title="Enviar email"
+                                                                                >
+                                                                                    <Mail size={12} />
+                                                                                </a>
+                                                                            )}
+                                                                            <button
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    // Generate vCard
+                                                                                    const vCard = `BEGIN:VCARD
 VERSION:3.0
 FN:${contact.firstName} ${contact.lastName}
 N:${contact.lastName};${contact.firstName};;;
@@ -305,35 +313,67 @@ ${contact.phone ? `TEL:${contact.phone}` : ''}
 ORG:${prospect.tradeName || prospect.companyName}
 TITLE:${contact.role}
 END:VCARD`;
-                                                                            const blob = new Blob([vCard], { type: 'text/vcard' });
-                                                                            const url = window.URL.createObjectURL(blob);
-                                                                            const a = document.createElement('a');
-                                                                            a.href = url;
-                                                                            a.download = `${contact.firstName}_${contact.lastName}.vcf`;
-                                                                            a.click();
-                                                                            window.URL.revokeObjectURL(url);
+                                                                                    const blob = new Blob([vCard], { type: 'text/vcard' });
+                                                                                    const url = window.URL.createObjectURL(blob);
+                                                                                    const a = document.createElement('a');
+                                                                                    a.href = url;
+                                                                                    a.download = `${contact.firstName}_${contact.lastName}.vcf`;
+                                                                                    a.click();
+                                                                                    window.URL.revokeObjectURL(url);
+                                                                                }}
+                                                                                className="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                title="Agregar a contactos"
+                                                                            >
+                                                                                <UserPlus size={12} />
+                                                                            </button>
+                                                                        </div>
+
+                                                                        {/* Contact Info (smaller, below actions) */}
+                                                                        <div className="flex flex-col gap-0.5 text-[10px] text-slate-400 mt-2">
+                                                                            {contact.email && <span>{contact.email}</span>}
+                                                                            {contact.phone && <span>{contact.phone}</span>}
+                                                                        </div>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            handleUnlinkContact(contact.id, `${contact.firstName} ${contact.lastName}`);
                                                                         }}
-                                                                        className="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
-                                                                        title="Agregar a contactos"
+                                                                        className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
                                                                     >
-                                                                        <UserPlus size={12} />
+                                                                        <Trash2 size={16} className="text-red-600" />
                                                                     </button>
                                                                 </div>
 
-                                                                {/* Contact Info (smaller, below actions) */}
-                                                                <div className="flex flex-col gap-0.5 text-[10px] text-slate-400 mt-2">
-                                                                    {contact.email && <span>{contact.email}</span>}
-                                                                    {contact.phone && <span>{contact.phone}</span>}
-                                                                </div>
+                                                                {/* Expanded Details */}
+                                                                {isContactExpanded && (
+                                                                    <div className="border-t border-slate-200 bg-white p-4 space-y-3">
+                                                                        <h5 className="text-xs font-bold text-slate-500 uppercase">Empresas Vinculadas</h5>
+                                                                        {contact.companies && contact.companies.map((company, idx) => (
+                                                                            <div key={idx} className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                                                                                <div className="flex items-center justify-between mb-1">
+                                                                                    <span className="font-bold text-xs text-slate-700">{company.companyName}</span>
+                                                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${company.companyType === 'client'
+                                                                                            ? 'bg-green-100 text-green-700'
+                                                                                            : 'bg-blue-100 text-blue-700'
+                                                                                        }`}>
+                                                                                        {company.companyType === 'client' ? 'CLIENTE' : 'PROSPECTO'}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div className="text-[10px] text-slate-500">{company.role}</div>
+                                                                            </div>
+                                                                        ))}
+                                                                        {contact.notes && (
+                                                                            <div className="pt-2 border-t border-slate-200">
+                                                                                <p className="text-xs font-bold text-slate-400 uppercase mb-1">Notas</p>
+                                                                                <p className="text-xs text-slate-600 italic">"{contact.notes}"</p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                            <button
-                                                                onClick={() => handleUnlinkContact(contact.id, `${contact.firstName} ${contact.lastName}`)}
-                                                                className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
-                                                            >
-                                                                <Trash2 size={16} className="text-red-600" />
-                                                            </button>
-                                                        </div>
-                                                    ))}
+                                                        );
+                                                    })}
                                                 </div>
                                             ) : (
                                                 <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-500 text-sm text-center">
