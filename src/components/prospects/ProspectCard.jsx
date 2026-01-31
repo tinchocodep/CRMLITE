@@ -83,34 +83,52 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                         <Building2 size={12} />
                         {prospect.companyName}
                     </p>
+
+                    {/* Inline Info: CUIT, Email, Phone */}
+                    <div className="mt-2 space-y-1">
+                        {/* CUIT */}
+                        <p className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                            <FileDigit size={12} className="text-slate-400 dark:text-slate-500" />
+                            <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mr-1">CUIT:</span>
+                            {prospect.cuit}
+                        </p>
+
+                        {/* Email */}
+                        {prospect.contact && prospect.contact.includes('@') && (
+                            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                                <Mail size={12} className="text-slate-400 dark:text-slate-500" />
+                                <a
+                                    href={`mailto:${prospect.contact}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="hover:text-brand-red dark:hover:text-red-400 transition-colors truncate"
+                                    title={prospect.contact}
+                                >
+                                    {prospect.contact}
+                                </a>
+                            </p>
+                        )}
+
+                        {/* Phone */}
+                        {prospect.phone && (
+                            <p className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                                <Phone size={12} className="text-slate-400 dark:text-slate-500" />
+                                <a
+                                    href={`tel:${prospect.phone}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="hover:text-brand-red dark:hover:text-red-400 transition-colors"
+                                >
+                                    {prospect.phone}
+                                </a>
+                            </p>
+                        )}
+                    </div>
+
                     {(prospect.city || prospect.province) && (
-                        <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-0.5 ml-0.5">
+                        <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-2 ml-0.5">
                             <MapPin size={10} />
                             {prospect.city}{prospect.city && prospect.province ? ', ' : ''}{prospect.province}
                         </p>
                     )}
-                </div>
-
-                <div className="space-y-1.5">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50/50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 group-hover:border-slate-200 dark:group-hover:border-slate-500 transition-colors">
-                        <div className="w-7 h-7 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center text-slate-400 dark:text-slate-300 shadow-sm border border-slate-100 dark:border-slate-500">
-                            <FileDigit size={14} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500">CUIT</p>
-                            <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">{prospect.cuit}</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50/50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 group-hover:border-slate-200 dark:group-hover:border-slate-500 transition-colors">
-                        <div className="w-7 h-7 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center text-slate-400 dark:text-slate-300 shadow-sm border border-slate-100 dark:border-slate-500">
-                            {prospect.contact.includes('@') ? <Mail size={14} /> : <Phone size={14} />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-[9px] uppercase font-bold text-slate-400 dark:text-slate-500">Contacto</p>
-                            <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate" title={prospect.contact}>{prospect.contact}</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
