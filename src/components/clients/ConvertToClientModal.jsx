@@ -313,7 +313,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
                     <button type="button" onClick={onClose} className="px-5 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors text-sm">Cancelar</button>
                     <button onClick={handleSubmit} type="submit" className="px-6 py-3 rounded-xl bg-brand-red text-white font-bold shadow-lg shadow-brand-red/30 hover:bg-red-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm">
                         <UserPlus size={18} />
-                        Confirmar
+                        Guardar
                     </button>
                 </div>
 

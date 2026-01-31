@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertCircle, LogOut, X } from 'lucide-react';
 
-export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirmar", cancelText = "Cancelar", type = "danger" }) => {
+export const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Guardar", cancelText = "Cancelar", type = "danger" }) => {
     const typeStyles = {
         danger: {
             icon: LogOut,

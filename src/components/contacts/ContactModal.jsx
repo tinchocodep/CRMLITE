@@ -262,8 +262,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                         value={formData.firstName}
                                         onChange={handleInputChange}
                                         className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${errors.firstName
-                                                ? 'border-red-300 focus:ring-red-200'
-                                                : 'border-slate-200 focus:ring-teal-200'
+                                            ? 'border-red-300 focus:ring-red-200'
+                                            : 'border-slate-200 focus:ring-teal-200'
                                             }`}
                                         placeholder="Juan"
                                     />
@@ -282,8 +282,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                         value={formData.lastName}
                                         onChange={handleInputChange}
                                         className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${errors.lastName
-                                                ? 'border-red-300 focus:ring-red-200'
-                                                : 'border-slate-200 focus:ring-teal-200'
+                                            ? 'border-red-300 focus:ring-red-200'
+                                            : 'border-slate-200 focus:ring-teal-200'
                                             }`}
                                         placeholder="Pérez"
                                     />
@@ -303,8 +303,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${errors.email
-                                            ? 'border-red-300 focus:ring-red-200'
-                                            : 'border-slate-200 focus:ring-teal-200'
+                                        ? 'border-red-300 focus:ring-red-200'
+                                        : 'border-slate-200 focus:ring-teal-200'
                                         }`}
                                     placeholder="juan.perez@example.com"
                                 />
@@ -350,8 +350,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="font-bold text-sm text-slate-800">{company.companyName}</span>
                                                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${company.companyType === 'client'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-blue-100 text-blue-700'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-blue-100 text-blue-700'
                                                         }`}>
                                                         {company.companyType === 'client' ? 'CLIENTE' : 'PROSPECTO'}
                                                     </span>
@@ -424,8 +424,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                                     >
                                                         <span className="font-semibold text-slate-800">{company.name}</span>
                                                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${company.type === 'client'
-                                                                ? 'bg-green-100 text-green-700'
-                                                                : 'bg-blue-100 text-blue-700'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-blue-100 text-blue-700'
                                                             }`}>
                                                             {company.type === 'client' ? 'CLIENTE' : 'PROSPECTO'}
                                                         </span>
@@ -508,7 +508,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                             onClick={handleSubmit}
                             className="flex-1 px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold transition-colors"
                         >
-                            {contact ? 'Guardar Cambios' : 'Crear Contacto'}
+                            {contact ? 'Guardar' : 'Crear Contacto'}
                         </button>
                     </div>
                 </motion.div>
