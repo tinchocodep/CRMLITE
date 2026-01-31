@@ -32,7 +32,7 @@ export const mockContacts = [
         avatar: null,
         companies: [
             {
-                companyId: 2, // Vial Andes (from mockProspects)
+                companyId: 3, // Vial Andes (FIXED: was 2, now 3 to match mockProspects)
                 companyName: "Vial Andes",
                 companyType: "prospect",
                 companyStatus: "active",
@@ -65,7 +65,7 @@ export const mockContacts = [
                 addedDate: "2024-01-20"
             },
             {
-                companyId: 2, // Vial Andes
+                companyId: 3, // Vial Andes (FIXED: was 2, now 3)
                 companyName: "Vial Andes",
                 companyType: "prospect",
                 companyStatus: "active",
@@ -88,7 +88,7 @@ export const mockContacts = [
         avatar: null,
         companies: [
             {
-                companyId: 3, // Assuming a third prospect/client
+                companyId: 6, // Agro Tech SA (converted prospect, FIXED: was 3)
                 companyName: "Agro Tech SA",
                 companyType: "client",
                 companyStatus: "active",
@@ -111,7 +111,7 @@ export const mockContacts = [
         avatar: null,
         companies: [
             {
-                companyId: 4, // Empresa desactivada
+                companyId: 5, // Campo Viejo SRL (FIXED: was 4)
                 companyName: "Campo Viejo SRL",
                 companyType: "prospect",
                 companyStatus: "active",
@@ -134,5 +134,51 @@ export const mockContacts = [
         notes: "Tiene una empresa desactivada pero sigue activo en Campo Sur.",
         createdAt: "2023-06-01T10:00:00Z",
         updatedAt: "2024-01-25T12:00:00Z"
+    },
+    {
+        id: 6,
+        firstName: "Lucas",
+        lastName: "Benetti",
+        email: "lucas.benetti@gmail.com",
+        phone: "+54 9 11 3456-7890",
+        avatar: null,
+        companies: [
+            {
+                companyId: 2, // Lucas Benetti (NEW)
+                companyName: "Lucas Benetti",
+                companyType: "prospect",
+                companyStatus: "active",
+                isCompanyActive: true,
+                role: "Productor Independiente",
+                isPrimary: true,
+                addedDate: "2024-03-11"
+            }
+        ],
+        notes: "Productor independiente interesado en asesoramiento técnico.",
+        createdAt: "2024-03-11T10:15:00Z",
+        updatedAt: "2024-03-11T10:15:00Z"
+    },
+    {
+        id: 7,
+        firstName: "Ana",
+        lastName: "López",
+        email: "ana.lopez@gmail.com",
+        phone: "+54 9 351 234-5678",
+        avatar: null,
+        companies: [
+            {
+                companyId: 4, // López Consultores (NEW)
+                companyName: "López Consultores",
+                companyType: "prospect",
+                companyStatus: "active",
+                isCompanyActive: true,
+                role: "Directora",
+                isPrimary: true,
+                addedDate: "2024-03-15"
+            }
+        ],
+        notes: "Directora de consultoría. Reunión de cierre pautada para próxima semana.",
+        createdAt: "2024-03-15T11:00:00Z",
+        updatedAt: "2024-03-15T11:00:00Z"
     }
 ];
