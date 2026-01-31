@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check } from 'lucide-react';
+import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus } from 'lucide-react';
 import { format } from 'date-fns';
+import { mockContacts } from '../../data/mockContacts';
 
 const statusOptions = [
     { id: 'contacted', label: 'Contacto Inicial', logo: '/logo_frio.png', color: 'bg-blue-50 text-blue-700' },
@@ -173,24 +174,104 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
 
                     {activeTab === 'contact' && (
                         <div className="space-y-6">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Contacto Principal</label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                                    <input
-                                        name="contact"
-                                        value={formData.contact}
-                                        onChange={handleChange}
-                                        placeholder="Email o Teléfono"
-                                        className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
-                                    />
-                                </div>
-                            </div>
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
+                                    <User size={14} />
+                                    Contactos Vinculados
+                                </h3>
 
-                            {/* Placeholder for future fields */}
-                            <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 text-blue-700 text-xs font-medium flex gap-2">
-                                <Link size={16} />
-                                <span>Aquí podrás vincular múltiples contactos, teléfonos y direcciones en el futuro.</span>
+                                {/* Get contacts linked to this prospect */}
+                                {(() => {
+                                    const linkedContacts = mockContacts.filter(contact =>
+                                        contact.companies.some(c =>
+                                            c.companyId === prospect?.id &&
+                                            c.companyType === 'prospect'
+                                        )
+                                    ).map(contact => {
+                                        const companyLink = contact.companies.find(c =>
+                                            c.companyId === prospect?.id &&
+                                            c.companyType === 'prospect'
+                                        );
+                                        return {
+                                            ...contact,
+                                            role: companyLink.role,
+                                            isPrimary: companyLink.isPrimary
+                                        };
+                                    });
+
+                                    return (
+                                        <>
+                                            {/* List of linked contacts */}
+                                            {linkedContacts.length > 0 ? (
+                                                <div className="space-y-2">
+                                                    {linkedContacts.map((contact) => (
+                                                        <div key={contact.id} className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start justify-between">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="font-bold text-sm text-slate-800">
+                                                                        {contact.firstName} {contact.lastName}
+                                                                    </span>
+                                                                    {contact.isPrimary && (
+                                                                        <span className="px-2 py-0.5 bg-yellow-100 border border-yellow-300 text-yellow-700 rounded-md text-[10px] font-bold flex items-center gap-1">
+                                                                            <Star size={10} fill="currentColor" /> PRINCIPAL
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="text-xs text-slate-600 font-semibold mb-1">{contact.role}</div>
+                                                                <div className="flex flex-col gap-1 text-xs text-slate-500">
+                                                                    {contact.email && (
+                                                                        <a href={`mailto:${contact.email}`} className="hover:text-brand-red flex items-center gap-1">
+                                                                            <Mail size={12} /> {contact.email}
+                                                                        </a>
+                                                                    )}
+                                                                    {contact.phone && (
+                                                                        <a href={`tel:${contact.phone}`} className="hover:text-brand-red flex items-center gap-1">
+                                                                            <Phone size={12} /> {contact.phone}
+                                                                        </a>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => {
+                                                                    if (window.confirm(`¿Desvincular a ${contact.firstName} ${contact.lastName}?`)) {
+                                                                        alert('Funcionalidad de desvinculación pendiente de implementación');
+                                                                    }
+                                                                }}
+                                                                className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
+                                                            >
+                                                                <Trash2 size={16} className="text-red-600" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-500 text-sm text-center">
+                                                    No hay contactos vinculados a este prospecto
+                                                </div>
+                                            )}
+
+                                            {/* Add contact section */}
+                                            <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 space-y-3">
+                                                <div className="flex items-center gap-2 text-slate-600 text-xs font-bold uppercase">
+                                                    <Plus size={14} />
+                                                    Agregar Contacto
+                                                </div>
+
+                                                <button
+                                                    onClick={() => alert('Abrir modal de crear contacto con este prospecto pre-seleccionado')}
+                                                    className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                >
+                                                    <UserPlus size={16} />
+                                                    Crear Nuevo Contacto
+                                                </button>
+
+                                                <div className="text-xs text-slate-500 text-center">
+                                                    También puedes vincular contactos existentes desde la página de Contactos
+                                                </div>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
                             </div>
                         </div>
                     )}
