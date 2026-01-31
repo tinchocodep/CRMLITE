@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Mail, Phone, Briefcase, ChevronDown, ChevronUp, Pencil, Trash2 } from 'lucide-react';
+import { Building2, Mail, Phone, Briefcase, ChevronDown, ChevronUp, Pencil, Trash2, Calendar, MessageSquare } from 'lucide-react';
 
 const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) => {
     // Get active companies count
@@ -28,21 +28,57 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                         </div>
                     </div>
 
-                    {/* Contact Info */}
+                    {/* Quick Actions */}
                     {(contact.email || contact.phone) && (
-                        <div className="space-y-1.5">
-                            {contact.email && (
-                                <div className="flex items-center gap-2 text-xs text-slate-600">
-                                    <Mail size={12} className="text-slate-400 shrink-0" />
-                                    <span className="truncate">{contact.email}</span>
-                                </div>
-                            )}
+                        <div className="flex items-center gap-1.5">
                             {contact.phone && (
-                                <div className="flex items-center gap-2 text-xs text-slate-600">
-                                    <Phone size={12} className="text-slate-400 shrink-0" />
-                                    <span>{contact.phone}</span>
-                                </div>
+                                <>
+                                    <a
+                                        href={`tel:${contact.phone}`}
+                                        className="p-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg transition-colors flex items-center gap-1"
+                                        title="Llamar"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Phone size={14} />
+                                    </a>
+                                    <a
+                                        href={`sms:${contact.phone}`}
+                                        className="p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors flex items-center gap-1"
+                                        title="Enviar mensaje"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <MessageSquare size={14} />
+                                    </a>
+                                </>
                             )}
+                            {contact.email && (
+                                <a
+                                    href={`mailto:${contact.email}`}
+                                    className="p-2 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-colors flex items-center gap-1"
+                                    title="Enviar email"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <Mail size={14} />
+                                </a>
+                            )}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    alert(`Agendar reunión con ${contact.firstName} ${contact.lastName}`);
+                                }}
+                                className="p-2 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-lg transition-colors flex items-center gap-1"
+                                title="Agendar reunión"
+                            >
+                                <Calendar size={14} />
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Contact Info (smaller text) */}
+                    {(contact.email || contact.phone) && (
+                        <div className="space-y-0.5 text-[10px] text-slate-400">
+                            {contact.email && <div className="truncate">{contact.email}</div>}
+                            {contact.phone && <div>{contact.phone}</div>}
                         </div>
                     )}
 
@@ -53,10 +89,10 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                                 <div
                                     key={idx}
                                     className={`px-2.5 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1.5 ${!company.isCompanyActive
-                                            ? 'bg-slate-100 border-slate-300 text-slate-400'
-                                            : company.companyType === 'client'
-                                                ? 'bg-green-50 border-green-200 text-green-700'
-                                                : 'bg-blue-50 border-blue-200 text-blue-700'
+                                        ? 'bg-slate-100 border-slate-300 text-slate-400'
+                                        : company.companyType === 'client'
+                                            ? 'bg-green-50 border-green-200 text-green-700'
+                                            : 'bg-blue-50 border-blue-200 text-blue-700'
                                         }`}
                                 >
                                     <Briefcase size={11} strokeWidth={2.5} />
@@ -103,8 +139,8 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                                 <div
                                     key={idx}
                                     className={`bg-white rounded-xl p-3 border shadow-sm ${!company.isCompanyActive
-                                            ? 'border-slate-300 opacity-60'
-                                            : 'border-slate-200'
+                                        ? 'border-slate-300 opacity-60'
+                                        : 'border-slate-200'
                                         }`}
                                 >
                                     <div className="flex justify-between items-start mb-2">
@@ -125,8 +161,8 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                                         </div>
                                         <div className="flex flex-col items-end gap-1">
                                             <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${company.companyType === 'client'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-blue-100 text-blue-700'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-blue-100 text-blue-700'
                                                 }`}>
                                                 {company.companyType === 'client' ? 'CLIENTE' : 'PROSPECTO'}
                                             </span>
