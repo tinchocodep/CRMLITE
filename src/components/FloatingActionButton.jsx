@@ -90,7 +90,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
             {/* Main FAB Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-16 h-16 rounded-full bg-gradient-to-r from-red-600 to-red-500 shadow-2xl shadow-red-500/50 flex items-center justify-center hover:scale-110 transition-all duration-300 ${isOpen ? 'rotate-45' : 'rotate-0'}`}
+                className={`w-16 h-16 rounded-full bg-gradient-to-r from-red-600 to-red-500 shadow-2xl shadow-red-500/50 flex items-center justify-center hover:scale-110 transition-all duration-300`}
             >
                 {isOpen ? (
                     <X className="w-8 h-8 text-white" />
