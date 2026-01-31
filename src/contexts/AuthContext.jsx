@@ -41,14 +41,15 @@ export const AuthProvider = ({ children }) => {
                 email: email,
                 name: email.split('@')[0],
                 role: 'user',
-                avatar: null
+                avatar: null,
+                rememberMe: rememberMe
             };
 
             setUser(mockUser);
 
-            if (rememberMe) {
-                localStorage.setItem('user', JSON.stringify(mockUser));
-            }
+            // Always save to localStorage to persist session
+            // The rememberMe flag is stored for future use (e.g., auto-logout)
+            localStorage.setItem('user', JSON.stringify(mockUser));
 
             setIsLoading(false);
             return { success: true, user: mockUser };

@@ -69,9 +69,11 @@ const Login = () => {
             const result = await login(formData.email, formData.password, formData.rememberMe);
 
             if (result.success) {
-                // Redirect based on device
+                // Force redirect to dashboard for mobile, ficha-360 for desktop
                 const redirectPath = isMobile ? '/dashboard' : '/ficha-360';
-                navigate(redirectPath, { replace: true });
+                setTimeout(() => {
+                    navigate(redirectPath, { replace: true });
+                }, 100);
             } else {
                 setAuthError(result.error || 'Error al iniciar sesión');
             }
