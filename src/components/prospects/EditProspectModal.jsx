@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { mockContacts } from '../../data/mockContacts';
+import ContactModal from '../contacts/ContactModal';
 
 const statusOptions = [
     { id: 'contacted', label: 'Contacto Inicial', logo: '/logo_frio.png', color: 'bg-blue-50 text-blue-700' },
@@ -10,11 +11,13 @@ const statusOptions = [
     { id: 'near_closing', label: 'Cierre Cercano', logo: '/logo_urgente.png', color: 'bg-red-50 text-red-700' },
 ];
 
-const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
+const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     if (!isOpen || !prospect) return null;
 
     const [formData, setFormData] = useState({ ...prospect });
     const [activeTab, setActiveTab] = useState('details'); // details | contact | notes
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [preselectedCompany, setPreselectedCompany] = useState(null);
 
     useEffect(() => {
         setFormData({ ...prospect });
@@ -28,6 +31,47 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
     const handleSubmit = () => {
         onSave(formData);
         onClose();
+    };
+
+    const handleUnlinkContact = (contactId, contactName) => {
+        if (window.confirm(`¿Desvincular a ${contactName}?`)) {
+            // Update mockContacts to remove this company from the contact's companies array
+            const contactIndex = mockContacts.findIndex(c => c.id === contactId);
+            if (contactIndex !== -1) {
+                mockContacts[contactIndex].companies = mockContacts[contactIndex].companies.filter(
+                    c => !(c.companyId === prospect.id && c.companyType === 'prospect')
+                );
+
+                // Notify parent to refresh
+                if (onContactsUpdate) {
+                    onContactsUpdate();
+                }
+
+                // Force re-render by updating formData
+                setFormData({ ...formData });
+            }
+        }
+    };
+
+    const handleCreateContact = () => {
+        setPreselectedCompany({
+            companyId: prospect.id,
+            companyName: prospect.tradeName || prospect.companyName,
+            companyType: 'prospect'
+        });
+        setIsContactModalOpen(true);
+    };
+
+    const handleContactSave = (contactData) => {
+        // Contact will be saved with the preselected company
+        // Notify parent to refresh
+        if (onContactsUpdate) {
+            onContactsUpdate();
+        }
+        setIsContactModalOpen(false);
+        setPreselectedCompany(null);
+        // Force re-render
+        setFormData({ ...formData });
     };
 
     return createPortal(
@@ -232,11 +276,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
                                                                 </div>
                                                             </div>
                                                             <button
-                                                                onClick={() => {
-                                                                    if (window.confirm(`¿Desvincular a ${contact.firstName} ${contact.lastName}?`)) {
-                                                                        alert('Funcionalidad de desvinculación pendiente de implementación');
-                                                                    }
-                                                                }}
+                                                                onClick={() => handleUnlinkContact(contact.id, `${contact.firstName} ${contact.lastName}`)}
                                                                 className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
                                                             >
                                                                 <Trash2 size={16} className="text-red-600" />
@@ -258,7 +298,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
                                                 </div>
 
                                                 <button
-                                                    onClick={() => alert('Abrir modal de crear contacto con este prospecto pre-seleccionado')}
+                                                    onClick={handleCreateContact}
                                                     className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                                 >
                                                     <UserPlus size={16} />
@@ -327,6 +367,17 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Contact Modal for creating new contacts */}
+            <ContactModal
+                isOpen={isContactModalOpen}
+                onClose={() => {
+                    setIsContactModalOpen(false);
+                    setPreselectedCompany(null);
+                }}
+                onSave={handleContactSave}
+                preselectedCompany={preselectedCompany}
+            />
         </div>,
         document.body
     );
