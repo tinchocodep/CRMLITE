@@ -10,6 +10,7 @@ import { mockContacts } from '../data/mockContacts';
 import { mockEvents } from '../data/mockAgenda';
 import EventCard from '../components/agenda/EventCard';
 import { useAuth } from '../contexts/AuthContext';
+import { ConfirmModal } from '../components/ConfirmModal';
 
 
 const Dashboard = () => {
@@ -17,13 +18,12 @@ const Dashboard = () => {
     const { logout } = useAuth();
     const [currentTime, setCurrentTime] = useState(new Date());
     const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const notificationsRef = useRef(null);
 
     const handleLogout = () => {
-        if (window.confirm('¿Estás seguro que deseas cerrar sesión?')) {
-            logout();
-            navigate('/login', { replace: true });
-        }
+        logout();
+        navigate('/login', { replace: true });
     };
 
     useEffect(() => {
@@ -165,7 +165,7 @@ const Dashboard = () => {
                         onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            handleLogout();
+                            setLogoutModalOpen(true);
                         }}
                         onTouchStart={(e) => {
                             e.stopPropagation();
@@ -456,6 +456,18 @@ const Dashboard = () => {
                     </div>
                 </motion.div>
             </motion.div>
+
+            {/* Logout Confirmation Modal */}
+            <ConfirmModal
+                isOpen={logoutModalOpen}
+                onClose={() => setLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+                title="Cerrar Sesión"
+                message="¿Estás seguro que deseas cerrar sesión? Tendrás que volver a iniciar sesión para acceder."
+                confirmText="Cerrar Sesión"
+                cancelText="Cancelar"
+                type="danger"
+            />
         </div>
     );
 };
