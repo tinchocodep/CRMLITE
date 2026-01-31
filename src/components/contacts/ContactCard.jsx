@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Mail, Phone, Briefcase, ChevronDown, ChevronUp, Pencil, Trash2, Calendar, MessageSquare } from 'lucide-react';
+import { Building2, Mail, Phone, Briefcase, ChevronDown, ChevronUp, Pencil, Trash2, MessageSquare, UserPlus } from 'lucide-react';
 
 const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) => {
     // Get active companies count
@@ -64,12 +64,28 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    alert(`Agendar reunión con ${contact.firstName} ${contact.lastName}`);
+                                    // Generate vCard
+                                    const vCard = `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.firstName} ${contact.lastName}
+N:${contact.lastName};${contact.firstName};;;
+${contact.email ? `EMAIL:${contact.email}` : ''}
+${contact.phone ? `TEL:${contact.phone}` : ''}
+${contact.companies[0] ? `ORG:${contact.companies[0].companyName}` : ''}
+${contact.companies[0] ? `TITLE:${contact.companies[0].role}` : ''}
+END:VCARD`;
+                                    const blob = new Blob([vCard], { type: 'text/vcard' });
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `${contact.firstName}_${contact.lastName}.vcf`;
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
                                 }}
-                                className="p-2 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-lg transition-colors flex items-center gap-1"
-                                title="Agendar reunión"
+                                className="p-2 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-lg transition-colors flex items-center gap-1"
+                                title="Agregar a contactos"
                             >
-                                <Calendar size={14} />
+                                <UserPlus size={14} />
                             </button>
                         </div>
                     )}

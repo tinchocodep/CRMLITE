@@ -146,8 +146,8 @@ export const mockProspects = [
         notes: 'Convertido a cliente el 01/03/2024.',
         contacts: [
             {
-                contactId: 4,
-                contactName: 'Ana Martínez',
+                contactId: 8,
+                contactName: 'Roberto Martínez',
                 role: 'Gerente General',
                 isPrimary: true
             }

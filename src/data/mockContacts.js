@@ -180,5 +180,28 @@ export const mockContacts = [
         notes: "Directora de consultoría. Reunión de cierre pautada para próxima semana.",
         createdAt: "2024-03-15T11:00:00Z",
         updatedAt: "2024-03-15T11:00:00Z"
+    },
+    {
+        id: 8,
+        firstName: "Roberto",
+        lastName: "Martínez",
+        email: "roberto.martinez@agrotech.com",
+        phone: "+54 9 11 9876-5432",
+        avatar: null,
+        companies: [
+            {
+                companyId: 6, // Agro Tech SA
+                companyName: "Agro Tech S.A.",
+                companyType: "prospect",
+                companyStatus: "converted",
+                isCompanyActive: true,
+                role: "Gerente General",
+                isPrimary: true,
+                addedDate: "2024-02-20"
+            }
+        ],
+        notes: "Gerente General de Agro Tech. Prospecto convertido a cliente.",
+        createdAt: "2024-02-20T10:00:00Z",
+        updatedAt: "2024-03-01T12:00:00Z"
     }
 ];

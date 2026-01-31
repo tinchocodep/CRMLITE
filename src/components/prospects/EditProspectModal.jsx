@@ -293,11 +293,30 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                                         </a>
                                                                     )}
                                                                     <button
-                                                                        onClick={() => alert('Agendar reunión con ' + contact.firstName)}
-                                                                        className="p-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
-                                                                        title="Agendar reunión"
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            // Generate vCard
+                                                                            const vCard = `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.firstName} ${contact.lastName}
+N:${contact.lastName};${contact.firstName};;;
+${contact.email ? `EMAIL:${contact.email}` : ''}
+${contact.phone ? `TEL:${contact.phone}` : ''}
+ORG:${prospect.tradeName || prospect.companyName}
+TITLE:${contact.role}
+END:VCARD`;
+                                                                            const blob = new Blob([vCard], { type: 'text/vcard' });
+                                                                            const url = window.URL.createObjectURL(blob);
+                                                                            const a = document.createElement('a');
+                                                                            a.href = url;
+                                                                            a.download = `${contact.firstName}_${contact.lastName}.vcf`;
+                                                                            a.click();
+                                                                            window.URL.revokeObjectURL(url);
+                                                                        }}
+                                                                        className="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                        title="Agregar a contactos"
                                                                     >
-                                                                        <Calendar size={12} />
+                                                                        <UserPlus size={12} />
                                                                     </button>
                                                                 </div>
 
