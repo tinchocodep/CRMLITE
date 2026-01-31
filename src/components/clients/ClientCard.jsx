@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Building2, MapPin, Briefcase, FileText, ChevronDown, ChevronUp, Tractor, Leaf, Map, User, Pencil, Trash2 } from 'lucide-react';
+import { Building2, MapPin, Briefcase, FileText, ChevronDown, ChevronUp, Tractor, Leaf, Map, User, Pencil, Trash2, Mail, Phone, FileDigit, FileCheck, FolderOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
+import { mockLegajos } from '../../data/mockLegajos';
 
 const importanceConfig = {
     low: { label: 'Estándar', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-100 text-blue-700' },
@@ -9,53 +11,133 @@ const importanceConfig = {
 };
 
 const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allContacts = [] }) => {
+    const navigate = useNavigate();
     const importance = importanceConfig[client.importance] || importanceConfig.low;
+
+    // Calculate legajo progress
+    const legajo = mockLegajos.find(l => l.clientId === client.id);
+    const docs = legajo?.documents || {};
+    const totalDocs = 6;
+    const uploadedDocs = Object.values(docs).filter(d => d.status === 'uploaded').length;
+    const legajoStatus = uploadedDocs === totalDocs ? 'complete' : uploadedDocs > 0 ? 'incomplete' : 'empty';
+    const progressPercentage = (uploadedDocs / totalDocs) * 100;
+
+    const handleLegajoClick = (e) => {
+        e.stopPropagation();
+        navigate('/legajos');
+    };
 
     return (
         <div className="mb-5">
             <div className="bg-white dark:bg-slate-800/90 rounded-2xl border-2 border-slate-300 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden">
 
-                {/* Header Section - Linear Layout for Mobile */}
-                <div className="p-4 space-y-3">
-                    {/* Top Row: Title + Importance Logo */}
-                    <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">
-                                {client.tradeName}
-                            </h3>
-                            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-xs mt-1">
-                                <Building2 size={12} className="text-slate-400 dark:text-slate-500 shrink-0" />
-                                <span className="truncate">{client.legalName}</span>
+                {/* Header Section - Compact Layout */}
+                <div className="p-3 space-y-2">
+                    {/* Top Row: Edit Button, Title + Importance Badge */}
+                    <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2 flex-1 min-w-0">
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onEdit(client); }}
+                                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-brand-red dark:hover:bg-red-600 hover:text-white text-slate-400 dark:text-slate-500 transition-all shadow-sm"
+                                title="Editar Cliente"
+                            >
+                                <Pencil size={14} strokeWidth={2.5} />
+                            </button>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">
+                                    {client.tradeName}
+                                </h3>
+                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                    <Building2 size={12} />
+                                    <span className="truncate">{client.legalName}</span>
+                                </p>
+
+                                {/* Inline Info: CUIT, Email, Phone */}
+                                <div className="mt-2 space-y-1">
+                                    {/* CUIT */}
+                                    <p className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                                        <FileDigit size={12} className="text-slate-400 dark:text-slate-500" />
+                                        <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 mr-1">CUIT:</span>
+                                        {client.cuit}
+                                    </p>
+
+                                    {/* Email */}
+                                    {client.email && (
+                                        <p className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                                            <Mail size={12} className="text-slate-400 dark:text-slate-500" />
+                                            <a
+                                                href={`mailto:${client.email}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="hover:text-brand-red dark:hover:text-red-400 transition-colors truncate"
+                                                title={client.email}
+                                            >
+                                                {client.email}
+                                            </a>
+                                        </p>
+                                    )}
+
+                                    {/* Phone */}
+                                    {client.phone && (
+                                        <p className="text-xs font-medium text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                                            <Phone size={12} className="text-slate-400 dark:text-slate-500" />
+                                            <a
+                                                href={`tel:${client.phone}`}
+                                                onClick={(e) => e.stopPropagation()}
+                                                className="hover:text-brand-red dark:hover:text-red-400 transition-colors"
+                                            >
+                                                {client.phone}
+                                            </a>
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Location */}
+                                <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 flex items-center gap-1 mt-2">
+                                    <MapPin size={10} />
+                                    {client.city}, {client.province}
+                                </p>
                             </div>
                         </div>
-                        <img
-                            src={importance.logo}
-                            alt={importance.label}
-                            className="w-10 h-10 object-contain shrink-0"
-                        />
+
+                        {/* Importance Badge */}
+                        <div className="flex items-center gap-1.5 pr-2.5 pl-0.5 py-0.5 rounded-full border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 shrink-0">
+                            <img src={importance.logo} alt={importance.label} className="w-5 h-5 object-contain" />
+                        </div>
                     </div>
 
-                    {/* Info Badges Row */}
-                    <div className="flex flex-wrap gap-2">
-                        <div className="px-2.5 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                            <MapPin size={11} strokeWidth={2.5} />
-                            <span>{client.city}, {client.province}</span>
+                    {/* Legajo Progress - Clickable */}
+                    <button
+                        onClick={handleLegajoClick}
+                        className="w-full p-2 bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 transition-all active:scale-95"
+                        title="Ver Legajo Completo"
+                    >
+                        <div className="flex items-center gap-2">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${legajoStatus === 'complete' ? 'bg-emerald-50 text-emerald-600' :
+                                    legajoStatus === 'incomplete' ? 'bg-orange-50 text-orange-600' :
+                                        'bg-slate-100 text-slate-400'
+                                }`}>
+                                {legajoStatus === 'complete' ? <FileCheck size={16} /> : <FolderOpen size={16} />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 mb-1">
+                                    <span>Legajo: {client.fileNumber}</span>
+                                    <span>{uploadedDocs}/{totalDocs} Docs</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full transition-all duration-500 ${legajoStatus === 'complete' ? 'bg-emerald-500' :
+                                                legajoStatus === 'incomplete' ? 'bg-orange-500' :
+                                                    'bg-slate-400'
+                                            }`}
+                                        style={{ width: `${progressPercentage}%` }}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div className="px-2.5 py-1 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
-                            <FileText size={11} strokeWidth={2.5} />
-                            <span>LEG: {client.fileNumber}</span>
-                        </div>
-                    </div>
+                    </button>
 
                     {/* Action Buttons Row */}
-                    <div className="flex items-center gap-2 pt-2">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onEdit(client); }}
-                            className="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-brand-red dark:hover:bg-red-600 hover:text-white text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5"
-                        >
-                            <Pencil size={14} />
-                            Editar
-                        </button>
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={(e) => { e.stopPropagation(); onDelete(client.id); }}
                             className="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-red-600 hover:text-white text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5"
