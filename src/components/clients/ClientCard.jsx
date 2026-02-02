@@ -101,7 +101,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
 
                         {/* Importance Badge */}
                         <div className="flex items-center gap-1.5 pr-2.5 pl-0.5 py-0.5 rounded-full border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 shrink-0">
-                            <img src="/icon_clientes.png" alt={importance.label} className="w-5 h-5 object-contain" />
+                            <img src="/logo_urgente.png" alt={importance.label} className="w-5 h-5 object-contain" />
                         </div>
                     </div>
 
