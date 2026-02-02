@@ -733,6 +733,52 @@ const MainLayout = () => {
                 {/* Vertical Sidebar */}
                 <VerticalSidebar onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)} />
 
+                {/* Quick Actions Modal - Desktop */}
+                <AnimatePresence>
+                    {desktopActionMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                            onClick={() => setDesktopActionMenuOpen(false)}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, x: -20 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, x: -20 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="fixed left-24 top-1/2 -translate-y-1/2 w-80 bg-white rounded-2xl shadow-2xl p-6"
+                            >
+                                <h3 className="text-xl font-bold text-slate-800 mb-4">Acciones Rápidas</h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {actions.map((action, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => {
+                                                if (action.label === 'Crear Actividad') setIsCreateModalOpen(true);
+                                                else if (action.label === 'Nuevo Prospecto') handleGlobalCreateProspect();
+                                                else if (action.label === 'Convertir Prospecto') handleGlobalPromoteProspect();
+                                                else if (action.label === 'Nuevo Cliente') handleGlobalCreateClient();
+                                                else if (action.label === 'Nuevo Contacto') handleGlobalCreateContact();
+                                                else if (action.label === 'Registrar Visita') navigate('/visitas');
+                                                else if (action.label === 'Nueva Oportunidad') navigate('/oportunidades');
+                                                setDesktopActionMenuOpen(false);
+                                            }}
+                                            className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        >
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-2 shadow-md">
+                                                <action.icon className="w-6 h-6 text-white" />
+                                            </div>
+                                            <span className="text-xs font-bold text-slate-800 text-center">{action.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 {/* Desktop Main Content */}
                 <main className="ml-20 min-h-screen p-6">
                     <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
