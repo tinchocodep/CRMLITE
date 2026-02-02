@@ -72,7 +72,7 @@ const DayView = ({ currentDate, events }) => {
                             <span className="text-2xl">☕</span>
                         </div>
                         <p className="font-medium text-lg text-slate-400">Todo libre por hoy</p>
-                        <p className="text-sm text-slate-400/70">No tienes eventos programados.</p>
+                        <p className="text-sm text-slate-400/70">No tienes actividades programadas.</p>
                     </div>
                 )}
             </div>
@@ -121,7 +121,7 @@ const DayView = ({ currentDate, events }) => {
                             <div className="relative w-full h-full p-2">
                                 {dayEvents.length === 0 && (
                                     <div className="absolute top-1/3 left-0 right-0 text-center text-slate-300">
-                                        <p className="text-lg">No hay eventos programados para hoy</p>
+                                        <p className="text-lg">No hay actividades programadas para hoy</p>
                                     </div>
                                 )}
 

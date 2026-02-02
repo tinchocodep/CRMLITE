@@ -26,7 +26,7 @@ const modules = [
 ];
 
 const actions = [
-    { label: 'Crear Evento', icon: Calendar, color: 'text-blue-600 bg-blue-50' },
+    { label: 'Crear Actividad', icon: Calendar, color: 'text-blue-600 bg-blue-50' },
     { label: 'Nuevo Prospecto', icon: UserCheck, color: 'text-purple-600 bg-purple-50' },
     { label: 'Convertir Prospecto', icon: UserPlus, color: 'text-pink-600 bg-pink-50' },
     { label: 'Nuevo Cliente', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
@@ -196,7 +196,7 @@ const MainLayout = () => {
 
                             {/* Notifications List */}
                             <div className="max-h-96 overflow-y-auto">
-                                {/* Evento Próximo */}
+                                {/* Actividad Próxima */}
                                 <div className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
                                     <div className="flex gap-3">
                                         <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -411,7 +411,7 @@ const MainLayout = () => {
 
                                 {/* Actions Grid */}
                                 <div className="px-4 pb-6 grid grid-cols-2 gap-3">
-                                    {/* Crear Evento */}
+                                    {/* Crear Actividad */}
                                     <button
                                         onClick={() => {
                                             setIsCreateModalOpen(true);
@@ -422,7 +422,7 @@ const MainLayout = () => {
                                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center mb-3 shadow-md">
                                             <Calendar className="w-6 h-6 text-white" />
                                         </div>
-                                        <span className="text-sm font-bold text-slate-800">Crear Evento</span>
+                                        <span className="text-sm font-bold text-slate-800">Crear Actividad</span>
                                     </button>
 
                                     {/* Nuevo Prospecto */}
@@ -779,7 +779,7 @@ const MainLayout = () => {
                                                     <button
                                                         key={idx}
                                                         onClick={() => {
-                                                            if (action.label === 'Crear Evento') setIsCreateModalOpen(true);
+                                                            if (action.label === 'Crear Actividad') setIsCreateModalOpen(true);
                                                             else if (action.label === 'Nuevo Prospecto') handleGlobalCreateProspect();
                                                             else if (action.label === 'Convertir Prospecto') handleGlobalPromoteProspect();
                                                             else if (action.label === 'Nuevo Cliente') handleGlobalCreateClient();
@@ -854,7 +854,7 @@ const MainLayout = () => {
                     console.log('Global Event Created:', newEvent);
                     import('../data/mockAgenda').then(module => {
                         module.mockEvents.push(newEvent);
-                        alert('Evento global creado! Ve a la Agenda para verlo.');
+                        alert('Actividad global creada! Ve a la Agenda para verla.');
                     });
                 }}
             />

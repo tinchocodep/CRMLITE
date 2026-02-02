@@ -222,7 +222,7 @@ const Agenda = () => {
             <div className="space-y-4">
                 {renderFilters()}
                 {filteredEvents.length === 0 ? (
-                    <div className="text-center py-12 text-slate-400">No hay eventos que coincidan con los filtros.</div>
+                    <div className="text-center py-12 text-slate-400">No hay actividades que coincidan con los filtros.</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredEvents.map(event => (
@@ -240,7 +240,7 @@ const Agenda = () => {
     const handleCreateEvent = (newEvent) => {
         console.log('New Event Created:', newEvent);
         mockEvents.push(newEvent);
-        alert('Evento creado exitosamente! (Mira la consola)');
+        alert('Actividad creada exitosamente! (Mira la consola)');
     };
 
     return (

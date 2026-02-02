@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake } from 'lucide-react';
+import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake, ChevronDown, UserPlus } from 'lucide-react';
 import { format, addHours, addMinutes } from 'date-fns';
 
 const priorityConfig = {
     high: {
         id: 'high',
-        label: 'Urgente',
+        label: 'Alta',
         logo: '/logo_urgente.png',
         color: 'bg-red-50 border-red-200',
         activeColor: 'bg-red-100 border-red-500 ring-2 ring-red-500/20'
     },
     medium: {
         id: 'medium',
-        label: 'Tibio',
+        label: 'Media',
         logo: '/logo_tibio.png',
         color: 'bg-orange-50 border-orange-200',
         activeColor: 'bg-orange-100 border-orange-500 ring-2 ring-orange-500/20'
     },
     low: {
         id: 'low',
-        label: 'Frío',
+        label: 'Baja',
         logo: '/logo_frio.png',
         color: 'bg-blue-50 border-blue-200',
         activeColor: 'bg-blue-100 border-blue-500 ring-2 ring-blue-500/20'
@@ -28,12 +28,12 @@ const priorityConfig = {
 };
 
 const typeConfig = [
-    { id: 'visit', label: 'Visita', color: 'bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200' },
-    { id: 'call', label: 'Llamada', color: 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200' },
-    { id: 'meeting', label: 'Reunión', color: 'bg-indigo-100 text-indigo-700 border-indigo-200 hover:bg-indigo-200' },
-    { id: 'reminder', label: 'Recordatorio', color: 'bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-200' },
-    { id: 'task', label: 'Tarea', color: 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200' },
-    { id: 'quote', label: 'Cotizar', color: 'bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-200' },
+    { id: 'visit', label: 'Visita', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'call', label: 'Llamada', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'meeting', label: 'Reunión', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'reminder', label: 'Recordatorio', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'task', label: 'Tarea', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'quote', label: 'Cotizar', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
 ];
 
 const durationOptions = [
@@ -43,6 +43,15 @@ const durationOptions = [
     { value: 90, label: '1.5 horas' },
     { value: 120, label: '2 horas' },
     { value: 180, label: '3 horas' },
+];
+
+// Mock team members - TODO: Replace with real data from Supabase
+const mockTeamMembers = [
+    { id: '1', name: 'Martin G.', email: 'martin@company.com', isCurrentUser: true, avatar: null },
+    { id: '2', name: 'Juan Pérez', email: 'juan@company.com', isCurrentUser: false, avatar: null },
+    { id: '3', name: 'María García', email: 'maria@company.com', isCurrentUser: false, avatar: null },
+    { id: '4', name: 'Carlos López', email: 'carlos@company.com', isCurrentUser: false, avatar: null },
+    { id: '5', name: 'Ana Martínez', email: 'ana@company.com', isCurrentUser: false, avatar: null },
 ];
 
 const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
@@ -56,8 +65,10 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
         duration: 60, // minutes
         client: '',
         description: '',
-        assignedTo: 'Martin G.' // Current user as default
+        assignedTo: ['1'] // Array of user IDs - default to current user
     });
+
+    const [showUserSelector, setShowUserSelector] = useState(false);
 
     // Calculate end time based on duration
     const getEndTime = () => {
@@ -95,7 +106,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-slate-100">
                     <div>
-                        <h2 className="text-2xl font-bold text-slate-800">Nuevo Evento</h2>
+                        <h2 className="text-2xl font-bold text-slate-800">Nueva Actividad</h2>
                         <p className="text-sm text-slate-500">Agenda una nueva actividad en el calendario</p>
                     </div>
                     <button
@@ -110,7 +121,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
 
                     {/* 1. Title - FIRST */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Título del Evento</label>
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Título de la Actividad</label>
                         <input
                             type="text"
                             placeholder="Ej: Visita Comercial TechSolutions"
@@ -121,22 +132,26 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                         />
                     </div>
 
-                    {/* 2. Client/Company - SECOND (like classification in clients) */}
+                    {/* 2. Type Selection - SECOND */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa</label>
-                        <div className="relative">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Buscar cliente..."
-                                value={newEvent.client}
-                                onChange={(e) => setNewEvent({ ...newEvent, client: e.target.value })}
-                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-red/20 outline-none font-medium"
-                            />
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Tipo de Actividad</label>
+                        <div className="flex flex-wrap gap-2">
+                            {typeConfig.map((t) => (
+                                <button
+                                    key={t.id}
+                                    onClick={() => setNewEvent({ ...newEvent, type: t.id })}
+                                    className={`
+                                        px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all
+                                        ${newEvent.type === t.id ? t.color.replace('bg-', 'bg-opacity-100 ring-2 ring-offset-1 ring-slate-200') : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200'}
+                                    `}
+                                >
+                                    {t.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* 3. Priority Selection - COMPACT (single row) */}
+                    {/* 3. Priority Selection - THIRD */}
                     <div className="space-y-2">
                         <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Prioridad</label>
                         <div className="flex gap-3">
@@ -168,22 +183,18 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                         </div>
                     </div>
 
-                    {/* 4. Type Selection - with Recordatorio */}
+                    {/* 4. Client/Company - FOURTH */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Tipo de Actividad</label>
-                        <div className="flex flex-wrap gap-2">
-                            {typeConfig.map((t) => (
-                                <button
-                                    key={t.id}
-                                    onClick={() => setNewEvent({ ...newEvent, type: t.id })}
-                                    className={`
-                                        px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all
-                                        ${newEvent.type === t.id ? t.color.replace('bg-', 'bg-opacity-100 ring-2 ring-offset-1 ring-slate-200') : 'bg-white border-slate-100 text-slate-500 hover:border-slate-200'}
-                                    `}
-                                >
-                                    {t.label}
-                                </button>
-                            ))}
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa</label>
+                        <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Buscar cliente..."
+                                value={newEvent.client}
+                                onChange={(e) => setNewEvent({ ...newEvent, client: e.target.value })}
+                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-red/20 outline-none font-medium"
+                            />
                         </div>
                     </div>
 
@@ -225,13 +236,111 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                         />
                     </div>
 
-                    {/* Footer / Asignar a (instead of Asignado por) */}
+                    {/* Asignar a: Multi-user selector */}
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Asignar a:</label>
+
+                        {/* Selected users chips */}
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {newEvent.assignedTo.map(userId => {
+                                const user = mockTeamMembers.find(u => u.id === userId);
+                                if (!user) return null;
+                                return (
+                                    <div
+                                        key={userId}
+                                        className="flex items-center gap-2 bg-brand-red/10 border border-brand-red/20 rounded-full px-3 py-1.5"
+                                    >
+                                        <div className="w-5 h-5 rounded-full bg-brand-red text-white flex items-center justify-center text-[10px] font-bold">
+                                            {user.name.charAt(0)}
+                                        </div>
+                                        <span className="text-xs font-medium text-slate-700">
+                                            {user.name}{user.isCurrentUser ? ' (Tú)' : ''}
+                                        </span>
+                                        <button
+                                            onClick={() => {
+                                                // Don't allow removing all users
+                                                if (newEvent.assignedTo.length > 1) {
+                                                    setNewEvent({
+                                                        ...newEvent,
+                                                        assignedTo: newEvent.assignedTo.filter(id => id !== userId)
+                                                    });
+                                                }
+                                            }}
+                                            className="text-slate-400 hover:text-red-500 transition-colors"
+                                        >
+                                            <X size={12} />
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Dropdown selector */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowUserSelector(!showUserSelector)}
+                                className="w-full flex items-center justify-between gap-2 p-3 bg-white border border-slate-200 rounded-xl hover:border-brand-red/50 transition-colors"
+                            >
+                                <div className="flex items-center gap-2 text-slate-600">
+                                    <UserPlus size={16} />
+                                    <span className="text-sm font-medium">Agregar persona</span>
+                                </div>
+                                <ChevronDown size={16} className={`text-slate-400 transition-transform ${showUserSelector ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {/* User list dropdown */}
+                            {showUserSelector && (
+                                <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                                    {mockTeamMembers.map(user => {
+                                        const isSelected = newEvent.assignedTo.includes(user.id);
+                                        return (
+                                            <button
+                                                key={user.id}
+                                                onClick={() => {
+                                                    if (isSelected) {
+                                                        // Remove user (but keep at least one)
+                                                        if (newEvent.assignedTo.length > 1) {
+                                                            setNewEvent({
+                                                                ...newEvent,
+                                                                assignedTo: newEvent.assignedTo.filter(id => id !== user.id)
+                                                            });
+                                                        }
+                                                    } else {
+                                                        // Add user
+                                                        setNewEvent({
+                                                            ...newEvent,
+                                                            assignedTo: [...newEvent.assignedTo, user.id]
+                                                        });
+                                                    }
+                                                }}
+                                                className={`w-full flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0 ${isSelected ? 'bg-brand-red/5' : ''
+                                                    }`}
+                                            >
+                                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${isSelected ? 'bg-brand-red border-brand-red' : 'border-slate-300'
+                                                    }`}>
+                                                    {isSelected && <Check size={12} className="text-white" strokeWidth={3} />}
+                                                </div>
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-red to-orange-500 flex items-center justify-center text-white text-sm font-bold">
+                                                    {user.name.charAt(0)}
+                                                </div>
+                                                <div className="flex-1 text-left">
+                                                    <div className="text-sm font-medium text-slate-700">
+                                                        {user.name}{user.isCurrentUser ? ' (Tú)' : ''}
+                                                    </div>
+                                                    <div className="text-xs text-slate-400">{user.email}</div>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Footer buttons */}
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                        <div className="flex items-center gap-3 bg-slate-100/50 px-4 py-2 rounded-full">
-                            <User size={16} className="text-slate-400" />
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                                Asignar a: <span className="text-slate-800">{newEvent.assignedTo}</span>
-                            </span>
+                        <div className="text-xs text-slate-400">
+                            {newEvent.assignedTo.length} {newEvent.assignedTo.length === 1 ? 'persona asignada' : 'personas asignadas'}
                         </div>
 
                         <div className="flex items-center gap-3">
@@ -245,7 +354,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                                 onClick={handleSubmit}
                                 className="px-8 py-2.5 rounded-xl bg-brand-red text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                             >
-                                Crear Evento
+                                Crear Actividad
                             </button>
                         </div>
                     </div>

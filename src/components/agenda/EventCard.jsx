@@ -6,19 +6,19 @@ import { es } from 'date-fns/locale';
 
 const priorityConfig = {
     high: {
-        label: 'Urgente',
+        label: 'Alta',
         logo: '/logo_urgente.png',
         color: 'bg-red-50 border-red-100',
         animation: 'animate-pulse shadow-red-200 shadow-md'
     },
     medium: {
-        label: 'Importante',
+        label: 'Media',
         logo: '/logo_tibio.png',
         color: 'bg-orange-50 border-orange-100',
         animation: 'hover:animate-pulse shadow-orange-100'
     },
     low: {
-        label: 'No Urgente',
+        label: 'Baja',
         logo: '/logo_frio.png',
         color: 'bg-blue-50 border-blue-100',
         animation: 'hover:rotate-1 transition-transform'
@@ -26,10 +26,10 @@ const priorityConfig = {
 };
 
 const typeConfig = {
-    visit: { label: 'Visita', color: 'text-purple-600 bg-purple-50' },
-    call: { label: 'Llamada', color: 'text-blue-600 bg-blue-50' },
-    meeting: { label: 'Reunión', color: 'text-indigo-600 bg-indigo-50' },
-    task: { label: 'Tarea', color: 'text-slate-600 bg-slate-50' },
+    visit: { label: 'Visita', color: 'text-brand-red bg-brand-red/10' },
+    call: { label: 'Llamada', color: 'text-brand-red bg-brand-red/10' },
+    meeting: { label: 'Reunión', color: 'text-brand-red bg-brand-red/10' },
+    task: { label: 'Tarea', color: 'text-brand-red bg-brand-red/10' },
 };
 
 const EventCard = ({ event, view = 'day' }) => {
@@ -43,7 +43,7 @@ const EventCard = ({ event, view = 'day' }) => {
 
     const handleDelete = (e) => {
         e.stopPropagation();
-        if (window.confirm('¿Estás seguro de que deseas eliminar este evento?')) {
+        if (window.confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
             console.log('Deleting event:', event.id);
             setShowDetails(false);
         }
@@ -85,14 +85,14 @@ const EventCard = ({ event, view = 'day' }) => {
                             <button
                                 onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
                                 className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 hover:text-brand-red dark:hover:text-red-400 transition-colors"
-                                title="Editar Evento"
+                                title="Editar Actividad"
                             >
                                 <Edit2 size={18} />
                             </button>
                             <button
                                 onClick={handleDelete}
                                 className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                title="Eliminar Evento"
+                                title="Eliminar Actividad"
                             >
                                 <Trash2 size={18} />
                             </button>
@@ -139,9 +139,9 @@ const EventCard = ({ event, view = 'day' }) => {
                             onChange={(e) => setEditedEvent({ ...editedEvent, priority: e.target.value })}
                             className="text-[10px] font-bold uppercase rounded-full border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-2 py-1 focus:ring-1 focus:ring-brand-red dark:focus:ring-red-500 outline-none"
                         >
-                            <option value="low">No Urgente</option>
-                            <option value="medium">Importante</option>
-                            <option value="high">Urgente</option>
+                            <option value="low">Baja</option>
+                            <option value="medium">Media</option>
+                            <option value="high">Alta</option>
                         </select>
                     ) : (
                         <div className={`
@@ -192,7 +192,7 @@ const EventCard = ({ event, view = 'day' }) => {
                         value={editedEvent.title}
                         onChange={(e) => setEditedEvent({ ...editedEvent, title: e.target.value })}
                         className="w-full text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-300 dark:border-slate-600 focus:border-brand-red dark:focus:border-red-500 focus:outline-none bg-transparent mb-2 pb-1 pr-24"
-                        placeholder="Título del evento"
+                        placeholder="Título de la actividad"
                         autoFocus
                     />
                 ) : (

@@ -54,7 +54,7 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                             {contact.email && (
                                 <a
                                     href={`mailto:${contact.email}`}
-                                    className="p-2 bg-purple-50 hover:bg-purple-100 text-purple-600 rounded-lg transition-colors flex items-center gap-1"
+                                    className="p-2 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg transition-colors flex items-center gap-1"
                                     title="Enviar email"
                                     onClick={(e) => e.stopPropagation()}
                                 >

@@ -132,22 +132,21 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                 </div>
             </div>
 
-            {/* Contacts Section */}
             {prospectContacts.length > 0 && (
-                <div className="mb-4">
+                <div className="mb-3">
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowContacts(!showContacts);
                         }}
-                        className="w-full flex items-center justify-between px-3 py-2 bg-teal-50 hover:bg-teal-100 rounded-xl transition-colors text-teal-700 font-bold text-xs"
+                        className="w-full flex items-center justify-between px-3 py-2 bg-brand-red/10 hover:bg-brand-red/20 rounded-xl transition-colors text-brand-red font-bold text-xs"
                     >
                         <span>Contactos ({prospectContacts.length})</span>
                         {showContacts ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </button>
 
                     {showContacts && (
-                        <div className="mt-3 pt-3 border-t border-slate-200">
+                        <div className="mt-2">
                             <CompanyContactsSection
                                 contacts={allContacts}
                                 companyId={prospect.id}
@@ -177,7 +176,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                 >
                     <div className="absolute inset-0 bg-brand-red/20 blur-xl rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500" />
                     <img
-                        src="/Diseno_sin_titulo.png"
+                        src="/logo_urgente.png"
                         alt="Promover a Cliente"
                         className="w-10 h-10 object-contain relative z-10 transition-transform duration-300 group-hover/btn:scale-110 drop-shadow-md hover:drop-shadow-xl"
                     />

@@ -5,9 +5,9 @@ import CompanyContactsSection from '../shared/CompanyContactsSection';
 import { mockLegajos } from '../../data/mockLegajos';
 
 const importanceConfig = {
-    low: { label: 'Estándar', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-100 text-blue-700' },
-    medium: { label: 'Importante', logo: '/logo_tibio.png', color: 'bg-orange-50 border-orange-100 text-orange-700' },
-    high: { label: 'Clave', logo: '/logo_urgente.png', color: 'bg-red-50 border-red-100 text-red-700' }
+    low: { label: 'Baja', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-100 text-blue-700' },
+    medium: { label: 'Media', logo: '/logo_tibio.png', color: 'bg-orange-50 border-orange-100 text-orange-700' },
+    high: { label: 'Alta', logo: '/logo_urgente.png', color: 'bg-red-50 border-red-100 text-red-700' }
 };
 
 const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allContacts = [] }) => {
@@ -101,7 +101,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
 
                         {/* Importance Badge */}
                         <div className="flex items-center gap-1.5 pr-2.5 pl-0.5 py-0.5 rounded-full border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 shrink-0">
-                            <img src={importance.logo} alt={importance.label} className="w-5 h-5 object-contain" />
+                            <img src="/Diseno_sin_titulo.png" alt={importance.label} className="w-5 h-5 object-contain" />
                         </div>
                     </div>
 
@@ -113,8 +113,8 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                     >
                         <div className="flex items-center gap-2">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${legajoStatus === 'complete' ? 'bg-emerald-50 text-emerald-600' :
-                                    legajoStatus === 'incomplete' ? 'bg-orange-50 text-orange-600' :
-                                        'bg-slate-100 text-slate-400'
+                                legajoStatus === 'incomplete' ? 'bg-orange-50 text-orange-600' :
+                                    'bg-slate-100 text-slate-400'
                                 }`}>
                                 {legajoStatus === 'complete' ? <FileCheck size={16} /> : <FolderOpen size={16} />}
                             </div>
@@ -126,8 +126,8 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                                 <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
                                     <div
                                         className={`h-full rounded-full transition-all duration-500 ${legajoStatus === 'complete' ? 'bg-emerald-500' :
-                                                legajoStatus === 'incomplete' ? 'bg-orange-500' :
-                                                    'bg-slate-400'
+                                            legajoStatus === 'incomplete' ? 'bg-orange-500' :
+                                                'bg-slate-400'
                                             }`}
                                         style={{ width: `${progressPercentage}%` }}
                                     />

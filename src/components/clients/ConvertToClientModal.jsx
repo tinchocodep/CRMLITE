@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { X, UserPlus, CheckCircle2, Building2, MapPin, FileText, Tractor, Leaf, DollarSign, User, Briefcase, Target, Map, Plus, Trash2 } from 'lucide-react';
 
 const importanceConfig = [
-    { id: 'low', label: 'Estándar', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-200 text-blue-700' },
-    { id: 'medium', label: 'Importante', logo: '/logo_tibio.png', color: 'bg-orange-50 border-orange-200 text-orange-700' },
-    { id: 'high', label: 'Clave', logo: '/logo_urgente.png', color: 'bg-red-50 border-red-200 text-red-700' }
+    { id: 'low', label: 'Baja', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-200 text-blue-700' },
+    { id: 'medium', label: 'Media', logo: '/logo_tibio.png', color: 'bg-orange-50 border-orange-200 text-orange-700' },
+    { id: 'high', label: 'Alta', logo: '/logo_urgente.png', color: 'bg-red-50 border-red-200 text-red-700' }
 ];
 
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
