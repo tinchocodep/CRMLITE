@@ -2,40 +2,47 @@ import React, { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import ClientCard from '../components/clients/ClientCard';
 import ConvertToClientModal from '../components/clients/ConvertToClientModal';
-import { mockClients } from '../data/mockClients';
-import { mockContacts } from '../data/mockContacts';
+import { useCompanies } from '../hooks/useCompanies';
+import { useContacts } from '../hooks/useContacts';
 
 const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [clients, setClients] = useState(mockClients);
+    const { companies: clients, loading, updateCompany, deleteCompany } = useCompanies('client');
+    const { contacts: allContacts } = useContacts();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingClient, setEditingClient] = useState(null);
     const [expandedClientId, setExpandedClientId] = useState(null);
 
     const filteredClients = clients.filter(c =>
-        c.tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.legalName.toLowerCase().includes(searchTerm.toLowerCase())
+        c.trade_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.legal_name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleToggleExpand = (id) => {
         setExpandedClientId(prevId => prevId === id ? null : id);
     };
 
-    const handleSaveClient = (clientData) => {
-        if (editingClient) {
-            // Update existing
-            setClients(clients.map(c => c.id === clientData.id ? clientData : c));
-        } else {
-            // Create new
-            setClients([...clients, { ...clientData, id: Date.now() }]);
+    const handleSaveClient = async (clientData) => {
+        try {
+            const result = await updateCompany(clientData.id, clientData);
+            if (result.success) {
+                alert('Cliente actualizado exitosamente!');
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error al guardar cliente');
         }
         setIsCreateModalOpen(false);
         setEditingClient(null);
     };
 
-    const handleDeleteClient = (id) => {
+    const handleDeleteClient = async (id) => {
         if (window.confirm('¿Está seguro de eliminar este cliente?')) {
-            setClients(clients.filter(c => c.id !== id));
+            const result = await deleteCompany(id);
+            if (!result.success) {
+                alert('Error al eliminar cliente: ' + result.error);
+            }
         }
     };
 
@@ -74,7 +81,11 @@ const Clients = () => {
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar items-start">
-                {filteredClients.map(client => (
+                {loading ? (
+                    <div className="col-span-full flex items-center justify-center py-20">
+                        <div className="text-slate-400 dark:text-slate-500">Cargando clientes...</div>
+                    </div>
+                ) : filteredClients.map(client => (
                     <ClientCard
                         key={client.id}
                         client={client}
@@ -82,7 +93,7 @@ const Clients = () => {
                         onDelete={handleDeleteClient}
                         isExpanded={expandedClientId === client.id}
                         onToggleExpand={() => handleToggleExpand(client.id)}
-                        allContacts={mockContacts}
+                        allContacts={allContacts}
                     />
                 ))}
 

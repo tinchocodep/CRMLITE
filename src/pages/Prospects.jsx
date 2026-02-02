@@ -3,22 +3,25 @@ import { Search, Filter, Plus, UserPlus, CheckCircle2, X } from 'lucide-react';
 import ProspectCard from '../components/prospects/ProspectCard';
 import EditProspectModal from '../components/prospects/EditProspectModal';
 import ConvertToClientModal from '../components/clients/ConvertToClientModal';
-import { mockProspects } from '../data/mockProspects';
-import { mockContacts } from '../data/mockContacts';
+import { useCompanies } from '../hooks/useCompanies';
+import { useContacts } from '../hooks/useContacts';
 
 const Prospects = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [prospects, setProspects] = useState(mockProspects || []);
+    const { companies: prospects, loading, createCompany, updateCompany, convertToClient } = useCompanies('prospect');
+    const { contacts: allContacts } = useContacts();
     const [isConvertModalOpen, setIsConvertModalOpen] = useState(false);
     const [selectedProspect, setSelectedProspect] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+
     // Filter Logic
     const filteredProspects = prospects.filter(p =>
-        p.tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.cuit.includes(searchTerm)
+        p.trade_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.legal_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.cuit?.includes(searchTerm)
     );
+
 
     const handlePromoteClick = (prospect) => {
         setSelectedProspect(prospect);
@@ -46,25 +49,76 @@ const Prospects = () => {
         setIsEditModalOpen(true);
     };
 
-    const handleSaveProspect = (updatedProspect) => {
-        const exists = prospects.find(p => p.id === updatedProspect.id);
-        if (exists) {
-            const updatedList = prospects.map(p => p.id === updatedProspect.id ? updatedProspect : p);
-            setProspects(updatedList);
-            alert('Prospecto actualizado exitosamente!');
-        } else {
-            setProspects([...prospects, updatedProspect]);
-            alert('Nuevo Prospecto creado exitosamente!');
+    const handleSaveProspect = async (updatedProspect) => {
+        try {
+            if (updatedProspect.id && typeof updatedProspect.id === 'number' && updatedProspect.id > 1000000) {
+                // New prospect (temporary ID)
+                const result = await createCompany({
+                    company_type: 'prospect',
+                    trade_name: updatedProspect.tradeName || updatedProspect.trade_name,
+                    legal_name: updatedProspect.companyName || updatedProspect.legal_name,
+                    cuit: updatedProspect.cuit,
+                    email: updatedProspect.email,
+                    phone: updatedProspect.phone,
+                    city: updatedProspect.city,
+                    province: updatedProspect.province,
+                    notes: updatedProspect.notes,
+                    prospect_source: updatedProspect.source,
+                    qualification_score: updatedProspect.qualification_score || 0
+                });
+
+                if (result.success) {
+                    alert('Nuevo Prospecto creado exitosamente!');
+                } else {
+                    alert('Error al crear prospecto: ' + result.error);
+                }
+            } else {
+                // Update existing prospect
+                const result = await updateCompany(updatedProspect.id, {
+                    trade_name: updatedProspect.tradeName || updatedProspect.trade_name,
+                    legal_name: updatedProspect.companyName || updatedProspect.legal_name,
+                    cuit: updatedProspect.cuit,
+                    email: updatedProspect.email,
+                    phone: updatedProspect.phone,
+                    city: updatedProspect.city,
+                    province: updatedProspect.province,
+                    notes: updatedProspect.notes
+                });
+
+                if (result.success) {
+                    alert('Prospecto actualizado exitosamente!');
+                } else {
+                    alert('Error al actualizar prospecto: ' + result.error);
+                }
+            }
+            setIsEditModalOpen(false);
+        } catch (error) {
+            console.error('Error saving prospect:', error);
+            alert('Error al guardar prospecto');
         }
-        setIsEditModalOpen(false);
     };
 
-    const handleConfirmConversion = (e) => {
-        e.preventDefault();
-        alert(`¡Felicitaciones! ${selectedProspect.tradeName} ha sido convertido a Cliente. (Mock)`);
-        setIsConvertModalOpen(false);
-        // In real app: navigate to clients or refresh list
+
+    const handleConfirmConversion = async (clientData) => {
+        try {
+            const result = await convertToClient(selectedProspect.id, {
+                client_since: clientData.clientSince || new Date().toISOString().split('T')[0],
+                payment_terms: clientData.paymentTerms,
+                credit_limit: clientData.creditLimit
+            });
+
+            if (result.success) {
+                alert(`¡Felicitaciones! ${selectedProspect.trade_name} ha sido convertido a Cliente.`);
+                setIsConvertModalOpen(false);
+            } else {
+                alert('Error al convertir a cliente: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error converting to client:', error);
+            alert('Error al convertir a cliente');
+        }
     };
+
 
     return (
         <div className="h-full flex flex-col gap-8">
@@ -91,15 +145,26 @@ const Prospects = () => {
 
             {/* Content Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar">
-                {filteredProspects.map(prospect => (
-                    <ProspectCard
-                        key={prospect.id}
-                        prospect={prospect}
-                        onPromote={handlePromoteClick}
-                        onEdit={handleEditClick}
-                        allContacts={mockContacts}
-                    />
-                ))}
+                {loading ? (
+                    <div className="col-span-full flex items-center justify-center py-20">
+                        <div className="text-slate-400 dark:text-slate-500">Cargando prospectos...</div>
+                    </div>
+                ) : filteredProspects.length === 0 ? (
+                    <div className="col-span-full flex items-center justify-center py-20">
+                        <div className="text-slate-400 dark:text-slate-500">No se encontraron prospectos</div>
+                    </div>
+                ) : (
+                    filteredProspects.map(prospect => (
+                        <ProspectCard
+                            key={prospect.id}
+                            prospect={prospect}
+                            onPromote={handlePromoteClick}
+                            onEdit={handleEditClick}
+                            allContacts={allContacts}
+                        />
+                    ))
+                )}
+
 
                 {/* Add New Placeholder */}
                 <button

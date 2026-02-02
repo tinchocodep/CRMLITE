@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase, getCurrentUser, getCurrentComercialId, getCurrentUserRole } from '../lib/supabase';
 
 const AuthContext = createContext();
 
@@ -12,64 +13,133 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
+    const [comercialId, setComercialId] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     // Check for existing session on mount
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (error) {
-                console.error('Error parsing stored user:', error);
-                localStorage.removeItem('user');
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
+                setUser(session.user);
+                loadUserProfile(session.user.id);
             }
-        }
-        setIsLoading(false);
+            setIsLoading(false);
+        });
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user) {
+                setUser(session.user);
+                loadUserProfile(session.user.id);
+            } else {
+                setUser(null);
+                setUserProfile(null);
+                setComercialId(null);
+            }
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
+
+    const loadUserProfile = async (userId) => {
+        try {
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', userId)
+                .single();
+
+            if (profileError) throw profileError;
+            setUserProfile(profile);
+
+            // Get comercial ID if exists
+            const { data: comercial, error: comercialError } = await supabase
+                .from('comerciales')
+                .select('id')
+                .eq('user_id', userId)
+                .single();
+
+            if (!comercialError && comercial) {
+                setComercialId(comercial.id);
+            }
+        } catch (error) {
+            console.error('Error loading user profile:', error);
+        }
+    };
 
     const login = async (email, password, rememberMe = false) => {
         setIsLoading(true);
 
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-        // Mock authentication - accept any email/password for demo
-        if (email && password) {
-            const mockUser = {
-                id: '1',
-                email: email,
-                name: email.split('@')[0],
-                role: 'user',
-                avatar: null,
-                rememberMe: rememberMe
-            };
+            if (error) throw error;
 
-            setUser(mockUser);
-
-            // Always save to localStorage to persist session
-            // The rememberMe flag is stored for future use (e.g., auto-logout)
-            localStorage.setItem('user', JSON.stringify(mockUser));
-
+            setUser(data.user);
+            await loadUserProfile(data.user.id);
             setIsLoading(false);
-            return { success: true, user: mockUser };
+            return { success: true, user: data.user };
+        } catch (error) {
+            setIsLoading(false);
+            return { success: false, error: error.message };
         }
-
-        setIsLoading(false);
-        return { success: false, error: 'Credenciales inválidas' };
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
+    const signup = async (email, password, fullName, role = 'user') => {
+        setIsLoading(true);
+
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: fullName,
+                        role: role
+                    }
+                }
+            });
+
+            if (error) throw error;
+
+            setIsLoading(false);
+            return { success: true, user: data.user };
+        } catch (error) {
+            setIsLoading(false);
+            return { success: false, error: error.message };
+        }
+    };
+
+    const logout = async () => {
+        try {
+            await supabase.auth.signOut();
+            setUser(null);
+            setUserProfile(null);
+            setComercialId(null);
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     };
 
     const value = {
         user,
+        userProfile,
+        comercialId,
         isLoading,
         login,
+        signup,
         logout,
-        isAuthenticated: !!user
+        isAuthenticated: !!user,
+        role: userProfile?.role || null,
+        isAdmin: userProfile?.role === 'admin',
+        isSupervisor: userProfile?.role === 'supervisor',
+        isUser: userProfile?.role === 'user'
     };
 
     return (
