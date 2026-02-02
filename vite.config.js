@@ -10,7 +10,7 @@ export default defineConfig({
     host: true, // Permite acceso desde la red local (para mobile)
   },
   build: {
-    chunkSizeWarningLimit: 1000, // Increase to 1000 kB to suppress warnings
+    chunkSizeWarningLimit: 2000, // Increase to 2000 kB to suppress warnings
     rollupOptions: {
       output: {
         manualChunks: {
