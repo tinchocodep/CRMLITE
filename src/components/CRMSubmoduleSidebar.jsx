@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, UserCheck, Users, User, Calendar,
-    Briefcase, Map, Target, AlertCircle
+    Briefcase, Map, Target, AlertCircle, ShieldCheck
 } from 'lucide-react';
 
 const crmSubmodules = [
@@ -12,6 +12,7 @@ const crmSubmodules = [
     { name: 'Contactos', path: '/contactos', icon: User },
     { name: 'Agenda', path: '/agenda', icon: Calendar },
     { name: 'Oportunidades', path: '/oportunidades', icon: Briefcase },
+    { name: 'Usuarios', path: '/usuarios', icon: ShieldCheck },
     { name: 'Visitas', path: '/visitas', icon: Map },
     { name: 'Territorios', path: '/territorios', icon: Target },
     { name: 'Reclamos', path: '/reclamos', icon: AlertCircle }
