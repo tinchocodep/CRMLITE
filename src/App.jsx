@@ -11,6 +11,7 @@ import Prospects from './pages/Prospects';
 import Clients from './pages/Clients';
 import Contacts from './pages/Contacts';
 import Legajos from './pages/Legajos';
+import Opportunities from './pages/Opportunities';
 import Settings from './pages/Settings';
 
 // Componente para proteger rutas que requieren autenticación
@@ -78,6 +79,7 @@ function AppRoutes() {
           <Route path="prospectos" element={<Prospects />} />
           <Route path="clientes" element={<Clients />} />
           <Route path="contactos" element={<Contacts />} />
+          <Route path="oportunidades" element={<Opportunities />} />
           <Route path="legajo" element={<Legajos />} />
           <Route path="configuracion" element={<Settings />} />
           {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
