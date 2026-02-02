@@ -164,36 +164,27 @@ export const useUsers = () => {
         }
 
         try {
-            // Create user using signUp (works with anon key)
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email: userData.email,
-                password: userData.password,
-                options: {
-                    data: {
-                        full_name: userData.fullName,
-                        role: userData.role
-                    },
-                    emailRedirectTo: window.location.origin
+            // Get current session token
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                throw new Error('No active session');
+            }
+
+            // Call Edge Function to create user
+            const { data, error } = await supabase.functions.invoke('create-user', {
+                body: {
+                    email: userData.email,
+                    password: userData.password,
+                    fullName: userData.fullName,
+                    role: userData.role
                 }
             });
 
-            if (authError) throw authError;
-
-            // Create user in public.users table
-            const { error: userError } = await supabase
-                .from('users')
-                .insert({
-                    id: authData.user.id,
-                    email: userData.email,
-                    full_name: userData.fullName,
-                    role: userData.role,
-                    is_active: true
-                });
-
-            if (userError) throw userError;
+            if (error) throw error;
+            if (!data.success) throw new Error(data.error);
 
             await fetchUsers(); // Refresh list
-            return { success: true, user: authData.user };
+            return { success: true, user: data.user };
         } catch (err) {
             console.error('Error creating user:', err);
             return { success: false, error: err.message };
