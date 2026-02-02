@@ -17,11 +17,11 @@ const crmSubmodules = [
     { name: 'Reclamos', path: '/reclamos', icon: AlertCircle }
 ];
 
-export function CRMSubmoduleSidebar() {
+export function CRMSubmoduleSidebar({ isMainSidebarExpanded }) {
     const location = useLocation();
 
     return (
-        <aside className="fixed left-20 top-0 h-screen w-52 bg-slate-800 border-r border-slate-700 shadow-xl z-20 transition-all duration-300">
+        <aside className={`fixed top-0 h-screen w-52 bg-slate-800 border-r border-slate-700 shadow-xl z-20 transition-all duration-300 ${isMainSidebarExpanded ? 'left-72' : 'left-20'}`}>
             {/* Header */}
             <div className="h-20 flex items-center px-4 border-b border-slate-700">
                 <div className="flex items-center gap-3">
