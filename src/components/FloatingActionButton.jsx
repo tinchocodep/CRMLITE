@@ -14,7 +14,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateEvent?.();
                 setIsOpen(false);
             },
-            color: 'from-brand-red to-red-600'
+            color: 'from-white to-brand-red'
         },
         {
             icon: UserCheck,
@@ -23,7 +23,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateProspect?.();
                 setIsOpen(false);
             },
-            color: 'from-brand-red to-red-600'
+            color: 'from-white to-brand-red'
         },
         {
             icon: UserPlus,
@@ -32,7 +32,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onConvertProspect?.();
                 setIsOpen(false);
             },
-            color: 'from-brand-red to-red-600'
+            color: 'from-white to-brand-red'
         },
         {
             icon: Users,
@@ -41,7 +41,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateClient?.();
                 setIsOpen(false);
             },
-            color: 'from-brand-red to-red-600'
+            color: 'from-white to-brand-red'
         },
         {
             icon: Map,
@@ -50,7 +50,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 navigate('/visitas');
                 setIsOpen(false);
             },
-            color: 'from-brand-red to-red-600'
+            color: 'from-white to-brand-red'
         },
         {
             icon: Briefcase,
@@ -59,7 +59,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 navigate('/oportunidades');
                 setIsOpen(false);
             },
-            color: 'from-brand-red to-red-600'
+            color: 'from-white to-brand-red'
         }
     ];
 
