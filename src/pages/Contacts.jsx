@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Search, Plus, UserPlus } from 'lucide-react';
 import ContactCard from '../components/contacts/ContactCard';
 import ContactModal from '../components/contacts/ContactModal';
-import { mockContacts } from '../data/mockContacts';
+import { useContacts } from '../hooks/useContacts';
 
 const Contacts = () => {
-    const [contacts, setContacts] = useState(mockContacts);
+    const { contacts, loading, createContact, updateContact, deleteContact } = useContacts();
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedContactId, setExpandedContactId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,15 +14,15 @@ const Contacts = () => {
     // Filter contacts based on search
     const filteredContacts = contacts.filter(contact => {
         const searchLower = searchTerm.toLowerCase();
-        const fullName = `${contact.firstName} ${contact.lastName}`.toLowerCase();
+        const fullName = `${contact.first_name} ${contact.last_name}`.toLowerCase();
         const email = contact.email?.toLowerCase() || '';
         const phone = contact.phone?.toLowerCase() || '';
-        const companies = contact.companies.map(c => c.companyName.toLowerCase()).join(' ');
+        const companyName = contact.company_name?.toLowerCase() || '';
 
         return fullName.includes(searchLower) ||
             email.includes(searchLower) ||
             phone.includes(searchLower) ||
-            companies.includes(searchLower);
+            companyName.includes(searchLower);
     });
 
     const handleToggleExpand = (contactId) => {
@@ -34,18 +34,13 @@ const Contacts = () => {
         setIsModalOpen(true);
     };
 
-    const handleDeleteContact = (contactId) => {
-        const contact = contacts.find(c => c.id === contactId);
-        const activeCompanies = contact.companies.filter(c => c.isCompanyActive);
-
-        if (activeCompanies.length > 0) {
-            const confirmMsg = `Este contacto está vinculado a ${activeCompanies.length} empresa(s) activa(s). ¿Estás seguro de eliminarlo?`;
-            if (!window.confirm(confirmMsg)) {
-                return;
+    const handleDeleteContact = async (contactId) => {
+        if (window.confirm('¿Estás seguro de eliminar este contacto?')) {
+            const result = await deleteContact(contactId);
+            if (!result.success) {
+                alert('Error al eliminar contacto: ' + result.error);
             }
         }
-
-        setContacts(contacts.filter(c => c.id !== contactId));
     };
 
     const handleCreateContact = () => {
@@ -53,13 +48,22 @@ const Contacts = () => {
         setIsModalOpen(true);
     };
 
-    const handleSaveContact = (contactData) => {
-        if (editingContact) {
-            // Update existing contact
-            setContacts(contacts.map(c => c.id === contactData.id ? contactData : c));
-        } else {
-            // Add new contact
-            setContacts([...contacts, contactData]);
+    const handleSaveContact = async (contactData) => {
+        try {
+            let result;
+            if (editingContact) {
+                result = await updateContact(editingContact.id, contactData);
+            } else {
+                result = await createContact(contactData);
+            }
+
+            if (result.success) {
+                handleCloseModal();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        } catch (error) {
+            alert('Error al guardar contacto');
         }
     };
 
@@ -119,7 +123,11 @@ const Contacts = () => {
 
             {/* Contacts Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar items-start">
-                {filteredContacts.map(contact => (
+                {loading ? (
+                    <div className="col-span-full flex items-center justify-center py-20">
+                        <div className="text-slate-400">Cargando contactos...</div>
+                    </div>
+                ) : filteredContacts.map(contact => (
                     <ContactCard
                         key={contact.id}
                         contact={contact}
