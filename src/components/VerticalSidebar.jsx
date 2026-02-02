@@ -19,13 +19,23 @@ const sidebarModules = [
     { name: 'Portal Proveedores', path: '/proveedores', icon: Building2 }
 ];
 
-export function VerticalSidebar({ onQuickActions }) {
+export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+        onHoverChange?.(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+        onHoverChange?.(false);
+    };
 
     return (
         <aside
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className={`fixed left-0 top-0 h-screen bg-white border-r border-slate-200 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
                 }`}
         >

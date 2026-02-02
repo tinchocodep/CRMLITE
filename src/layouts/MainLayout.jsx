@@ -54,6 +54,7 @@ const MainLayout = () => {
 
     // ========== DESKTOP STATE (Separate) ==========
     const [desktopActionMenuOpen, setDesktopActionMenuOpen] = useState(false);
+    const [mainSidebarExpanded, setMainSidebarExpanded] = useState(false);
     const desktopMenuRef = useRef(null);
 
     // ========== NOTIFICATIONS STATE ==========
@@ -736,7 +737,10 @@ const MainLayout = () => {
             {/* ========== DESKTOP VERSION ========== */}
             <div className="hidden xl:block">
                 {/* Vertical Sidebar */}
-                <VerticalSidebar onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)} />
+                <VerticalSidebar
+                    onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)}
+                    onHoverChange={setMainSidebarExpanded}
+                />
 
                 {/* Quick Actions Modal - Desktop */}
                 <AnimatePresence>
@@ -785,10 +789,13 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* CRM Submodule Sidebar - Conditional */}
-                {isCRMActive && <CRMSubmoduleSidebar />}
+                {isCRMActive && <CRMSubmoduleSidebar isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Desktop Main Content */}
-                <main className={`min-h-screen p-6 transition-all duration-300 ${isCRMActive ? 'ml-72' : 'ml-20'}`}>
+                <main className={`min-h-screen p-6 transition-all duration-300 ${isCRMActive
+                        ? (mainSidebarExpanded ? 'ml-[324px]' : 'ml-72')
+                        : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
+                    }`}>
                     <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
                         <Outlet />
                     </div>
