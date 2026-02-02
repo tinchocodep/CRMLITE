@@ -283,7 +283,7 @@ const MainLayout = () => {
                             >
                                 {({ isActive }) => (
                                     <>
-                                        <UserCheck size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
+                                        <Users size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
                                         <span className="text-[9px] font-semibold mt-0.5">Prospectos</span>
                                     </>
                                 )}
@@ -299,7 +299,7 @@ const MainLayout = () => {
                             >
                                 {({ isActive }) => (
                                     <>
-                                        <Users size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
+                                        <UserCheck size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
                                         <span className="text-[9px] font-semibold mt-0.5">Clientes</span>
                                     </>
                                 )}
