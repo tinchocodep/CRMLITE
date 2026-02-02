@@ -213,14 +213,23 @@ export const useUsers = () => {
                 }
             });
 
-            if (error) throw error;
-            if (!data.success) throw new Error(data.error);
+            if (error) {
+                console.error('Edge Function error:', error);
+                throw new Error(error.message || 'Failed to create user');
+            }
+
+            if (data && !data.success) {
+                console.error('Edge Function returned error:', data);
+                throw new Error(data.error || 'Failed to create user');
+            }
 
             await fetchUsers(); // Refresh list
             return { success: true, user: data.user };
         } catch (err) {
             console.error('Error creating user:', err);
-            return { success: false, error: err.message };
+            // Try to extract more detailed error message
+            const errorMessage = err.context?.body?.error || err.message || 'Unknown error occurred';
+            return { success: false, error: errorMessage };
         }
     };
 
