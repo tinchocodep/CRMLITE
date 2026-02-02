@@ -4,13 +4,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Users, UserCheck, Briefcase, Calendar, TrendingUp, Clock, MapPin, Phone, Mail, ChevronRight, Sparkles, Bell, LogOut, Map } from 'lucide-react';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { mockProspects } from '../data/mockProspects';
-import { mockClients } from '../data/mockClients';
-import { mockContacts } from '../data/mockContacts';
-import { mockEvents } from '../data/mockAgenda';
 import EventCard from '../components/agenda/EventCard';
 import { useAuth } from '../contexts/AuthContext';
 import { ConfirmModal } from '../components/ConfirmModal';
+import { useCompanies } from '../hooks/useCompanies';
+import { useOpportunities } from '../hooks/useOpportunities';
+import { useContacts } from '../hooks/useContacts';
+import { useActivities } from '../hooks/useActivities';
 
 
 const Dashboard = () => {
@@ -20,6 +20,12 @@ const Dashboard = () => {
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const notificationsRef = useRef(null);
+
+    // Fetch real data from Supabase
+    const { companies: allCompanies, loading: loadingCompanies } = useCompanies();
+    const { opportunities, loading: loadingOpportunities } = useOpportunities();
+    const { contacts, loading: loadingContacts } = useContacts();
+    const { activities, loading: loadingActivities } = useActivities(7); // Next 7 days
 
     const handleLogout = () => {
         logout();
@@ -44,25 +50,36 @@ const Dashboard = () => {
         };
     }, []);
 
-    // Calculate stats
+    // Calculate stats from real data
+    const prospects = allCompanies.filter(c => c.type === 'prospect' && c.is_active);
+    const clients = allCompanies.filter(c => c.type === 'client' && c.is_active);
+
     const stats = {
-        prospects: mockProspects.filter(p => p.isActive !== false).length,
-        contacts: mockContacts.length,
-        opportunities: mockProspects.filter(p => p.status === 'near_closing').length,
-        clients: mockClients.filter(c => c.isActive !== false).length
+        prospects: prospects.length,
+        contacts: contacts.length,
+        opportunities: opportunities.filter(o => o.stage === 'negotiation' || o.stage === 'proposal').length,
+        clients: clients.length
     };
 
-    // Get upcoming events (next 7 days)
-    const upcomingEvents = mockEvents
-        .filter(event => {
-            const eventDate = event.start; // start is already a Date object
+    // Get upcoming events (next 7 days) from real data
+    const upcomingEvents = activities
+        .filter(activity => {
+            const eventDate = new Date(activity.activity_date);
             const today = new Date();
             const weekFromNow = new Date();
             weekFromNow.setDate(today.getDate() + 7);
             return eventDate >= today && eventDate <= weekFromNow;
         })
-        .sort((a, b) => a.start - b.start)
-        .slice(0, 5);
+        .sort((a, b) => new Date(a.activity_date) - new Date(b.activity_date))
+        .slice(0, 5)
+        .map(activity => ({
+            ...activity,
+            id: activity.id,
+            start: new Date(activity.activity_date),
+            type: activity.activity_type,
+            title: activity.title,
+            description: activity.description
+        }));
 
     const getEventTypeConfig = (type) => {
         const configs = {
