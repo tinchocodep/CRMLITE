@@ -9,6 +9,7 @@ import ConvertToClientModal from '../components/clients/ConvertToClientModal';
 import ProspectPickerModal from '../components/prospects/ProspectPickerModal';
 import ContactModal from '../components/contacts/ContactModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
+import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { mockProspects } from '../data/mockProspects';
 
 // ========== SHARED CONSTANTS ==========
@@ -42,6 +43,10 @@ const MainLayout = () => {
 
     // Check if we're on the dashboard
     const isDashboard = location.pathname === '/dashboard' || location.pathname === '/';
+
+    // Check if we're in CRM module (any CRM submodule)
+    const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/territorios', '/reclamos'];
+    const isCRMActive = crmPaths.includes(location.pathname) || location.pathname === '/';
 
     // ========== MOBILE STATE (Separate) ==========
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -779,8 +784,11 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
+                {/* CRM Submodule Sidebar - Conditional */}
+                {isCRMActive && <CRMSubmoduleSidebar />}
+
                 {/* Desktop Main Content */}
-                <main className="ml-20 min-h-screen p-6">
+                <main className={`min-h-screen p-6 transition-all duration-300 ${isCRMActive ? 'ml-72' : 'ml-20'}`}>
                     <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
                         <Outlet />
                     </div>
