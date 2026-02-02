@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Shield, Users, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
+import CreateUserModal from '../components/settings/CreateUserModal';
 
 const UserManagement = () => {
     const navigate = useNavigate();
     const { isAdmin, user } = useAuth();
-    const { users, loading, updateUserRole, assignComercial, toggleUserActive } = useUsers();
+    const { users, loading, createUser, updateUserRole, assignComercial, toggleUserActive } = useUsers();
     const [searchTerm, setSearchTerm] = useState('');
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     // Redirect if not admin
     if (!isAdmin) {
@@ -61,18 +63,35 @@ const UserManagement = () => {
         }
     };
 
+    const handleCreateUser = async (userData) => {
+        const result = await createUser(userData);
+        if (result.success) {
+            setIsCreateModalOpen(false);
+        }
+        return result;
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-24">
             {/* Header */}
             <div className="bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
-                        <Shield className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
+                            <Shield className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-2xl font-black text-slate-800 dark:text-slate-200">Gestión de Usuarios</h1>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">Administra roles y permisos</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-2xl font-black text-slate-800 dark:text-slate-200">Gestión de Usuarios</h1>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Administra roles y permisos</p>
-                    </div>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white rounded-xl font-semibold hover:bg-red-700 transition shadow-lg"
+                    >
+                        <UserPlus size={18} />
+                        <span className="hidden sm:inline">Crear Usuario</span>
+                    </button>
                 </div>
             </div>
 
@@ -162,8 +181,8 @@ const UserManagement = () => {
                                                     onClick={() => handleToggleActive(u.id, u.is_active)}
                                                     disabled={u.id === user.id}
                                                     className={`px-3 py-1 rounded-full text-xs font-bold transition disabled:opacity-50 disabled:cursor-not-allowed ${u.is_active
-                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
-                                                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
+                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
+                                                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
                                                         }`}
                                                 >
                                                     {u.is_active ? 'Activo' : 'Inactivo'}
@@ -177,6 +196,13 @@ const UserManagement = () => {
                     )}
                 </div>
             </div>
+
+            {/* Create User Modal */}
+            <CreateUserModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onCreateUser={handleCreateUser}
+            />
         </div>
     );
 };
