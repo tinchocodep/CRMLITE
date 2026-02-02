@@ -70,7 +70,7 @@ const Dashboard = () => {
             meeting: { label: 'Reunión', color: 'bg-blue-500', icon: Users },
             call: { label: 'Llamada', color: 'bg-purple-500', icon: Phone },
             email: { label: 'Email', color: 'bg-teal-500', icon: Mail },
-            default: { label: 'Evento', color: 'bg-slate-500', icon: Calendar }
+            default: { label: 'Actividad', color: 'bg-slate-500', icon: Calendar }
         };
         return configs[type] || configs.default;
     };
@@ -240,7 +240,7 @@ const Dashboard = () => {
 
                         {/* Notifications List */}
                         <div className="max-h-96 overflow-y-auto">
-                            {/* Evento Próximo */}
+                            {/* Actividad Próxima */}
                             <div className="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
                                 <div className="flex gap-3">
                                     <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">

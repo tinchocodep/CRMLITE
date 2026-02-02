@@ -9,7 +9,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
     const actions = [
         {
             icon: Calendar,
-            label: 'Crear Evento',
+            label: 'Crear Actividad',
             onClick: () => {
                 onCreateEvent?.();
                 setIsOpen(false);

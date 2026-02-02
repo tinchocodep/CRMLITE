@@ -325,7 +325,7 @@ END:VCARD`;
                                                                                     a.click();
                                                                                     window.URL.revokeObjectURL(url);
                                                                                 }}
-                                                                                className="p-1.5 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                                className="p-1.5 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
                                                                                 title="Agregar a contactos"
                                                                             >
                                                                                 <UserPlus size={12} />
@@ -394,7 +394,7 @@ END:VCARD`;
 
                                                 <button
                                                     onClick={handleCreateContact}
-                                                    className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                    className="w-full px-4 py-3 bg-brand-red hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                                 >
                                                     <UserPlus size={16} />
                                                     Crear Nuevo Contacto

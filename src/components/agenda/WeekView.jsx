@@ -51,7 +51,7 @@ const WeekView = ({ currentDate, events }) => {
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-xs text-slate-300 italic py-2 pl-4">Sin eventos</p>
+                                <p className="text-xs text-slate-300 italic py-2 pl-4">Sin actividades</p>
                             )}
                         </div>
                     </div>

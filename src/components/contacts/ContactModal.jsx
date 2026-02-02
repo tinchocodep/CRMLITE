@@ -225,10 +225,10 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                     className="relative w-full md:w-[600px] bg-white rounded-t-3xl md:rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
                 >
                     {/* Header */}
-                    <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-teal-50 to-cyan-50">
+                    <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-gradient-to-r from-red-50 to-orange-50">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
-                                <UserPlus className="w-5 h-5 text-teal-600" />
+                            <div className="w-10 h-10 rounded-full bg-brand-red/10 flex items-center justify-center">
+                                <UserPlus className="w-5 h-5 text-brand-red" />
                             </div>
                             <div>
                                 <h2 className="text-xl font-bold text-slate-800">
@@ -263,7 +263,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                         onChange={handleInputChange}
                                         className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${errors.firstName
                                             ? 'border-red-300 focus:ring-red-200'
-                                            : 'border-slate-200 focus:ring-teal-200'
+                                            : 'border-slate-200 focus:ring-brand-red/20'
                                             }`}
                                         placeholder="Juan"
                                     />
@@ -283,7 +283,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                         onChange={handleInputChange}
                                         className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${errors.lastName
                                             ? 'border-red-300 focus:ring-red-200'
-                                            : 'border-slate-200 focus:ring-teal-200'
+                                            : 'border-slate-200 focus:ring-brand-red/20'
                                             }`}
                                         placeholder="Pérez"
                                     />
@@ -304,7 +304,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                     onChange={handleInputChange}
                                     className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${errors.email
                                         ? 'border-red-300 focus:ring-red-200'
-                                        : 'border-slate-200 focus:ring-teal-200'
+                                        : 'border-slate-200 focus:ring-brand-red/20'
                                         }`}
                                     placeholder="juan.perez@example.com"
                                 />
@@ -322,7 +322,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+                                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
                                     placeholder="+54 9 11 1234-5678"
                                 />
                             </div>
@@ -406,7 +406,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                             setSearchTerm(e.target.value);
                                             setNewCompany(prev => ({ ...prev, companyId: '', companyName: '', companyType: '' }));
                                         }}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+                                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
                                         placeholder="Buscar empresa..."
                                         disabled={!!newCompany.companyId}
                                     />
@@ -449,7 +449,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                                 type="text"
                                                 value={newCompany.role}
                                                 onChange={(e) => setNewCompany(prev => ({ ...prev, role: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-200"
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
                                                 placeholder="Gerente Comercial"
                                             />
                                         </div>
@@ -460,7 +460,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                                 type="checkbox"
                                                 checked={newCompany.isPrimary}
                                                 onChange={(e) => setNewCompany(prev => ({ ...prev, isPrimary: e.target.checked }))}
-                                                className="w-4 h-4 text-teal-600 border-slate-300 rounded focus:ring-2 focus:ring-teal-200"
+                                                className="w-4 h-4 text-brand-red border-slate-300 rounded focus:ring-2 focus:ring-brand-red/20"
                                             />
                                             <span className="text-xs font-semibold text-slate-600">Contacto principal de esta empresa</span>
                                         </label>
@@ -469,7 +469,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                         <button
                                             type="button"
                                             onClick={handleAddCompany}
-                                            className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                            className="w-full px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                         >
                                             <Plus size={16} />
                                             Agregar Empresa
@@ -489,7 +489,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                 value={formData.notes}
                                 onChange={handleInputChange}
                                 rows={3}
-                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-200 resize-none"
+                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 resize-none"
                                 placeholder="Información adicional sobre el contacto..."
                             />
                         </div>
@@ -506,7 +506,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className="flex-1 px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold transition-colors"
+                            className="flex-1 px-4 py-3 bg-brand-red hover:bg-red-700 text-white rounded-xl font-bold transition-colors"
                         >
                             {contact ? 'Guardar' : 'Crear Contacto'}
                         </button>
