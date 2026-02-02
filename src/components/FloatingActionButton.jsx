@@ -14,7 +14,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateEvent?.();
                 setIsOpen(false);
             },
-            color: 'from-blue-600 to-blue-500'
+            color: 'from-brand-red to-red-600'
         },
         {
             icon: UserCheck,
@@ -23,7 +23,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateProspect?.();
                 setIsOpen(false);
             },
-            color: 'from-purple-600 to-purple-500'
+            color: 'from-brand-red to-red-600'
         },
         {
             icon: UserPlus,
@@ -32,7 +32,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onConvertProspect?.();
                 setIsOpen(false);
             },
-            color: 'from-pink-600 to-pink-500'
+            color: 'from-brand-red to-red-600'
         },
         {
             icon: Users,
@@ -41,7 +41,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateClient?.();
                 setIsOpen(false);
             },
-            color: 'from-emerald-600 to-emerald-500'
+            color: 'from-brand-red to-red-600'
         },
         {
             icon: Map,
@@ -50,7 +50,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 navigate('/visitas');
                 setIsOpen(false);
             },
-            color: 'from-amber-600 to-amber-500'
+            color: 'from-brand-red to-red-600'
         },
         {
             icon: Briefcase,
@@ -59,7 +59,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 navigate('/oportunidades');
                 setIsOpen(false);
             },
-            color: 'from-red-600 to-red-500'
+            color: 'from-brand-red to-red-600'
         }
     ];
 
@@ -90,7 +90,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
             {/* Main FAB Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-16 h-16 rounded-full bg-gradient-to-r from-red-600 to-red-500 shadow-2xl shadow-red-500/50 flex items-center justify-center hover:scale-110 transition-all duration-300`}
+                className={`w-16 h-16 rounded-full bg-gradient-to-r from-brand-red to-red-600 shadow-2xl shadow-red-500/50 flex items-center justify-center hover:scale-110 transition-all duration-300`}
             >
                 {isOpen ? (
                     <X className="w-8 h-8 text-white" />
