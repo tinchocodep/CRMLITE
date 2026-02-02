@@ -160,7 +160,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
             )}
 
             {/* Footer / Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-slate-100/50 dark:border-slate-700">
+            <div className="flex items-center justify-between pt-2">
                 <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium italic line-clamp-1">
                     {prospect.notes}
                 </div>
