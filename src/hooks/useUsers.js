@@ -200,13 +200,16 @@ export const useUsers = () => {
                 throw new Error('No active session');
             }
 
-            // Call Edge Function to create user
+            // Call Edge Function to create user with explicit auth header
             const { data, error } = await supabase.functions.invoke('create-user', {
                 body: {
                     email: userData.email,
                     password: userData.password,
                     fullName: userData.fullName,
                     role: userData.role
+                },
+                headers: {
+                    Authorization: `Bearer ${session.access_token}`
                 }
             });
 
