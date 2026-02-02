@@ -417,9 +417,9 @@ const MainLayout = () => {
                                             setIsCreateModalOpen(true);
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
                                             <Calendar className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Crear Actividad</span>
@@ -431,9 +431,9 @@ const MainLayout = () => {
                                             handleGlobalCreateProspect();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-purple-500 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
                                             <UserCheck className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nuevo Prospecto</span>
@@ -445,9 +445,9 @@ const MainLayout = () => {
                                             handleGlobalPromoteProspect();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-pink-50 to-pink-100 border border-pink-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
                                             <UserPlus className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Convertir Prospecto</span>
@@ -459,9 +459,9 @@ const MainLayout = () => {
                                             handleGlobalCreateClient();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-500 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
                                             <Users className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nuevo Cliente</span>
@@ -473,9 +473,9 @@ const MainLayout = () => {
                                             handleGlobalCreateContact();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-teal-50 to-teal-100 border border-teal-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-600 to-teal-500 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
                                             <UserCheck className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nuevo Contacto</span>
@@ -487,9 +487,9 @@ const MainLayout = () => {
                                             navigate('/visitas');
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
                                             <Map className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Registrar Visita</span>
