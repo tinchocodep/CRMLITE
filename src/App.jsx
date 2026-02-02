@@ -13,6 +13,7 @@ import Contacts from './pages/Contacts';
 import Legajos from './pages/Legajos';
 import Opportunities from './pages/Opportunities';
 import Settings from './pages/Settings';
+import UserManagement from './pages/UserManagement';
 
 // Componente para proteger rutas que requieren autenticación
 function ProtectedRoute({ children }) {
@@ -82,6 +83,7 @@ function AppRoutes() {
           <Route path="oportunidades" element={<Opportunities />} />
           <Route path="legajo" element={<Legajos />} />
           <Route path="configuracion" element={<Settings />} />
+          <Route path="usuarios" element={<UserManagement />} />
           {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
             <Route
               key={name}
