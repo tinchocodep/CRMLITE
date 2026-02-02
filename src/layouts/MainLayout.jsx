@@ -132,6 +132,17 @@ const MainLayout = () => {
         setMobileMenuOpen(false);
     };
 
+    const handleGlobalCreateOpportunity = () => {
+        navigate('/oportunidades');
+        // Trigger modal open after navigation
+        setTimeout(() => {
+            const event = new CustomEvent('openOpportunityModal');
+            window.dispatchEvent(event);
+        }, 100);
+        setDesktopActionMenuOpen(false);
+        setMobileMenuOpen(false);
+    };
+
     // Desktop: Split modules for central logo
     const leftModules = modules.slice(0, 5);
     const rightModules = modules.slice(5);
@@ -505,7 +516,7 @@ const MainLayout = () => {
                                     {/* Nueva Oportunidad */}
                                     <button
                                         onClick={() => {
-                                            navigate('/oportunidades');
+                                            handleGlobalCreateOpportunity();
                                             setMobileMenuOpen(false);
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
@@ -771,7 +782,7 @@ const MainLayout = () => {
                                                 else if (action.label === 'Nuevo Cliente') handleGlobalCreateClient();
                                                 else if (action.label === 'Nuevo Contacto') handleGlobalCreateContact();
                                                 else if (action.label === 'Registrar Visita') navigate('/visitas');
-                                                else if (action.label === 'Nueva Oportunidad') navigate('/oportunidades');
+                                                else if (action.label === 'Nueva Oportunidad') handleGlobalCreateOpportunity();
                                                 setDesktopActionMenuOpen(false);
                                             }}
                                             className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
@@ -793,8 +804,8 @@ const MainLayout = () => {
 
                 {/* Desktop Main Content */}
                 <main className={`min-h-screen p-6 transition-all duration-300 ${isCRMActive
-                        ? (mainSidebarExpanded ? 'ml-[324px]' : 'ml-72')
-                        : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
+                    ? (mainSidebarExpanded ? 'ml-[324px]' : 'ml-72')
+                    : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
                     }`}>
                     <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
                         <Outlet />
