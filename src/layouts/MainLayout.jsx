@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Calendar, FileText, Map, Target, AlertCircle, Briefcase, UserCheck, Search, Plus, X, UserPlus, LogOut, Bell, Home, Menu, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, FileText, Map, Target, AlertCircle, Briefcase, UserCheck, Search, Plus, X, UserPlus, LogOut, Bell, Home, Menu, Settings, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
 import CreateEventModal from '../components/agenda/CreateEventModal';
@@ -655,6 +655,23 @@ const MainLayout = () => {
                                             <>
                                                 <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
                                                 <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Contactos</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* Usuarios */}
+                                    <NavLink
+                                        to="/usuarios"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <ShieldCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Usuarios</span>
                                             </>
                                         )}
                                     </NavLink>
