@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Plus, Filter, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
 import CreateOpportunityModal from '../components/opportunities/CreateOpportunityModal';
@@ -10,6 +10,19 @@ export default function Opportunities() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedOpportunity, setSelectedOpportunity] = useState(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+    // Listen for custom event from Quick Actions
+    useEffect(() => {
+        const handleOpenModal = () => {
+            setIsCreateModalOpen(true);
+        };
+
+        window.addEventListener('openOpportunityModal', handleOpenModal);
+
+        return () => {
+            window.removeEventListener('openOpportunityModal', handleOpenModal);
+        };
+    }, []);
 
     // Filter opportunities
     const filteredOpportunities = opportunities.filter(opp => {
@@ -196,13 +209,6 @@ export default function Opportunities() {
                 )}
             </div>
 
-            {/* FAB - Create Opportunity */}
-            <button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="xl:hidden fixed bottom-24 right-6 w-14 h-14 bg-gradient-to-r from-brand-red to-red-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center z-40"
-            >
-                <Plus size={24} />
-            </button>
 
             {/* Create Opportunity Modal */}
             <CreateOpportunityModal
