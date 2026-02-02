@@ -194,42 +194,61 @@ export const useUsers = () => {
         }
 
         try {
-            // Get current session token
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                throw new Error('No active session');
-            }
-
-            // Call Edge Function to create user with explicit auth header
-            const { data, error } = await supabase.functions.invoke('create-user', {
-                body: {
-                    email: userData.email,
-                    password: userData.password,
-                    fullName: userData.fullName,
-                    role: userData.role
-                },
-                headers: {
-                    Authorization: `Bearer ${session.access_token}`
+            // Create user using Supabase Auth signUp
+            // The database trigger will automatically create the user in public.users
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                email: userData.email,
+                password: userData.password,
+                options: {
+                    data: {
+                        full_name: userData.fullName,
+                        role: userData.role
+                    },
+                    emailRedirectTo: window.location.origin
                 }
             });
 
-            if (error) {
-                console.error('Edge Function error:', error);
-                throw new Error(error.message || 'Failed to create user');
+            if (signUpError) {
+                console.error('SignUp error:', signUpError);
+                throw new Error(signUpError.message);
             }
 
-            if (data && !data.success) {
-                console.error('Edge Function returned error:', data);
-                throw new Error(data.error || 'Failed to create user');
+            if (!signUpData.user) {
+                throw new Error('User creation failed - no user returned');
+            }
+
+            // Wait a bit for the trigger to create the user in public.users
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Update the user's role and full_name in public.users
+            // (The trigger creates it with default values)
+            const { error: updateError } = await supabase
+                .from('users')
+                .update({
+                    role: userData.role,
+                    full_name: userData.fullName
+                })
+                .eq('id', signUpData.user.id);
+
+            if (updateError) {
+                console.error('Role update error:', updateError);
+                // Don't throw here - user was created, just role update failed
+                // Admin can manually update the role
             }
 
             await fetchUsers(); // Refresh list
-            return { success: true, user: data.user };
+            return {
+                success: true,
+                user: {
+                    id: signUpData.user.id,
+                    email: signUpData.user.email,
+                    full_name: userData.fullName,
+                    role: userData.role
+                }
+            };
         } catch (err) {
             console.error('Error creating user:', err);
-            // Try to extract more detailed error message
-            const errorMessage = err.context?.body?.error || err.message || 'Unknown error occurred';
-            return { success: false, error: errorMessage };
+            return { success: false, error: err.message };
         }
     };
 
