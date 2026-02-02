@@ -176,7 +176,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                 >
                     <div className="absolute inset-0 bg-brand-red/20 blur-xl rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500" />
                     <img
-                        src="/Diseno_sin_titulo.png"
+                        src="/icon_prospectos.png"
                         alt="Promover a Cliente"
                         className="w-10 h-10 object-contain relative z-10 transition-transform duration-300 group-hover/btn:scale-110 drop-shadow-md hover:drop-shadow-xl"
                     />
