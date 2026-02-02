@@ -729,17 +729,123 @@ const MainLayout = () => {
             </div >
 
             {/* ========== DESKTOP VERSION ========== */}
-            <div className="hidden xl:block">
-                {/* Vertical Sidebar */}
-                <VerticalSidebar onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)} />
+            < div className="hidden xl:block" >
+                {/* Desktop Header */}
+                < header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm transition-all duration-300" >
+                    <div className="max-w-[1920px] mx-auto h-28 w-full">
+                        <div className="flex items-center justify-between h-full px-6 w-full">
+
+                            {/* Block 1: Logo (Fixed 300px) */}
+                            <div className="w-[300px] flex-shrink-0 flex items-center gap-3">
+                                <button onClick={() => window.location.href = '/agenda'} className="w-16 h-16 relative flex-shrink-0 flex items-center justify-center focus:outline-none">
+                                    <img src="/logo.png" alt="Logo" className="w-12 h-12 object-contain" />
+                                </button>
+                                <div className="flex flex-col justify-center">
+                                    <span className="font-bold text-2xl tracking-tight text-slate-800 leading-none">
+                                        CRM <span className="text-brand-red">Lite</span>
+                                    </span>
+                                    <span className="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">Desktop</span>
+                                </div>
+                            </div>
+
+                            {/* Block 2: Navigation (Flexible Center) */}
+                            <nav className="flex-1 flex items-center justify-center h-full gap-2 px-4">
+                                {/* Left Modules */}
+                                <div className="flex items-center gap-1">
+                                    {leftModules.map((module) => (
+                                        <DesktopNavItem key={module.path} module={module} />
+                                    ))}
+                                </div>
+
+                                {/* Center Action Button */}
+                                <div className="relative mx-2 flex-shrink-0" ref={desktopMenuRef}>
+                                    <button
+                                        onClick={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)}
+                                        className="w-14 h-14 rounded-full bg-white border-2 border-slate-200 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center justify-center"
+                                    >
+                                        <div className="absolute inset-0 bg-brand-red/5 rounded-full" />
+                                        <img src="/logo.png" alt="Menu" className={`w-7 h-7 object-contain transition-transform duration-300 ${desktopActionMenuOpen ? 'rotate-90 scale-0' : 'scale-100'}`} />
+                                        <X size={24} className={`absolute text-brand-red transition-transform duration-300 ${desktopActionMenuOpen ? 'scale-100' : 'scale-0'}`} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {desktopActionMenuOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-60 bg-white border border-slate-200 shadow-xl rounded-xl p-2 flex flex-col gap-1"
+                                            >
+                                                {actions.map((action, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            if (action.label === 'Crear Actividad') setIsCreateModalOpen(true);
+                                                            else if (action.label === 'Nuevo Prospecto') handleGlobalCreateProspect();
+                                                            else if (action.label === 'Convertir Prospecto') handleGlobalPromoteProspect();
+                                                            else if (action.label === 'Nuevo Cliente') handleGlobalCreateClient();
+                                                            else if (action.label === 'Nuevo Contacto') handleGlobalCreateContact();
+                                                            setDesktopActionMenuOpen(false);
+                                                        }}
+                                                        className="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg transition-colors"
+                                                    >
+                                                        <div className={`w-8 h-8 rounded-lg ${action.color} flex items-center justify-center`}>
+                                                            <action.icon size={16} />
+                                                        </div>
+                                                        <span className="text-xs font-semibold text-slate-700">{action.label}</span>
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+
+                                {/* Right Modules */}
+                                <div className="flex items-center gap-1">
+                                    {rightModules.map((module) => (
+                                        <DesktopNavItem key={module.path} module={module} />
+                                    ))}
+                                </div>
+                            </nav>
+
+                            {/* Block 3: User (Fixed 300px) */}
+                            <div className="w-[300px] flex-shrink-0 flex items-center justify-end gap-3">
+                                <div className="text-right">
+                                    <p className="text-sm font-semibold text-slate-700">Martin G.</p>
+                                    <p className="text-[9px] text-slate-400 font-semibold tracking-wide uppercase">Admin</p>
+                                </div>
+                                <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-slate-500">
+                                    <Users size={18} />
+                                </div>
+
+                                {/* Notifications Button - Desktop */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setNotificationsOpen(!notificationsOpen)}
+                                        className="relative p-2 hover:text-brand-red transition-colors"
+                                        title="Notificaciones"
+                                    >
+                                        <Bell size={18} />
+                                        {/* Badge */}
+                                        <span className="absolute top-1 right-1 w-2 h-2 bg-brand-red rounded-full"></span>
+                                    </button>
+                                </div>
+
+                                <button onClick={handleLogout} className="p-2 hover:text-brand-red transition-colors" title="Salir">
+                                    <LogOut size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header >
 
                 {/* Desktop Main Content */}
-                <main className="ml-20 min-h-screen p-6">
-                    <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
+                < main className="flex-1 max-w-[1920px] mx-auto w-full p-6 pt-6" >
+                    <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-140px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
                         <Outlet />
                     </div>
-                </main>
-            </div>
+                </main >
+            </div >
 
             {/* ========== GLOBAL MODALS (Shared) ========== */}
             < CreateEventModal
