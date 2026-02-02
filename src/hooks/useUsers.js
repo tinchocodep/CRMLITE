@@ -158,11 +158,54 @@ export const useUsers = () => {
         }
     };
 
+    const createUser = async (userData) => {
+        if (!isAdmin) {
+            return { success: false, error: 'Unauthorized' };
+        }
+
+        try {
+            // Create user using signUp (works with anon key)
+            const { data: authData, error: authError } = await supabase.auth.signUp({
+                email: userData.email,
+                password: userData.password,
+                options: {
+                    data: {
+                        full_name: userData.fullName,
+                        role: userData.role
+                    },
+                    emailRedirectTo: window.location.origin
+                }
+            });
+
+            if (authError) throw authError;
+
+            // Create user in public.users table
+            const { error: userError } = await supabase
+                .from('users')
+                .insert({
+                    id: authData.user.id,
+                    email: userData.email,
+                    full_name: userData.fullName,
+                    role: userData.role,
+                    is_active: true
+                });
+
+            if (userError) throw userError;
+
+            await fetchUsers(); // Refresh list
+            return { success: true, user: authData.user };
+        } catch (err) {
+            console.error('Error creating user:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
     return {
         users,
         loading,
         error,
         refetch: fetchUsers,
+        createUser,
         updateUserRole,
         assignComercial,
         toggleUserActive
