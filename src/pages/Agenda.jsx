@@ -6,9 +6,10 @@ import EventCard from '../components/agenda/EventCard';
 import WeekView from '../components/agenda/WeekView';
 import DayView from '../components/agenda/DayView';
 import CreateEventModal from '../components/agenda/CreateEventModal';
-import { mockEvents } from '../data/mockAgenda';
+import { useActivities } from '../hooks/useActivities';
 
 const Agenda = () => {
+    const { activities: events, loading, createActivity } = useActivities(30);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
 
@@ -42,7 +43,7 @@ const Agenda = () => {
             for (let i = 0; i < 7; i++) {
                 formattedDate = format(day, dateFormat);
                 const cloneDay = day;
-                const dayEvents = mockEvents.filter(e => isSameDay(e.start, cloneDay));
+                const dayEvents = events.filter(e => isSameDay(new Date(e.activity_date), cloneDay));
 
                 days.push(
                     <div
@@ -142,9 +143,10 @@ const Agenda = () => {
 
     const filterEvents = (events) => {
         return events.filter(event => {
-            const eventYear = event.start.getFullYear();
-            const eventMonth = event.start.getMonth();
-            const eventDay = event.start.getDate();
+            const eventDate = new Date(event.activity_date);
+            const eventYear = eventDate.getFullYear();
+            const eventMonth = eventDate.getMonth();
+            const eventDay = eventDate.getDate();
 
             if (filters.year !== 'all' && eventYear !== parseInt(filters.year)) return false;
             if (filters.month !== 'all' && eventMonth !== parseInt(filters.month)) return false;
@@ -217,7 +219,7 @@ const Agenda = () => {
     );
 
     const renderList = () => {
-        const filteredEvents = filterEvents(mockEvents);
+        const filteredEvents = filterEvents(events);
         return (
             <div className="space-y-4">
                 {renderFilters()}
@@ -237,10 +239,13 @@ const Agenda = () => {
     // Create Event Logic
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    const handleCreateEvent = (newEvent) => {
-        console.log('New Event Created:', newEvent);
-        mockEvents.push(newEvent);
-        alert('Actividad creada exitosamente! (Mira la consola)');
+    const handleCreateEvent = async (newEvent) => {
+        const result = await createActivity(newEvent);
+        if (result.success) {
+            setIsCreateModalOpen(false);
+        } else {
+            alert('Error al crear actividad: ' + result.error);
+        }
     };
 
     return (
@@ -297,9 +302,9 @@ const Agenda = () => {
                 )}
                 {view === 'list' && <div className="p-4">{renderList()}</div>}
 
-                {view === 'week' && <WeekView currentDate={currentDate} events={mockEvents} />}
+                {view === 'week' && <WeekView currentDate={currentDate} events={events} />}
 
-                {view === 'day' && <DayView currentDate={currentDate} events={mockEvents} />}
+                {view === 'day' && <DayView currentDate={currentDate} events={events} />}
             </div>
 
             <CreateEventModal
