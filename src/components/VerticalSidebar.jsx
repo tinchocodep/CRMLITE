@@ -9,7 +9,7 @@ import {
 const sidebarModules = [
     { name: 'Home', path: '/dashboard', icon: Home },
     { name: 'Portal Clientes', path: '/portal-clientes', icon: Users },
-    { name: 'CRM', path: '/crm', icon: Briefcase, isCRM: true },
+    { name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true },
     { name: 'Cotizador Insumos', path: '/cotizador', icon: Package },
     { name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp },
     { name: 'Marketing', path: '/marketing', icon: Megaphone },
