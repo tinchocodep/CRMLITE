@@ -1,35 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, UserPlus, Shield, Users, AlertCircle } from 'lucide-react';
+import { Search, UserPlus, Shield, Users, AlertCircle, UserCog, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
 import CreateUserModal from '../components/settings/CreateUserModal';
 
 const UserManagement = () => {
     const navigate = useNavigate();
-    const { isAdmin, user } = useAuth();
-    const { users, loading, createUser, updateUserRole, assignComercial, toggleUserActive } = useUsers();
+    const { user } = useAuth();
+    const {
+        users,
+        loading,
+        isAdmin,
+        isSupervisor,
+        isUser: isRegularUser,
+        createUser,
+        updateUserRole,
+        assignComercial,
+        toggleUserActive
+    } = useUsers();
     const [searchTerm, setSearchTerm] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-    // Redirect if not admin
-    if (!isAdmin) {
-        return (
-            <div className="h-full flex items-center justify-center">
-                <div className="text-center">
-                    <AlertCircle size={64} className="text-red-500 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-2">Acceso Denegado</h2>
-                    <p className="text-slate-500 dark:text-slate-400 mb-4">Solo los administradores pueden acceder a esta página</p>
-                    <button
-                        onClick={() => navigate('/')}
-                        className="px-6 py-2 bg-brand-red text-white rounded-xl font-semibold hover:bg-red-700 transition"
-                    >
-                        Volver al Inicio
-                    </button>
-                </div>
-            </div>
-        );
-    }
 
     // Filter users
     const filteredUsers = users.filter(u =>
@@ -38,6 +29,8 @@ const UserManagement = () => {
     );
 
     const handleRoleChange = async (userId, newRole) => {
+        if (!isAdmin) return;
+
         // Prevent admin from removing their own admin role
         if (userId === user.id && newRole !== 'admin') {
             alert('No puedes cambiar tu propio rol de administrador');
@@ -51,6 +44,8 @@ const UserManagement = () => {
     };
 
     const handleToggleActive = async (userId, currentStatus) => {
+        if (!isAdmin) return;
+
         // Prevent admin from deactivating themselves
         if (userId === user.id) {
             alert('No puedes desactivar tu propia cuenta');
@@ -71,6 +66,33 @@ const UserManagement = () => {
         return result;
     };
 
+    const handleAssignComercial = async (userId, comercialId) => {
+        if (!isAdmin && !isSupervisor) return;
+
+        const result = await assignComercial(userId, comercialId);
+        if (!result.success) {
+            alert('Error al asignar comercial: ' + result.error);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-brand-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-slate-600 dark:text-slate-400">Cargando usuarios...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Get permission level text
+    const getPermissionText = () => {
+        if (isAdmin) return 'Administrador - Acceso Total';
+        if (isSupervisor) return 'Supervisor - Ver y Asignar';
+        return 'Usuario - Solo Lectura';
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-24">
             {/* Header */}
@@ -81,128 +103,167 @@ const UserManagement = () => {
                             <Shield className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-black text-slate-800 dark:text-slate-200">Gestión de Usuarios</h1>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">Administra roles y permisos</p>
+                            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Usuarios</h1>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{getPermissionText()}</p>
                         </div>
                     </div>
-                    <button
-                        onClick={() => setIsCreateModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white rounded-xl font-semibold hover:bg-red-700 transition shadow-lg"
-                    >
-                        <UserPlus size={18} />
-                        <span className="hidden sm:inline">Crear Usuario</span>
-                    </button>
-                </div>
-            </div>
 
-            {/* Search Bar */}
-            <div className="px-4 pt-6">
-                <div className="flex items-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/10 transition-all">
-                    <Search size={20} className="text-slate-400" />
-                    <input
-                        type="text"
-                        placeholder="Buscar usuario..."
-                        className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none w-full"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            {/* Stats */}
-            <div className="px-4 py-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-slate-200 dark:border-slate-700 shadow-sm">
-                    <div className="text-2xl font-bold text-slate-800 dark:text-slate-200">{users.length}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wide">Total Usuarios</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-red-200 dark:border-red-900 shadow-sm">
-                    <div className="text-2xl font-bold text-red-700 dark:text-red-400">{users.filter(u => u.role === 'admin').length}</div>
-                    <div className="text-xs text-red-600 dark:text-red-500 font-semibold uppercase tracking-wide">Admins</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-blue-200 dark:border-blue-900 shadow-sm">
-                    <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">{users.filter(u => u.role === 'supervisor').length}</div>
-                    <div className="text-xs text-blue-600 dark:text-blue-500 font-semibold uppercase tracking-wide">Supervisores</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border-2 border-green-200 dark:border-green-900 shadow-sm">
-                    <div className="text-2xl font-bold text-green-700 dark:text-green-400">{users.filter(u => u.comercial_id).length}</div>
-                    <div className="text-xs text-green-600 dark:text-green-500 font-semibold uppercase tracking-wide">Comerciales</div>
-                </div>
-            </div>
-
-            {/* User Table */}
-            <div className="px-4 pb-6">
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                    {loading ? (
-                        <div className="flex items-center justify-center py-20">
-                            <div className="text-slate-400">Cargando usuarios...</div>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                                    <tr>
-                                        <th className="text-left px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Usuario</th>
-                                        <th className="text-left px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Email</th>
-                                        <th className="text-left px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Rol</th>
-                                        <th className="text-left px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Comercial</th>
-                                        <th className="text-left px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredUsers.map(u => (
-                                        <tr key={u.id} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-                                            <td className="px-6 py-4">
-                                                <div className="font-semibold text-slate-800 dark:text-slate-200">{u.full_name || 'Sin nombre'}</div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm text-slate-600 dark:text-slate-400">{u.email}</div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <select
-                                                    value={u.role}
-                                                    onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                                                    disabled={u.id === user.id}
-                                                    className="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-medium text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-brand-red/20 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                                                >
-                                                    <option value="user">Usuario</option>
-                                                    <option value="supervisor">Supervisor</option>
-                                                    <option value="admin">Admin</option>
-                                                </select>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm text-slate-600 dark:text-slate-400">
-                                                    {u.comercial_name || (
-                                                        <span className="text-slate-400 dark:text-slate-500 italic">No asignado</span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <button
-                                                    onClick={() => handleToggleActive(u.id, u.is_active)}
-                                                    disabled={u.id === user.id}
-                                                    className={`px-3 py-1 rounded-full text-xs font-bold transition disabled:opacity-50 disabled:cursor-not-allowed ${u.is_active
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
-                                                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
-                                                        }`}
-                                                >
-                                                    {u.is_active ? 'Activo' : 'Inactivo'}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                    {/* Create User Button - Admin Only */}
+                    {isAdmin && (
+                        <button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white rounded-xl font-semibold hover:bg-red-700 transition shadow-lg"
+                        >
+                            <UserPlus size={20} />
+                            <span className="hidden sm:inline">Crear Usuario</span>
+                        </button>
                     )}
                 </div>
+
+                {/* Search Bar */}
+                <div className="relative mt-4">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre o email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-red text-slate-800 dark:text-white"
+                    />
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Total</p>
+                        <p className="text-2xl font-bold text-slate-800 dark:text-white">{users.length}</p>
+                    </div>
+                    <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Activos</p>
+                        <p className="text-2xl font-bold text-green-600">{users.filter(u => u.is_active).length}</p>
+                    </div>
+                    <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Admins</p>
+                        <p className="text-2xl font-bold text-brand-red">{users.filter(u => u.role === 'admin').length}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* User List */}
+            <div className="p-4 space-y-3">
+                {filteredUsers.length === 0 ? (
+                    <div className="text-center py-12">
+                        <Users size={64} className="text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                        <p className="text-slate-500 dark:text-slate-400">No se encontraron usuarios</p>
+                    </div>
+                ) : (
+                    filteredUsers.map((userItem) => (
+                        <div
+                            key={userItem.id}
+                            className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition"
+                        >
+                            <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="font-semibold text-slate-800 dark:text-white">
+                                            {userItem.full_name || 'Sin nombre'}
+                                        </h3>
+                                        {userItem.id === user.id && (
+                                            <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                                                Tú
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{userItem.email}</p>
+
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        {/* Role Badge */}
+                                        <span className={`px-2 py-1 text-xs rounded-lg font-medium ${userItem.role === 'admin'
+                                                ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                                                : userItem.role === 'supervisor'
+                                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                            }`}>
+                                            {userItem.role === 'admin' ? 'Administrador' :
+                                                userItem.role === 'supervisor' ? 'Supervisor' : 'Usuario'}
+                                        </span>
+
+                                        {/* Status Badge */}
+                                        <span className={`px-2 py-1 text-xs rounded-lg font-medium ${userItem.is_active
+                                                ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                            }`}>
+                                            {userItem.is_active ? 'Activo' : 'Inactivo'}
+                                        </span>
+
+                                        {/* Comercial Info */}
+                                        {userItem.comercial_name && (
+                                            <span className="px-2 py-1 text-xs rounded-lg font-medium bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
+                                                Comercial: {userItem.comercial_name}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Actions - Role Based */}
+                                <div className="flex flex-col gap-2 ml-4">
+                                    {/* Admin Actions */}
+                                    {isAdmin && userItem.id !== user.id && (
+                                        <>
+                                            <select
+                                                value={userItem.role}
+                                                onChange={(e) => handleRoleChange(userItem.id, e.target.value)}
+                                                className="px-3 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white"
+                                            >
+                                                <option value="user">Usuario</option>
+                                                <option value="supervisor">Supervisor</option>
+                                                <option value="admin">Admin</option>
+                                            </select>
+                                            <button
+                                                onClick={() => handleToggleActive(userItem.id, userItem.is_active)}
+                                                className={`px-3 py-1 text-sm rounded-lg font-medium transition ${userItem.is_active
+                                                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300'
+                                                        : 'bg-green-200 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-300'
+                                                    }`}
+                                            >
+                                                {userItem.is_active ? 'Desactivar' : 'Activar'}
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {/* Supervisor Actions */}
+                                    {isSupervisor && !isAdmin && (
+                                        <button
+                                            onClick={() => {/* TODO: Open assign modal */ }}
+                                            className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg font-medium hover:bg-blue-200 transition flex items-center gap-1"
+                                        >
+                                            <UserCog size={14} />
+                                            Asignar
+                                        </button>
+                                    )}
+
+                                    {/* User View - No Actions */}
+                                    {isRegularUser && !isAdmin && !isSupervisor && (
+                                        <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
+                                            <Eye size={14} />
+                                            Solo lectura
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
 
             {/* Create User Modal */}
-            <CreateUserModal
-                isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
-                onCreateUser={handleCreateUser}
-            />
+            {isAdmin && (
+                <CreateUserModal
+                    isOpen={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    onCreateUser={handleCreateUser}
+                />
+            )}
         </div>
     );
 };

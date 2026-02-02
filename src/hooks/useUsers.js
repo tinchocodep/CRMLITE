@@ -6,11 +6,40 @@ export const useUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { isAdmin } = useAuth();
+    const [currentUserRole, setCurrentUserRole] = useState(null);
+    const { user } = useAuth();
+
+    // Detect current user role
+    useEffect(() => {
+        const fetchCurrentUserRole = async () => {
+            if (!user) return;
+
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!error && data) {
+                    setCurrentUserRole(data.role);
+                }
+            } catch (err) {
+                console.error('Error fetching user role:', err);
+            }
+        };
+
+        fetchCurrentUserRole();
+    }, [user]);
+
+    const isAdmin = currentUserRole === 'admin';
+    const isSupervisor = currentUserRole === 'supervisor';
+    const isUser = currentUserRole === 'user';
 
     const fetchUsers = async () => {
-        if (!isAdmin) {
-            setError('Unauthorized: Admin access required');
+        // Allow all authenticated users to view users
+        if (!user) {
+            setError('Unauthorized: Authentication required');
             setLoading(false);
             return;
         }
@@ -195,6 +224,10 @@ export const useUsers = () => {
         users,
         loading,
         error,
+        isAdmin,
+        isSupervisor,
+        isUser,
+        currentUserRole,
         refetch: fetchUsers,
         createUser,
         updateUserRole,
