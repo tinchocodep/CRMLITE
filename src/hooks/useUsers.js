@@ -90,10 +90,11 @@ export const useUsers = () => {
     };
 
     useEffect(() => {
-        if (isAdmin) {
+        // Fetch users once we know the current user's role
+        if (currentUserRole !== null && user) {
             fetchUsers();
         }
-    }, [isAdmin]);
+    }, [currentUserRole, user]);
 
     const updateUserRole = async (userId, newRole) => {
         if (!isAdmin) {
