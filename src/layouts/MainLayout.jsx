@@ -419,7 +419,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <Calendar className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Crear Actividad</span>
@@ -433,7 +433,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <UserCheck className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nuevo Prospecto</span>
@@ -447,7 +447,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <UserPlus className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Convertir Prospecto</span>
@@ -461,7 +461,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <Users className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nuevo Cliente</span>
@@ -475,7 +475,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <UserCheck className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nuevo Contacto</span>
@@ -489,7 +489,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <Map className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Registrar Visita</span>
@@ -503,7 +503,7 @@ const MainLayout = () => {
                                         }}
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
                                             <Briefcase className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Nueva Oportunidad</span>
