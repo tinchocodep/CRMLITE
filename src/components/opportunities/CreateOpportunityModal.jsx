@@ -143,36 +143,36 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end xl:items-center justify-center">
-            <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[92vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-brand-red to-red-600 text-white p-6 flex items-center justify-between xl:rounded-t-2xl">
+                <div className="sticky top-0 bg-gradient-to-r from-brand-red to-red-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl z-10">
                     <div>
-                        <h2 className="text-xl font-bold">Nueva Oportunidad</h2>
-                        <p className="text-red-100 text-sm mt-1">Completa la información</p>
+                        <h2 className="text-lg font-bold">Nueva Oportunidad</h2>
+                        <p className="text-red-100 text-xs mt-0.5">Completa la información</p>
                     </div>
-                    <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all">
-                        <X size={20} />
+                    <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all">
+                        <X size={18} />
                     </button>
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="p-4 space-y-4">
                     {/* Comercial */}
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            <User size={16} className="inline mr-2" />
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <User size={14} className="inline mr-1.5" />
                             Comercial *
                         </label>
                         <select
                             required
                             value={formData.comercialId}
                             onChange={(e) => setFormData({ ...formData, comercialId: e.target.value })}
-                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                         >
                             <option value="">Seleccionar comercial</option>
                             {mockComerciales.map(comercial => (
                                 <option key={comercial.id} value={comercial.id}>
-                                    {comercial.name} - {comercial.activeOpportunities} oportunidades activas
+                                    {comercial.name} - {comercial.activeOpportunities} oportunidades
                                 </option>
                             ))}
                         </select>
@@ -180,8 +180,8 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
                     {/* Product Type */}
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            <Briefcase size={16} className="inline mr-2" />
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <Briefcase size={14} className="inline mr-1.5" />
                             Tipo de Producto *
                         </label>
                         <input
@@ -189,15 +189,15 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             required
                             value={formData.productType}
                             onChange={(e) => setFormData({ ...formData, productType: e.target.value })}
-                            placeholder="Ej: Fertilizantes, Semillas, Maquinaria..."
-                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                            placeholder="Ej: Fertilizantes, Semillas..."
+                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                         />
                     </div>
 
                     {/* Opportunity Name with Auto-search */}
                     <div className="relative">
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            <Search size={16} className="inline mr-2" />
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <Search size={14} className="inline mr-1.5" />
                             Nombre de Oportunidad *
                         </label>
                         <input
@@ -205,25 +205,25 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             required
                             value={formData.opportunityName}
                             onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
-                            placeholder="Buscar cliente/prospecto o escribir nombre..."
-                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                            placeholder="Buscar cliente/prospecto..."
+                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                         />
 
                         {/* Auto-suggestions */}
                         {showSuggestions && (
-                            <div className="absolute z-10 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                            <div className="absolute z-10 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
                                 {searchResults.map(entity => (
                                     <button
                                         key={`${entity.type}-${entity.id}`}
                                         type="button"
                                         onClick={() => handleSelectEntity(entity)}
-                                        className="w-full px-4 py-3 text-left hover:bg-slate-50 flex items-center gap-3 border-b border-slate-100 last:border-0"
+                                        className="w-full px-3 py-2.5 text-left hover:bg-slate-50 flex items-center gap-2.5 border-b border-slate-100 last:border-0"
                                     >
-                                        <div className={`w-10 h-10 rounded-lg ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center`}>
-                                            {entity.type === 'client' ? <Users size={20} className="text-emerald-600" /> : <User size={20} className="text-purple-600" />}
+                                        <div className={`w-8 h-8 rounded-lg ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
+                                            {entity.type === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
                                         </div>
-                                        <div className="flex-1">
-                                            <p className="font-semibold text-slate-800">{entity.displayName}</p>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-sm text-slate-800 truncate">{entity.displayName}</p>
                                             <p className="text-xs text-slate-500 capitalize">{entity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
                                         </div>
                                     </button>
@@ -233,13 +233,13 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
                         {/* Selected Entity Display */}
                         {formData.linkedEntityId && (
-                            <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-lg ${formData.linkedEntityType === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center`}>
-                                    {formData.linkedEntityType === 'client' ? <Users size={20} className="text-emerald-600" /> : <User size={20} className="text-purple-600" />}
+                            <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5">
+                                <div className={`w-8 h-8 rounded-lg ${formData.linkedEntityType === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
+                                    {formData.linkedEntityType === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                     <p className="text-xs text-emerald-700 font-medium capitalize">Vinculado a {formData.linkedEntityType === 'client' ? 'Cliente' : 'Prospecto'}</p>
-                                    <p className="font-semibold text-emerald-900">
+                                    <p className="font-semibold text-sm text-emerald-900 truncate">
                                         {formData.linkedEntityType === 'client'
                                             ? mockClients.find(c => c.id === parseInt(formData.linkedEntityId))?.tradeName
                                             : mockProspects.find(p => p.id === parseInt(formData.linkedEntityId))?.tradeName
@@ -253,14 +253,14 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                     {/* Contact */}
                     {availableContacts.length > 0 && (
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                <User size={16} className="inline mr-2" />
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <User size={14} className="inline mr-1.5" />
                                 Contacto
                             </label>
                             <select
                                 value={formData.contactId}
                                 onChange={(e) => setFormData({ ...formData, contactId: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             >
                                 <option value="">Seleccionar contacto</option>
                                 {availableContacts.map(contact => (
@@ -273,10 +273,10 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                     )}
 
                     {/* Amount & Close Date */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                <DollarSign size={16} className="inline mr-2" />
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <DollarSign size={14} className="inline mr-1.5" />
                                 Monto (ARS) *
                             </label>
                             <input
@@ -287,12 +287,12 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 value={formData.amount}
                                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                                 placeholder="0"
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                <Calendar size={16} className="inline mr-2" />
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <Calendar size={14} className="inline mr-1.5" />
                                 Fecha Cierre *
                             </label>
                             <input
@@ -300,22 +300,22 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 required
                                 value={formData.closeDate}
                                 onChange={(e) => setFormData({ ...formData, closeDate: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             />
                         </div>
                     </div>
 
                     {/* Status & Probability */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                                 Estado *
                             </label>
                             <select
                                 required
                                 value={formData.status}
                                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             >
                                 <option value="iniciado">🚀 Iniciado</option>
                                 <option value="presupuestado">📋 Presupuestado</option>
@@ -325,8 +325,8 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                <TrendingUp size={16} className="inline mr-2" />
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <TrendingUp size={14} className="inline mr-1.5" />
                                 Probabilidad: {formData.probability}%
                             </label>
                             <input
@@ -336,68 +336,68 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 step="5"
                                 value={formData.probability}
                                 onChange={(e) => setFormData({ ...formData, probability: parseInt(e.target.value) })}
-                                className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-red"
+                                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-red mt-1"
                             />
                         </div>
                     </div>
 
                     {/* Next Action */}
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            <FileText size={16} className="inline mr-2" />
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                            <FileText size={14} className="inline mr-1.5" />
                             Próxima Acción
                         </label>
                         <textarea
                             value={formData.nextAction}
                             onChange={(e) => setFormData({ ...formData, nextAction: e.target.value })}
-                            placeholder="Describe la próxima acción a realizar..."
-                            rows="3"
-                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
+                            placeholder="Describe la próxima acción..."
+                            rows="2"
+                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
                         />
                     </div>
 
                     {/* Next Action Date */}
                     {formData.nextAction && (
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                <Clock size={16} className="inline mr-2" />
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <Clock size={14} className="inline mr-1.5" />
                                 Fecha Próxima Acción
                             </label>
                             <input
                                 type="date"
                                 value={formData.nextActionDate}
                                 onChange={(e) => setFormData({ ...formData, nextActionDate: e.target.value })}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             />
                         </div>
                     )}
 
                     {/* Notes */}
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                             Notas
                         </label>
                         <textarea
                             value={formData.notes}
                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                             placeholder="Información adicional..."
-                            rows="3"
-                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
+                            rows="2"
+                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
                         />
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-3 pt-4">
+                    <div className="flex gap-3 pt-2 sticky bottom-0 bg-white pb-2">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all"
+                            className="flex-1 px-4 py-2.5 text-sm rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white font-semibold hover:shadow-lg transition-all"
+                            className="flex-1 px-4 py-2.5 text-sm rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white font-semibold hover:shadow-lg transition-all"
                         >
                             Crear Oportunidad
                         </button>
