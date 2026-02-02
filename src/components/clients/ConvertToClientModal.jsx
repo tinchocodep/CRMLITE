@@ -98,7 +98,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
                             <UserPlus size={24} className="md:w-7 md:h-7" strokeWidth={2.5} />
                         </div>
                         <div>
-                            <h3 className="text-xl md:text-2xl font-bold text-slate-800">Alta de Cliente</h3>
+                            <h3 className="text-xl md:text-2xl font-bold text-slate-800">{prospect ? 'Editar Cliente' : 'Alta de Cliente'}</h3>
                             <p className="text-xs md:text-sm text-slate-500 font-medium leading-tight">Complete la ficha técnica para vincular el legajo</p>
                         </div>
                     </div>
