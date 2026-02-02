@@ -9,4 +9,16 @@ export default defineConfig({
     port: 8000,
     host: true, // Permite acceso desde la red local (para mobile)
   },
+  build: {
+    chunkSizeWarningLimit: 1000, // Increase to 1000 kB to suppress warnings
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-utils': ['date-fns']
+        }
+      }
+    }
+  }
 })
