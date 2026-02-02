@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, Filter, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
 import CreateOpportunityModal from '../components/opportunities/CreateOpportunityModal';
-import { mockOpportunities } from '../data/mockOpportunities';
+import { useOpportunities } from '../hooks/useOpportunities';
 
 export default function Opportunities() {
-    const [opportunities, setOpportunities] = useState(mockOpportunities);
+    const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedOpportunity, setSelectedOpportunity] = useState(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
 
     // Listen for custom event from Quick Actions
     useEffect(() => {
@@ -24,14 +25,16 @@ export default function Opportunities() {
         };
     }, []);
 
+
     // Filter opportunities
     const filteredOpportunities = opportunities.filter(opp => {
-        const matchesSearch = opp.opportunityName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            opp.linkedEntity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            opp.productType.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = opp.opportunity_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            opp.company_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            opp.product_type?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'all' || opp.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
+
 
     // Calculate stats
     const stats = {
@@ -188,7 +191,11 @@ export default function Opportunities() {
 
             {/* Opportunities List */}
             <div className="px-4">
-                {filteredOpportunities.length === 0 ? (
+                {loading ? (
+                    <div className="text-center py-12">
+                        <div className="text-slate-400">Cargando oportunidades...</div>
+                    </div>
+                ) : filteredOpportunities.length === 0 ? (
                     <div className="text-center py-12">
                         <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <TrendingUp size={32} className="text-slate-400" />
@@ -214,8 +221,13 @@ export default function Opportunities() {
             <CreateOpportunityModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
-                onSave={(newOpportunity) => {
-                    setOpportunities([newOpportunity, ...opportunities]);
+                onSave={async (newOpportunity) => {
+                    const result = await createOpportunity(newOpportunity);
+                    if (result.success) {
+                        setIsCreateModalOpen(false);
+                    } else {
+                        alert('Error al crear oportunidad: ' + result.error);
+                    }
                 }}
             />
         </div>
