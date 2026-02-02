@@ -1,0 +1,108 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+
+export const useActivities = (daysAhead = 30) => {
+    const [activities, setActivities] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { comercialId, isAdmin, isSupervisor } = useAuth();
+
+    const fetchActivities = async () => {
+        try {
+            setLoading(true);
+            const { data, error: fetchError } = await supabase
+                .from('upcoming_activities_view')
+                .select('*')
+                .gte('scheduled_date', new Date().toISOString().split('T')[0])
+                .lte('scheduled_date', new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+                .order('scheduled_date', { ascending: true })
+                .order('scheduled_time', { ascending: true });
+
+            if (fetchError) throw fetchError;
+            setActivities(data || []);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching activities:', err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (comercialId || isAdmin || isSupervisor) {
+            fetchActivities();
+        }
+    }, [comercialId, daysAhead, isAdmin, isSupervisor]);
+
+    const createActivity = async (activityData) => {
+        try {
+            const { data, error: createError } = await supabase
+                .from('activities')
+                .insert([{
+                    ...activityData,
+                    comercial_id: activityData.comercial_id || comercialId,
+                    created_by: (await supabase.auth.getUser()).data.user.id
+                }])
+                .select()
+                .single();
+
+            if (createError) throw createError;
+            await fetchActivities();
+            return { success: true, data };
+        } catch (err) {
+            console.error('Error creating activity:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
+    const updateActivity = async (id, updates) => {
+        try {
+            const { data, error: updateError } = await supabase
+                .from('activities')
+                .update(updates)
+                .eq('id', id)
+                .select()
+                .single();
+
+            if (updateError) throw updateError;
+            await fetchActivities();
+            return { success: true, data };
+        } catch (err) {
+            console.error('Error updating activity:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
+    const completeActivity = async (id) => {
+        return updateActivity(id, { status: 'completed' });
+    };
+
+    const deleteActivity = async (id) => {
+        try {
+            const { error: deleteError } = await supabase
+                .from('activities')
+                .delete()
+                .eq('id', id);
+
+            if (deleteError) throw deleteError;
+            await fetchActivities();
+            return { success: true };
+        } catch (err) {
+            console.error('Error deleting activity:', err);
+            return { success: false, error: err.message };
+        }
+    };
+
+    return {
+        activities,
+        loading,
+        error,
+        refetch: fetchActivities,
+        createActivity,
+        updateActivity,
+        completeActivity,
+        deleteActivity
+    };
+};
