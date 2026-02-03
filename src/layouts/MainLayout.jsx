@@ -11,6 +11,7 @@ import ContactModal from '../components/contacts/ContactModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { useCompanies } from '../hooks/useCompanies';
+import { useAuth } from '../contexts/AuthContext';
 
 // ========== SHARED CONSTANTS ==========
 const modules = [
@@ -40,7 +41,8 @@ const actions = [
 const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { companies } = useCompanies();
+    const { companies, createCompany } = useCompanies();
+    const { user } = useAuth();
 
     // Filter only prospects
     const prospects = companies.filter(c => c.company_type === 'prospect');
@@ -97,7 +99,8 @@ const MainLayout = () => {
 
     const handleGlobalCreateProspect = () => {
         setProspectData({
-            id: Date.now(),
+            // No ID for new prospects to avoid confusion in EditProspectModal
+            // id: Date.now(), 
             date: new Date().toISOString(),
             status: 'contacted',
             tradeName: '',
@@ -839,10 +842,9 @@ const MainLayout = () => {
             <CreateEventModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
+                companies={companies}
                 onCreate={async (newEvent) => {
                     console.log('Global Event Created:', newEvent);
-                    // TODO: Implement real Supabase saving here or inside the modal
-                    // For now, avoid crashing the app
                     try {
                         const { error } = await supabase
                             .from('activities')
@@ -852,17 +854,19 @@ const MainLayout = () => {
                                 type: newEvent.type, // visit, call, etc
                                 status: 'pending',
                                 priority: newEvent.priority,
-                                scheduled_date: newEvent.start, // Adjust format if needed
+                                scheduled_date: newEvent.start,
                                 scheduled_time: new Date(newEvent.start).toLocaleTimeString(),
                                 duration_minutes: newEvent.duration,
-                                company_id: null, // TODO: map client string to ID if possible
-                                created_by: null // handled by RLS/database default
+                                company_id: newEvent.company_id || null,
+                                created_by: user?.id,
+                                assigned_to: newEvent.assignedTo || [user?.id] // Array of UUIDs
                             }]);
 
-                        if (error) console.error('Error auto-saving event:', error);
-                        else alert('Actividad creada (guardada en Supabase)');
+                        if (error) throw error;
+                        alert('Actividad creada exitosamente');
                     } catch (err) {
                         console.error('Error saving event:', err);
+                        alert('Error al guardar la actividad: ' + err.message);
                     }
                 }}
             />
@@ -871,9 +875,27 @@ const MainLayout = () => {
                 isOpen={isProspectModalOpen}
                 onClose={() => setIsProspectModalOpen(false)}
                 prospect={prospectData}
-                onSave={(newProspect) => {
+                onSave={async (newProspect) => {
                     console.log('Global Prospect Created:', newProspect);
-                    setIsProspectModalOpen(false);
+
+                    // Remove dummy ID if present (from initialization)
+                    // eslint-disable-next-line no-unused-vars
+                    const { id, ...prospectDataToSave } = newProspect;
+
+                    const result = await createCompany({
+                        ...prospectDataToSave,
+                        company_type: 'prospect',
+                        // Ensure required fields for safety
+                        trade_name: prospectDataToSave.trade_name || '',
+                        legal_name: prospectDataToSave.legal_name || ''
+                    });
+
+                    if (result.success) {
+                        alert('Prospecto creado exitosamente');
+                        setIsProspectModalOpen(false);
+                    } else {
+                        alert('Error al crear prospecto: ' + result.error);
+                    }
                 }}
             />
 

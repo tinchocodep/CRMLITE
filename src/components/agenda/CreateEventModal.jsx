@@ -47,7 +47,7 @@ const durationOptions = [
     { value: 180, label: '3 horas' },
 ];
 
-const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
+const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
     const { user } = useAuth();
     const [teamMembers, setTeamMembers] = useState([]);
 
@@ -59,7 +59,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
         type: 'visit',
         start: format(new Date(), "yyyy-MM-dd'T'HH:00"),
         duration: 60, // minutes
-        client: '',
+        company_id: '',
         description: '',
         assignedTo: [] // Will be set after users load
     });
@@ -113,8 +113,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
     };
 
     const handleSubmit = () => {
-        if (!newEvent.title || !newEvent.client) {
-            alert('Por favor completa el título y el cliente.');
+        if (!newEvent.title || !newEvent.company_id) {
+            alert('Por favor completa el título y selecciona una empresa.');
             return;
         }
 
@@ -224,13 +224,19 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                         <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa</label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Buscar cliente..."
-                                value={newEvent.client}
-                                onChange={(e) => setNewEvent({ ...newEvent, client: e.target.value })}
-                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-red/20 outline-none font-medium"
-                            />
+                            <select
+                                value={newEvent.company_id}
+                                onChange={(e) => setNewEvent({ ...newEvent, company_id: e.target.value })}
+                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-red/20 outline-none font-medium appearance-none"
+                            >
+                                <option value="">Seleccionar Empresa...</option>
+                                {companies.map(company => (
+                                    <option key={company.id} value={company.id}>
+                                        {company.trade_name || company.legal_name || 'Sin Nombre'} ({company.company_type === 'client' ? 'Cliente' : 'Prospecto'})
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
                         </div>
                     </div>
 
