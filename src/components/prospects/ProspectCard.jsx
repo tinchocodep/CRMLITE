@@ -146,7 +146,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                     </button>
 
                     {showContacts && (
-                        <div className="mt-2">
+                        <div className="mt-2" onClick={(e) => e.stopPropagation()}>
                             <CompanyContactsSection
                                 contacts={allContacts}
                                 companyId={prospect.id}

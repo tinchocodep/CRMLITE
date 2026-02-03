@@ -257,10 +257,14 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                                 {/* Main Contact Card - Clickable */}
                                                                 <div
                                                                     className="p-4 flex items-start justify-between cursor-pointer hover:bg-slate-100 transition-colors"
-                                                                    onClick={() => setExpandedContacts(prev => ({
-                                                                        ...prev,
-                                                                        [contact.id]: !prev[contact.id]
-                                                                    }))}
+                                                                    onClick={(e) => {
+                                                                        console.log('Contact clicked - stopping propagation');
+                                                                        e.stopPropagation();
+                                                                        setExpandedContacts(prev => ({
+                                                                            ...prev,
+                                                                            [contact.id]: !prev[contact.id]
+                                                                        }));
+                                                                    }}
                                                                 >
                                                                     <div className="flex-1">
                                                                         <div className="flex items-center gap-2 mb-1">
