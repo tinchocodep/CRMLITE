@@ -301,14 +301,19 @@ const MainLayout = () => {
                 </main>
 
                 {/* Bottom Navigation Bar */}
-                <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
+                <nav className="fixed bottom-0 left-0 right-0 z-[9999] pointer-events-auto bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
                     <div className="relative flex items-center justify-between h-16 px-4">
                         {/* Left Side - 2 buttons */}
                         <div className="flex items-center gap-2 flex-1 justify-start">
                             {/* Prospectos Button */}
                             <NavLink
                                 to="/prospectos"
-                                onClick={() => console.log('🔍 [DEBUG] Clicked Prospectos NavLink')}
+                                onClick={(e) => {
+                                    console.log('🔍 [DEBUG] Clicked Prospectos NavLink');
+                                    console.log('🔍 [DEBUG] Event:', e);
+                                    console.log('🔍 [DEBUG] Event defaultPrevented:', e.defaultPrevented);
+                                    console.log('🔍 [DEBUG] Current location:', window.location.pathname);
+                                }}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
                                     ${isActive ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'}
