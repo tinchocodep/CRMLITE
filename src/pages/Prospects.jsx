@@ -54,8 +54,8 @@ const Prospects = () => {
             if (updatedProspect.id && typeof updatedProspect.id === 'number' && updatedProspect.id > 1000000) {
                 // New prospect (temporary ID)
                 // Before creating, check if CUIT already exists
-                if (updatedProspect.cuit) {
-                    const existingCompany = companies.find(c => c.cuit === updatedProspect.cuit);
+                if (updatedProspect.cuit && prospects && prospects.length > 0) {
+                    const existingCompany = prospects.find(c => c.cuit === updatedProspect.cuit);
                     if (existingCompany) {
                         alert(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
                         return;
