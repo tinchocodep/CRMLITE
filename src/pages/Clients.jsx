@@ -35,6 +35,16 @@ const Clients = () => {
             // Check if this is a new client (no id) or updating existing
             if (clientData.id) {
                 // Update existing client
+                // Before updating, check if CUIT already exists (excluding current client)
+                if (clientData.cuit && clients && clients.length > 0) {
+                    const existingCompany = clients.find(c =>
+                        c.cuit === clientData.cuit && c.id !== clientData.id
+                    );
+                    if (existingCompany) {
+                        alert(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        return;
+                    }
+                }
                 result = await updateCompany(clientData.id, dataToSave);
             } else {
                 // Before creating, check if CUIT already exists
