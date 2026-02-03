@@ -30,12 +30,19 @@ const statusConfig = {
 
 const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
     const [showContacts, setShowContacts] = useState(false);
+
+    // Validación de datos
+    if (!prospect) {
+        console.error('🔍 [DEBUG] ProspectCard: prospect is null or undefined');
+        return null;
+    }
+
     const status = statusConfig[prospect.status] || statusConfig.contacted;
 
     // Get contacts linked to this prospect
-    const prospectContacts = allContacts.filter(contact =>
-        contact.companies?.some(c => c.companyId === prospect.id && c.companyType === 'prospect')
-    );
+    const prospectContacts = Array.isArray(allContacts) ? allContacts.filter(contact =>
+        contact?.companies?.some(c => c.companyId === prospect.id && c.companyType === 'prospect')
+    ) : [];
 
     return (
         <div
