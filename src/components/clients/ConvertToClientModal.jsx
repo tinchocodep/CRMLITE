@@ -20,6 +20,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
         // Client-specific fields
         paymentTerms: '',
         creditLimit: '',
+        detail: '',
 
         // Segment (Multiple Units) - will be saved separately
         segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
@@ -32,7 +33,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
         if (prospect) {
             setFormData(prev => ({
                 ...prev,
-                // Map common fields from prospect
+                // Map common fields from prospect - support both snake_case and camelCase
                 legalName: prospect.legal_name || prospect.legalName || prospect.companyName || '',
                 tradeName: prospect.trade_name || prospect.tradeName || '',
                 cuit: prospect.cuit || '',
@@ -40,8 +41,9 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
                 province: prospect.province || '',
                 address: prospect.address || '',
                 // Client-specific fields
-                paymentTerms: prospect.payment_terms || '',
-                creditLimit: prospect.credit_limit || '',
+                paymentTerms: prospect.payment_terms || prospect.paymentTerms || '',
+                creditLimit: prospect.credit_limit || prospect.creditLimit || '',
+                detail: prospect.detail || '',
                 segments: prospect.segments || [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
                 importance: prospect.importance || 'medium',
                 // Keep ID if exists
@@ -51,7 +53,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
             // Reset form for new entry
             setFormData({
                 legalName: '', tradeName: '', cuit: '', city: '', province: '', address: '',
-                paymentTerms: '', creditLimit: '',
+                paymentTerms: '', creditLimit: '', detail: '',
                 segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
                 importance: 'medium'
             });
@@ -76,6 +78,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
             city: formData.city,
             province: formData.province,
             address: formData.address,
+            detail: formData.detail || null,
             // Client-specific fields
             client_since: new Date().toISOString().split('T')[0],
             payment_terms: formData.paymentTerms || null,
