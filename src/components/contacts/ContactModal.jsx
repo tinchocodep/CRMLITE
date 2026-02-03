@@ -28,9 +28,9 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
     // Get all available companies from Supabase
     const allCompanies = companies.map(c => ({
         id: c.id,
-        name: c.trade_name || c.legal_name,
+        name: c.trade_name || c.legal_name || '',
         type: c.company_type,
-        fullName: c.legal_name
+        fullName: c.legal_name || ''
     }));
 
     // Filter companies for autocomplete
