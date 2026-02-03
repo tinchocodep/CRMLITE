@@ -194,7 +194,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                         )}
 
                         {/* Contacts Section */}
-                        <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
+                        <div className="pt-3 border-t border-slate-200 dark:border-slate-700" onClick={(e) => e.stopPropagation()}>
                             <CompanyContactsSection
                                 contacts={allContacts}
                                 companyId={client.id}

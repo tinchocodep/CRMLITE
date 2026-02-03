@@ -67,10 +67,13 @@ const CompanyContactsSection = ({
                             >
                                 {/* Main Contact Card - Clickable */}
                                 <div
-                                    onClick={() => setExpandedContacts(prev => ({
-                                        ...prev,
-                                        [contact.id]: !prev[contact.id]
-                                    }))}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setExpandedContacts(prev => ({
+                                            ...prev,
+                                            [contact.id]: !prev[contact.id]
+                                        }));
+                                    }}
                                     className="p-3 cursor-pointer hover:bg-slate-100 transition-colors"
                                 >
                                     <div className="flex items-start justify-between gap-2">
