@@ -35,8 +35,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
 
     // Filter companies for autocomplete
     const filteredCompanies = allCompanies.filter(c =>
-        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+        (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.fullName || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Initialize form when contact changes or preselectedCompany is provided
@@ -56,6 +56,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                 companyId: preselectedCompany.companyId,
                 companyName: preselectedCompany.companyName,
                 companyType: preselectedCompany.companyType,
+                companyStatus: 'active',
+                isCompanyActive: true,
                 role: '', // User will fill this
                 isPrimary: true,
                 addedDate: new Date().toISOString()
