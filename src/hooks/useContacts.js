@@ -38,8 +38,8 @@ export const useContacts = () => {
                     .filter(rel => rel.contact_id === contact.id)
                     .map(rel => ({
                         companyId: rel.company_id,
-                        companyName: rel.company.trade_name || rel.company.legal_name,
-                        companyType: rel.company.company_type,
+                        companyName: rel.company?.trade_name || rel.company?.legal_name || 'Empresa Desconocida',
+                        companyType: rel.company?.company_type || 'unknown',
                         companyStatus: 'active',
                         isCompanyActive: true,
                         role: rel.role,
@@ -133,6 +133,15 @@ export const useContacts = () => {
         try {
             setError(null);
 
+            // Get current user's tenant_id
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user?.id)
+                .single();
+
+            if (userError) throw userError;
+
             // Update contact
             const { data: updatedContact, error: contactError } = await supabase
                 .from('contacts')
@@ -164,7 +173,8 @@ export const useContacts = () => {
                     contact_id: id,
                     company_id: company.companyId,
                     role: company.role,
-                    is_primary: company.isPrimary
+                    is_primary: company.isPrimary,
+                    tenant_id: userData.tenant_id
                 }));
 
                 const { error: relationsError } = await supabase
