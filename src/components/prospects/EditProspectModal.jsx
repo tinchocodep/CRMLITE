@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
-import { format } from 'date-fns';
+import { safeFormat } from '../../utils/dateUtils';
 import { mockContacts } from '../../data/mockContacts';
 import ContactModal from '../contacts/ContactModal';
 
@@ -57,7 +57,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     const handleCreateContact = () => {
         setPreselectedCompany({
             companyId: prospect.id,
-            companyName: prospect.tradeName || prospect.companyName,
+            companyName: prospect.trade_name || prospect.legal_name,
             companyType: 'prospect'
         });
         setIsContactModalOpen(true);
@@ -94,10 +94,10 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white/50">
                     <div>
                         <h2 className="text-xl font-bold text-slate-800">
-                            {(!prospect.tradeName && !prospect.companyName) ? 'Crear Prospecto' : 'Editar Prospecto'}
+                            {(!prospect.trade_name && !prospect.legal_name) ? 'Crear Prospecto' : 'Editar Prospecto'}
                         </h2>
                         <p className="text-xs text-slate-500 font-medium">
-                            {(!prospect.tradeName && !prospect.companyName) ? 'Completa los datos del nuevo prospecto' : 'Actualiza la información y el estado'}
+                            {(!prospect.trade_name && !prospect.legal_name) ? 'Completa los datos del nuevo prospecto' : 'Actualiza la información y el estado'}
                         </p>
                     </div>
                     <button
@@ -140,8 +140,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Nombre Comercial</label>
                                     <input
-                                        name="tradeName"
-                                        value={formData.tradeName}
+                                        name="trade_name"
+                                        value={formData.trade_name || ''}
                                         onChange={handleChange}
                                         className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
                                     />
@@ -149,8 +149,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                 <div className="space-y-1">
                                     <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Razón Social</label>
                                     <input
-                                        name="companyName"
-                                        value={formData.companyName}
+                                        name="legal_name"
+                                        value={formData.legal_name || ''}
                                         onChange={handleChange}
                                         className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
                                     />
@@ -187,7 +187,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     <input
                                         type="date"
                                         disabled
-                                        value={format(new Date(formData.date), 'yyyy-MM-dd')}
+                                        value={safeFormat(formData.created_at, 'yyyy-MM-dd', {}, '')}
                                         className="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-500 cursor-not-allowed"
                                     />
                                 </div>
@@ -332,7 +332,7 @@ FN:${contact.firstName} ${contact.lastName}
 N:${contact.lastName};${contact.firstName};;;
 ${contact.email ? `EMAIL:${contact.email}` : ''}
 ${contact.phone ? `TEL:${contact.phone}` : ''}
-ORG:${prospect.tradeName || prospect.companyName}
+ORG:${prospect.trade_name || prospect.legal_name}
 TITLE:${contact.role}
 END:VCARD`;
                                                                                     const blob = new Blob([vCard], { type: 'text/vcard' });
@@ -449,7 +449,7 @@ END:VCARD`;
                         <div className="pt-6 border-t border-slate-200">
                             <button
                                 onClick={() => {
-                                    if (window.confirm(`¿Convertir "${formData.tradeName || formData.companyName}" a Cliente?`)) {
+                                    if (window.confirm(`¿Convertir "${formData.trade_name || formData.legal_name}" a Cliente?`)) {
                                         alert('Funcionalidad de conversión a cliente pendiente de implementación');
                                     }
                                 }}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Calendar, Building2, FileDigit, Phone, Mail, ArrowRight, Pencil, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
-import { format } from 'date-fns';
+import { safeFormat } from '../../utils/dateUtils';
 import { es } from 'date-fns/locale';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
 
@@ -57,7 +57,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                     </button>
                     <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-100/50 dark:bg-slate-700/50 px-2 py-0.5 rounded-lg">
                         <Calendar size={11} />
-                        <span>{format(new Date(prospect.date), "dd MMM yyyy", { locale: es })}</span>
+                        <span>{safeFormat(prospect.created_at, "dd MMM yyyy", { locale: es })}</span>
                     </div>
                 </div>
 
@@ -77,11 +77,11 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
             >
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">
-                        {prospect.tradeName}
+                        {prospect.trade_name}
                     </h3>
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                         <Building2 size={12} />
-                        {prospect.companyName}
+                        {prospect.legal_name}
                     </p>
 
                     {/* Inline Info: CUIT, Email, Phone */}
@@ -150,7 +150,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                             <CompanyContactsSection
                                 contacts={allContacts}
                                 companyId={prospect.id}
-                                companyName={prospect.tradeName}
+                                companyName={prospect.trade_name}
                                 companyType="prospect"
                                 isCompact={false}
                             />
