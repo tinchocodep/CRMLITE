@@ -38,11 +38,11 @@ export const useActivities = (daysAhead = 30) => {
 
     const createActivity = async (activityData) => {
         try {
-            // Get current user's tenant_id and comercial_id
+            // Get current user's tenant_id
             const { data: { user } } = await supabase.auth.getUser();
             const { data: userData, error: userError } = await supabase
                 .from('users')
-                .select('tenant_id, comercial_id')
+                .select('tenant_id')
                 .eq('id', user.id)
                 .single();
 
@@ -53,7 +53,7 @@ export const useActivities = (daysAhead = 30) => {
                 .insert([{
                     ...activityData,
                     tenant_id: userData.tenant_id,
-                    comercial_id: activityData.comercial_id || userData.comercial_id || comercialId,
+                    comercial_id: activityData.comercial_id || comercialId || null,
                     created_by: user.id
                 }])
                 .select()
