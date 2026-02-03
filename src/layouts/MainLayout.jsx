@@ -312,43 +312,36 @@ const MainLayout = () => {
                         {/* Left Side - 2 buttons */}
                         <div className="flex items-center gap-2 flex-1 justify-start">
                             {/* Prospectos Button */}
-                            <NavLink
-                                to="/prospectos"
+                            <button
                                 onClick={(e) => {
-                                    console.log('🔍 [DEBUG] Clicked Prospectos NavLink');
-                                    console.log('🔍 [DEBUG] Event:', e);
-                                    console.log('🔍 [DEBUG] Event defaultPrevented:', e.defaultPrevented);
-                                    console.log('🔍 [DEBUG] Current location:', window.location.pathname);
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🔍 [DEBUG] Clicked Prospectos Button');
+                                    console.log('🔍 [DEBUG] Navigating to /prospectos');
+                                    navigate('/prospectos');
                                 }}
-                                className={({ isActive }) => `
-                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'}
-                                `}
+                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${location.pathname === '/prospectos' ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'
+                                    }`}
                             >
-                                {({ isActive }) => (
-                                    <>
-                                        <Users size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
-                                        <span className="text-[9px] font-semibold mt-0.5">Prospectos</span>
-                                    </>
-                                )}
-                            </NavLink>
+                                <Users size={22} strokeWidth={location.pathname === '/prospectos' ? 2.5 : 2} className={`transition-all duration-200 ${location.pathname === '/prospectos' ? 'scale-110' : 'scale-100'}`} />
+                                <span className="text-[9px] font-semibold mt-0.5">Prospectos</span>
+                            </button>
 
                             {/* Clientes Button */}
-                            <NavLink
-                                to="/clientes"
-                                onClick={() => console.log('🔍 [DEBUG] Clicked Clientes NavLink')}
-                                className={({ isActive }) => `
-                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-brand-red' : 'text-slate-600'}
-                                `}
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('🔍 [DEBUG] Clicked Clientes Button');
+                                    console.log('🔍 [DEBUG] Navigating to /clientes');
+                                    navigate('/clientes');
+                                }}
+                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${location.pathname === '/clientes' ? 'text-brand-red' : 'text-slate-600'
+                                    }`}
                             >
-                                {({ isActive }) => (
-                                    <>
-                                        <UserCheck size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
-                                        <span className="text-[9px] font-semibold mt-0.5">Clientes</span>
-                                    </>
-                                )}
-                            </NavLink>
+                                <UserCheck size={22} strokeWidth={location.pathname === '/clientes' ? 2.5 : 2} className={`transition-all duration-200 ${location.pathname === '/clientes' ? 'scale-110' : 'scale-100'}`} />
+                                <span className="text-[9px] font-semibold mt-0.5">Clientes</span>
+                            </button>
                         </div>
 
                         {/* Center - Quick Actions Button (Elevated) */}
