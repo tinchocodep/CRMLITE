@@ -9,7 +9,7 @@ const importanceConfig = [
 
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
     const [formData, setFormData] = useState({
-        // Basic Info (Inherited)
+        // Basic Info (Inherited from prospect)
         legalName: '',
         tradeName: '',
         cuit: '',
@@ -17,20 +17,11 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
         province: '',
         address: '',
 
-        // Business & Contact
-        businessUnit: '',
-        detail: '',
-        contactName: '',
-        contactPhone: '',
-        contactEmail: '',
-        commercialRep: '', // Comercial
+        // Client-specific fields
+        paymentTerms: '',
+        creditLimit: '',
 
-        // Specifics
-        fileNumber: '', // Legajo
-        coordinates: '', // Geoloc Punto
-        polygon: '', // Geoloc Poligono
-
-        // Segment (Multiple Units)
+        // Segment (Multiple Units) - will be saved separately
         segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
 
         // Importance
@@ -41,25 +32,18 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
         if (prospect) {
             setFormData(prev => ({
                 ...prev,
-                // Map common fields
-                legalName: prospect.legalName || prospect.companyName || '',
-                tradeName: prospect.tradeName || '',
+                // Map common fields from prospect
+                legalName: prospect.legal_name || prospect.legalName || prospect.companyName || '',
+                tradeName: prospect.trade_name || prospect.tradeName || '',
                 cuit: prospect.cuit || '',
                 city: prospect.city || '',
                 province: prospect.province || '',
-                contactName: prospect.contactName || prospect.contact || '',
-
-                // Map Client Specifics if editing a client
                 address: prospect.address || '',
-                businessUnit: prospect.businessUnit || '',
-                detail: prospect.detail || '',
-                contactPhone: prospect.contactPhone || '',
-                contactEmail: prospect.contactEmail || '',
-                commercialRep: prospect.commercialRep || '',
-                fileNumber: prospect.fileNumber || '',
+                // Client-specific fields
+                paymentTerms: prospect.payment_terms || '',
+                creditLimit: prospect.credit_limit || '',
                 segments: prospect.segments || [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
                 importance: prospect.importance || 'medium',
-
                 // Keep ID if exists
                 id: prospect.id,
             }));
@@ -67,8 +51,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
             // Reset form for new entry
             setFormData({
                 legalName: '', tradeName: '', cuit: '', city: '', province: '', address: '',
-                businessUnit: '', detail: '', contactName: '', contactPhone: '', contactEmail: '', commercialRep: '',
-                fileNumber: '', coordinates: '', polygon: '',
+                paymentTerms: '', creditLimit: '',
                 segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
                 importance: 'medium'
             });
@@ -82,20 +65,19 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Convert camelCase to snake_case and add company_type
+        // Only send fields that exist in the companies table
         const dataToSubmit = {
-            ...prospect,
-            ...formData,
-            // Map camelCase to snake_case
+            // Map camelCase to snake_case for existing DB fields
             trade_name: formData.tradeName,
             legal_name: formData.legalName,
-            contact_name: formData.contactName,
-            contact_phone: formData.contactPhone,
-            contact_email: formData.contactEmail,
-            business_unit: formData.businessUnit,
-            commercial_rep: formData.commercialRep,
-            file_number: formData.fileNumber,
-            company_type: 'client'
+            cuit: formData.cuit,
+            city: formData.city,
+            province: formData.province,
+            address: formData.address,
+            // Client-specific fields
+            client_since: new Date().toISOString().split('T')[0],
+            payment_terms: formData.paymentTerms || null,
+            credit_limit: formData.creditLimit || null
         };
         onConvert(dataToSubmit);
     };
@@ -256,30 +238,34 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
                         </div>
                     </section>
 
-                    {/* 3. Datos Administrativos y Contacto */}
+                    {/* 3. Datos de Cliente */}
                     <section className="pt-4 border-t border-slate-100">
                         <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <Briefcase size={16} /> Administración
+                            <Briefcase size={16} /> Información de Cliente
                         </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Unidad de Negocio</label>
-                                <select name="businessUnit" value={formData.businessUnit} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none">
+                                <label className="text-xs font-bold text-slate-500 ml-1">Condiciones de Pago</label>
+                                <select name="paymentTerms" value={formData.paymentTerms} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none">
                                     <option value="">Seleccionar...</option>
-                                    <option value="agro">Agro</option>
-                                    <option value="construccion">Construcción</option>
-                                    <option value="transporte">Transporte</option>
+                                    <option value="contado">Contado</option>
+                                    <option value="30_dias">30 días</option>
+                                    <option value="60_dias">60 días</option>
+                                    <option value="90_dias">90 días</option>
                                 </select>
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Comercial Asignado</label>
-                                <input name="commercialRep" value={formData.commercialRep} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none" placeholder="Nombre del Vendedor" />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Nro. Legajo</label>
+                                <label className="text-xs font-bold text-slate-500 ml-1">Límite de Crédito</label>
                                 <div className="relative">
-                                    <FileText size={16} className="absolute left-3 top-3 text-slate-400" />
-                                    <input name="fileNumber" value={formData.fileNumber} onChange={handleChange} className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono font-bold text-brand-red focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none" placeholder="000-0000" />
+                                    <DollarSign size={16} className="absolute left-3 top-3 text-slate-400" />
+                                    <input
+                                        name="creditLimit"
+                                        type="number"
+                                        value={formData.creditLimit}
+                                        onChange={handleChange}
+                                        className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono font-bold text-brand-red focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none"
+                                        placeholder="0.00"
+                                    />
                                 </div>
                             </div>
                         </div>
