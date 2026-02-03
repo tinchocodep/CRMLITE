@@ -78,11 +78,17 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     return createPortal(
         <div
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-            onClick={onClose}
+            onClick={(e) => {
+                console.log('🔴 BACKDROP CLICKED - CLOSING MODAL', e.target);
+                onClose();
+            }}
         >
             <div
                 className="w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col max-h-[90vh]"
-                onClick={e => e.stopPropagation()}
+                onClick={(e) => {
+                    console.log('✅ MODAL CONTENT CLICKED - STOPPING PROPAGATION', e.target);
+                    e.stopPropagation();
+                }}
             >
                 {/* Header */}
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white/50">
@@ -258,8 +264,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                                 <div
                                                                     className="p-4 flex items-start justify-between cursor-pointer hover:bg-slate-100 transition-colors"
                                                                     onClick={(e) => {
-                                                                        console.log('Contact clicked - stopping propagation');
+                                                                        console.log('🟢 CONTACT CARD CLICKED', {
+                                                                            contactName: `${contact.firstName} ${contact.lastName}`,
+                                                                            target: e.target,
+                                                                            currentTarget: e.currentTarget
+                                                                        });
                                                                         e.stopPropagation();
+                                                                        console.log('✋ PROPAGATION STOPPED FOR CONTACT CARD');
                                                                         setExpandedContacts(prev => ({
                                                                             ...prev,
                                                                             [contact.id]: !prev[contact.id]
@@ -280,7 +291,10 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                                         <div className="text-xs text-slate-600 font-semibold mb-1">{contact.role}</div>
 
                                                                         {/* Quick Actions */}
-                                                                        <div className="flex items-center gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
+                                                                        <div className="flex items-center gap-1 mt-2" onClick={(e) => {
+                                                                            console.log('🔵 QUICK ACTIONS CLICKED - STOPPING PROPAGATION');
+                                                                            e.stopPropagation();
+                                                                        }}>
                                                                             {contact.phone && (
                                                                                 <>
                                                                                     <a
