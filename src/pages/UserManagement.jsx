@@ -24,8 +24,8 @@ const UserManagement = () => {
 
     // Filter users
     const filteredUsers = users.filter(u =>
-        u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.email?.toLowerCase().includes(searchTerm.toLowerCase())
+        (u.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (u.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
 
     const handleRoleChange = async (userId, newRole) => {
@@ -179,10 +179,10 @@ const UserManagement = () => {
                                     <div className="flex items-center gap-2 flex-wrap">
                                         {/* Role Badge */}
                                         <span className={`px-2 py-1 text-xs rounded-lg font-medium ${userItem.role === 'admin'
-                                                ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
-                                                : userItem.role === 'supervisor'
-                                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                            ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
+                                            : userItem.role === 'supervisor'
+                                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                                             }`}>
                                             {userItem.role === 'admin' ? 'Administrador' :
                                                 userItem.role === 'supervisor' ? 'Supervisor' : 'Usuario'}
@@ -190,8 +190,8 @@ const UserManagement = () => {
 
                                         {/* Status Badge */}
                                         <span className={`px-2 py-1 text-xs rounded-lg font-medium ${userItem.is_active
-                                                ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
-                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                            ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                                            : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                                             }`}>
                                             {userItem.is_active ? 'Activo' : 'Inactivo'}
                                         </span>
@@ -222,8 +222,8 @@ const UserManagement = () => {
                                             <button
                                                 onClick={() => handleToggleActive(userItem.id, userItem.is_active)}
                                                 className={`px-3 py-1 text-sm rounded-lg font-medium transition ${userItem.is_active
-                                                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300'
-                                                        : 'bg-green-200 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-300'
+                                                    ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300'
+                                                    : 'bg-green-200 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-300'
                                                     }`}
                                             >
                                                 {userItem.is_active ? 'Desactivar' : 'Activar'}

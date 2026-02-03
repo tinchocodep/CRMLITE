@@ -14,8 +14,8 @@ const Clients = () => {
     const [expandedClientId, setExpandedClientId] = useState(null);
 
     const filteredClients = clients.filter(c =>
-        c.trade_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.legal_name?.toLowerCase().includes(searchTerm.toLowerCase())
+        (c.trade_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (c.legal_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
 
     const handleToggleExpand = (id) => {
