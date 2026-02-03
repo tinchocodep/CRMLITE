@@ -319,13 +319,8 @@ const MainLayout = () => {
                                         e.stopPropagation();
                                         console.log('🔍 [DEBUG] Clicked Prospectos Button');
                                         console.log('🔍 [DEBUG] Current location before navigate:', location.pathname);
-                                        console.log('🔍 [DEBUG] Navigating to /prospectos');
-                                        navigate('/prospectos');
-                                        console.log('🔍 [DEBUG] navigate() called successfully');
-                                        setTimeout(() => {
-                                            console.log('🔍 [DEBUG] Location after navigate (100ms):', location.pathname);
-                                            console.log('🔍 [DEBUG] Window location after navigate:', window.location.pathname);
-                                        }, 100);
+                                        console.log('🔍 [DEBUG] Forcing page reload to /prospectos');
+                                        window.location.href = '/prospectos';
                                     } catch (error) {
                                         console.error('🔍 [DEBUG] Error in Prospectos button:', error);
                                     }
@@ -343,8 +338,8 @@ const MainLayout = () => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     console.log('🔍 [DEBUG] Clicked Clientes Button');
-                                    console.log('🔍 [DEBUG] Navigating to /clientes');
-                                    navigate('/clientes');
+                                    console.log('🔍 [DEBUG] Forcing page reload to /clientes');
+                                    window.location.href = '/clientes';
                                 }}
                                 className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${location.pathname === '/clientes' ? 'text-brand-red' : 'text-slate-600'
                                     }`}
