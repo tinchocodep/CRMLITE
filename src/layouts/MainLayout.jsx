@@ -312,41 +312,36 @@ const MainLayout = () => {
                         {/* Left Side - 2 buttons */}
                         <div className="flex items-center gap-2 flex-1 justify-start">
                             {/* Prospectos Button */}
-                            <button
-                                onClick={(e) => {
-                                    try {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        console.log('🔍 [DEBUG] Clicked Prospectos Button');
-                                        console.log('🔍 [DEBUG] Current location before navigate:', location.pathname);
-                                        console.log('🔍 [DEBUG] Forcing page reload to /prospectos');
-                                        window.location.href = '/prospectos';
-                                    } catch (error) {
-                                        console.error('🔍 [DEBUG] Error in Prospectos button:', error);
-                                    }
-                                }}
-                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${location.pathname === '/prospectos' ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'
-                                    }`}
+                            <NavLink
+                                to="/prospectos"
+                                className={({ isActive }) => `
+                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
+                                    ${isActive ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'}
+                                `}
                             >
-                                <Users size={22} strokeWidth={location.pathname === '/prospectos' ? 2.5 : 2} className={`transition-all duration-200 ${location.pathname === '/prospectos' ? 'scale-110' : 'scale-100'}`} />
-                                <span className="text-[9px] font-semibold mt-0.5">Prospectos</span>
-                            </button>
+                                {({ isActive }) => (
+                                    <>
+                                        <Users size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
+                                        <span className="text-[9px] font-semibold mt-0.5">Prospectos</span>
+                                    </>
+                                )}
+                            </NavLink>
 
                             {/* Clientes Button */}
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('🔍 [DEBUG] Clicked Clientes Button');
-                                    console.log('🔍 [DEBUG] Forcing page reload to /clientes');
-                                    window.location.href = '/clientes';
-                                }}
-                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${location.pathname === '/clientes' ? 'text-brand-red' : 'text-slate-600'
-                                    }`}
+                            <NavLink
+                                to="/clientes"
+                                className={({ isActive }) => `
+                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
+                                    ${isActive ? 'text-brand-red' : 'text-slate-600'}
+                                `}
                             >
-                                <UserCheck size={22} strokeWidth={location.pathname === '/clientes' ? 2.5 : 2} className={`transition-all duration-200 ${location.pathname === '/clientes' ? 'scale-110' : 'scale-100'}`} />
-                                <span className="text-[9px] font-semibold mt-0.5">Clientes</span>
-                            </button>
+                                {({ isActive }) => (
+                                    <>
+                                        <UserCheck size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
+                                        <span className="text-[9px] font-semibold mt-0.5">Clientes</span>
+                                    </>
+                                )}
+                            </NavLink>
                         </div>
 
                         {/* Center - Quick Actions Button (Elevated) */}
