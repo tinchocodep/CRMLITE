@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Building2, MapPin, Briefcase, FileText, ChevronDown, ChevronUp, Tractor, Leaf, Map, User, Pencil, Trash2, Mail, Phone, FileDigit, FileCheck, FolderOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
-import { mockLegajos } from '../../data/mockLegajos';
 
 const importanceConfig = {
     low: { label: 'Baja', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-100 text-blue-700' },
@@ -14,13 +13,12 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
     const navigate = useNavigate();
     const importance = importanceConfig[client.importance] || importanceConfig.low;
 
-    // Calculate legajo progress
-    const legajo = mockLegajos.find(l => l.clientId === client.id);
-    const docs = legajo?.documents || {};
+    // TODO: Calculate legajo progress from actual legajo system
+    // For now, use placeholder values
     const totalDocs = 6;
-    const uploadedDocs = Object.values(docs).filter(d => d.status === 'uploaded').length;
-    const legajoStatus = uploadedDocs === totalDocs ? 'complete' : uploadedDocs > 0 ? 'incomplete' : 'empty';
-    const progressPercentage = (uploadedDocs / totalDocs) * 100;
+    const uploadedDocs = 0;
+    const legajoStatus = 'empty';
+    const progressPercentage = 0;
 
     const handleLegajoClick = (e) => {
         e.stopPropagation();

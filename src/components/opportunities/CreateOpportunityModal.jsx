@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, User, Users, Briefcase, DollarSign, Calendar, TrendingUp, FileText, Clock } from 'lucide-react';
-import { mockClients } from '../../data/mockClients';
-import { mockProspects } from '../../data/mockProspects';
+import { useCompanies } from '../../hooks/useCompanies';
+import { useContacts } from '../../hooks/useContacts';
 import { mockComerciales } from '../../data/mockComerciales';
-import { mockContacts } from '../../data/mockContacts';
 
 export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
+    const { companies } = useCompanies();
+    const { contacts } = useContacts();
+
+    // Filter companies by type
+    const clients = companies.filter(c => c.company_type === 'client');
+    const prospects = companies.filter(c => c.company_type === 'prospect');
     const [formData, setFormData] = useState({
         comercialId: '',
         opportunityName: '',
@@ -29,15 +34,15 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // Auto-search when opportunity name changes
     useEffect(() => {
         if (formData.opportunityName.length >= 3) {
-            const clientResults = mockClients.map(c => ({
+            const clientResults = clients.map(c => ({
                 ...c,
                 type: 'client',
-                displayName: c.tradeName || c.legalName
+                displayName: c.trade_name || c.legal_name
             }));
-            const prospectResults = mockProspects.map(p => ({
+            const prospectResults = prospects.map(p => ({
                 ...p,
                 type: 'prospect',
-                displayName: p.tradeName
+                displayName: p.trade_name
             }));
 
             const allResults = [...clientResults, ...prospectResults];
@@ -51,24 +56,23 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             setSearchResults([]);
             setShowSuggestions(false);
         }
-    }, [formData.opportunityName]);
+    }, [formData.opportunityName, clients, prospects]);
 
     // Update available contacts when entity is selected
     useEffect(() => {
         if (formData.linkedEntityId) {
             // Get contacts for the selected entity
-            const entityContacts = mockContacts.filter(contact => {
-                if (formData.linkedEntityType === 'client') {
-                    return contact.clientId === parseInt(formData.linkedEntityId);
-                } else {
-                    return contact.prospectId === parseInt(formData.linkedEntityId);
-                }
+            const entityContacts = contacts.filter(contact => {
+                return contact.companies.some(c =>
+                    c.companyId === parseInt(formData.linkedEntityId) &&
+                    c.companyType === formData.linkedEntityType
+                );
             });
             setAvailableContacts(entityContacts);
         } else {
             setAvailableContacts([]);
         }
-    }, [formData.linkedEntityId, formData.linkedEntityType]);
+    }, [formData.linkedEntityId, formData.linkedEntityType, contacts]);
 
     // Update probability based on status
     useEffect(() => {
@@ -100,9 +104,9 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
         const comercial = mockComerciales.find(c => c.id === parseInt(formData.comercialId));
         const linkedEntity = formData.linkedEntityType === 'client'
-            ? mockClients.find(c => c.id === parseInt(formData.linkedEntityId))
-            : mockProspects.find(p => p.id === parseInt(formData.linkedEntityId));
-        const contact = mockContacts.find(c => c.id === parseInt(formData.contactId));
+            ? clients.find(c => c.id === parseInt(formData.linkedEntityId))
+            : prospects.find(p => p.id === parseInt(formData.linkedEntityId));
+        const contact = contacts.find(c => c.id === parseInt(formData.contactId));
 
         const newOpportunity = {
             id: Date.now(),
@@ -115,7 +119,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             linkedEntity: {
                 type: formData.linkedEntityType,
                 id: linkedEntity.id,
-                name: linkedEntity.tradeName || linkedEntity.legalName
+                name: linkedEntity.trade_name || linkedEntity.legal_name
             },
             contact: contact ? {
                 id: contact.id,
@@ -241,8 +245,8 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                     <p className="text-xs text-emerald-700 font-medium capitalize">Vinculado a {formData.linkedEntityType === 'client' ? 'Cliente' : 'Prospecto'}</p>
                                     <p className="font-semibold text-sm text-emerald-900 truncate">
                                         {formData.linkedEntityType === 'client'
-                                            ? mockClients.find(c => c.id === parseInt(formData.linkedEntityId))?.tradeName
-                                            : mockProspects.find(p => p.id === parseInt(formData.linkedEntityId))?.tradeName
+                                            ? clients.find(c => c.id === parseInt(formData.linkedEntityId))?.trade_name
+                                            : prospects.find(p => p.id === parseInt(formData.linkedEntityId))?.trade_name
                                         }
                                     </p>
                                 </div>
