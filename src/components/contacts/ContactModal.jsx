@@ -222,6 +222,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: '100%', opacity: 0 }}
                     transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                    onClick={(e) => e.stopPropagation()}
                     className="relative w-full md:w-[600px] bg-white rounded-t-3xl md:rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden flex flex-col"
                 >
                     {/* Header */}
