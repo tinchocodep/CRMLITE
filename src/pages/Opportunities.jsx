@@ -56,7 +56,7 @@ export default function Opportunities() {
     };
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 pb-40 xl:pb-8">
+        <div className="h-full bg-gradient-to-br from-slate-50 to-slate-100 pb-40 xl:pb-8 overflow-y-auto">
             {/* Header */}
             <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-6 pb-8">
                 <h1 className="text-2xl font-bold mb-2">Oportunidades</h1>
