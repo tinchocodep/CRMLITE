@@ -43,7 +43,17 @@ const Agenda = () => {
             for (let i = 0; i < 7; i++) {
                 formattedDate = format(day, dateFormat);
                 const cloneDay = day;
-                const dayEvents = events.filter(e => isSameDay(new Date(e.activity_date), cloneDay));
+                // Handle both Supabase data (scheduled_date) and mock data (start)
+                // Also filter out events with invalid/null dates
+                const dayEvents = events.filter(e => {
+                    const eventDate = e.scheduled_date || e.start;
+                    if (!eventDate) return false; // Skip events without dates
+                    try {
+                        return isSameDay(new Date(eventDate), cloneDay);
+                    } catch {
+                        return false; // Skip events with invalid dates
+                    }
+                });
 
                 days.push(
                     <div
@@ -143,7 +153,19 @@ const Agenda = () => {
 
     const filterEvents = (events) => {
         return events.filter(event => {
-            const eventDate = new Date(event.activity_date);
+            // Handle both Supabase data (scheduled_date) and mock data (start)
+            const eventDateValue = event.scheduled_date || event.start;
+            if (!eventDateValue) return false; // Skip events without dates
+
+            let eventDate;
+            try {
+                eventDate = new Date(eventDateValue);
+                // Check if date is valid
+                if (isNaN(eventDate.getTime())) return false;
+            } catch {
+                return false; // Skip events with invalid dates
+            }
+
             const eventYear = eventDate.getFullYear();
             const eventMonth = eventDate.getMonth();
             const eventDay = eventDate.getDate();
