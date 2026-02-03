@@ -249,6 +249,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
                                 <select name="paymentTerms" value={formData.paymentTerms} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none">
                                     <option value="">Seleccionar...</option>
                                     <option value="contado">Contado</option>
+                                    <option value="transferencia">Transferencia</option>
                                     <option value="30_dias">30 días</option>
                                     <option value="60_dias">60 días</option>
                                     <option value="90_dias">90 días</option>
