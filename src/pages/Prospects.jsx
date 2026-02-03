@@ -84,6 +84,17 @@ const Prospects = () => {
                 }
             } else {
                 // Update existing prospect
+                // Before updating, check if CUIT already exists (excluding current prospect)
+                if (updatedProspect.cuit && prospects && prospects.length > 0) {
+                    const existingCompany = prospects.find(c =>
+                        c.cuit === updatedProspect.cuit && c.id !== updatedProspect.id
+                    );
+                    if (existingCompany) {
+                        alert(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        return;
+                    }
+                }
+
                 const result = await updateCompany(updatedProspect.id, {
                     trade_name: updatedProspect.tradeName || updatedProspect.trade_name,
                     legal_name: updatedProspect.companyName || updatedProspect.legal_name,
