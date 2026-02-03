@@ -8,10 +8,55 @@ import DayView from '../components/agenda/DayView';
 import CreateEventModal from '../components/agenda/CreateEventModal';
 import { useActivities } from '../hooks/useActivities';
 
+
 const Agenda = () => {
-    const { activities: events, loading, createActivity } = useActivities(30);
+    const { activities: rawEvents, loading, createActivity } = useActivities(30);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
+
+    // Normalize events to ensure they all have start/end properties
+    // This handles both Supabase format (scheduled_date/time) and mock format (start/end)
+    const events = React.useMemo(() => {
+        return rawEvents.map(event => {
+            // If event already has start/end, use as is
+            if (event.start && event.end) {
+                return event;
+            }
+
+            // If event has scheduled_date/time (Supabase), convert to start/end
+            if (event.scheduled_date) {
+                try {
+                    const date = new Date(event.scheduled_date);
+                    if (isNaN(date.getTime())) {
+                        // Invalid date, skip this event
+                        console.warn('Invalid scheduled_date for event:', event.id);
+                        return null;
+                    }
+
+                    const [hours, minutes] = (event.scheduled_time || '09:00').split(':');
+                    const start = new Date(date);
+                    start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+                    // Calculate end time
+                    const durationMinutes = event.duration_minutes || 60;
+                    const end = new Date(start.getTime() + durationMinutes * 60000);
+
+                    return {
+                        ...event,
+                        start,
+                        end
+                    };
+                } catch (error) {
+                    console.error('Error normalizing event:', event.id, error);
+                    return null;
+                }
+            }
+
+            // Event has neither format, skip it
+            console.warn('Event missing date fields:', event.id);
+            return null;
+        }).filter(Boolean); // Remove null events
+    }, [rawEvents]);
 
     const nextDate = () => {
         if (view === 'month') setCurrentDate(addMonths(currentDate, 1));
