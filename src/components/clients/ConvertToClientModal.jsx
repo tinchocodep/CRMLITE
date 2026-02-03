@@ -79,6 +79,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
             province: formData.province,
             address: formData.address,
             detail: formData.detail || null,
+            importance: formData.importance || 'medium',
+            segments: formData.segments || [],
             // Client-specific fields
             client_since: new Date().toISOString().split('T')[0],
             payment_terms: formData.paymentTerms || null,
