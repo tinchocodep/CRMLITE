@@ -56,15 +56,15 @@ export default function Opportunities() {
     };
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 to-slate-100 pointer-events-none">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 max-h-screen overflow-y-auto">
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-6 pb-8 pointer-events-auto">
+            <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-6 pb-8">
                 <h1 className="text-2xl font-bold mb-2">Oportunidades</h1>
                 <p className="text-red-100 text-sm">Gestiona tu pipeline de ventas</p>
             </div>
 
             {/* Stats Cards */}
-            <div className="px-4 -mt-4 mb-6 pointer-events-auto">
+            <div className="px-4 -mt-4 mb-6">
                 <div className="grid grid-cols-2 gap-3 mb-4">
                     {/* Total Opportunities */}
                     <div className="bg-white rounded-xl p-4 shadow-md border border-slate-200">
@@ -117,7 +117,7 @@ export default function Opportunities() {
             </div>
 
             {/* Search & Filter */}
-            <div className="px-4 mb-6 pointer-events-auto">
+            <div className="px-4 mb-6">
                 {/* Search Bar */}
                 <div className="relative mb-3">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
@@ -190,7 +190,7 @@ export default function Opportunities() {
             </div>
 
             {/* Opportunities List */}
-            <div className="px-4 pointer-events-auto">
+            <div className="px-4">
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="text-slate-400">Cargando oportunidades...</div>
