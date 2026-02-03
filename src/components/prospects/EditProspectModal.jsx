@@ -65,16 +65,27 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         setIsContactModalOpen(true);
     };
 
-    const handleContactSave = (contactData) => {
-        // Contact will be saved with the preselected company
-        // Notify parent to refresh
-        if (onContactsUpdate) {
-            onContactsUpdate();
+    const handleContactSave = async (contactData) => {
+        try {
+            // Save contact to Supabase
+            const result = await createContact(contactData);
+
+            if (result.success) {
+                // Notify parent to refresh
+                if (onContactsUpdate) {
+                    onContactsUpdate();
+                }
+                setIsContactModalOpen(false);
+                setPreselectedCompany(null);
+                // Force re-render
+                setFormData({ ...formData });
+            } else {
+                alert('Error al guardar contacto: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error saving contact:', error);
+            alert('Error al guardar contacto');
         }
-        setIsContactModalOpen(false);
-        setPreselectedCompany(null);
-        // Force re-render
-        setFormData({ ...formData });
     };
 
     // CRITICAL: All hooks must be called BEFORE any conditional returns
