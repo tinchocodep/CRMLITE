@@ -12,7 +12,7 @@ export const useOpportunities = () => {
         try {
             setLoading(true);
             const { data, error: fetchError } = await supabase
-                .from('active_opportunities')
+                .from('opportunities')
                 .select('*')
                 .order('close_date', { ascending: true });
 
