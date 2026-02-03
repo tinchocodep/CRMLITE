@@ -76,6 +76,15 @@ export const useContacts = () => {
         try {
             setError(null);
 
+            // Get current user's tenant_id
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user?.id)
+                .single();
+
+            if (userError) throw userError;
+
             // Insert contact
             const { data: newContact, error: contactError } = await supabase
                 .from('contacts')
@@ -85,6 +94,7 @@ export const useContacts = () => {
                     email: contactData.email,
                     phone: contactData.phone,
                     notes: contactData.notes,
+                    tenant_id: userData.tenant_id,
                     created_by: user?.id
                 }])
                 .select()
@@ -98,7 +108,8 @@ export const useContacts = () => {
                     contact_id: newContact.id,
                     company_id: company.companyId,
                     role: company.role,
-                    is_primary: company.isPrimary
+                    is_primary: company.isPrimary,
+                    tenant_id: userData.tenant_id
                 }));
 
                 const { error: relationsError } = await supabase
@@ -198,6 +209,15 @@ export const useContacts = () => {
         try {
             setError(null);
 
+            // Get current user's tenant_id
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user?.id)
+                .single();
+
+            if (userError) throw userError;
+
             // If setting as primary, unset other primaries for this contact
             if (isPrimary) {
                 await supabase
@@ -212,7 +232,8 @@ export const useContacts = () => {
                     contact_id: contactId,
                     company_id: companyId,
                     role,
-                    is_primary: isPrimary
+                    is_primary: isPrimary,
+                    tenant_id: userData.tenant_id
                 }]);
 
             if (insertError) throw insertError;
