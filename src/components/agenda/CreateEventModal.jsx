@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake, ChevronDown, UserPlus } from 'lucide-react';
 import { format, addHours, addMinutes } from 'date-fns';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 
 const priorityConfig = {
     high: {
@@ -45,16 +47,10 @@ const durationOptions = [
     { value: 180, label: '3 horas' },
 ];
 
-// Mock team members - TODO: Replace with real data from Supabase
-const mockTeamMembers = [
-    { id: '1', name: 'Martin G.', email: 'martin@company.com', isCurrentUser: true, avatar: null },
-    { id: '2', name: 'Juan Pérez', email: 'juan@company.com', isCurrentUser: false, avatar: null },
-    { id: '3', name: 'María García', email: 'maria@company.com', isCurrentUser: false, avatar: null },
-    { id: '4', name: 'Carlos López', email: 'carlos@company.com', isCurrentUser: false, avatar: null },
-    { id: '5', name: 'Ana Martínez', email: 'ana@company.com', isCurrentUser: false, avatar: null },
-];
-
 const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
+    const { user } = useAuth();
+    const [teamMembers, setTeamMembers] = useState([]);
+
     if (!isOpen) return null;
 
     const [newEvent, setNewEvent] = useState({
@@ -65,10 +61,50 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
         duration: 60, // minutes
         client: '',
         description: '',
-        assignedTo: ['1'] // Array of user IDs - default to current user
+        assignedTo: [] // Will be set after users load
     });
 
     const [showUserSelector, setShowUserSelector] = useState(false);
+
+    // Fetch team members from Supabase
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('id, name, email')
+                    .order('name');
+
+                if (error) throw error;
+
+                const currentUserId = user?.id;
+                const formattedUsers = data.map(u => ({
+                    id: u.id,
+                    name: u.name || u.email.split('@')[0],
+                    email: u.email,
+                    isCurrentUser: u.id === currentUserId,
+                    avatar: null
+                }));
+
+                setTeamMembers(formattedUsers);
+
+                // Set current user as default assignee
+                if (currentUserId && newEvent.assignedTo.length === 0) {
+                    setNewEvent(prev => ({
+                        ...prev,
+                        assignedTo: [currentUserId]
+                    }));
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                setTeamMembers([]);
+            }
+        };
+
+        if (isOpen) {
+            fetchUsers();
+        }
+    }, [isOpen, user]);
 
     // Calculate end time based on duration
     const getEndTime = () => {
@@ -243,7 +279,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                         {/* Selected users chips */}
                         <div className="flex flex-wrap gap-2 mb-2">
                             {newEvent.assignedTo.map(userId => {
-                                const user = mockTeamMembers.find(u => u.id === userId);
+                                const user = teamMembers.find(u => u.id === userId);
                                 if (!user) return null;
                                 return (
                                     <div
@@ -291,7 +327,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate }) => {
                             {/* User list dropdown */}
                             {showUserSelector && (
                                 <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
-                                    {mockTeamMembers.map(user => {
+                                    {teamMembers.map(user => {
                                         const isSelected = newEvent.assignedTo.includes(user.id);
                                         return (
                                             <button
