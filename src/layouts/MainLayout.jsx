@@ -314,11 +314,21 @@ const MainLayout = () => {
                             {/* Prospectos Button */}
                             <button
                                 onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('🔍 [DEBUG] Clicked Prospectos Button');
-                                    console.log('🔍 [DEBUG] Navigating to /prospectos');
-                                    navigate('/prospectos');
+                                    try {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.log('🔍 [DEBUG] Clicked Prospectos Button');
+                                        console.log('🔍 [DEBUG] Current location before navigate:', location.pathname);
+                                        console.log('🔍 [DEBUG] Navigating to /prospectos');
+                                        navigate('/prospectos');
+                                        console.log('🔍 [DEBUG] navigate() called successfully');
+                                        setTimeout(() => {
+                                            console.log('🔍 [DEBUG] Location after navigate (100ms):', location.pathname);
+                                            console.log('🔍 [DEBUG] Window location after navigate:', window.location.pathname);
+                                        }, 100);
+                                    } catch (error) {
+                                        console.error('🔍 [DEBUG] Error in Prospectos button:', error);
+                                    }
                                 }}
                                 className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${location.pathname === '/prospectos' ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'
                                     }`}
