@@ -271,6 +271,8 @@ export const useContacts = () => {
     useEffect(() => {
         if (user) {
             fetchContacts();
+        } else {
+            setLoading(false);
         }
     }, [user]);
 

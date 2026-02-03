@@ -38,6 +38,10 @@ export const useCompanies = (type = null) => {
     useEffect(() => {
         if (comercialId || isAdmin || isSupervisor) {
             fetchCompanies();
+        } else {
+            // If we have Auth but no permissions yet, or simply not logged in, we shouldn't hang
+            const timer = setTimeout(() => setLoading(false), 2000); // Fail-safe
+            return () => clearTimeout(timer);
         }
     }, [comercialId, type, isAdmin, isSupervisor]);
 

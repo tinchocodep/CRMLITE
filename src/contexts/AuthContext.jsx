@@ -25,6 +25,9 @@ export const AuthProvider = ({ children }) => {
                 setUser(session.user);
                 loadUserProfile(session.user.id);
             }
+        }).catch((err) => {
+            console.error('Error getting session:', err);
+        }).finally(() => {
             setIsLoading(false);
         });
 
@@ -38,6 +41,7 @@ export const AuthProvider = ({ children }) => {
                 setUserProfile(null);
                 setComercialId(null);
             }
+            setIsLoading(false);
         });
 
         return () => subscription.unsubscribe();
