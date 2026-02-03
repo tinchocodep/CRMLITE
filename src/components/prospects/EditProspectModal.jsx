@@ -14,13 +14,11 @@ const statusOptions = [
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     const { contacts, unlinkFromCompany, createContact } = useContacts();
 
-    if (!isOpen || !prospect) return null;
-
     // DEBUG: Log prospect data to see if it has hardcoded contacts
     console.log('🔍 PROSPECT DATA:', prospect);
-    console.log('🔍 PROSPECT HAS CONTACTS PROPERTY?', 'contacts' in prospect, prospect.contacts);
+    console.log('🔍 PROSPECT HAS CONTACTS PROPERTY?', prospect && 'contacts' in prospect, prospect?.contacts);
 
-    const [formData, setFormData] = useState({ ...prospect });
+    const [formData, setFormData] = useState(prospect || {});
     const [activeTab, setActiveTab] = useState('details'); // details | contact | notes
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [preselectedCompany, setPreselectedCompany] = useState(null);
@@ -78,6 +76,9 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         // Force re-render
         setFormData({ ...formData });
     };
+
+    // CRITICAL: All hooks must be called BEFORE any conditional returns
+    if (!isOpen || !prospect) return null;
 
     return createPortal(
         <div
