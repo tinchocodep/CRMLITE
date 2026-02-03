@@ -112,10 +112,28 @@ const Prospects = () => {
 
     const handleConfirmConversion = async (clientData) => {
         try {
+            // First, update the prospect data if any fields were edited
+            if (clientData.trade_name || clientData.legal_name || clientData.cuit || clientData.city || clientData.province || clientData.address) {
+                const updateResult = await updateCompany(selectedProspect.id, {
+                    trade_name: clientData.trade_name,
+                    legal_name: clientData.legal_name,
+                    cuit: clientData.cuit,
+                    city: clientData.city,
+                    province: clientData.province,
+                    address: clientData.address
+                });
+
+                if (!updateResult.success) {
+                    alert('Error al actualizar datos del prospecto: ' + updateResult.error);
+                    return;
+                }
+            }
+
+            // Then convert to client
             const result = await convertToClient(selectedProspect.id, {
-                client_since: clientData.clientSince || new Date().toISOString().split('T')[0],
-                payment_terms: clientData.paymentTerms,
-                credit_limit: clientData.creditLimit
+                client_since: clientData.client_since || new Date().toISOString().split('T')[0],
+                payment_terms: clientData.payment_terms,
+                credit_limit: clientData.credit_limit
             });
 
             if (result.success) {
