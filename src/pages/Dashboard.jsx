@@ -64,22 +64,51 @@ const Dashboard = () => {
     // Get upcoming events (next 7 days) from real data
     const upcomingEvents = activities
         .filter(activity => {
-            const eventDate = new Date(activity.activity_date);
-            const today = new Date();
-            const weekFromNow = new Date();
-            weekFromNow.setDate(today.getDate() + 7);
-            return eventDate >= today && eventDate <= weekFromNow;
+            // Use scheduled_date (Supabase) instead of activity_date
+            if (!activity.scheduled_date) return false;
+
+            try {
+                const eventDate = new Date(activity.scheduled_date);
+                if (isNaN(eventDate.getTime())) return false; // Invalid date
+
+                const today = new Date();
+                const weekFromNow = new Date();
+                weekFromNow.setDate(today.getDate() + 7);
+                return eventDate >= today && eventDate <= weekFromNow;
+            } catch {
+                return false; // Skip invalid dates
+            }
         })
-        .sort((a, b) => new Date(a.activity_date) - new Date(b.activity_date))
+        .sort((a, b) => {
+            try {
+                return new Date(a.scheduled_date) - new Date(b.scheduled_date);
+            } catch {
+                return 0;
+            }
+        })
         .slice(0, 5)
-        .map(activity => ({
-            ...activity,
-            id: activity.id,
-            start: new Date(activity.activity_date),
-            type: activity.activity_type,
-            title: activity.title,
-            description: activity.description
-        }));
+        .map(activity => {
+            try {
+                return {
+                    ...activity,
+                    id: activity.id,
+                    start: new Date(activity.scheduled_date),
+                    type: activity.activity_type,
+                    title: activity.title,
+                    description: activity.description
+                };
+            } catch {
+                // Fallback for invalid dates
+                return {
+                    ...activity,
+                    id: activity.id,
+                    start: new Date(),
+                    type: activity.activity_type,
+                    title: activity.title,
+                    description: activity.description
+                };
+            }
+        });
 
     const getEventTypeConfig = (type) => {
         const configs = {
