@@ -36,10 +36,10 @@ const Prospects = () => {
     const handleCreateClick = () => {
         setSelectedProspect({
             id: Date.now(), // Temporary ID
-            date: new Date().toISOString(),
+            created_at: new Date().toISOString(),
             status: 'contacted',
-            tradeName: '',
-            companyName: '',
+            trade_name: '',
+            legal_name: '',
             cuit: '',
             contact: '',
             city: '',
