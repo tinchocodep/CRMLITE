@@ -151,25 +151,27 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                     <div className="p-4 space-y-4">
 
                         {/* Units / Segments */}
-                        <div>
-                            <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                                <Map size={13} /> Unidades Productivas ({client.segments.length})
-                            </h4>
-                            <div className="space-y-2">
-                                {client.segments.map(segment => (
-                                    <div key={segment.id} className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <span className="font-bold text-xs text-slate-700 dark:text-slate-200 uppercase">{segment.name}</span>
-                                            <span className="text-xs font-bold text-brand-red dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md">{segment.hectares} Has</span>
+                        {client.segments && client.segments.length > 0 && (
+                            <div>
+                                <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <Map size={13} /> Unidades Productivas ({client.segments.length})
+                                </h4>
+                                <div className="space-y-2">
+                                    {client.segments.map(segment => (
+                                        <div key={segment.id} className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-bold text-xs text-slate-700 dark:text-slate-200 uppercase">{segment.name}</span>
+                                                <span className="text-xs font-bold text-brand-red dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md">{segment.hectares} Has</span>
+                                            </div>
+                                            <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-3">
+                                                <span className="flex items-center gap-1"><Leaf size={10} /> {segment.crops || 'N/A'}</span>
+                                                <span className="flex items-center gap-1"><Tractor size={10} /> {segment.machinery || 'N/A'}</span>
+                                            </div>
                                         </div>
-                                        <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-3">
-                                            <span className="flex items-center gap-1"><Leaf size={10} /> {segment.crops || 'N/A'}</span>
-                                            <span className="flex items-center gap-1"><Tractor size={10} /> {segment.machinery || 'N/A'}</span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Extra Info */}
                         <div className="grid grid-cols-2 gap-3 pt-2">
