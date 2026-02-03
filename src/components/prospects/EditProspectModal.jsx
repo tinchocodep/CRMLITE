@@ -14,10 +14,6 @@ const statusOptions = [
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     const { contacts, unlinkFromCompany, createContact } = useContacts();
 
-    // DEBUG: Log prospect data to see if it has hardcoded contacts
-    console.log('🔍 PROSPECT DATA:', prospect);
-    console.log('🔍 PROSPECT HAS CONTACTS PROPERTY?', prospect && 'contacts' in prospect, prospect?.contacts);
-
     const [formData, setFormData] = useState(prospect || {});
     const [activeTab, setActiveTab] = useState('details'); // details | contact | notes
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
