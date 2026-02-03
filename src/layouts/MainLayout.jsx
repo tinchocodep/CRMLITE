@@ -833,7 +833,7 @@ const MainLayout = () => {
                     : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
                     }`}>
                     <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
-                        <Outlet />
+                        <Outlet key={location.pathname} />
                     </div>
                 </main>
             </div>
