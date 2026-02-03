@@ -291,7 +291,7 @@ const MainLayout = () => {
 
                 {/* Mobile Main Content */}
                 <main className="flex-1 w-full overflow-y-auto pb-32">
-                    <Outlet />
+                    <Outlet key={location.pathname} />
                 </main>
 
                 {/* Bottom Navigation Bar */}
