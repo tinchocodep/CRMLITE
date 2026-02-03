@@ -28,8 +28,8 @@ const Legajos = () => {
     });
 
     const filteredClients = clientsWithLegajo.filter(c =>
-        (c.trade_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
-        (c.legal_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+        ((c.trade_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || false) ||
+        ((c.legal_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || false) ||
         (c.file_number && c.file_number.includes(searchTerm))
     );
 

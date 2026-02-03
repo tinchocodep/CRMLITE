@@ -17,9 +17,9 @@ const Prospects = () => {
 
     // Filter Logic
     const filteredProspects = prospects.filter(p =>
-        p.trade_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.legal_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.cuit?.includes(searchTerm)
+        (p.trade_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (p.legal_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (p.cuit?.includes(searchTerm))
     );
 
 
