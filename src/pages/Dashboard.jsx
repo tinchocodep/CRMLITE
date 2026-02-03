@@ -151,7 +151,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24">
+        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40">
             {/* Custom Curved Header - Only for Dashboard */}
             <div className="relative bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-100 px-4 pt-4 pb-16 overflow-hidden">
                 {/* Decorative curves */}
