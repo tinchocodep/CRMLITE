@@ -93,6 +93,12 @@ const MainLayout = () => {
         };
     }, []);
 
+    // Debug: Log location changes
+    useEffect(() => {
+        console.log('🔍 [DEBUG] React Router location changed:', location.pathname);
+        console.log('🔍 [DEBUG] Window location:', window.location.pathname);
+    }, [location]);
+
     // ========== SHARED HANDLERS ==========
     const handleLogout = () => {
         navigate('/');
