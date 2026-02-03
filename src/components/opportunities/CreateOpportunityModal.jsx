@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Search, User, Users, Briefcase, DollarSign, Calendar, TrendingUp, FileText, Clock } from 'lucide-react';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
-import { mockComerciales } from '../../data/mockComerciales';
+import { supabase } from '../../lib/supabase';
 
 export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const { companies } = useCompanies();
@@ -11,6 +11,19 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // Filter companies by type
     const clients = companies.filter(c => c.company_type === 'client');
     const prospects = companies.filter(c => c.company_type === 'prospect');
+
+    // State for users (comerciales)
+    const [comerciales, setComerciales] = useState([]);
+
+    // Fetch users
+    useEffect(() => {
+        const fetchUsers = async () => {
+            const { data } = await supabase.from('users').select('*');
+            if (data) setComerciales(data);
+        };
+        fetchUsers();
+    }, []);
+
     const [formData, setFormData] = useState({
         comercialId: '',
         opportunityName: '',
@@ -102,7 +115,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const comercial = mockComerciales.find(c => c.id === parseInt(formData.comercialId));
+        const comercial = comerciales.find(c => c.id === formData.comercialId);
         const linkedEntity = formData.linkedEntityType === 'client'
             ? clients.find(c => c.id === parseInt(formData.linkedEntityId))
             : prospects.find(p => p.id === parseInt(formData.linkedEntityId));
@@ -174,9 +187,9 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                         >
                             <option value="">Seleccionar comercial</option>
-                            {mockComerciales.map(comercial => (
+                            {comerciales.map(comercial => (
                                 <option key={comercial.id} value={comercial.id}>
-                                    {comercial.name} - {comercial.activeOpportunities} oportunidades
+                                    {comercial.name}
                                 </option>
                             ))}
                         </select>
