@@ -43,12 +43,23 @@ export const useCompanies = (type = null) => {
 
     const createCompany = async (companyData) => {
         try {
+            // Get current user's tenant_id
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user.id)
+                .single();
+
+            if (userError) throw userError;
+
             const { data, error: createError } = await supabase
                 .from('companies')
                 .insert([{
                     ...companyData,
+                    tenant_id: userData.tenant_id,
                     comercial_id: companyData.comercial_id || comercialId,
-                    created_by: (await supabase.auth.getUser()).data.user.id
+                    created_by: user.id
                 }])
                 .select()
                 .single();
