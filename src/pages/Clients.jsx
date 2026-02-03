@@ -14,8 +14,8 @@ const Clients = () => {
     const [expandedClientId, setExpandedClientId] = useState(null);
 
     const filteredClients = clients.filter(c =>
-        (c.trade_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (c.legal_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+        (c.trade_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.legal_name || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleToggleExpand = (id) => {
@@ -37,6 +37,14 @@ const Clients = () => {
                 // Update existing client
                 result = await updateCompany(clientData.id, dataToSave);
             } else {
+                // Before creating, check if CUIT already exists
+                if (clientData.cuit) {
+                    const existingCompany = companies.find(c => c.cuit === clientData.cuit);
+                    if (existingCompany) {
+                        alert(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        return;
+                    }
+                }
                 // Create new client
                 result = await createCompany(dataToSave);
             }
