@@ -82,7 +82,22 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onConvert({ ...prospect, ...formData, isClient: true });
+        // Convert camelCase to snake_case and add company_type
+        const dataToSubmit = {
+            ...prospect,
+            ...formData,
+            // Map camelCase to snake_case
+            trade_name: formData.tradeName,
+            legal_name: formData.legalName,
+            contact_name: formData.contactName,
+            contact_phone: formData.contactPhone,
+            contact_email: formData.contactEmail,
+            business_unit: formData.businessUnit,
+            commercial_rep: formData.commercialRep,
+            file_number: formData.fileNumber,
+            company_type: 'client'
+        };
+        onConvert(dataToSubmit);
     };
 
     if (!isOpen) return null;
