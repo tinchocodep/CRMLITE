@@ -7,7 +7,7 @@ import { useContacts } from '../hooks/useContacts';
 
 const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { companies: clients, loading, updateCompany, deleteCompany } = useCompanies('client');
+    const { companies: clients, loading, createCompany, updateCompany, deleteCompany } = useCompanies('client');
     const { contacts: allContacts } = useContacts();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingClient, setEditingClient] = useState(null);
@@ -24,13 +24,30 @@ const Clients = () => {
 
     const handleSaveClient = async (clientData) => {
         try {
-            const result = await updateCompany(clientData.id, clientData);
+            // Prepare the data with correct field names and company_type
+            const dataToSave = {
+                ...clientData,
+                company_type: 'client'
+            };
+
+            let result;
+
+            // Check if this is a new client (no id) or updating existing
+            if (clientData.id) {
+                // Update existing client
+                result = await updateCompany(clientData.id, dataToSave);
+            } else {
+                // Create new client
+                result = await createCompany(dataToSave);
+            }
+
             if (result.success) {
-                alert('Cliente actualizado exitosamente!');
+                alert(clientData.id ? 'Cliente actualizado exitosamente!' : 'Cliente creado exitosamente!');
             } else {
                 alert('Error: ' + result.error);
             }
         } catch (error) {
+            console.error('Error saving client:', error);
             alert('Error al guardar cliente');
         }
         setIsCreateModalOpen(false);
