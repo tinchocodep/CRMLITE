@@ -292,6 +292,12 @@ const MainLayout = () => {
                 {/* Mobile Main Content */}
                 <main className="flex-1 w-full overflow-y-auto pb-32">
                     <Outlet key={location.pathname} />
+                    {/* Debug: Log route changes */}
+                    {(() => {
+                        console.log('🔍 [DEBUG] Current route:', location.pathname);
+                        console.log('🔍 [DEBUG] Outlet key:', location.pathname);
+                        return null;
+                    })()}
                 </main>
 
                 {/* Bottom Navigation Bar */}
@@ -302,6 +308,7 @@ const MainLayout = () => {
                             {/* Prospectos Button */}
                             <NavLink
                                 to="/prospectos"
+                                onClick={() => console.log('🔍 [DEBUG] Clicked Prospectos NavLink')}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
                                     ${isActive ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'}
@@ -318,6 +325,7 @@ const MainLayout = () => {
                             {/* Clientes Button */}
                             <NavLink
                                 to="/clientes"
+                                onClick={() => console.log('🔍 [DEBUG] Clicked Clientes NavLink')}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
                                     ${isActive ? 'text-brand-red' : 'text-slate-600'}
