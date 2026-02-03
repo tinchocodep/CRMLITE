@@ -43,24 +43,22 @@ export const useCompanies = (type = null) => {
 
     const createCompany = async (companyData) => {
         try {
-            // Get current user's tenant_id
+            // Get current user's tenant_id and comercial_id
             const { data: { user } } = await supabase.auth.getUser();
             const { data: userData, error: userError } = await supabase
                 .from('users')
-                .select('tenant_id')
+                .select('tenant_id, comercial_id')
                 .eq('id', user.id)
                 .single();
 
             if (userError) throw userError;
 
-            // comercial_id must be provided in companyData or from AuthContext
-            // If not provided, it will be null (which may be valid for some cases)
             const { data, error: createError } = await supabase
                 .from('companies')
                 .insert([{
                     ...companyData,
                     tenant_id: userData.tenant_id,
-                    comercial_id: companyData.comercial_id || comercialId || null,
+                    comercial_id: companyData.comercial_id || userData.comercial_id,
                     created_by: user.id
                 }])
                 .select()
