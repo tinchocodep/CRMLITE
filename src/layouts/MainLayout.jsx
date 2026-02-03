@@ -835,15 +835,35 @@ const MainLayout = () => {
             </div>
 
             {/* ========== GLOBAL MODALS (Shared) ========== */}
-            < CreateEventModal
+            {/* ========== GLOBAL MODALS (Shared) ========== */}
+            <CreateEventModal
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
-                onCreate={(newEvent) => {
+                onCreate={async (newEvent) => {
                     console.log('Global Event Created:', newEvent);
-                    import('../data/mockAgenda').then(module => {
-                        module.mockEvents.push(newEvent);
-                        alert('Actividad global creada! Ve a la Agenda para verla.');
-                    });
+                    // TODO: Implement real Supabase saving here or inside the modal
+                    // For now, avoid crashing the app
+                    try {
+                        const { error } = await supabase
+                            .from('activities')
+                            .insert([{
+                                title: newEvent.title,
+                                description: newEvent.description,
+                                type: newEvent.type, // visit, call, etc
+                                status: 'pending',
+                                priority: newEvent.priority,
+                                scheduled_date: newEvent.start, // Adjust format if needed
+                                scheduled_time: new Date(newEvent.start).toLocaleTimeString(),
+                                duration_minutes: newEvent.duration,
+                                company_id: null, // TODO: map client string to ID if possible
+                                created_by: null // handled by RLS/database default
+                            }]);
+
+                        if (error) console.error('Error auto-saving event:', error);
+                        else alert('Actividad creada (guardada en Supabase)');
+                    } catch (err) {
+                        console.error('Error saving event:', err);
+                    }
                 }}
             />
 
@@ -853,7 +873,6 @@ const MainLayout = () => {
                 prospect={prospectData}
                 onSave={(newProspect) => {
                     console.log('Global Prospect Created:', newProspect);
-                    // Data will be saved to Supabase via the hook
                     setIsProspectModalOpen(false);
                 }}
             />
@@ -871,10 +890,7 @@ const MainLayout = () => {
                 prospect={prospectToConvert}
                 onConvert={(newClient) => {
                     console.log('Client Created/Converted:', newClient);
-                    import('../data/mockClients').then(module => {
-                        module.mockClients.push(newClient);
-                        alert('Cliente Creado Exitosamente!');
-                    });
+                    alert('Cliente convertido! (Lógica real pendiente en componente)');
                     setIsClientModalOpen(false);
                 }}
             />
@@ -884,10 +900,7 @@ const MainLayout = () => {
                 onClose={() => setIsContactModalOpen(false)}
                 onSave={(newContact) => {
                     console.log('Global Contact Created:', newContact);
-                    import('../data/mockContacts').then(module => {
-                        module.mockContacts.push(newContact);
-                        alert('Contacto creado exitosamente! Ve a Contactos para verlo.');
-                    });
+                    alert('Contacto creado! (Lógica real pendiente en componente)');
                     setIsContactModalOpen(false);
                 }}
                 contact={null}
