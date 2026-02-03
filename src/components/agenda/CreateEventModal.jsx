@@ -50,9 +50,6 @@ const durationOptions = [
 const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
     const { user } = useAuth();
     const [teamMembers, setTeamMembers] = useState([]);
-
-    if (!isOpen) return null;
-
     const [newEvent, setNewEvent] = useState({
         title: '',
         priority: 'medium',
@@ -105,6 +102,9 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
             fetchUsers();
         }
     }, [isOpen, user]);
+
+    // CRITICAL: All hooks must be called BEFORE any conditional returns
+    if (!isOpen) return null;
 
     // Calculate end time based on duration
     const getEndTime = () => {

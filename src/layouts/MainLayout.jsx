@@ -12,6 +12,7 @@ import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 // ========== SHARED CONSTANTS ==========
 const modules = [
