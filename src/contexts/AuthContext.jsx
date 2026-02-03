@@ -55,15 +55,18 @@ export const AuthProvider = ({ children }) => {
             if (profileError) throw profileError;
             setUserProfile(profile);
 
-            // Get comercial ID if exists
+            // Get comercial ID if exists (optional - user may not be a comercial)
             const { data: comercial, error: comercialError } = await supabase
                 .from('comerciales')
                 .select('id')
                 .eq('user_id', userId)
-                .single();
+                .maybeSingle(); // Use maybeSingle() instead of single() to handle no results
 
+            // Only set comercialId if a record exists and no error
             if (!comercialError && comercial) {
                 setComercialId(comercial.id);
+            } else {
+                setComercialId(null); // Explicitly set to null if no comercial record
             }
         } catch (error) {
             console.error('Error loading user profile:', error);
