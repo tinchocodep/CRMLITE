@@ -113,6 +113,13 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
     };
 
     const handleSubmit = () => {
+        console.log('CreateEventModal - Validating:', {
+            title: newEvent.title,
+            company_id: newEvent.company_id,
+            company_id_type: typeof newEvent.company_id,
+            fullEvent: newEvent
+        });
+
         if (!newEvent.title || !newEvent.company_id) {
             alert('Por favor completa el título y selecciona una empresa.');
             return;
