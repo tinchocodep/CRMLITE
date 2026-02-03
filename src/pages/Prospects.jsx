@@ -17,8 +17,8 @@ const Prospects = () => {
 
     // Filter Logic
     const filteredProspects = prospects.filter(p =>
-        (p.trade_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (p.legal_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (p.trade_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.legal_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.cuit?.includes(searchTerm))
     );
 
@@ -63,6 +63,7 @@ const Prospects = () => {
                     city: updatedProspect.city,
                     province: updatedProspect.province,
                     notes: updatedProspect.notes,
+                    status: updatedProspect.status || 'contacted',
                     prospect_source: updatedProspect.source,
                     qualification_score: updatedProspect.qualification_score || 0
                 });
@@ -82,7 +83,8 @@ const Prospects = () => {
                     phone: updatedProspect.phone,
                     city: updatedProspect.city,
                     province: updatedProspect.province,
-                    notes: updatedProspect.notes
+                    notes: updatedProspect.notes,
+                    status: updatedProspect.status
                 });
 
                 if (result.success) {
