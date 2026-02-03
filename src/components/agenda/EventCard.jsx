@@ -34,8 +34,54 @@ const typeConfig = {
 
 const EventCard = ({ event, view = 'day' }) => {
     const [showDetails, setShowDetails] = useState(false);
+
+    // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
+    const normalizedEvent = React.useMemo(() => {
+        // If event already has start/end (mock data), use as is
+        if (event.start && event.end) {
+            return event;
+        }
+
+        // If event has scheduled_date/time (Supabase data), convert to start/end
+        if (event.scheduled_date) {
+            try {
+                const date = new Date(event.scheduled_date);
+                const [hours, minutes] = (event.scheduled_time || '09:00').split(':');
+                const start = new Date(date);
+                start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+                // Calculate end time (default 1 hour duration)
+                const durationMinutes = event.duration_minutes || 60;
+                const end = new Date(start.getTime() + durationMinutes * 60000);
+
+                return {
+                    ...event,
+                    start,
+                    end
+                };
+            } catch (error) {
+                console.error('Error normalizing event dates:', error);
+                // Return event with default dates to prevent crashes
+                const now = new Date();
+                return {
+                    ...event,
+                    start: now,
+                    end: new Date(now.getTime() + 3600000) // +1 hour
+                };
+            }
+        }
+
+        // Fallback: return event with current time to prevent crashes
+        const now = new Date();
+        return {
+            ...event,
+            start: now,
+            end: new Date(now.getTime() + 3600000)
+        };
+    }, [event]);
+
     // Local state for editing fields
-    const [editedEvent, setEditedEvent] = useState({ ...event });
+    const [editedEvent, setEditedEvent] = useState({ ...normalizedEvent });
     const [isEditing, setIsEditing] = useState(false);
 
     const config = priorityConfig[editedEvent.priority];
