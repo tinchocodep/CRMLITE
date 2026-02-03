@@ -162,7 +162,7 @@ const MainLayout = () => {
             <div className="xl:hidden flex flex-col h-screen">
                 {/* Mobile Header - Simple Top Bar (Hidden on Dashboard) */}
                 {!isDashboard && (
-                    <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-red-50 to-red-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-red-200 dark:border-slate-700 shadow-md">
+                    <header className="sticky top-0 z-[60] bg-gradient-to-r from-white via-red-50 to-red-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-red-200 dark:border-slate-700 shadow-md">
                         <div className="flex items-center justify-between h-16 px-4">
                             {/* Logo SAILO - Clickable to Home */}
                             <button
@@ -290,12 +290,12 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* Mobile Main Content */}
-                <main className="flex-1 w-full overflow-y-auto pb-20">
+                <main className="flex-1 w-full overflow-y-auto pb-32">
                     <Outlet />
                 </main>
 
                 {/* Bottom Navigation Bar */}
-                <nav className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
+                <nav className="fixed bottom-0 left-0 right-0 z-[100] bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
                     <div className="relative flex items-center justify-between h-16 px-4">
                         {/* Left Side - 2 buttons */}
                         <div className="flex items-center gap-2 flex-1 justify-start">
