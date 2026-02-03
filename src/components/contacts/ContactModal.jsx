@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Building2, UserPlus, Plus, Trash2, Star } from 'lucide-react';
+import { X, Building2, UserPlus, Plus, Trash2, Star, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { mockProspects } from '../../data/mockProspects';
-import { mockClients } from '../../data/mockClients';
+import { useCompanies } from '../../hooks/useCompanies';
 
-const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
+const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedCompany = null }) => {
+    const { companies } = useCompanies();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -25,25 +25,13 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
     const [errors, setErrors] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Get all available companies (prospects + clients)
-    const allCompanies = [
-        ...mockProspects
-            .filter(p => p.isActive && p.prospectStatus === 'active')
-            .map(p => ({
-                id: p.id,
-                name: p.tradeName,
-                type: 'prospect',
-                fullName: p.companyName
-            })),
-        ...mockClients
-            .filter(c => c.isActive)
-            .map(c => ({
-                id: c.id,
-                name: c.tradeName,
-                type: 'client',
-                fullName: c.legalName
-            }))
-    ];
+    // Get all available companies from Supabase
+    const allCompanies = companies.map(c => ({
+        id: c.id,
+        name: c.trade_name || c.legal_name,
+        type: c.company_type,
+        fullName: c.legal_name
+    }));
 
     // Filter companies for autocomplete
     const filteredCompanies = allCompanies.filter(c =>
@@ -51,7 +39,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
         c.fullName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Initialize form when contact changes
+    // Initialize form when contact changes or preselectedCompany is provided
     useEffect(() => {
         if (contact) {
             setFormData({
@@ -63,17 +51,27 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                 companies: contact.companies || []
             });
         } else {
+            // If creating new contact with preselected company, add it automatically
+            const initialCompanies = preselectedCompany ? [{
+                companyId: preselectedCompany.companyId,
+                companyName: preselectedCompany.companyName,
+                companyType: preselectedCompany.companyType,
+                role: '', // User will fill this
+                isPrimary: true,
+                addedDate: new Date().toISOString()
+            }] : [];
+
             setFormData({
                 firstName: '',
                 lastName: '',
                 email: '',
                 phone: '',
                 notes: '',
-                companies: []
+                companies: initialCompanies
             });
         }
         setErrors({});
-    }, [contact, isOpen]);
+    }, [contact, isOpen, preselectedCompany]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -171,7 +169,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Email inválido';
         }
-        if (formData.companies.length === 0) {
+        // Only require company if not preselected (will be added on save)
+        if (formData.companies.length === 0 && !preselectedCompany) {
             newErrors.companies = 'Debe vincular al menos una empresa';
         }
         // Check that at least one company is active
@@ -388,96 +387,134 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null }) => {
                                 </div>
                             )}
 
-                            {/* Add New Company */}
-                            <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 space-y-3">
-                                <div className="flex items-center gap-2 text-slate-600 text-xs font-bold uppercase">
-                                    <Plus size={14} />
-                                    Agregar Empresa
-                                </div>
-
-                                {/* Company Search/Select */}
-                                <div className="relative">
-                                    <label className="block text-xs font-semibold text-slate-600 mb-1">
-                                        Seleccionar Empresa
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={newCompany.companyId ? newCompany.companyName : searchTerm}
-                                        onChange={(e) => {
-                                            setSearchTerm(e.target.value);
-                                            setNewCompany(prev => ({ ...prev, companyId: '', companyName: '', companyType: '' }));
-                                        }}
-                                        className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
-                                        placeholder="Buscar empresa..."
-                                        disabled={!!newCompany.companyId}
-                                    />
-
-                                    {/* Autocomplete Dropdown */}
-                                    {searchTerm && !newCompany.companyId && (
-                                        <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-40 overflow-y-auto">
-                                            {filteredCompanies.length > 0 ? (
-                                                filteredCompanies.map(company => (
-                                                    <button
-                                                        key={company.id}
-                                                        type="button"
-                                                        onClick={() => handleSelectCompany(company)}
-                                                        className="w-full px-3 py-2 text-left hover:bg-slate-50 flex items-center justify-between text-sm"
-                                                    >
-                                                        <span className="font-semibold text-slate-800">{company.name}</span>
-                                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${company.type === 'client'
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-blue-100 text-blue-700'
-                                                            }`}>
-                                                            {company.type === 'client' ? 'CLIENTE' : 'PROSPECTO'}
-                                                        </span>
-                                                    </button>
-                                                ))
-                                            ) : (
-                                                <div className="px-3 py-2 text-sm text-slate-500">No se encontraron empresas</div>
-                                            )}
+                            {/* Preselected Company Info or Add New Company */}
+                            {preselectedCompany ? (
+                                // Show info message when company is preselected
+                                <div className="bg-green-50 border-2 border-green-200 rounded-xl p-4 space-y-3">
+                                    <div className="flex items-center gap-2 text-green-700">
+                                        <CheckCircle size={18} className="flex-shrink-0" />
+                                        <div>
+                                            <p className="text-sm font-bold">
+                                                Este contacto se vinculará a: {preselectedCompany.companyName}
+                                            </p>
+                                            <p className="text-xs text-green-600 mt-1">
+                                                El contacto quedará automáticamente asociado a esta empresa
+                                            </p>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
 
-                                {/* Role Input */}
-                                {newCompany.companyId && (
-                                    <>
+                                    {/* Allow editing the role for preselected company */}
+                                    {formData.companies.length > 0 && (
                                         <div>
                                             <label className="block text-xs font-semibold text-slate-600 mb-1">
-                                                Rol/Cargo
+                                                Rol/Cargo en esta empresa
                                             </label>
                                             <input
                                                 type="text"
-                                                value={newCompany.role}
-                                                onChange={(e) => setNewCompany(prev => ({ ...prev, role: e.target.value }))}
+                                                value={formData.companies[0]?.role || ''}
+                                                onChange={(e) => {
+                                                    const updatedCompanies = [...formData.companies];
+                                                    updatedCompanies[0].role = e.target.value;
+                                                    setFormData(prev => ({ ...prev, companies: updatedCompanies }));
+                                                }}
                                                 className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
-                                                placeholder="Gerente Comercial"
+                                                placeholder="Ej: Gerente General, Dueño, Encargado..."
                                             />
                                         </div>
+                                    )}
+                                </div>
+                            ) : (
+                                // Show company selection UI when no preselected company
+                                <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 space-y-3">
+                                    <div className="flex items-center gap-2 text-slate-600 text-xs font-bold uppercase">
+                                        <Plus size={14} />
+                                        Agregar Empresa
+                                    </div>
 
-                                        {/* Primary Checkbox */}
-                                        <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                checked={newCompany.isPrimary}
-                                                onChange={(e) => setNewCompany(prev => ({ ...prev, isPrimary: e.target.checked }))}
-                                                className="w-4 h-4 text-brand-red border-slate-300 rounded focus:ring-2 focus:ring-brand-red/20"
-                                            />
-                                            <span className="text-xs font-semibold text-slate-600">Contacto principal de esta empresa</span>
+                                    {/* Company Search/Select */}
+                                    <div className="relative">
+                                        <label className="block text-xs font-semibold text-slate-600 mb-1">
+                                            Seleccionar Empresa
                                         </label>
+                                        <input
+                                            type="text"
+                                            value={newCompany.companyId ? newCompany.companyName : searchTerm}
+                                            onChange={(e) => {
+                                                setSearchTerm(e.target.value);
+                                                setNewCompany(prev => ({ ...prev, companyId: '', companyName: '', companyType: '' }));
+                                            }}
+                                            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
+                                            placeholder="Buscar empresa..."
+                                            disabled={!!newCompany.companyId}
+                                        />
 
-                                        {/* Add Button */}
-                                        <button
-                                            type="button"
-                                            onClick={handleAddCompany}
-                                            className="w-full px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Plus size={16} />
-                                            Agregar Empresa
-                                        </button>
-                                    </>
-                                )}
-                            </div>
+                                        {/* Autocomplete Dropdown */}
+                                        {searchTerm && !newCompany.companyId && (
+                                            <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-40 overflow-y-auto">
+                                                {filteredCompanies.length > 0 ? (
+                                                    filteredCompanies.map(company => (
+                                                        <button
+                                                            key={company.id}
+                                                            type="button"
+                                                            onClick={() => handleSelectCompany(company)}
+                                                            className="w-full px-3 py-2 text-left hover:bg-slate-50 flex items-center justify-between text-sm"
+                                                        >
+                                                            <span className="font-semibold text-slate-800">{company.name}</span>
+                                                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${company.type === 'client'
+                                                                ? 'bg-green-100 text-green-700'
+                                                                : 'bg-blue-100 text-blue-700'
+                                                                }`}>
+                                                                {company.type === 'client' ? 'CLIENTE' : 'PROSPECTO'}
+                                                            </span>
+                                                        </button>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-3 py-2 text-sm text-slate-500">No se encontraron empresas</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Role Input */}
+                                    {newCompany.companyId && (
+                                        <>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-slate-600 mb-1">
+                                                    Rol/Cargo
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={newCompany.role}
+                                                    onChange={(e) => setNewCompany(prev => ({ ...prev, role: e.target.value }))}
+                                                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20"
+                                                    placeholder="Gerente Comercial"
+                                                />
+                                            </div>
+
+                                            {/* Primary Checkbox */}
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={newCompany.isPrimary}
+                                                    onChange={(e) => setNewCompany(prev => ({ ...prev, isPrimary: e.target.checked }))}
+                                                    className="w-4 h-4 text-brand-red border-slate-300 rounded focus:ring-2 focus:ring-brand-red/20"
+                                                />
+                                                <span className="text-xs font-semibold text-slate-600">Contacto principal de esta empresa</span>
+                                            </label>
+
+                                            {/* Add Button */}
+                                            <button
+                                                type="button"
+                                                onClick={handleAddCompany}
+                                                className="w-full px-4 py-2 bg-brand-red hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <Plus size={16} />
+                                                Agregar Empresa
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Notes */}

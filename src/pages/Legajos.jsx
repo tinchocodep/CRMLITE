@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { Search, FolderOpen, FileCheck, FileWarning, Filter } from 'lucide-react';
-import { mockClients } from '../data/mockClients';
-import { mockLegajos } from '../data/mockLegajos';
+import { useCompanies } from '../hooks/useCompanies';
 import LegajoModal from '../components/legajo/LegajoModal';
 
 const Legajos = () => {
+    const { companies, loading } = useCompanies();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedClient, setSelectedClient] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Merge Clients with their Legajo Data
-    const clientsWithLegajo = mockClients.map(client => {
-        const legajo = mockLegajos.find(l => l.clientId === client.id);
-        const docs = legajo?.documents || {};
-        const totalDocs = 6;
-        const uploadedDocs = Object.values(docs).filter(d => d.status === 'uploaded').length;
-        const status = uploadedDocs === totalDocs ? 'complete' : uploadedDocs > 0 ? 'incomplete' : 'empty';
+    // Filter only clients (not prospects)
+    const clients = companies.filter(c => c.company_type === 'client');
 
-        return { ...client, legajo, legajoStatus: status, progress: { current: uploadedDocs, total: totalDocs } };
+    // Merge Clients with their Legajo Data (for now, all legajos are empty until we implement the legajo system)
+    const clientsWithLegajo = clients.map(client => {
+        const docs = {}; // TODO: Fetch from legajo table when implemented
+        const totalDocs = 6;
+        const uploadedDocs = 0; // TODO: Count from actual legajo data
+        const status = 'empty'; // TODO: Calculate from actual legajo data
+
+        return {
+            ...client,
+            legajo: { documents: docs },
+            legajoStatus: status,
+            progress: { current: uploadedDocs, total: totalDocs }
+        };
     });
 
     const filteredClients = clientsWithLegajo.filter(c =>
-        c.tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.legalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (c.fileNumber && c.fileNumber.includes(searchTerm))
+        (c.trade_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+        (c.legal_name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+        (c.file_number && c.file_number.includes(searchTerm))
     );
 
     const handleOpenLegajo = (client) => {
@@ -75,13 +82,13 @@ const Legajos = () => {
 
                         {/* Info */}
                         <div className="flex-1 min-w-0 text-center md:text-left">
-                            <h3 className="text-lg font-bold text-slate-800 group-hover:text-brand-red transition-colors">{client.tradeName}</h3>
-                            <p className="text-sm text-slate-500">{client.legalName}</p>
+                            <h3 className="text-lg font-bold text-slate-800 group-hover:text-brand-red transition-colors">{client.trade_name}</h3>
+                            <p className="text-sm text-slate-500">{client.legal_name}</p>
                         </div>
 
                         {/* File Number Badge */}
                         <div className="px-3 py-1 rounded-lg bg-slate-50 border border-slate-100 text-xs font-mono font-bold text-slate-500">
-                            LEG: {client.fileNumber || '---'}
+                            LEG: {client.file_number || '---'}
                         </div>
 
                         {/* Progress Bar */}

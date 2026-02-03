@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
 import { safeFormat } from '../../utils/dateUtils';
-import { mockContacts } from '../../data/mockContacts';
+import { useContacts } from '../../hooks/useContacts';
 import ContactModal from '../contacts/ContactModal';
 
 const statusOptions = [
@@ -12,7 +12,13 @@ const statusOptions = [
 ];
 
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
+    const { contacts, unlinkFromCompany, createContact } = useContacts();
+
     if (!isOpen || !prospect) return null;
+
+    // DEBUG: Log prospect data to see if it has hardcoded contacts
+    console.log('🔍 PROSPECT DATA:', prospect);
+    console.log('🔍 PROSPECT HAS CONTACTS PROPERTY?', 'contacts' in prospect, prospect.contacts);
 
     const [formData, setFormData] = useState({ ...prospect });
     const [activeTab, setActiveTab] = useState('details'); // details | contact | notes
@@ -34,23 +40,21 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         onClose();
     };
 
-    const handleUnlinkContact = (contactId, contactName) => {
+    const handleUnlinkContact = async (contactId, contactName) => {
         if (window.confirm(`¿Desvincular a ${contactName}?`)) {
-            // Update mockContacts to remove this company from the contact's companies array
-            const contactIndex = mockContacts.findIndex(c => c.id === contactId);
-            if (contactIndex !== -1) {
-                mockContacts[contactIndex].companies = mockContacts[contactIndex].companies.filter(
-                    c => !(c.companyId === prospect.id && c.companyType === 'prospect')
-                );
+            try {
+                await unlinkFromCompany(contactId, prospect.id);
 
                 // Notify parent to refresh
                 if (onContactsUpdate) {
                     onContactsUpdate();
                 }
-
-                // Force re-render by updating formData
-                setFormData({ ...formData });
+            } catch (error) {
+                alert('Error al desvincular contacto');
             }
+
+            // Force re-render by updating formData
+            setFormData({ ...formData });
         }
     };
 
@@ -233,7 +237,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
 
                                 {/* Get contacts linked to this prospect */}
                                 {(() => {
-                                    const linkedContacts = mockContacts.filter(contact =>
+                                    const linkedContacts = contacts.filter(contact =>
                                         contact.companies.some(c =>
                                             c.companyId === prospect?.id &&
                                             c.companyType === 'prospect'

@@ -10,7 +10,7 @@ import ProspectPickerModal from '../components/prospects/ProspectPickerModal';
 import ContactModal from '../components/contacts/ContactModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
-import { mockProspects } from '../data/mockProspects';
+import { useCompanies } from '../hooks/useCompanies';
 
 // ========== SHARED CONSTANTS ==========
 const modules = [
@@ -40,6 +40,10 @@ const actions = [
 const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { companies } = useCompanies();
+
+    // Filter only prospects
+    const prospects = companies.filter(c => c.company_type === 'prospect');
 
     // Check if we're on the dashboard
     const isDashboard = location.pathname === '/dashboard' || location.pathname === '/';
@@ -843,24 +847,21 @@ const MainLayout = () => {
                 }}
             />
 
-            < EditProspectModal
+            <EditProspectModal
                 isOpen={isProspectModalOpen}
                 onClose={() => setIsProspectModalOpen(false)}
                 prospect={prospectData}
                 onSave={(newProspect) => {
                     console.log('Global Prospect Created:', newProspect);
-                    import('../data/mockProspects').then(module => {
-                        module.mockProspects.push(newProspect);
-                        alert('Prospecto global creado! Ve a Prospectos para verlo.');
-                    });
+                    // Data will be saved to Supabase via the hook
                     setIsProspectModalOpen(false);
                 }}
             />
 
-            < ProspectPickerModal
+            <ProspectPickerModal
                 isOpen={isPickerOpen}
                 onClose={() => setIsPickerOpen(false)}
-                prospects={mockProspects}
+                prospects={prospects}
                 onSelect={handlePickerSelect}
             />
 
