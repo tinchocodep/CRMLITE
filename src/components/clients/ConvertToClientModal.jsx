@@ -67,6 +67,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert }) => {
         e.preventDefault();
         // Only send fields that exist in the companies table
         const dataToSubmit = {
+            // Include ID if editing existing client
+            ...(formData.id && { id: formData.id }),
             // Map camelCase to snake_case for existing DB fields
             trade_name: formData.tradeName,
             legal_name: formData.legalName,
