@@ -97,15 +97,19 @@ function AppRoutes() {
   );
 }
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
