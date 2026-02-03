@@ -60,7 +60,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
             const allResults = [...clientResults, ...prospectResults];
             const filtered = allResults.filter(entity =>
-                entity.displayName.toLowerCase().includes(formData.opportunityName.toLowerCase())
+                entity.displayName && entity.displayName.toLowerCase().includes(formData.opportunityName.toLowerCase())
             );
 
             setSearchResults(filtered);

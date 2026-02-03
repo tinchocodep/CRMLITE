@@ -4,10 +4,12 @@ import { X, Search, ArrowRight } from 'lucide-react';
 const ProspectPickerModal = ({ isOpen, onClose, prospects, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredProspects = prospects.filter(p =>
-        p.tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.companyName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredProspects = prospects.filter(p => {
+        const tradeName = p.trade_name || p.tradeName || '';
+        const companyName = p.legal_name || p.companyName || '';
+        return tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            companyName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
     if (!isOpen) return null;
 
@@ -48,8 +50,12 @@ const ProspectPickerModal = ({ isOpen, onClose, prospects, onSelect }) => {
                                 className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl group transition-colors border border-transparent hover:border-slate-100 text-left"
                             >
                                 <div>
-                                    <div className="font-bold text-slate-700 text-sm group-hover:text-brand-red transition-colors">{prospect.tradeName}</div>
-                                    <div className="text-xs text-slate-500">{prospect.companyName}</div>
+                                    <div className="font-bold text-slate-700 text-sm group-hover:text-brand-red transition-colors">
+                                        {prospect.trade_name || prospect.tradeName}
+                                    </div>
+                                    <div className="text-xs text-slate-500">
+                                        {prospect.legal_name || prospect.companyName}
+                                    </div>
                                 </div>
                                 <div className="text-slate-300 group-hover:text-brand-red transition-colors">
                                     <ArrowRight size={16} />
