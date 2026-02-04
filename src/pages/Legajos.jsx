@@ -46,9 +46,9 @@ const Legajos = () => {
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
                 <div className="flex items-center gap-3 text-center md:text-left">
                     <button
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate('/clientes')}
                         className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-600 hover:text-brand-red"
-                        title="Volver"
+                        title="Volver a Clientes"
                     >
                         <ArrowLeft size={24} />
                     </button>
