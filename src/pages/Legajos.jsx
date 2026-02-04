@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Search, FolderOpen, FileCheck, FileWarning, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useCompanies } from '../hooks/useCompanies';
+import { useLegajosProgress } from '../hooks/useLegajosProgress';
 import LegajoModal from '../components/legajo/LegajoModal';
 
 const Legajos = () => {
     const navigate = useNavigate();
-    const { companies, loading } = useCompanies();
+    const { companies, loading, refresh } = useLegajosProgress();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedClient, setSelectedClient] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -133,7 +133,10 @@ const Legajos = () => {
 
             <LegajoModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    refresh(); // Refresh progress when modal closes
+                }}
                 client={selectedClient}
                 legajo={selectedClient?.legajo}
             />
