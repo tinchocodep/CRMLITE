@@ -82,13 +82,23 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // Update available contacts when entity is selected
     useEffect(() => {
         if (formData.linkedEntityId) {
+            console.log('Filtering contacts for entity:', {
+                linkedEntityId: formData.linkedEntityId,
+                linkedEntityType: formData.linkedEntityType,
+                totalContacts: contacts.length
+            });
+
             // Get contacts for the selected entity
             const entityContacts = contacts.filter(contact => {
-                return contact.companies.some(c =>
-                    c.companyId === parseInt(formData.linkedEntityId) &&
-                    c.companyType === formData.linkedEntityType
-                );
+                const hasCompany = contact.companies && contact.companies.some(c => {
+                    const matches = c.companyId === parseInt(formData.linkedEntityId) &&
+                        c.companyType === formData.linkedEntityType;
+                    return matches;
+                });
+                return hasCompany;
             });
+
+            console.log('Filtered contacts:', entityContacts.length, entityContacts);
             setAvailableContacts(entityContacts);
         } else {
             setAvailableContacts([]);
