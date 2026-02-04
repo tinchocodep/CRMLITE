@@ -7,10 +7,12 @@ import WeekView from '../components/agenda/WeekView';
 import DayView from '../components/agenda/DayView';
 import CreateEventModal from '../components/agenda/CreateEventModal';
 import { useActivities } from '../hooks/useActivities';
+import { useCompanies } from '../hooks/useCompanies';
 
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity } = useActivities(30);
+    const { companies } = useCompanies('client'); // Only fetch clients, not prospects
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
 
@@ -378,6 +380,7 @@ const Agenda = () => {
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onCreate={handleCreateEvent}
+                companies={companies}
             />
         </div>
     );
