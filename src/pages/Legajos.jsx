@@ -11,8 +11,13 @@ const Legajos = () => {
     const [selectedClient, setSelectedClient] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    console.log('🔍 [Legajos] Component rendering');
+    console.log('🔍 [Legajos] Companies:', companies);
+    console.log('🔍 [Legajos] Loading:', loading);
+
     // Filter only clients (not prospects)
     const clients = companies.filter(c => c.company_type === 'client');
+    console.log('🔍 [Legajos] Filtered clients:', clients);
 
     // Merge Clients with their Legajo Data (for now, all legajos are empty until we implement the legajo system)
     const clientsWithLegajo = clients.map(client => {
