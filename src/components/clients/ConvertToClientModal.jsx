@@ -83,8 +83,11 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             detail: formData.detail || null,
             importance: formData.importance || 'medium',
             segments: formData.segments || [],
-            // Client-specific fields
-            client_since: new Date().toISOString().split('T')[0],
+            // Client-specific fields - use local date
+            client_since: (() => {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            })(),
             payment_terms: formData.paymentTerms || null,
             credit_limit: formData.creditLimit || null
         };

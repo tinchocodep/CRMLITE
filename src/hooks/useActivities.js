@@ -12,9 +12,12 @@ export const useActivities = (daysAhead = 30) => {
         try {
             setLoading(true);
 
-            // Calculate date range
-            const today = new Date().toISOString().split('T')[0];
-            const futureDate = new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            // Calculate date range using local timezone
+            const todayDate = new Date();
+            const today = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`;
+
+            const futureDateObj = new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000);
+            const futureDate = `${futureDateObj.getFullYear()}-${String(futureDateObj.getMonth() + 1).padStart(2, '0')}-${String(futureDateObj.getDate()).padStart(2, '0')}`;
 
             const { data, error: fetchError } = await supabase
                 .from('activities')
