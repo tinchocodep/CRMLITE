@@ -3,7 +3,7 @@ import { format, startOfWeek, addDays, getHours, getMinutes, differenceInMinutes
 import { es } from 'date-fns/locale';
 import EventCard from './EventCard';
 
-const WeekView = ({ currentDate, events, onUpdate }) => {
+const WeekView = ({ currentDate, events, onUpdate, onDelete }) => {
     const startDate = startOfWeek(currentDate);
     const hours = Array.from({ length: 24 }, (_, i) => i);
     const weekDays = Array.from({ length: 7 }, (_, i) => addDays(startDate, i));
@@ -47,7 +47,7 @@ const WeekView = ({ currentDate, events, onUpdate }) => {
                             {dayEvents.length > 0 ? (
                                 dayEvents.map(event => (
                                     <div key={event.id} className="pl-2 border-l-2 border-brand-red/30">
-                                        <EventCard event={event} view="list" onUpdate={onUpdate} />
+                                        <EventCard event={event} view="list" onUpdate={onUpdate} onDelete={onDelete} />
                                     </div>
                                 ))
                             ) : (
@@ -167,7 +167,7 @@ const WeekView = ({ currentDate, events, onUpdate }) => {
                                                         left: `calc(${colWidthPercent * event.colIndex}% + 3px)`,
                                                     }}
                                                 >
-                                                    <EventCard event={event} view="week" onUpdate={onUpdate} />
+                                                    <EventCard event={event} view="week" onUpdate={onUpdate} onDelete={onDelete} />
                                                 </div>
                                             );
                                         })}
