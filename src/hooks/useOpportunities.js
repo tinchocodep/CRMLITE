@@ -13,11 +13,43 @@ export const useOpportunities = () => {
             setLoading(true);
             const { data, error: fetchError } = await supabase
                 .from('opportunities')
-                .select('*')
+                .select(`
+                    *,
+                    comercial:comerciales!comercial_id(id, name, email),
+                    company:companies!company_id(id, trade_name, legal_name, company_type),
+                    contact:contacts!contact_id(id, first_name, last_name, email, phone)
+                `)
                 .order('close_date', { ascending: true });
 
             if (fetchError) throw fetchError;
-            setOpportunities(data || []);
+
+            // Transform data to match OpportunityCard expectations
+            const transformedData = (data || []).map(opp => ({
+                ...opp,
+                opportunityName: opp.opportunity_name,
+                productType: opp.product_type,
+                closeDate: opp.close_date,
+                nextAction: opp.next_action,
+                nextActionDate: opp.next_action_date,
+                comercial: opp.comercial ? {
+                    id: opp.comercial.id,
+                    name: opp.comercial.name,
+                    email: opp.comercial.email
+                } : null,
+                linkedEntity: opp.company ? {
+                    type: opp.company.company_type,
+                    id: opp.company.id,
+                    name: opp.company.trade_name || opp.company.legal_name
+                } : null,
+                contact: opp.contact ? {
+                    id: opp.contact.id,
+                    name: `${opp.contact.first_name || ''} ${opp.contact.last_name || ''}`.trim() || 'Sin nombre',
+                    email: opp.contact.email,
+                    phone: opp.contact.phone
+                } : null
+            }));
+
+            setOpportunities(transformedData);
             setError(null);
         } catch (err) {
             console.error('Error fetching opportunities:', err);
