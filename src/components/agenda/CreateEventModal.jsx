@@ -142,14 +142,22 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
 
         // Convert modal format to database format
         const startDate = new Date(newEvent.start);
+
+        // Extract local date without timezone conversion
+        const year = startDate.getFullYear();
+        const month = String(startDate.getMonth() + 1).padStart(2, '0');
+        const day = String(startDate.getDate()).padStart(2, '0');
+        const hours = String(startDate.getHours()).padStart(2, '0');
+        const minutes = String(startDate.getMinutes()).padStart(2, '0');
+
         const activityData = {
             title: newEvent.title,
-            activity_type: newEvent.type, // Database column is 'activity_type'
-            priority: newEvent.priority, // Add priority field
+            activity_type: newEvent.type,
+            priority: newEvent.priority,
             company_id: parseInt(newEvent.company_id),
-            comercial_id: newEvent.assignedTo[0], // Take first assigned user as primary comercial
-            scheduled_date: startDate.toISOString().split('T')[0], // YYYY-MM-DD
-            scheduled_time: startDate.toTimeString().slice(0, 5), // HH:MM
+            comercial_id: newEvent.assignedTo[0],
+            scheduled_date: `${year}-${month}-${day}`, // Local date YYYY-MM-DD
+            scheduled_time: `${hours}:${minutes}`, // Local time HH:MM
             duration_minutes: newEvent.duration,
             description: newEvent.description || null,
             status: 'pending'
