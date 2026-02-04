@@ -240,15 +240,6 @@ const Dashboard = () => {
                     transition={{ delay: 0.3, duration: 0.6 }}
                     className="relative z-10 text-center pt-12"
                 >
-                    {/* Brand Name */}
-                    <div className="mb-1">
-                        <h1 className="text-base font-black tracking-tight leading-none">
-                            <span className="text-blue-900 dark:text-blue-300">SaiLO CRM</span>
-                            <span className="text-brand-red dark:text-red-400 text-[10px] ml-1 font-bold">Lite</span>
-                        </h1>
-                        <p className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold tracking-wide uppercase mt-0.5">Mobile</p>
-                    </div>
-
                     {/* Dashboard Title */}
                     <div className="mb-3">
                         <h2 className="text-3xl font-black bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 dark:from-slate-100 dark:via-white dark:to-slate-100 bg-clip-text text-transparent">
