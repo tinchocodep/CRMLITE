@@ -44,7 +44,9 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 paymentTerms: prospect.payment_terms || prospect.paymentTerms || '',
                 creditLimit: prospect.credit_limit || prospect.creditLimit || '',
                 detail: prospect.detail || '',
-                segments: prospect.segments || [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
+                segments: (prospect.segments && prospect.segments.length > 0)
+                    ? prospect.segments
+                    : [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
                 importance: prospect.importance || 'medium',
                 // Keep ID if exists
                 id: prospect.id,
@@ -58,8 +60,6 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 importance: 'medium'
             });
         }
-        console.log('🔍 [ConvertToClientModal] formData.segments:', formData.segments);
-        console.log('🔍 [ConvertToClientModal] prospect:', prospect);
     }, [prospect]);
 
     const handleChange = (e) => {
