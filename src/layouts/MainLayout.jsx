@@ -319,7 +319,7 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* Mobile Main Content */}
-                <main className="flex-1 w-full overflow-y-auto pb-32 px-3 pt-4">
+                <main className="flex-1 w-full overflow-y-auto pb-32">
                     <Outlet key={outletKey} />
                     {/* Debug: Log route changes */}
                     {(() => {
@@ -863,7 +863,7 @@ const MainLayout = () => {
                 {isCRMActive && <CRMSubmoduleSidebar isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Desktop Main Content */}
-                <main className={`min-h-screen p-6 transition-all duration-300 ${isCRMActive
+                <main className={`min-h-screen transition-all duration-300 ${isCRMActive
                     ? (mainSidebarExpanded ? 'ml-[324px]' : 'ml-72')
                     : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
                     }`}>
