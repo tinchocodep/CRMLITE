@@ -63,43 +63,53 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
 
     const [showUserSelector, setShowUserSelector] = useState(false);
 
-    // Fetch team members from Supabase
+    // Fetch team members (comerciales) from Supabase
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchComerciales = async () => {
             try {
                 const { data, error } = await supabase
-                    .from('users')
+                    .from('comerciales')
                     .select('id, name, email')
+                    .eq('is_active', true)
                     .order('name');
 
                 if (error) throw error;
 
-                const currentUserId = user?.id;
-                const formattedUsers = data.map(u => ({
-                    id: u.id,
-                    name: u.name || u.email.split('@')[0],
-                    email: u.email,
-                    isCurrentUser: u.id === currentUserId,
+                // Get current user's comercial_id
+                const { data: { user: authUser } } = await supabase.auth.getUser();
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('comercial_id')
+                    .eq('id', authUser?.id)
+                    .single();
+
+                const currentComercialId = userData?.comercial_id;
+
+                const formattedComerciales = data.map(c => ({
+                    id: c.id,
+                    name: c.name || c.email?.split('@')[0] || 'Sin nombre',
+                    email: c.email,
+                    isCurrentUser: c.id === currentComercialId,
                     avatar: null
                 }));
 
-                setTeamMembers(formattedUsers);
+                setTeamMembers(formattedComerciales);
 
-                // Set current user as default assignee
-                if (currentUserId && newEvent.assignedTo.length === 0) {
+                // Set current comercial as default assignee
+                if (currentComercialId && newEvent.assignedTo.length === 0) {
                     setNewEvent(prev => ({
                         ...prev,
-                        assignedTo: [currentUserId]
+                        assignedTo: [currentComercialId]
                     }));
                 }
             } catch (error) {
-                console.error('Error fetching users:', error);
+                console.error('Error fetching comerciales:', error);
                 setTeamMembers([]);
             }
         };
 
         if (isOpen) {
-            fetchUsers();
+            fetchComerciales();
         }
     }, [isOpen, user]);
 
@@ -125,15 +135,28 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
             return;
         }
 
-        const createdEvent = {
-            id: Date.now(),
-            ...newEvent,
-            start: new Date(newEvent.start),
-            end: getEndTime(),
+        if (!newEvent.assignedTo || newEvent.assignedTo.length === 0) {
+            alert('Por favor asigna al menos un comercial.');
+            return;
+        }
+
+        // Convert modal format to database format
+        const startDate = new Date(newEvent.start);
+        const activityData = {
+            title: newEvent.title,
+            type: newEvent.type,
+            priority: newEvent.priority,
+            company_id: parseInt(newEvent.company_id),
+            comercial_id: newEvent.assignedTo[0], // Take first assigned user as primary comercial
+            scheduled_date: startDate.toISOString().split('T')[0], // YYYY-MM-DD
+            scheduled_time: startDate.toTimeString().slice(0, 5), // HH:MM
+            duration_minutes: newEvent.duration,
+            description: newEvent.description || null,
             status: 'pending'
         };
 
-        onCreate(createdEvent);
+        console.log('CreateEventModal - Sending to database:', activityData);
+        onCreate(activityData);
         onClose();
     };
 
