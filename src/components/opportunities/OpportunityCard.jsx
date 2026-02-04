@@ -52,8 +52,27 @@ export default function OpportunityCard({ opportunity, onClick }) {
                 <div className="flex-1 min-w-0">
                     <p className="text-xs text-slate-500 capitalize">{opportunity.linkedEntity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
                     <p className="font-semibold text-sm text-slate-800 truncate">{opportunity.linkedEntity.name}</p>
+                    {opportunity.linkedEntity.cuit && (
+                        <p className="text-xs text-slate-500">CUIT: {opportunity.linkedEntity.cuit}</p>
+                    )}
                 </div>
             </div>
+
+            {/* Contact Info */}
+            {opportunity.contact && (
+                <div className="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                    <p className="text-xs font-semibold text-blue-700 mb-1.5">Cliente/Contacto</p>
+                    <div className="space-y-1">
+                        <p className="text-sm font-semibold text-slate-800">{opportunity.contact.name}</p>
+                        {opportunity.contact.email && (
+                            <p className="text-xs text-slate-600">📧 {opportunity.contact.email}</p>
+                        )}
+                        {opportunity.contact.phone && (
+                            <p className="text-xs text-slate-600">📱 {opportunity.contact.phone}</p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Amount & Probability */}
             <div className="grid grid-cols-2 gap-3 mb-3">
@@ -112,12 +131,8 @@ export default function OpportunityCard({ opportunity, onClick }) {
                 </div>
             )}
 
-            {/* Footer */}
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <User size={12} />
-                    <span>{opportunity.contact.name}</span>
-                </div>
+            {/* Footer - Click indicator */}
+            <div className="flex items-center justify-end mt-4 pt-3 border-t border-slate-100">
                 <ChevronRight size={16} className="text-slate-400" />
             </div>
         </div>
