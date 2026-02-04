@@ -95,28 +95,28 @@ const Contacts = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-sm">
-                    <div className="text-2xl font-bold text-slate-800">{contacts.length}</div>
-                    <div className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Total Contactos</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="bg-white rounded-xl p-2 border border-slate-200 shadow-sm">
+                    <div className="text-xl font-bold text-slate-800">{contacts.length}</div>
+                    <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">Total</div>
                 </div>
-                <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shadow-sm">
-                    <div className="text-2xl font-bold text-blue-700">
+                <div className="bg-white rounded-xl p-2 border border-blue-200 shadow-sm">
+                    <div className="text-xl font-bold text-blue-700">
                         {contacts.filter(c => c.companies.some(comp => comp.companyType === 'prospect')).length}
                     </div>
-                    <div className="text-xs text-blue-600 font-semibold uppercase tracking-wide">En Prospectos</div>
+                    <div className="text-[10px] text-blue-600 font-semibold uppercase tracking-wide">Prospectos</div>
                 </div>
-                <div className="bg-white rounded-2xl p-4 border-2 border-green-200 shadow-sm">
-                    <div className="text-2xl font-bold text-green-700">
+                <div className="bg-white rounded-xl p-2 border border-green-200 shadow-sm">
+                    <div className="text-xl font-bold text-green-700">
                         {contacts.filter(c => c.companies.some(comp => comp.companyType === 'client')).length}
                     </div>
-                    <div className="text-xs text-green-600 font-semibold uppercase tracking-wide">En Clientes</div>
+                    <div className="text-[10px] text-green-600 font-semibold uppercase tracking-wide">Clientes</div>
                 </div>
-                <div className="bg-white rounded-2xl p-4 border-2 border-yellow-200 shadow-sm">
-                    <div className="text-2xl font-bold text-yellow-700">
+                <div className="bg-white rounded-xl p-2 border border-yellow-200 shadow-sm">
+                    <div className="text-xl font-bold text-yellow-700">
                         {contacts.filter(c => c.companies.length > 1).length}
                     </div>
-                    <div className="text-xs text-yellow-600 font-semibold uppercase tracking-wide">Multi-empresa</div>
+                    <div className="text-[10px] text-yellow-600 font-semibold uppercase tracking-wide">Multi-empresa</div>
                 </div>
             </div>
 
