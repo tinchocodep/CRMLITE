@@ -106,7 +106,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                     {/* Legajo Progress - Clickable */}
                     <button
                         onClick={handleLegajoClick}
-                        className="w-full p-2 bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 transition-all active:scale-95"
+                        className="w-full p-2 bg-white dark:bg-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 transition-all active:scale-95"
                         title="Ver Legajo Completo"
                     >
                         <div className="flex items-center gap-2">
@@ -147,7 +147,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                 </div>
 
                 {/* Expandable Details */}
-                <div className={`bg-slate-50/50 dark:bg-slate-900/50 border-t-2 border-slate-200 dark:border-slate-700 transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'} overflow-y-auto`}>
+                <div className={`bg-white dark:bg-slate-900/50 border-t-2 border-slate-200 dark:border-slate-700 transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'} overflow-y-auto`}>
                     <div className="p-4 space-y-4">
 
                         {/* Units / Segments */}
