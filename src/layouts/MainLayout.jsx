@@ -459,46 +459,26 @@ const MainLayout = () => {
                                 </div>
 
                                 {/* Header */}
-                                <div className="px-6 pb-4 flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Acciones Rápidas</h3>
-                                    </div>
-                                    <button
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
-                                    >
-                                        <X className="w-4 h-4 text-slate-600" />
-                                    </button>
+                                <div className="px-6 pb-4">
+                                    <h3 className="text-lg font-bold text-slate-800">Nuevo:</h3>
                                 </div>
 
                                 {/* Actions Grid */}
                                 <div className="px-4 pb-6 grid grid-cols-2 gap-3">
-                                    {/* Crear Actividad */}
-                                    <button
-                                        onClick={() => {
-                                            setIsCreateModalOpen(true);
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
-                                    >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
-                                            <Calendar className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Crear Actividad</span>
-                                    </button>
+                                    {/* PERSONAS - Azul */}
 
-                                    {/* Nuevo Prospecto */}
+                                    {/* Prospecto */}
                                     <button
                                         onClick={() => {
                                             handleGlobalCreateProspect();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
                                             <UserCheck className="w-6 h-6 text-white" />
                                         </div>
-                                        <span className="text-sm font-bold text-slate-800">Nuevo Prospecto</span>
+                                        <span className="text-sm font-bold text-slate-800">Prospecto</span>
                                     </button>
 
                                     {/* Convertir Prospecto */}
@@ -507,68 +487,84 @@ const MainLayout = () => {
                                             handleGlobalPromoteProspect();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
                                             <UserPlus className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Convertir Prospecto</span>
                                     </button>
 
-                                    {/* Nuevo Cliente */}
+                                    {/* Cliente */}
                                     <button
                                         onClick={() => {
                                             handleGlobalCreateClient();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
                                             <Users className="w-6 h-6 text-white" />
                                         </div>
-                                        <span className="text-sm font-bold text-slate-800">Nuevo Cliente</span>
+                                        <span className="text-sm font-bold text-slate-800">Cliente</span>
                                     </button>
 
-                                    {/* Nuevo Contacto */}
+                                    {/* Contacto */}
                                     <button
                                         onClick={() => {
                                             handleGlobalCreateContact();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
                                             <UserCheck className="w-6 h-6 text-white" />
                                         </div>
-                                        <span className="text-sm font-bold text-slate-800">Nuevo Contacto</span>
+                                        <span className="text-sm font-bold text-slate-800">Contacto</span>
                                     </button>
 
-                                    {/* Registrar Visita */}
+                                    {/* PROCESOS - Verde */}
+
+                                    {/* Actividad */}
+                                    <button
+                                        onClick={() => {
+                                            setIsCreateModalOpen(true);
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95"
+                                    >
+                                        <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center mb-3">
+                                            <Calendar className="w-6 h-6 text-white" />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-800">Actividad</span>
+                                    </button>
+
+                                    {/* Visita */}
                                     <button
                                         onClick={() => {
                                             navigate('/visitas');
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center mb-3">
                                             <Map className="w-6 h-6 text-white" />
                                         </div>
-                                        <span className="text-sm font-bold text-slate-800">Registrar Visita</span>
+                                        <span className="text-sm font-bold text-slate-800">Visita</span>
                                     </button>
 
-                                    {/* Nueva Oportunidad */}
+                                    {/* Oportunidad */}
                                     <button
                                         onClick={() => {
                                             handleGlobalCreateOpportunity();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-3 shadow-md">
+                                        <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center mb-3">
                                             <Briefcase className="w-6 h-6 text-white" />
                                         </div>
-                                        <span className="text-sm font-bold text-slate-800">Nueva Oportunidad</span>
+                                        <span className="text-sm font-bold text-slate-800">Oportunidad</span>
                                     </button>
                                 </div>
                             </motion.div>
