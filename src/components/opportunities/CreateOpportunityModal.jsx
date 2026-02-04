@@ -171,7 +171,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end xl:items-center justify-center">
-            <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[92vh] flex flex-col">
+            <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[85vh] flex flex-col">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
                     <div>
