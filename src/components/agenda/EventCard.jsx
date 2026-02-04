@@ -32,7 +32,7 @@ const typeConfig = {
     task: { label: 'Tarea', color: 'text-brand-red bg-brand-red/10' },
 };
 
-const EventCard = ({ event, view = 'day', onUpdate }) => {
+const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
     const [showDetails, setShowDetails] = useState(false);
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
@@ -88,11 +88,24 @@ const EventCard = ({ event, view = 'day', onUpdate }) => {
     const config = priorityConfig[editedEvent.priority || 'medium'];
     const isCompactView = view === 'month';
 
-    const handleDelete = (e) => {
+    const handleDelete = async (e) => {
         e.stopPropagation();
+
+        if (!onDelete) {
+            console.error('onDelete prop is required for EventCard');
+            alert('Error: No se puede eliminar la actividad');
+            return;
+        }
+
         if (window.confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
-            console.log('Deleting event:', event.id);
-            setShowDetails(false);
+            try {
+                console.log('Deleting event:', event.id);
+                await onDelete(event.id);
+                setShowDetails(false);
+            } catch (error) {
+                console.error('Error deleting activity:', error);
+                alert('Error al eliminar la actividad');
+            }
         }
     };
 
