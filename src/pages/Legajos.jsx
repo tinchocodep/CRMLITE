@@ -67,22 +67,8 @@ const Legajos = () => {
     const clients = companies.filter(c => c.company_type === 'client');
     console.log('🔍 [Legajos] Filtered clients:', clients);
 
-    // Merge Clients with their Legajo Data (for now, all legajos are empty until we implement the legajo system)
-    const clientsWithLegajo = clients.map(client => {
-        const docs = {}; // TODO: Fetch from legajo table when implemented
-        const totalDocs = 6;
-        const uploadedDocs = 0; // TODO: Count from actual legajo data
-        const status = 'empty'; // TODO: Calculate from actual legajo data
-
-        return {
-            ...client,
-            legajo: { documents: docs },
-            legajoStatus: status,
-            progress: { current: uploadedDocs, total: totalDocs }
-        };
-    });
-
-    const filteredClients = clientsWithLegajo.filter(c =>
+    // Filter by search term
+    const filteredClients = clients.filter(c =>
         ((c.trade_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || false) ||
         ((c.legal_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) || false) ||
         (c.file_number && c.file_number.includes(searchTerm))
