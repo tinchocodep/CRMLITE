@@ -8,7 +8,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                'brand-red': '#E63946',
+                'brand-red': '#E76E53',
             },
         },
     },
