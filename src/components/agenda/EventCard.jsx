@@ -32,7 +32,7 @@ const typeConfig = {
     task: { label: 'Tarea', color: 'text-brand-red bg-brand-red/10' },
 };
 
-const EventCard = ({ event, view = 'day' }) => {
+const EventCard = ({ event, view = 'day', onUpdate }) => {
     const [showDetails, setShowDetails] = useState(false);
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
