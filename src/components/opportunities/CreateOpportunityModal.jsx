@@ -18,7 +18,11 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // Fetch users
     useEffect(() => {
         const fetchUsers = async () => {
-            const { data } = await supabase.from('users').select('*');
+            const { data } = await supabase
+                .from('users')
+                .select('id, full_name, email, role')
+                .eq('is_active', true)
+                .order('full_name');
             if (data) setComerciales(data);
         };
         fetchUsers();
@@ -125,7 +129,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             id: Date.now(),
             comercial: {
                 id: comercial.id,
-                name: comercial.name,
+                name: comercial.full_name || comercial.email,
                 email: comercial.email
             },
             opportunityName: formData.opportunityName,
@@ -189,7 +193,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             <option value="">Seleccionar comercial</option>
                             {comerciales.map(comercial => (
                                 <option key={comercial.id} value={comercial.id}>
-                                    {comercial.name}
+                                    {comercial.full_name || comercial.email}
                                 </option>
                             ))}
                         </select>
