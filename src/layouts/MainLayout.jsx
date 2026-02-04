@@ -476,12 +476,10 @@ const MainLayout = () => {
                                             handleGlobalCreateProspect();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
-                                            <Users className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Prospecto</span>
+                                        <Users className="w-8 h-8 text-blue-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Prospecto</span>
                                     </button>
 
                                     {/* Convertir Prospecto */}
@@ -490,12 +488,10 @@ const MainLayout = () => {
                                             handleGlobalPromoteProspect();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
-                                            <UserPlus className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Convertir Prospecto</span>
+                                        <UserPlus className="w-8 h-8 text-blue-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Convertir Prospecto</span>
                                     </button>
 
                                     {/* Cliente */}
@@ -504,12 +500,10 @@ const MainLayout = () => {
                                             handleGlobalCreateClient();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
-                                            <UserCheck className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Cliente</span>
+                                        <UserCheck className="w-8 h-8 text-blue-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Cliente</span>
                                     </button>
 
                                     {/* Contacto */}
@@ -518,12 +512,10 @@ const MainLayout = () => {
                                             handleGlobalCreateContact();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
-                                            <User className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Contacto</span>
+                                        <User className="w-8 h-8 text-blue-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Contacto</span>
                                     </button>
 
                                     {/* PROCESOS - Verde */}
@@ -534,12 +526,10 @@ const MainLayout = () => {
                                             setIsCreateModalOpen(true);
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center mb-3">
-                                            <Calendar className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Actividad</span>
+                                        <Calendar className="w-8 h-8 text-green-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Actividad</span>
                                     </button>
 
                                     {/* Visita */}
@@ -548,12 +538,10 @@ const MainLayout = () => {
                                             navigate('/visitas');
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center mb-3">
-                                            <Map className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Visita</span>
+                                        <Map className="w-8 h-8 text-green-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Visita</span>
                                     </button>
 
                                     {/* Oportunidad */}
@@ -562,12 +550,10 @@ const MainLayout = () => {
                                             handleGlobalCreateOpportunity();
                                             setMobileMenuOpen(false);
                                         }}
-                                        className="flex flex-col items-center justify-center p-5 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95"
+                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95 gap-2"
                                     >
-                                        <div className="w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center mb-3">
-                                            <Briefcase className="w-6 h-6 text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-800">Oportunidad</span>
+                                        <Briefcase className="w-8 h-8 text-green-600" strokeWidth={2} />
+                                        <span className="text-xs font-bold text-slate-800">Oportunidad</span>
                                     </button>
                                 </div>
                             </motion.div>
