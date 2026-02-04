@@ -306,11 +306,20 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             >
                                 <option value="">Seleccionar contacto</option>
-                                {availableContacts.map(contact => (
-                                    <option key={contact.id} value={contact.id}>
-                                        {contact.first_name} {contact.last_name} - {contact.email}
-                                    </option>
-                                ))}
+                                {availableContacts.map(contact => {
+                                    const fullName = contact.firstName && contact.lastName
+                                        ? `${contact.firstName} ${contact.lastName}`
+                                        : '';
+                                    const displayText = fullName
+                                        ? `${fullName} - ${contact.email}`
+                                        : contact.email;
+
+                                    return (
+                                        <option key={contact.id} value={contact.id}>
+                                            {displayText}
+                                        </option>
+                                    );
+                                })}
                             </select>
                         </div>
                     )}
