@@ -73,7 +73,7 @@ const Contacts = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6">
+        <div className="h-full flex flex-col gap-6 p-4 md:p-6">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
                 <div className="text-center md:text-left">
