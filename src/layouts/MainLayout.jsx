@@ -319,7 +319,7 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* Mobile Main Content */}
-                <main className="flex-1 w-full overflow-y-auto pb-32">
+                <main className="flex-1 w-full overflow-y-auto">
                     <Outlet key={outletKey} />
                     {/* Debug: Log route changes */}
                     {(() => {
