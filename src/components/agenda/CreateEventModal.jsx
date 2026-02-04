@@ -33,9 +33,9 @@ const typeConfig = [
     { id: 'visit', label: 'Visita', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
     { id: 'call', label: 'Llamada', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
     { id: 'meeting', label: 'Reunión', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'reminder', label: 'Recordatorio', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'email', label: 'Email', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
     { id: 'task', label: 'Tarea', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'quote', label: 'Cotizar', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'other', label: 'Otro', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
 ];
 
 const durationOptions = [
