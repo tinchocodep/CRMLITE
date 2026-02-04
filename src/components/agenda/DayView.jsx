@@ -2,7 +2,7 @@ import React from 'react';
 import { format, getHours, getMinutes, differenceInMinutes, isSameDay } from 'date-fns';
 import EventCard from './EventCard';
 
-const DayView = ({ currentDate, events }) => {
+const DayView = ({ currentDate, events, onUpdate }) => {
     // Filter events strictly for this day
     const dayEvents = events.filter(e => isSameDay(e.start, currentDate));
     const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -60,7 +60,7 @@ const DayView = ({ currentDate, events }) => {
                                     <div className="absolute top-4 left-[7.5px] w-2.5 h-2.5 rounded-full border border-slate-50 bg-brand-red z-10 shadow-sm" />
 
                                     <div className="rounded-2xl overflow-hidden shadow-sm shadow-slate-200/50 ring-1 ring-slate-100 bg-white">
-                                        <EventCard event={event} view="list" />
+                                        <EventCard event={event} view="list" onUpdate={onUpdate} />
                                     </div>
                                 </div>
                             </React.Fragment>
@@ -163,7 +163,7 @@ const DayView = ({ currentDate, events }) => {
                                                     left: `calc(${left}% + 4px)`,
                                                 }}
                                             >
-                                                <EventCard event={event} view="day-detail" />
+                                                <EventCard event={event} view="day-detail" onUpdate={onUpdate} />
                                             </div>
                                         );
                                     });

@@ -371,9 +371,9 @@ const Agenda = () => {
                 )}
                 {view === 'list' && <div className="p-4">{renderList()}</div>}
 
-                {view === 'week' && <WeekView currentDate={currentDate} events={events} />}
+                {view === 'week' && <WeekView currentDate={currentDate} events={events} onUpdate={updateActivity} />}
 
-                {view === 'day' && <DayView currentDate={currentDate} events={events} />}
+                {view === 'day' && <DayView currentDate={currentDate} events={events} onUpdate={updateActivity} />}
             </div>
 
             <CreateEventModal
