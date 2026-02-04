@@ -319,7 +319,7 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* Mobile Main Content */}
-                <main className="flex-1 w-full overflow-y-auto pb-32">
+                <main className="flex-1 w-full overflow-y-auto pb-32 px-4 pt-6">
                     <Outlet key={outletKey} />
                     {/* Debug: Log route changes */}
                     {(() => {
@@ -867,7 +867,7 @@ const MainLayout = () => {
                     ? (mainSidebarExpanded ? 'ml-[324px]' : 'ml-72')
                     : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
                     }`}>
-                    <div className="w-full h-full glass-panel rounded-[2rem] p-8 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
+                    <div className="w-full h-full glass-panel rounded-[2rem] p-10 min-h-[calc(100vh-48px)] animate-in fade-in zoom-in-95 duration-500 shadow-2xl shadow-slate-200/50 border border-white/60">
                         <Outlet key={location.pathname} />
                     </div>
                 </main>
