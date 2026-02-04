@@ -224,6 +224,7 @@ const Prospects = () => {
                 onClose={() => setIsConvertModalOpen(false)}
                 prospect={selectedProspect}
                 onConvert={handleConfirmConversion}
+                title="Alta de Cliente"
             />
 
             {/* Edit Modal */}
