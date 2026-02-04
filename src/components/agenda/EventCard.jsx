@@ -84,7 +84,8 @@ const EventCard = ({ event, view = 'day' }) => {
     const [editedEvent, setEditedEvent] = useState({ ...normalizedEvent });
     const [isEditing, setIsEditing] = useState(false);
 
-    const config = priorityConfig[editedEvent.priority];
+    // Default to 'medium' priority if not set (activities from DB don't have priority yet)
+    const config = priorityConfig[editedEvent.priority || 'medium'];
     const isCompactView = view === 'month';
 
     const handleDelete = (e) => {
@@ -219,8 +220,8 @@ const EventCard = ({ event, view = 'day' }) => {
                                 ))}
                             </select>
                         ) : (
-                            <span className={`text-xs font-bold px-3 py-1 rounded-full ${typeConfig[editedEvent.type].color}`}>
-                                {typeConfig[editedEvent.type].label}
+                            <span className={`text-xs font-bold px-3 py-1 rounded-full ${typeConfig[editedEvent.type || 'task']?.color || 'bg-gray-100 text-gray-600'}`}>
+                                {typeConfig[editedEvent.type || 'task']?.label || 'Tarea'}
                             </span>
                         )
                     )}
