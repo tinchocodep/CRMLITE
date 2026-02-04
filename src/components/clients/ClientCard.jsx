@@ -22,7 +22,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
 
     const handleLegajoClick = (e) => {
         e.stopPropagation();
-        navigate('/legajos');
+        navigate('/legajo');
     };
 
     return (
