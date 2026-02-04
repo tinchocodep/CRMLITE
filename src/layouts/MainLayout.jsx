@@ -479,7 +479,7 @@ const MainLayout = () => {
                                         className="flex flex-col items-center justify-center p-5 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95"
                                     >
                                         <div className="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center mb-3">
-                                            <UserCheck className="w-6 h-6 text-white" />
+                                            <Users className="w-6 h-6 text-white" />
                                         </div>
                                         <span className="text-sm font-bold text-slate-800">Prospecto</span>
                                     </button>
