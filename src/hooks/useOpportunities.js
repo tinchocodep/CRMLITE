@@ -16,7 +16,7 @@ export const useOpportunities = () => {
                 .select(`
                     *,
                     comercial:comerciales!comercial_id(id, name, email),
-                    company:companies!company_id(id, trade_name, legal_name, company_type),
+                    company:companies!company_id(id, trade_name, legal_name, company_type, cuit),
                     contact:contacts!contact_id(id, first_name, last_name, email, phone)
                 `)
                 .order('close_date', { ascending: true });
@@ -39,7 +39,8 @@ export const useOpportunities = () => {
                 linkedEntity: opp.company ? {
                     type: opp.company.company_type,
                     id: opp.company.id,
-                    name: opp.company.trade_name || opp.company.legal_name
+                    name: opp.company.trade_name || opp.company.legal_name,
+                    cuit: opp.company.cuit
                 } : null,
                 contact: opp.contact ? {
                     id: opp.contact.id,
