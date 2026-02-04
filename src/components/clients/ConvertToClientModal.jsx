@@ -58,6 +58,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 importance: 'medium'
             });
         }
+        console.log('🔍 [ConvertToClientModal] formData.segments:', formData.segments);
+        console.log('🔍 [ConvertToClientModal] prospect:', prospect);
     }, [prospect]);
 
     const handleChange = (e) => {
