@@ -25,7 +25,7 @@ const Dashboard = () => {
     const { companies: allCompanies, loading: loadingCompanies } = useCompanies();
     const { opportunities, loading: loadingOpportunities } = useOpportunities();
     const { contacts, loading: loadingContacts } = useContacts();
-    const { activities, loading: loadingActivities } = useActivities(7); // Next 7 days
+    const { activities, loading: loadingActivities, updateActivity } = useActivities(7); // Next 7 days
 
     const handleLogout = () => {
         logout();
@@ -466,7 +466,7 @@ const Dashboard = () => {
 
                                 return (
                                     <div key={event.id} className="w-full">
-                                        <EventCard event={event} view="list" />
+                                        <EventCard event={event} view="list" onUpdate={updateActivity} />
                                     </div>
                                 );
                             })}
