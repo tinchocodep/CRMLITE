@@ -11,16 +11,33 @@ export const useActivities = (daysAhead = 30) => {
     const fetchActivities = async () => {
         try {
             setLoading(true);
+
+            // Calculate date range
+            const today = new Date().toISOString().split('T')[0];
+            const futureDate = new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
             const { data, error: fetchError } = await supabase
-                .from('upcoming_activities_view')
-                .select('*')
-                .gte('scheduled_date', new Date().toISOString().split('T')[0])
-                .lte('scheduled_date', new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+                .from('activities')
+                .select(`
+                    *,
+                    company:companies!activities_company_id_fkey(id, legal_name, trade_name),
+                    comercial:comerciales!activities_comercial_id_fkey(id, name)
+                `)
+                .gte('scheduled_date', today)
+                .lte('scheduled_date', futureDate)
                 .order('scheduled_date', { ascending: true })
                 .order('scheduled_time', { ascending: true });
 
             if (fetchError) throw fetchError;
-            setActivities(data || []);
+
+            // Format data to match expected structure
+            const formattedData = (data || []).map(activity => ({
+                ...activity,
+                client: activity.company?.trade_name || activity.company?.legal_name || 'Sin nombre',
+                comercial_name: activity.comercial?.name || 'Sin asignar'
+            }));
+
+            setActivities(formattedData);
             setError(null);
         } catch (err) {
             console.error('Error fetching activities:', err);
