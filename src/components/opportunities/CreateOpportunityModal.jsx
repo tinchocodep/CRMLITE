@@ -63,9 +63,13 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             }));
 
             const allResults = [...clientResults, ...prospectResults];
-            const filtered = allResults.filter(entity =>
-                entity.displayName && entity.displayName.toLowerCase().includes(formData.opportunityName.toLowerCase())
-            );
+            const searchTerm = formData.opportunityName.toLowerCase();
+
+            const filtered = allResults.filter(entity => {
+                const nameMatch = entity.displayName && entity.displayName.toLowerCase().includes(searchTerm);
+                const cuitMatch = entity.cuit && entity.cuit.toLowerCase().includes(searchTerm);
+                return nameMatch || cuitMatch;
+            });
 
             setSearchResults(filtered);
             setShowSuggestions(filtered.length > 0);
@@ -245,7 +249,15 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-semibold text-sm text-slate-800 truncate">{entity.displayName}</p>
-                                            <p className="text-xs text-slate-500 capitalize">{entity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-xs text-slate-500 capitalize">{entity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
+                                                {entity.cuit && (
+                                                    <>
+                                                        <span className="text-xs text-slate-300">•</span>
+                                                        <p className="text-xs text-slate-500 font-mono">CUIT: {entity.cuit}</p>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                     </button>
                                 ))}
