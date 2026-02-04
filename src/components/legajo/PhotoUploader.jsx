@@ -14,6 +14,7 @@ const PhotoUploader = ({
     companyId
 }) => {
     const fileInputRef = useRef(null);
+    const cameraInputRef = useRef(null);
     const [preview, setPreview] = useState(existingFile?.storage_path || null);
     const [selectedFile, setSelectedFile] = useState(null);
     const { uploadFile, uploading, progress, error } = useFileUpload();
@@ -94,6 +95,9 @@ const PhotoUploader = ({
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
+        if (cameraInputRef.current) {
+            cameraInputRef.current.value = '';
+        }
     };
 
     const isUploaded = !!existingFile;
@@ -101,12 +105,21 @@ const PhotoUploader = ({
 
     return (
         <div className="relative">
-            {/* File Input (Hidden) */}
+            {/* Camera Input (Hidden) - Opens camera on mobile */}
+            <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/jpeg,image/jpg,image/png"
+                capture="environment"
+                onChange={handleFileSelect}
+                className="hidden"
+            />
+
+            {/* File Input (Hidden) - Opens file picker */}
             <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/jpg,image/png,application/pdf"
-                capture="environment" // Mobile camera
                 onChange={handleFileSelect}
                 className="hidden"
             />
@@ -175,20 +188,14 @@ const PhotoUploader = ({
                         {!hasNewFile ? (
                             <>
                                 <button
-                                    onClick={() => fileInputRef.current?.click()}
+                                    onClick={() => cameraInputRef.current?.click()}
                                     className="flex-1 px-4 py-2 bg-brand-red text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Camera size={16} />
                                     Tomar Foto
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        if (fileInputRef.current) {
-                                            fileInputRef.current.removeAttribute('capture');
-                                            fileInputRef.current.click();
-                                            fileInputRef.current.setAttribute('capture', 'environment');
-                                        }
-                                    }}
+                                    onClick={() => fileInputRef.current?.click()}
                                     className="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-300 transition-colors"
                                 >
                                     <Upload size={16} />
