@@ -123,32 +123,23 @@ const Prospects = () => {
 
     const handleConfirmConversion = async (clientData) => {
         try {
-            // First, update the prospect data if any fields were edited
-            if (clientData.trade_name || clientData.legal_name || clientData.cuit || clientData.city || clientData.province || clientData.address) {
-                const updateResult = await updateCompany(selectedProspect.id, {
-                    trade_name: clientData.trade_name,
-                    legal_name: clientData.legal_name,
-                    cuit: clientData.cuit,
-                    city: clientData.city,
-                    province: clientData.province,
-                    address: clientData.address
-                });
+            // Prepare the data for client creation
+            const dataToSave = {
+                ...clientData,
+                company_type: 'client',
+                // Ensure we don't duplicate the ID
+                id: undefined
+            };
 
-                if (!updateResult.success) {
-                    alert('Error al actualizar datos del prospecto: ' + updateResult.error);
-                    return;
-                }
-            }
+            console.log('🔍 [Prospects] Creating client with data:', dataToSave);
 
-            // Then convert to client
-            const result = await convertToClient(selectedProspect.id, {
-                client_since: clientData.client_since || new Date().toISOString().split('T')[0],
-                payment_terms: clientData.payment_terms,
-                credit_limit: clientData.credit_limit
-            });
+            // Create the new client with all the data
+            const result = await createCompany(dataToSave);
 
             if (result.success) {
-                alert(`¡Felicitaciones! ${selectedProspect.trade_name} ha sido convertido a Cliente.`);
+                // After successful client creation, soft-delete the prospect
+                await updateCompany(selectedProspect.id, { is_active: false });
+                alert(`¡Felicitaciones! ${clientData.trade_name || clientData.legal_name} ha sido convertido a Cliente.`);
                 setIsConvertModalOpen(false);
             } else {
                 alert('Error al convertir a cliente: ' + result.error);
@@ -158,6 +149,7 @@ const Prospects = () => {
             alert('Error al convertir a cliente');
         }
     };
+
 
 
     return (
