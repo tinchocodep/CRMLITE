@@ -97,7 +97,6 @@ const Clients = () => {
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
                 <div className="text-center md:text-left">
                     <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Cartera de Clientes</h1>
-                    <p className="text-slate-500 dark:text-slate-400 mt-1">Gestión de fichas técnicas y productivas</p>
                 </div>
 
                 <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm w-full md:w-auto">

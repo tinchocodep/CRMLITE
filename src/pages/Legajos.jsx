@@ -93,7 +93,6 @@ const Legajos = () => {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Legajos Digitales</h1>
-                        <p className="text-slate-500 mt-1">Gestión de documentación y cumplimiento</p>
                     </div>
                 </div>
 
