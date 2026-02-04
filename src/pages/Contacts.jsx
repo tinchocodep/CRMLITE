@@ -77,7 +77,7 @@ const Contacts = () => {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
                 <div className="text-center md:text-left">
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Agenda de Contactos</h1>
+                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Contactos</h1>
                 </div>
 
                 <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">

@@ -174,7 +174,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                 <div className="flex justify-between items-center p-6 border-b border-slate-100">
                     <div>
                         <h2 className="text-2xl font-bold text-slate-800">Nueva Actividad</h2>
-                        <p className="text-sm text-slate-500">Agenda una nueva actividad en el calendario</p>
                     </div>
                     <button
                         onClick={onClose}

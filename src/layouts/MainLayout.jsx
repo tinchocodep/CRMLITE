@@ -462,7 +462,6 @@ const MainLayout = () => {
                                 <div className="px-6 pb-4 flex items-center justify-between">
                                     <div>
                                         <h3 className="text-lg font-bold text-slate-800">Acciones Rápidas</h3>
-                                        <p className="text-xs text-slate-500 mt-1">Selecciona una acción para comenzar</p>
                                     </div>
                                     <button
                                         onClick={() => setMobileMenuOpen(false)}
@@ -606,8 +605,7 @@ const MainLayout = () => {
                                 {/* Header */}
                                 <div className="px-6 pb-4 flex items-center justify-between">
                                     <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Menú de Navegación</h3>
-                                        <p className="text-xs text-slate-500 mt-1">Accede a todas las secciones del CRM</p>
+                                        <h3 className="text-lg font-bold text-slate-800">MENÚ</h3>
                                     </div>
                                     <button
                                         onClick={() => setMobileNavMenuOpen(false)}

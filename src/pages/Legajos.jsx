@@ -92,7 +92,7 @@ const Legajos = () => {
                         <ArrowLeft size={24} />
                     </button>
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Legajos Digitales</h1>
+                        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Legajo</h1>
                     </div>
                 </div>
 
