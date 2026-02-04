@@ -16,20 +16,29 @@ const Legajos = () => {
     // Calculate progress for each company
     useEffect(() => {
         const calculateProgress = async () => {
+            console.log('📊 [Progress] Starting calculation');
+            console.log('📊 [Progress] Raw companies:', rawCompanies);
+
             if (!rawCompanies || rawCompanies.length === 0) {
+                console.log('📊 [Progress] No companies, setting empty array');
                 setCompanies([]);
                 return;
             }
 
             // Get all file attachments
-            const { data: attachments } = await supabase
+            const { data: attachments, error } = await supabase
                 .from('file_attachments')
                 .select('entity_id, document_type, status')
                 .eq('entity_type', 'company')
                 .eq('status', 'active');
 
+            console.log('📊 [Progress] Attachments:', attachments);
+            console.log('📊 [Progress] Error:', error);
+
             const companiesWithProgress = rawCompanies.map(company => {
                 const companyDocs = attachments?.filter(att => att.entity_id === company.id) || [];
+                console.log(`📊 [Progress] Company ${company.trade_name}: ${companyDocs.length} docs`);
+
                 const progress = {
                     current: companyDocs.length,
                     total: 6
@@ -43,6 +52,7 @@ const Legajos = () => {
                 };
             });
 
+            console.log('📊 [Progress] Final companies with progress:', companiesWithProgress);
             setCompanies(companiesWithProgress);
         };
 
