@@ -118,16 +118,25 @@ export default function Opportunities() {
 
             {/* Search & Filter */}
             <div className="px-4 mb-6">
-                {/* Search Bar */}
-                <div className="relative mb-3">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Buscar oportunidades..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none transition-all bg-white"
-                    />
+                {/* Search Bar with New Button */}
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Buscar oportunidades..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none transition-all bg-white"
+                        />
+                    </div>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="px-4 py-3 bg-brand-red hover:bg-red-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                    >
+                        <Plus size={18} />
+                        <span className="hidden md:inline">Nuevo</span>
+                    </button>
                 </div>
 
                 {/* Status Filter */}
