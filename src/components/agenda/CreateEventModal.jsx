@@ -140,15 +140,11 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
             return;
         }
 
-        // Convert modal format to database format
-        const startDate = new Date(newEvent.start);
-
-        // Extract local date without timezone conversion
-        const year = startDate.getFullYear();
-        const month = String(startDate.getMonth() + 1).padStart(2, '0');
-        const day = String(startDate.getDate()).padStart(2, '0');
-        const hours = String(startDate.getHours()).padStart(2, '0');
-        const minutes = String(startDate.getMinutes()).padStart(2, '0');
+        // Parse datetime-local string directly (format: "2026-02-04T12:00")
+        // DO NOT use new Date() as it interprets the string as UTC
+        const [datePart, timePart] = newEvent.start.split('T');
+        const [year, month, day] = datePart.split('-');
+        const [hours, minutes] = timePart.split(':');
 
         const activityData = {
             title: newEvent.title,
@@ -156,8 +152,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
             priority: newEvent.priority,
             company_id: parseInt(newEvent.company_id),
             comercial_id: newEvent.assignedTo[0],
-            scheduled_date: `${year}-${month}-${day}`, // Local date YYYY-MM-DD
-            scheduled_time: `${hours}:${minutes}`, // Local time HH:MM
+            scheduled_date: datePart, // Already in YYYY-MM-DD format
+            scheduled_time: `${hours}:${minutes}`, // HH:MM
             duration_minutes: newEvent.duration,
             description: newEvent.description || null,
             status: 'pending'
