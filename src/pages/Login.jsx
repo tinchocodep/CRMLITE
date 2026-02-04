@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import RotatingLogoScene from '../components/3d/RotatingLogo';
+import sailoLogo from '../assets/sailo-logo.png';
 import { ArrowRight, Lock, Mail, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -112,16 +112,18 @@ const Login = () => {
                 className="container mx-auto px-4 z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 min-h-screen py-8 lg:py-0"
             >
 
-                {/* Left Side: 3D Logo */}
+                {/* Left Side: Logo */}
                 <motion.div
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="w-full lg:w-1/2 h-[200px] md:h-[300px] lg:h-[600px] flex items-center justify-center relative"
                 >
-                    <div className="absolute inset-0">
-                        <RotatingLogoScene />
-                    </div>
+                    <img
+                        src={sailoLogo}
+                        alt="SAILO CRM"
+                        className="w-full max-w-[300px] md:max-w-[400px] lg:max-w-[500px] h-auto object-contain drop-shadow-2xl"
+                    />
                 </motion.div>
 
                 {/* Right Side: Login Form */}
@@ -136,9 +138,6 @@ const Login = () => {
                             <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-slate-100 dark:via-white dark:to-slate-100 bg-clip-text text-transparent mb-2">
                                 Bienvenido
                             </h1>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm md:text-base">
-                                Inicia sesión para acceder a <span className="font-semibold text-brand-red dark:text-red-400">SAILO CRM Lite</span>
-                            </p>
                         </div>
 
                         {/* Auth Error Alert */}
@@ -271,16 +270,6 @@ const Login = () => {
                             </button>
                         </form>
 
-                        {/* Demo Hint */}
-                        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                            <p className="text-xs text-blue-700 dark:text-blue-300 text-center">
-                                <span className="font-semibold">Modo Demo:</span> Usa cualquier email y contraseña (mín. 6 caracteres)
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 text-center text-xs text-slate-400 dark:text-slate-600">
-                        Powered by <span className="font-semibold">SAILO CRM Lite</span>
                     </div>
                 </motion.div>
             </motion.div>

@@ -28,9 +28,9 @@ export default function Opportunities() {
 
     // Filter opportunities
     const filteredOpportunities = opportunities.filter(opp => {
-        const matchesSearch = (opp.opportunity_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-            (opp.company_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-            (opp.product_type?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+        const matchesSearch = (opp.opportunity_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (opp.company_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (opp.product_type || '').toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'all' || opp.status === statusFilter;
         return matchesSearch && matchesStatus;
     });

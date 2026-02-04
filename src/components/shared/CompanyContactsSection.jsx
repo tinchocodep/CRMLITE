@@ -17,8 +17,8 @@ const CompanyContactsSection = ({
     const [expandedContacts, setExpandedContacts] = useState({});
 
     // Filter contacts for this specific company
-    const companyContacts = contacts.filter(contact =>
-        contact.companies?.some(c => c.companyId === companyId)
+    const companyContacts = (contacts || []).filter(contact =>
+        (contact.companies || []).some(c => c.companyId === companyId)
     );
 
     // Get primary contact

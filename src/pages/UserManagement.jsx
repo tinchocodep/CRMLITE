@@ -24,8 +24,8 @@ const UserManagement = () => {
 
     // Filter users
     const filteredUsers = users.filter(u =>
-        (u.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-        (u.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+        (u.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (u.email || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleRoleChange = async (userId, newRole) => {

@@ -14,10 +14,10 @@ const Contacts = () => {
     // Filter contacts based on search
     const filteredContacts = contacts.filter(contact => {
         const searchLower = searchTerm.toLowerCase();
-        const fullName = `${contact.first_name} ${contact.last_name}`.toLowerCase();
-        const email = contact.email?.toLowerCase() || '';
-        const phone = contact.phone?.toLowerCase() || '';
-        const companyName = contact.company_name?.toLowerCase() || '';
+        const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.toLowerCase();
+        const email = (contact.email || '').toLowerCase();
+        const phone = (contact.phone || '').toLowerCase();
+        const companyName = (contact.company_name || '').toLowerCase();
 
         return fullName.includes(searchLower) ||
             email.includes(searchLower) ||
