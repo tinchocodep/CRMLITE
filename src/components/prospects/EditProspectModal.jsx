@@ -108,9 +108,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                         <h2 className="text-xl font-bold text-slate-800">
                             {(!prospect.trade_name && !prospect.legal_name) ? 'Crear Prospecto' : 'Editar Prospecto'}
                         </h2>
-                        <p className="text-xs text-slate-500 font-medium">
-                            {(!prospect.trade_name && !prospect.legal_name) ? 'Completa los datos del nuevo prospecto' : 'Actualiza la información y el estado'}
-                        </p>
                     </div>
                     <button
                         onClick={onClose}

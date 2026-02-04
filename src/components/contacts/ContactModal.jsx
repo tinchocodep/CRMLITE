@@ -236,7 +236,6 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                 <h2 className="text-xl font-bold text-slate-800">
                                     {contact ? 'Editar Contacto' : 'Nuevo Contacto'}
                                 </h2>
-                                <p className="text-xs text-slate-500">Gestión de personas vinculadas</p>
                             </div>
                         </div>
                         <button

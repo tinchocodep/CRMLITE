@@ -110,7 +110,6 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                             <h3 className="text-xl md:text-2xl font-bold text-slate-800">
                                 {title || (prospect ? 'Editar Cliente' : 'Alta de Cliente')}
                             </h3>
-                            <p className="text-xs md:text-sm text-slate-500 font-medium leading-tight">Complete la ficha técnica para vincular el legajo</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
