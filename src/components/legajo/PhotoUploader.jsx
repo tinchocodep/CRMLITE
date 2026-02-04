@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, CheckCircle2, AlertCircle, X, Camera, Image as ImageIcon } from 'lucide-react';
 import { useFileUpload } from '../../hooks/useFileUpload';
+import CameraCapture from './CameraCapture';
 
 /**
  * Mobile-optimized photo uploader component
@@ -17,12 +18,20 @@ const PhotoUploader = ({
     const cameraInputRef = useRef(null);
     const [preview, setPreview] = useState(existingFile?.storage_path || null);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [showCamera, setShowCamera] = useState(false);
     const { uploadFile, uploading, progress, error } = useFileUpload();
 
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        processFile(file);
+    };
 
+    const handleCameraCapture = (file) => {
+        processFile(file);
+    };
+
+    const processFile = (file) => {
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         if (!allowedTypes.includes(file.type)) {
@@ -188,7 +197,7 @@ const PhotoUploader = ({
                         {!hasNewFile ? (
                             <>
                                 <button
-                                    onClick={() => cameraInputRef.current?.click()}
+                                    onClick={() => setShowCamera(true)}
                                     className="flex-1 px-4 py-2 bg-brand-red text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Camera size={16} />
@@ -220,6 +229,14 @@ const PhotoUploader = ({
                     </div>
                 )}
             </div>
+
+            {/* Camera Modal */}
+            {showCamera && (
+                <CameraCapture
+                    onCapture={handleCameraCapture}
+                    onClose={() => setShowCamera(false)}
+                />
+            )}
         </div>
     );
 };
