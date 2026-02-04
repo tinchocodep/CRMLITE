@@ -51,8 +51,8 @@ const Dashboard = () => {
     }, []);
 
     // Calculate stats from real data
-    const prospects = allCompanies.filter(c => c.type === 'prospect' && c.is_active);
-    const clients = allCompanies.filter(c => c.type === 'client' && c.is_active);
+    const prospects = allCompanies.filter(c => c.company_type === 'prospect' && c.is_active);
+    const clients = allCompanies.filter(c => c.company_type === 'client' && c.is_active);
 
     const stats = {
         prospects: prospects.length,
