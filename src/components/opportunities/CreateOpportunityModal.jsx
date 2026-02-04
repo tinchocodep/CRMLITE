@@ -171,9 +171,9 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end xl:items-center justify-center">
-            <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[92vh] overflow-y-auto">
+            <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[92vh] flex flex-col">
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-brand-red to-red-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl z-10">
+                <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
                     <div>
                         <h2 className="text-lg font-bold">Nueva Oportunidad</h2>
                         <p className="text-red-100 text-xs mt-0.5">Completa la información</p>
@@ -183,256 +183,258 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                     </button>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                    {/* Comercial */}
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            <User size={14} className="inline mr-1.5" />
-                            Comercial *
-                        </label>
-                        <select
-                            required
-                            value={formData.comercialId}
-                            onChange={(e) => setFormData({ ...formData, comercialId: e.target.value })}
-                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                        >
-                            <option value="">Seleccionar comercial</option>
-                            {comerciales.map(comercial => (
-                                <option key={comercial.id} value={comercial.id}>
-                                    {comercial.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Product Type */}
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            <Briefcase size={14} className="inline mr-1.5" />
-                            Tipo de Producto *
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.productType}
-                            onChange={(e) => setFormData({ ...formData, productType: e.target.value })}
-                            placeholder="Ej: Fertilizantes, Semillas..."
-                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                        />
-                    </div>
-
-                    {/* Opportunity Name with Auto-search */}
-                    <div className="relative">
-                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            <Search size={14} className="inline mr-1.5" />
-                            Nombre de Oportunidad *
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.opportunityName}
-                            onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
-                            placeholder="Buscar cliente/prospecto..."
-                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                        />
-
-                        {/* Auto-suggestions */}
-                        {showSuggestions && (
-                            <div className="absolute z-10 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                                {searchResults.map(entity => (
-                                    <button
-                                        key={`${entity.type}-${entity.id}`}
-                                        type="button"
-                                        onClick={() => handleSelectEntity(entity)}
-                                        className="w-full px-3 py-2.5 text-left hover:bg-slate-50 flex items-center gap-2.5 border-b border-slate-100 last:border-0"
-                                    >
-                                        <div className={`w-8 h-8 rounded-lg ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
-                                            {entity.type === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-semibold text-sm text-slate-800 truncate">{entity.displayName}</p>
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-xs text-slate-500 capitalize">{entity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
-                                                {entity.cuit && (
-                                                    <>
-                                                        <span className="text-xs text-slate-300">•</span>
-                                                        <p className="text-xs text-slate-500 font-mono">CUIT: {entity.cuit}</p>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Selected Entity Display */}
-                        {formData.linkedEntityId && (
-                            <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5">
-                                <div className={`w-8 h-8 rounded-lg ${formData.linkedEntityType === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
-                                    {formData.linkedEntityType === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-xs text-emerald-700 font-medium capitalize">Vinculado a {formData.linkedEntityType === 'client' ? 'Cliente' : 'Prospecto'}</p>
-                                    <p className="font-semibold text-sm text-emerald-900 truncate">
-                                        {formData.linkedEntityType === 'client'
-                                            ? clients.find(c => c.id === parseInt(formData.linkedEntityId))?.trade_name
-                                            : prospects.find(p => p.id === parseInt(formData.linkedEntityId))?.trade_name
-                                        }
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Contact */}
-                    {availableContacts.length > 0 && (
+                {/* Form - Scrollable Content */}
+                <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+                    <div className="p-4 space-y-4 overflow-y-auto flex-1">
+                        {/* Comercial */}
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                                 <User size={14} className="inline mr-1.5" />
-                                Contacto
-                            </label>
-                            <select
-                                value={formData.contactId}
-                                onChange={(e) => setFormData({ ...formData, contactId: e.target.value })}
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                            >
-                                <option value="">Seleccionar contacto</option>
-                                {availableContacts.map(contact => {
-                                    const fullName = contact.firstName && contact.lastName
-                                        ? `${contact.firstName} ${contact.lastName}`
-                                        : '';
-                                    const displayText = fullName
-                                        ? `${fullName} - ${contact.email}`
-                                        : contact.email;
-
-                                    return (
-                                        <option key={contact.id} value={contact.id}>
-                                            {displayText}
-                                        </option>
-                                    );
-                                })}
-                            </select>
-                        </div>
-                    )}
-
-                    {/* Amount & Close Date */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <DollarSign size={14} className="inline mr-1.5" />
-                                Monto (ARS) *
-                            </label>
-                            <input
-                                type="number"
-                                required
-                                min="0"
-                                step="1000"
-                                value={formData.amount}
-                                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                                placeholder="0"
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <Calendar size={14} className="inline mr-1.5" />
-                                Fecha Cierre *
-                            </label>
-                            <input
-                                type="date"
-                                required
-                                value={formData.closeDate}
-                                onChange={(e) => setFormData({ ...formData, closeDate: e.target.value })}
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Status & Probability */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                Estado *
+                                Comercial *
                             </label>
                             <select
                                 required
-                                value={formData.status}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                value={formData.comercialId}
+                                onChange={(e) => setFormData({ ...formData, comercialId: e.target.value })}
                                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             >
-                                <option value="iniciado">🚀 Iniciado</option>
-                                <option value="presupuestado">📋 Presupuestado</option>
-                                <option value="negociado">🤝 Negociado</option>
-                                <option value="ganado">✅ Ganado</option>
-                                <option value="perdido">❌ Perdido</option>
+                                <option value="">Seleccionar comercial</option>
+                                {comerciales.map(comercial => (
+                                    <option key={comercial.id} value={comercial.id}>
+                                        {comercial.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
+
+                        {/* Product Type */}
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <TrendingUp size={14} className="inline mr-1.5" />
-                                Probabilidad: {formData.probability}%
+                                <Briefcase size={14} className="inline mr-1.5" />
+                                Tipo de Producto *
                             </label>
                             <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                step="5"
-                                value={formData.probability}
-                                onChange={(e) => setFormData({ ...formData, probability: parseInt(e.target.value) })}
-                                className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-red mt-1"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Next Action */}
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            <FileText size={14} className="inline mr-1.5" />
-                            Próxima Acción
-                        </label>
-                        <textarea
-                            value={formData.nextAction}
-                            onChange={(e) => setFormData({ ...formData, nextAction: e.target.value })}
-                            placeholder="Describe la próxima acción..."
-                            rows="2"
-                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
-                        />
-                    </div>
-
-                    {/* Next Action Date */}
-                    {formData.nextAction && (
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <Clock size={14} className="inline mr-1.5" />
-                                Fecha Próxima Acción
-                            </label>
-                            <input
-                                type="date"
-                                value={formData.nextActionDate}
-                                onChange={(e) => setFormData({ ...formData, nextActionDate: e.target.value })}
+                                type="text"
+                                required
+                                value={formData.productType}
+                                onChange={(e) => setFormData({ ...formData, productType: e.target.value })}
+                                placeholder="Ej: Fertilizantes, Semillas..."
                                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             />
                         </div>
-                    )}
 
-                    {/* Notes */}
-                    <div>
-                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                            Notas
-                        </label>
-                        <textarea
-                            value={formData.notes}
-                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                            placeholder="Información adicional..."
-                            rows="2"
-                            className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
-                        />
+                        {/* Opportunity Name with Auto-search */}
+                        <div className="relative">
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <Search size={14} className="inline mr-1.5" />
+                                Nombre de Oportunidad *
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                value={formData.opportunityName}
+                                onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
+                                placeholder="Buscar cliente/prospecto..."
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                            />
+
+                            {/* Auto-suggestions */}
+                            {showSuggestions && (
+                                <div className="absolute z-10 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                    {searchResults.map(entity => (
+                                        <button
+                                            key={`${entity.type}-${entity.id}`}
+                                            type="button"
+                                            onClick={() => handleSelectEntity(entity)}
+                                            className="w-full px-3 py-2.5 text-left hover:bg-slate-50 flex items-center gap-2.5 border-b border-slate-100 last:border-0"
+                                        >
+                                            <div className={`w-8 h-8 rounded-lg ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
+                                                {entity.type === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-semibold text-sm text-slate-800 truncate">{entity.displayName}</p>
+                                                <div className="flex items-center gap-2">
+                                                    <p className="text-xs text-slate-500 capitalize">{entity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
+                                                    {entity.cuit && (
+                                                        <>
+                                                            <span className="text-xs text-slate-300">•</span>
+                                                            <p className="text-xs text-slate-500 font-mono">CUIT: {entity.cuit}</p>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Selected Entity Display */}
+                            {formData.linkedEntityId && (
+                                <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5">
+                                    <div className={`w-8 h-8 rounded-lg ${formData.linkedEntityType === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
+                                        {formData.linkedEntityType === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs text-emerald-700 font-medium capitalize">Vinculado a {formData.linkedEntityType === 'client' ? 'Cliente' : 'Prospecto'}</p>
+                                        <p className="font-semibold text-sm text-emerald-900 truncate">
+                                            {formData.linkedEntityType === 'client'
+                                                ? clients.find(c => c.id === parseInt(formData.linkedEntityId))?.trade_name
+                                                : prospects.find(p => p.id === parseInt(formData.linkedEntityId))?.trade_name
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Contact */}
+                        {availableContacts.length > 0 && (
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <User size={14} className="inline mr-1.5" />
+                                    Contacto
+                                </label>
+                                <select
+                                    value={formData.contactId}
+                                    onChange={(e) => setFormData({ ...formData, contactId: e.target.value })}
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                >
+                                    <option value="">Seleccionar contacto</option>
+                                    {availableContacts.map(contact => {
+                                        const fullName = contact.firstName && contact.lastName
+                                            ? `${contact.firstName} ${contact.lastName}`
+                                            : '';
+                                        const displayText = fullName
+                                            ? `${fullName} - ${contact.email}`
+                                            : contact.email;
+
+                                        return (
+                                            <option key={contact.id} value={contact.id}>
+                                                {displayText}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* Amount & Close Date */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <DollarSign size={14} className="inline mr-1.5" />
+                                    Monto (ARS) *
+                                </label>
+                                <input
+                                    type="number"
+                                    required
+                                    min="0"
+                                    step="1000"
+                                    value={formData.amount}
+                                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                    placeholder="0"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <Calendar size={14} className="inline mr-1.5" />
+                                    Fecha Cierre *
+                                </label>
+                                <input
+                                    type="date"
+                                    required
+                                    value={formData.closeDate}
+                                    onChange={(e) => setFormData({ ...formData, closeDate: e.target.value })}
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Status & Probability */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    Estado *
+                                </label>
+                                <select
+                                    required
+                                    value={formData.status}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                >
+                                    <option value="iniciado">🚀 Iniciado</option>
+                                    <option value="presupuestado">📋 Presupuestado</option>
+                                    <option value="negociado">🤝 Negociado</option>
+                                    <option value="ganado">✅ Ganado</option>
+                                    <option value="perdido">❌ Perdido</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <TrendingUp size={14} className="inline mr-1.5" />
+                                    Probabilidad: {formData.probability}%
+                                </label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    step="5"
+                                    value={formData.probability}
+                                    onChange={(e) => setFormData({ ...formData, probability: parseInt(e.target.value) })}
+                                    className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-red mt-1"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Next Action */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <FileText size={14} className="inline mr-1.5" />
+                                Próxima Acción
+                            </label>
+                            <textarea
+                                value={formData.nextAction}
+                                onChange={(e) => setFormData({ ...formData, nextAction: e.target.value })}
+                                placeholder="Describe la próxima acción..."
+                                rows="2"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
+                            />
+                        </div>
+
+                        {/* Next Action Date */}
+                        {formData.nextAction && (
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <Clock size={14} className="inline mr-1.5" />
+                                    Fecha Próxima Acción
+                                </label>
+                                <input
+                                    type="date"
+                                    value={formData.nextActionDate}
+                                    onChange={(e) => setFormData({ ...formData, nextActionDate: e.target.value })}
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                />
+                            </div>
+                        )}
+
+                        {/* Notes */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                Notas
+                            </label>
+                            <textarea
+                                value={formData.notes}
+                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                placeholder="Información adicional..."
+                                rows="2"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
+                            />
+                        </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-4 mt-4 border-t border-slate-200">
+                    {/* Footer - Fixed Buttons */}
+                    <div className="flex gap-3 p-4 border-t border-slate-200 bg-white flex-shrink-0">
                         <button
                             type="button"
                             onClick={onClose}
