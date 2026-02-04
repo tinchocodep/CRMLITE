@@ -15,17 +15,17 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // State for users (comerciales)
     const [comerciales, setComerciales] = useState([]);
 
-    // Fetch users
+    // Fetch comerciales (active only)
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetchComerciales = async () => {
             const { data } = await supabase
-                .from('users')
-                .select('id, full_name, email, role')
+                .from('comerciales')
+                .select('id, name, email')
                 .eq('is_active', true)
-                .order('full_name');
+                .order('name');
             if (data) setComerciales(data);
         };
-        fetchUsers();
+        fetchComerciales();
     }, []);
 
     const [formData, setFormData] = useState({
@@ -129,7 +129,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             id: Date.now(),
             comercial: {
                 id: comercial.id,
-                name: comercial.full_name || comercial.email,
+                name: comercial.name,
                 email: comercial.email
             },
             opportunityName: formData.opportunityName,
@@ -193,7 +193,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             <option value="">Seleccionar comercial</option>
                             {comerciales.map(comercial => (
                                 <option key={comercial.id} value={comercial.id}>
-                                    {comercial.full_name || comercial.email}
+                                    {comercial.name}
                                 </option>
                             ))}
                         </select>
