@@ -11,7 +11,7 @@ import { useCompanies } from '../hooks/useCompanies';
 
 
 const Agenda = () => {
-    const { activities: rawEvents, loading, createActivity } = useActivities(30);
+    const { activities: rawEvents, loading, createActivity, updateActivity } = useActivities(30);
     const { companies } = useCompanies('client'); // Only fetch clients, not prospects
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
@@ -118,7 +118,7 @@ const Agenda = () => {
                         {/* Desktop View: Full Cards */}
                         <div className="hidden md:block space-y-1">
                             {dayEvents.slice(0, 3).map(event => (
-                                <EventCard key={event.id} event={event} view="month" />
+                                <EventCard key={event.id} event={event} view="month" onUpdate={updateActivity} />
                             ))}
                             {dayEvents.length > 3 && (
                                 <div className="text-[10px] text-slate-400 dark:text-slate-500 pl-1">+{dayEvents.length - 3} más</div>
@@ -297,7 +297,7 @@ const Agenda = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredEvents.map(event => (
-                            <EventCard key={event.id} event={event} view="list" />
+                            <EventCard key={event.id} event={event} view="list" onUpdate={updateActivity} />
                         ))}
                     </div>
                 )}

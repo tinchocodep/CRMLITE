@@ -145,6 +145,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
         const activityData = {
             title: newEvent.title,
             activity_type: newEvent.type, // Database column is 'activity_type'
+            priority: newEvent.priority, // Add priority field
             company_id: parseInt(newEvent.company_id),
             comercial_id: newEvent.assignedTo[0], // Take first assigned user as primary comercial
             scheduled_date: startDate.toISOString().split('T')[0], // YYYY-MM-DD
