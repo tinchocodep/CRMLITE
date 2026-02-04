@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Building2, MapPin, Briefcase, FileText, ChevronDown, ChevronUp, Tractor, Leaf, Map, User, Pencil, Trash2, Mail, Phone, FileDigit, FileCheck, FolderOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
+import { useLegajoDocuments } from '../../hooks/useLegajoDocuments';
 
 const importanceConfig = {
     low: { label: 'Baja', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-100 text-blue-700' },
@@ -13,12 +14,14 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
     const navigate = useNavigate();
     const importance = importanceConfig[client.importance] || importanceConfig.low;
 
-    // TODO: Calculate legajo progress from actual legajo system
-    // For now, use placeholder values
-    const totalDocs = 6;
-    const uploadedDocs = 0;
-    const legajoStatus = 'empty';
-    const progressPercentage = 0;
+    // Get real legajo progress
+    const { getCompletionStats } = useLegajoDocuments(client.id);
+    const stats = getCompletionStats();
+
+    const totalDocs = stats.total;
+    const uploadedDocs = stats.uploaded;
+    const legajoStatus = stats.uploaded === stats.total ? 'complete' : stats.uploaded > 0 ? 'incomplete' : 'empty';
+    const progressPercentage = stats.total > 0 ? (stats.uploaded / stats.total) * 100 : 0;
 
     const handleLegajoClick = (e) => {
         e.stopPropagation();
@@ -118,7 +121,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500 mb-1">
-                                    <span>Legajo: {client.fileNumber}</span>
+                                    <span>Legajo: {client.file_number || '---'}</span>
                                     <span>{uploadedDocs}/{totalDocs} Docs</span>
                                 </div>
                                 <div className="h-1.5 w-full bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
