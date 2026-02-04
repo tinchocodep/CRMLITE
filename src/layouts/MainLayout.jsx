@@ -188,7 +188,7 @@ const MainLayout = () => {
     const rightModules = modules.slice(5);
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-slate-900 flex flex-col font-sans text-slate-800 dark:text-slate-200">
+        <div className="min-h-screen bg-white dark:bg-slate-900 flex flex-col font-sans text-slate-800 dark:text-slate-200">
 
             {/* ========== MOBILE VERSION ========== */}
             <div className="xl:hidden flex flex-col h-screen">
