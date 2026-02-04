@@ -298,7 +298,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 <option value="">Seleccionar contacto</option>
                                 {availableContacts.map(contact => (
                                     <option key={contact.id} value={contact.id}>
-                                        {contact.name} - {contact.email}
+                                        {contact.first_name} {contact.last_name} - {contact.email}
                                     </option>
                                 ))}
                             </select>
