@@ -96,11 +96,31 @@ const EventCard = ({ event, view = 'day' }) => {
         }
     };
 
-    const handleSave = (e) => {
+
+    const handleSave = async (e) => {
         e.stopPropagation();
-        // Here you would typically bubble up the save event
-        console.log('Saving changes:', editedEvent);
-        setIsEditing(false);
+
+        if (!onUpdate) {
+            console.error('onUpdate prop is required for EventCard');
+            return;
+        }
+
+        try {
+            // Prepare update data
+            const updateData = {
+                title: editedEvent.title,
+                priority: editedEvent.priority,
+                activity_type: editedEvent.type,
+                description: editedEvent.description
+            };
+
+            console.log('EventCard - Saving changes:', updateData);
+            await onUpdate(editedEvent.id, updateData);
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Error saving activity:', error);
+            alert('Error al guardar los cambios');
+        }
     };
 
     // Calculate Duration
