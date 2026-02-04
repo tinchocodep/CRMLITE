@@ -133,42 +133,35 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        console.log('=== CREATING OPPORTUNITY ===');
+        console.log('Form Data:', formData);
+
         const comercial = comerciales.find(c => c.id === formData.comercialId);
         const linkedEntity = formData.linkedEntityType === 'client'
             ? clients.find(c => c.id === parseInt(formData.linkedEntityId))
             : prospects.find(p => p.id === parseInt(formData.linkedEntityId));
         const contact = contacts.find(c => c.id === parseInt(formData.contactId));
 
+        console.log('Resolved entities:', { comercial, linkedEntity, contact });
+
+        // Transform to database schema
         const newOpportunity = {
-            id: Date.now(),
-            comercial: {
-                id: comercial.id,
-                name: comercial.name,
-                email: comercial.email
-            },
-            opportunityName: formData.opportunityName,
-            linkedEntity: {
-                type: formData.linkedEntityType,
-                id: linkedEntity.id,
-                name: linkedEntity.trade_name || linkedEntity.legal_name
-            },
-            contact: contact ? {
-                id: contact.id,
-                name: contact.name,
-                email: contact.email,
-                phone: contact.phone
-            } : null,
-            productType: formData.productType,
+            name: formData.opportunityName,
+            comercial_id: formData.comercialId,
+            company_id: parseInt(formData.linkedEntityId),
+            company_type: formData.linkedEntityType,
+            contact_id: formData.contactId ? parseInt(formData.contactId) : null,
+            product_type: formData.productType,
             amount: parseFloat(formData.amount),
-            closeDate: formData.closeDate,
+            close_date: formData.closeDate,
             status: formData.status,
-            probability: formData.probability,
-            nextAction: formData.nextAction,
-            nextActionDate: formData.nextActionDate,
-            notes: formData.notes,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            probability: parseInt(formData.probability),
+            next_action: formData.nextAction,
+            next_action_date: formData.nextActionDate || null,
+            notes: formData.notes
         };
+
+        console.log('Opportunity object to save:', newOpportunity);
 
         onSave(newOpportunity);
         onClose();
@@ -439,7 +432,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-3 pt-2 sticky bottom-0 bg-white pb-2">
+                    <div className="flex gap-3 pt-4 mt-4 border-t border-slate-200">
                         <button
                             type="button"
                             onClick={onClose}
