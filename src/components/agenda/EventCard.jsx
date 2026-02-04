@@ -7,19 +7,16 @@ import { es } from 'date-fns/locale';
 const priorityConfig = {
     high: {
         label: 'Alta',
-        logo: '/logo_urgente.png',
         color: 'bg-red-50 border-red-100',
         animation: 'animate-pulse shadow-red-200 shadow-md'
     },
     medium: {
         label: 'Media',
-        logo: '/logo_tibio.png',
         color: 'bg-orange-50 border-orange-100',
         animation: 'hover:animate-pulse shadow-orange-100'
     },
     low: {
         label: 'Baja',
-        logo: '/logo_frio.png',
         color: 'bg-blue-50 border-blue-100',
         animation: 'hover:rotate-1 transition-transform'
     },
@@ -229,10 +226,8 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                     ) : (
                         <div className={`
                             flex items-center gap-1.5 rounded-full border transition-all duration-500 max-w-full
-                            ${config.color} ${isFloating ? `${config.animation} pr-3 pl-1 py-1` : 'px-1.5 py-0.5 border-transparent bg-transparent'}
+                            ${config.color} ${isFloating ? `${config.animation} px-3 py-1` : 'px-1.5 py-0.5 border-transparent bg-transparent'}
                         `}>
-                            <img src={config.logo} alt={config.label} className={`${isFloating ? 'w-6 h-6' : 'w-4 h-4'} object-contain drop-shadow-sm`} />
-
                             {/* Show label only if floating or wide enough (simplified logic: always show but smaller in grid) */}
                             <span className={`text-[9px] font-bold uppercase tracking-wide opacity-90 truncate ${editedEvent.priority === 'high' ? 'text-red-700' :
                                 editedEvent.priority === 'medium' ? 'text-orange-700' :
@@ -409,7 +404,6 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                     }}
                     className="group relative bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg p-1.5 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex items-center gap-2 hover:border-brand-red/30 dark:hover:border-red-500/30"
                 >
-                    <img src={config.logo} alt={config.label} className="w-5 h-5 object-contain flex-shrink-0" />
                     <div className="min-w-0">
                         <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">{editedEvent.title}</p>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{format(editedEvent.start, 'HH:mm')}</p>
