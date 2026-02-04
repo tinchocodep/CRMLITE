@@ -1,15 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, FolderOpen, FileCheck, FileWarning, Filter, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useLegajosProgress } from '../hooks/useLegajosProgress';
+import { useCompanies } from '../hooks/useCompanies';
+import { supabase } from '../lib/supabase';
 import LegajoModal from '../components/legajo/LegajoModal';
 
 const Legajos = () => {
     const navigate = useNavigate();
-    const { companies, loading, refresh } = useLegajosProgress();
+    const { companies: rawCompanies, loading } = useCompanies();
+    const [companies, setCompanies] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedClient, setSelectedClient] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Calculate progress for each company
+    useEffect(() => {
+        const calculateProgress = async () => {
+            if (!rawCompanies || rawCompanies.length === 0) {
+                setCompanies([]);
+                return;
+            }
+
+            // Get all file attachments
+            const { data: attachments } = await supabase
+                .from('file_attachments')
+                .select('entity_id, document_type, status')
+                .eq('entity_type', 'company')
+                .eq('status', 'active');
+
+            const companiesWithProgress = rawCompanies.map(company => {
+                const companyDocs = attachments?.filter(att => att.entity_id === company.id) || [];
+                const progress = {
+                    current: companyDocs.length,
+                    total: 6
+                };
+                const legajoStatus = progress.current === progress.total ? 'complete' : 'incomplete';
+
+                return {
+                    ...company,
+                    progress,
+                    legajoStatus
+                };
+            });
+
+            setCompanies(companiesWithProgress);
+        };
+
+        calculateProgress();
+    }, [rawCompanies]);
 
     console.log('🔍 [Legajos] Component rendering');
     console.log('🔍 [Legajos] Companies:', companies);
@@ -133,10 +171,7 @@ const Legajos = () => {
 
             <LegajoModal
                 isOpen={isModalOpen}
-                onClose={() => {
-                    setIsModalOpen(false);
-                    refresh(); // Refresh progress when modal closes
-                }}
+                onClose={() => setIsModalOpen(false)}
                 client={selectedClient}
                 legajo={selectedClient?.legajo}
             />
