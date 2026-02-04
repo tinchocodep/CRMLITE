@@ -28,16 +28,18 @@ const Agenda = () => {
             // If event has scheduled_date/time (Supabase), convert to start/end
             if (event.scheduled_date) {
                 try {
-                    const date = new Date(event.scheduled_date);
-                    if (isNaN(date.getTime())) {
-                        // Invalid date, skip this event
-                        console.warn('Invalid scheduled_date for event:', event.id);
+                    // Parse date manually to avoid timezone issues
+                    // scheduled_date is in format "YYYY-MM-DD"
+                    const [year, month, day] = event.scheduled_date.split('-').map(Number);
+                    if (!year || !month || !day) {
+                        console.warn('Invalid scheduled_date format for event:', event.id);
                         return null;
                     }
 
-                    const [hours, minutes] = (event.scheduled_time || '09:00').split(':');
-                    const start = new Date(date);
-                    start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                    const [hours, minutes] = (event.scheduled_time || '09:00').split(':').map(Number);
+
+                    // Create date in local timezone
+                    const start = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
                     // Calculate end time
                     const durationMinutes = event.duration_minutes || 60;

@@ -45,10 +45,13 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
         // If event has scheduled_date/time (Supabase data), convert to start/end
         if (event.scheduled_date) {
             try {
-                const date = new Date(event.scheduled_date);
-                const [hours, minutes] = (event.scheduled_time || '09:00').split(':');
-                const start = new Date(date);
-                start.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                // Parse date manually to avoid timezone issues
+                // scheduled_date is in format "YYYY-MM-DD"
+                const [year, month, day] = event.scheduled_date.split('-').map(Number);
+                const [hours, minutes] = (event.scheduled_time || '09:00').split(':').map(Number);
+
+                // Create date in local timezone
+                const start = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
                 // Calculate end time (default 1 hour duration)
                 const durationMinutes = event.duration_minutes || 60;
