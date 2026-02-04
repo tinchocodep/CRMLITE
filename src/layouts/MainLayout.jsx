@@ -202,9 +202,6 @@ const MainLayout = () => {
                                 className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                             >
                                 <img src="/logo.png" alt="SAILO" className="w-9 h-9 object-contain drop-shadow-sm" />
-                                <span className="font-bold text-lg tracking-tight text-slate-800 dark:text-slate-200">
-                                    SAILO <span className="text-brand-red">CRM</span>
-                                </span>
                             </button>
 
                             {/* Right Actions */}
