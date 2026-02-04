@@ -126,27 +126,18 @@ const Agenda = () => {
                             )}
                         </div>
 
-                        {/* Mobile View: Logos */}
+                        {/* Mobile View: Priority Dots */}
                         <div className="md:hidden flex flex-wrap gap-1 content-start pt-1">
                             {dayEvents.map(event => {
-                                const logo = event.priority === 'high' ? '/logo_urgente.png' :
-                                    event.priority === 'medium' ? '/logo_tibio.png' :
-                                        '/logo_frio.png';
-                                const bgClass = event.priority === 'high' ? 'bg-red-100 ring-1 ring-red-200' :
-                                    event.priority === 'medium' ? 'bg-orange-100 ring-1 ring-orange-200' :
-                                        'bg-blue-100 ring-1 ring-blue-200';
+                                const bgClass = event.priority === 'high' ? 'bg-red-500' :
+                                    event.priority === 'medium' ? 'bg-orange-500' :
+                                        'bg-blue-500';
 
                                 return (
                                     <div
                                         key={event.id}
-                                        className={`w-6 h-6 rounded-full flex items-center justify-center shadow-sm ${bgClass}`}
-                                    >
-                                        <img
-                                            src={logo}
-                                            alt={event.priority}
-                                            className="w-4 h-4 object-contain"
-                                        />
-                                    </div>
+                                        className={`w-2 h-2 rounded-full ${bgClass}`}
+                                    />
                                 );
                             })}
                         </div>

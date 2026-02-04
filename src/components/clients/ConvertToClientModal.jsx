@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { X, UserPlus, CheckCircle2, Building2, MapPin, FileText, Tractor, Leaf, DollarSign, User, Briefcase, Target, Map, Plus, Trash2 } from 'lucide-react';
 
 const importanceConfig = [
-    { id: 'low', label: 'Baja', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-200 text-blue-700' },
-    { id: 'medium', label: 'Media', logo: '/logo_tibio.png', color: 'bg-orange-50 border-orange-200 text-orange-700' },
-    { id: 'high', label: 'Alta', logo: '/logo_urgente.png', color: 'bg-red-50 border-red-200 text-red-700' }
+    { id: 'low', label: 'Baja', color: 'bg-blue-50 border-blue-200 text-blue-700' },
+    { id: 'medium', label: 'Media', color: 'bg-orange-50 border-orange-200 text-orange-700' },
+    { id: 'high', label: 'Alta', color: 'bg-red-50 border-red-200 text-red-700' }
 ];
 
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) => {
@@ -304,12 +304,6 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                                             : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200 hover:bg-slate-50'}
                                     `}
                                 >
-                                    <div className={`
-                                        p-2 rounded-xl transition-all duration-300
-                                        ${formData.importance === level.id ? 'bg-white shadow-sm' : 'bg-slate-100 group-hover:bg-white'}
-                                    `}>
-                                        <img src={level.logo} alt={level.label} className="w-6 h-6 md:w-8 md:h-8 object-contain" />
-                                    </div>
                                     <span className="font-bold text-xs md:text-sm tracking-wide text-center">{level.label}</span>
 
                                     {formData.importance === level.id && (

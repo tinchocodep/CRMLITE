@@ -8,21 +8,18 @@ const statusConfig = {
     contacted: {
         id: 'contacted',
         label: 'Contacto Inicial',
-        logo: '/logo_frio.png',
         color: 'bg-blue-50 border-blue-100',
         textColor: 'text-blue-700'
     },
     quoted: {
         id: 'quoted',
         label: 'Cotizado',
-        logo: '/logo_tibio.png',
         color: 'bg-orange-50 border-orange-100',
         textColor: 'text-orange-700'
     },
     near_closing: {
         id: 'near_closing',
         label: 'Cierre Cercano',
-        logo: '/logo_urgente.png',
         color: 'bg-red-50 border-red-100',
         textColor: 'text-red-700'
     },
@@ -69,8 +66,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                 </div>
 
                 {/* Status Badge */}
-                <div className={`flex items-center gap-1.5 pr-2.5 pl-0.5 py-0.5 rounded-full border ${status.color}`}>
-                    <img src={status.logo} alt={status.label} className="w-5 h-5 object-contain" />
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${status.color}`}>
                     <span className={`text-[9px] font-bold uppercase tracking-wide opacity-90 ${status.textColor}`}>
                         {status.label}
                     </span>

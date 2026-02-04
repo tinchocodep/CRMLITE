@@ -9,21 +9,18 @@ const priorityConfig = {
     high: {
         id: 'high',
         label: 'Alta',
-        logo: '/logo_urgente.png',
         color: 'bg-red-50 border-red-200',
         activeColor: 'bg-red-100 border-red-500 ring-2 ring-red-500/20'
     },
     medium: {
         id: 'medium',
         label: 'Media',
-        logo: '/logo_tibio.png',
         color: 'bg-orange-50 border-orange-200',
         activeColor: 'bg-orange-100 border-orange-500 ring-2 ring-orange-500/20'
     },
     low: {
         id: 'low',
         label: 'Baja',
-        logo: '/logo_frio.png',
         color: 'bg-blue-50 border-blue-200',
         activeColor: 'bg-blue-100 border-blue-500 ring-2 ring-blue-500/20'
     },
@@ -236,11 +233,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                             ${isActive ? p.activeColor : `${p.color} border-transparent hover:scale-[1.02]`}
                                         `}
                                     >
-                                        <img
-                                            src={p.logo}
-                                            alt={p.label}
-                                            className={`w-6 h-6 object-contain transition-transform ${isActive ? 'scale-110' : 'grayscale-[0.3]'}`}
-                                        />
                                         <span className={`text-sm font-bold ${isActive ? 'text-slate-900' : 'text-slate-600'}`}>
                                             {p.label}
                                         </span>

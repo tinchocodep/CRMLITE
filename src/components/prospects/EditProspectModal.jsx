@@ -6,9 +6,9 @@ import { useContacts } from '../../hooks/useContacts';
 import ContactModal from '../contacts/ContactModal';
 
 const statusOptions = [
-    { id: 'contacted', label: 'Contacto Inicial', logo: '/logo_frio.png', color: 'bg-blue-50 text-blue-700' },
-    { id: 'quoted', label: 'Cotizado', logo: '/logo_tibio.png', color: 'bg-orange-50 text-orange-700' },
-    { id: 'near_closing', label: 'Cierre Cercano', logo: '/logo_urgente.png', color: 'bg-red-50 text-red-700' },
+    { id: 'contacted', label: 'Contacto Inicial', color: 'bg-blue-50 text-blue-700' },
+    { id: 'quoted', label: 'Cotizado', color: 'bg-orange-50 text-orange-700' },
+    { id: 'near_closing', label: 'Cierre Cercano', color: 'bg-red-50 text-red-700' },
 ];
 
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
@@ -221,7 +221,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                 }
                                             `}
                                         >
-                                            <img src={option.logo} alt={option.label} className={`w-6 h-6 object-contain transition-transform ${formData.status === option.id ? 'scale-110' : 'grayscale-[0.3]'}`} />
                                             <span className={`text-sm font-bold ${formData.status === option.id ? 'text-slate-900' : 'text-slate-600'}`}>
                                                 {option.label}
                                             </span>

@@ -5,9 +5,9 @@ import CompanyContactsSection from '../shared/CompanyContactsSection';
 import { useLegajoDocuments } from '../../hooks/useLegajoDocuments';
 
 const importanceConfig = {
-    low: { label: 'Baja', logo: '/logo_frio.png', color: 'bg-blue-50 border-blue-100 text-blue-700' },
-    medium: { label: 'Media', logo: '/logo_tibio.png', color: 'bg-orange-50 border-orange-100 text-orange-700' },
-    high: { label: 'Alta', logo: '/logo_urgente.png', color: 'bg-red-50 border-red-100 text-red-700' }
+    low: { label: 'Baja', color: 'bg-blue-50 border-blue-100 text-blue-700' },
+    medium: { label: 'Media', color: 'bg-orange-50 border-orange-100 text-orange-700' },
+    high: { label: 'Alta', color: 'bg-red-50 border-red-100 text-red-700' }
 };
 
 const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allContacts = [] }) => {
@@ -100,10 +100,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                             </div>
                         </div>
 
-                        {/* Importance Badge */}
-                        <div className="flex items-center gap-1.5 pr-2.5 pl-0.5 py-0.5 rounded-full border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 shrink-0">
-                            <img src="/logo_urgente.png" alt={importance.label} className="w-5 h-5 object-contain" />
-                        </div>
+
                     </div>
 
                     {/* Legajo Progress - Clickable */}
