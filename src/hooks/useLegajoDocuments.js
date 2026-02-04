@@ -57,6 +57,9 @@ export const useLegajoDocuments = (companyId) => {
                 .eq('id', user.id)
                 .single();
 
+            // Generate the full Storage URL
+            const publicUrl = `https://lifeqgwsyopvaevywtsf.supabase.co/storage/v1/object/authenticated/legajo-documents/${documentData.storage_path}`;
+
             const { data, error: insertError } = await supabase
                 .from('file_attachments')
                 .insert({
@@ -67,6 +70,7 @@ export const useLegajoDocuments = (companyId) => {
                     file_size: documentData.file_size,
                     file_type: documentData.file_type,
                     storage_path: documentData.storage_path,
+                    public_url: publicUrl,
                     uploaded_by: user.id,
                     tenant_id: userData.tenant_id,
                     status: 'active',
@@ -86,6 +90,7 @@ export const useLegajoDocuments = (companyId) => {
             return { data: null, error: err };
         }
     };
+
 
     // Mark a document as replaced (when uploading a new version)
     const replaceDocument = async (documentType) => {
