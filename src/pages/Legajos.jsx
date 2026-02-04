@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Search, FolderOpen, FileCheck, FileWarning, Filter } from 'lucide-react';
+import { Search, FolderOpen, FileCheck, FileWarning, Filter, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useCompanies } from '../hooks/useCompanies';
 import LegajoModal from '../components/legajo/LegajoModal';
 
 const Legajos = () => {
+    const navigate = useNavigate();
     const { companies, loading } = useCompanies();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedClient, setSelectedClient] = useState(null);
@@ -42,9 +44,18 @@ const Legajos = () => {
         <div className="h-full flex flex-col gap-6">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
-                <div className="text-center md:text-left">
-                    <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Legajos Digitales</h1>
-                    <p className="text-slate-500 mt-1">Gestión de documentación y cumplimiento</p>
+                <div className="flex items-center gap-3 text-center md:text-left">
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-600 hover:text-brand-red"
+                        title="Volver"
+                    >
+                        <ArrowLeft size={24} />
+                    </button>
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Legajos Digitales</h1>
+                        <p className="text-slate-500 mt-1">Gestión de documentación y cumplimiento</p>
+                    </div>
                 </div>
 
                 <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">
