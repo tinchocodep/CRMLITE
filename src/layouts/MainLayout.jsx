@@ -337,6 +337,7 @@ const MainLayout = () => {
                             {/* Prospectos Button */}
                             <NavLink
                                 to="/prospectos"
+                                end
                                 onClick={(e) => safeNavLinkClick(e, '/prospectos')}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
@@ -354,6 +355,7 @@ const MainLayout = () => {
                             {/* Clientes Button */}
                             <NavLink
                                 to="/clientes"
+                                end
                                 onClick={(e) => safeNavLinkClick(e, '/clientes')}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
@@ -406,6 +408,7 @@ const MainLayout = () => {
                             {/* Oportunidades Button */}
                             <NavLink
                                 to="/oportunidades"
+                                end
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
                                     ${isActive ? 'text-brand-red' : 'text-slate-600'}
