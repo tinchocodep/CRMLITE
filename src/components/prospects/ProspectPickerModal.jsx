@@ -7,8 +7,8 @@ const ProspectPickerModal = ({ isOpen, onClose, prospects, onSelect }) => {
     const filteredProspects = prospects.filter(p => {
         const tradeName = p.trade_name || p.tradeName || '';
         const companyName = p.legal_name || p.companyName || '';
-        return tradeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            companyName.toLowerCase().includes(searchTerm.toLowerCase());
+        return (tradeName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (companyName || '').toLowerCase().includes(searchTerm.toLowerCase());
     });
 
     if (!isOpen) return null;

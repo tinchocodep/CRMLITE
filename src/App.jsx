@@ -62,7 +62,7 @@ function AppRoutes() {
     'Visitas', 'Oportunidades', 'Objetivos', 'Territorios', 'Reclamos'
   ];
 
-  const slugify = (text) => text.toLowerCase().replace(/°/g, '').replace(/\s+/g, '-');
+  const slugify = (text) => (text || '').toLowerCase().replace(/°/g, '').replace(/\s+/g, '-');
 
   return (
     <MobileRedirect>
