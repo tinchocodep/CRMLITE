@@ -65,6 +65,28 @@ export const useFileUpload = () => {
     };
 
     /**
+     * Get a signed URL for secure access to a private file
+     * @param {string} bucket - Storage bucket name
+     * @param {string} path - File path in bucket
+     * @param {number} expiresIn - URL expiration time in seconds (default: 3600 = 1 hour)
+     * @returns {Object} { data: { signedUrl }, error }
+     */
+    const getSignedUrl = async (bucket, path, expiresIn = 3600) => {
+        try {
+            const { data, error } = await supabase.storage
+                .from(bucket)
+                .createSignedUrl(path, expiresIn);
+
+            if (error) throw error;
+
+            return { data, error: null };
+        } catch (err) {
+            console.error('Error getting signed URL:', err);
+            return { data: null, error: err };
+        }
+    };
+
+    /**
      * Get public URL for a file
      * @param {string} bucket - Storage bucket name
      * @param {string} path - File path in bucket
@@ -100,6 +122,7 @@ export const useFileUpload = () => {
 
     return {
         uploadFile,
+        getSignedUrl,
         getPublicUrl,
         deleteFile,
         uploading,
