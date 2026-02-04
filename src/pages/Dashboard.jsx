@@ -61,54 +61,62 @@ const Dashboard = () => {
         clients: clients.length
     };
 
-    // Get upcoming events (next 7 days) from real data
+    // Get upcoming events sorted by proximity to current time
+    const now = new Date();
     const upcomingEvents = activities
         .filter(activity => {
-            // Use scheduled_date (Supabase) instead of activity_date
             if (!activity.scheduled_date) return false;
 
             try {
-                const eventDate = new Date(activity.scheduled_date);
-                if (isNaN(eventDate.getTime())) return false; // Invalid date
+                // Combine scheduled_date and scheduled_time
+                const dateStr = activity.scheduled_date;
+                const timeStr = activity.scheduled_time || '00:00';
+                const eventDateTime = new Date(`${dateStr}T${timeStr}`);
 
-                const today = new Date();
-                const weekFromNow = new Date();
-                weekFromNow.setDate(today.getDate() + 7);
-                return eventDate >= today && eventDate <= weekFromNow;
+                if (isNaN(eventDateTime.getTime())) return false;
+
+                // Show activities from today onwards (including past activities from today)
+                const todayStart = new Date(now);
+                todayStart.setHours(0, 0, 0, 0);
+
+                return eventDateTime >= todayStart;
             } catch {
-                return false; // Skip invalid dates
+                return false;
             }
         })
-        .sort((a, b) => {
-            try {
-                return new Date(a.scheduled_date) - new Date(b.scheduled_date);
-            } catch {
-                return 0;
-            }
-        })
-        .slice(0, 5)
         .map(activity => {
             try {
+                const dateStr = activity.scheduled_date;
+                const timeStr = activity.scheduled_time || '00:00';
+                const eventDateTime = new Date(`${dateStr}T${timeStr}`);
+
                 return {
                     ...activity,
                     id: activity.id,
-                    start: new Date(activity.scheduled_date),
+                    start: eventDateTime,
                     type: activity.activity_type,
                     title: activity.title,
-                    description: activity.description
+                    description: activity.description,
+                    // Calculate time difference in milliseconds for sorting
+                    timeDiff: Math.abs(eventDateTime - now)
                 };
             } catch {
-                // Fallback for invalid dates
                 return {
                     ...activity,
                     id: activity.id,
                     start: new Date(),
                     type: activity.activity_type,
                     title: activity.title,
-                    description: activity.description
+                    description: activity.description,
+                    timeDiff: Infinity
                 };
             }
-        });
+        })
+        .sort((a, b) => {
+            // Sort by proximity to current time (closest first)
+            return a.timeDiff - b.timeDiff;
+        })
+        .slice(0, 5); // Show only 5 closest activities
 
     const getEventTypeConfig = (type) => {
         const configs = {
