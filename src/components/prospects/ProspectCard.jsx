@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Building2, FileDigit, Phone, Mail, ArrowRight, Pencil, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, Building2, FileDigit, Phone, Mail, ArrowRight, Pencil, MapPin, ChevronDown, ChevronUp, UserCheck } from 'lucide-react';
 import { safeFormat } from '../../utils/dateUtils';
 import { es } from 'date-fns/locale';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
@@ -178,11 +178,9 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                     title="Convertir a Cliente"
                 >
                     <div className="absolute inset-0 bg-brand-red/20 blur-xl rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500" />
-                    <img
-                        src="/Diseno_sin_titulo.png"
-                        alt="Promover a Cliente"
-                        className="w-10 h-10 object-contain relative z-10 transition-transform duration-300 group-hover/btn:scale-110 drop-shadow-md hover:drop-shadow-xl"
-                    />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center relative z-10 transition-transform duration-300 group-hover/btn:scale-110 shadow-md hover:shadow-xl">
+                        <UserCheck className="w-5 h-5 text-white" strokeWidth={2.5} />
+                    </div>
                 </button>
             </div>
 
