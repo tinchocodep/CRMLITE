@@ -13,8 +13,3 @@ body {
   @apply bg-white text-slate-900 antialiased;
   font-family: var(--font-sans);
 }
-
-/* Custom Utilities if needed */
-.glass-panel {
-  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
-}
