@@ -16,7 +16,7 @@ const PhotoUploader = ({
 }) => {
     const fileInputRef = useRef(null);
     const cameraInputRef = useRef(null);
-    const [preview, setPreview] = useState(existingFile?.storage_path || null);
+    const [preview, setPreview] = useState(existingFile?.public_url || null);
     const [selectedFile, setSelectedFile] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const { uploadFile, uploading, progress, error } = useFileUpload();
@@ -100,7 +100,7 @@ const PhotoUploader = ({
 
     const handleCancel = () => {
         setSelectedFile(null);
-        setPreview(existingFile?.storage_path || null);
+        setPreview(existingFile?.public_url || null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
