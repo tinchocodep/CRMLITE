@@ -123,22 +123,20 @@ const Prospects = () => {
 
     const handleConfirmConversion = async (clientData) => {
         try {
-            // Prepare the data for client creation
-            const dataToSave = {
+            // Prepare the data for updating the prospect to client
+            const dataToUpdate = {
                 ...clientData,
                 company_type: 'client',
-                // Ensure we don't duplicate the ID
-                id: undefined
+                // Keep the same ID
+                id: selectedProspect.id
             };
 
-            console.log('🔍 [Prospects] Creating client with data:', dataToSave);
+            console.log('🔍 [Prospects] Updating prospect to client with data:', dataToUpdate);
 
-            // Create the new client with all the data
-            const result = await createCompany(dataToSave);
+            // Update the existing prospect record to become a client
+            const result = await updateCompany(selectedProspect.id, dataToUpdate);
 
             if (result.success) {
-                // After successful client creation, soft-delete the prospect
-                await updateCompany(selectedProspect.id, { is_active: false });
                 alert(`¡Felicitaciones! ${clientData.trade_name || clientData.legal_name} ha sido convertido a Cliente.`);
                 setIsConvertModalOpen(false);
             } else {
@@ -149,6 +147,7 @@ const Prospects = () => {
             alert('Error al convertir a cliente');
         }
     };
+
 
 
 
