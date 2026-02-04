@@ -19,7 +19,7 @@ export const useLegajosProgress = () => {
             // Get all companies (without file_number since it doesn't exist)
             const { data: companiesData, error: companiesError } = await supabase
                 .from('companies')
-                .select('id, trade_name, legal_name')
+                .select('id, trade_name, legal_name, file_number')
                 .order('trade_name');
 
             if (companiesError) throw companiesError;
