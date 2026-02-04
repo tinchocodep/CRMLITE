@@ -144,12 +144,11 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
         console.log('Resolved entities:', { comercial, linkedEntity, contact });
 
-        // Transform to database schema
+        // Transform to database schema (only IDs, no nested objects)
         const newOpportunity = {
-            name: formData.opportunityName,
+            opportunity_name: formData.opportunityName,
             comercial_id: formData.comercialId,
             company_id: parseInt(formData.linkedEntityId),
-            company_type: formData.linkedEntityType,
             contact_id: formData.contactId ? parseInt(formData.contactId) : null,
             product_type: formData.productType,
             amount: parseFloat(formData.amount),
