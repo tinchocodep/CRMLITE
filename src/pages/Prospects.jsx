@@ -170,6 +170,13 @@ const Prospects = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
+                    <button
+                        onClick={handleCreateClick}
+                        className="px-4 py-2 bg-brand-red hover:bg-red-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                    >
+                        <Plus size={18} />
+                        <span className="hidden md:inline">Nuevo</span>
+                    </button>
                 </div>
             </div>
 
@@ -194,18 +201,6 @@ const Prospects = () => {
                         />
                     ))
                 )}
-
-
-                {/* Add New Placeholder */}
-                <button
-                    onClick={handleCreateClick}
-                    className="group border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl p-6 flex flex-col items-center justify-center gap-4 hover:border-brand-red/50 dark:hover:border-red-500/50 hover:bg-red-50/30 dark:hover:bg-red-900/10 transition-all min-h-[300px]"
-                >
-                    <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 group-hover:bg-white dark:group-hover:bg-slate-700 border-2 border-slate-100 dark:border-slate-700 group-hover:border-brand-red/20 dark:group-hover:border-red-500/30 flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:text-brand-red dark:group-hover:text-red-400 transition-all shadow-sm">
-                        <Plus size={32} />
-                    </div>
-                    <span className="text-slate-500 dark:text-slate-400 font-bold group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">Nuevo Prospecto</span>
-                </button>
             </div>
 
             {/* Conversion Modal */}
