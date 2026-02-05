@@ -5,6 +5,8 @@ import { useToast } from '../../contexts/ToastContext';
 const ToastContainer = () => {
     const { toasts, dismissToast } = useToast();
 
+    console.log('[ToastContainer] Rendering with toasts:', toasts.length);
+
     // Limit to 3 visible toasts at a time
     const visibleToasts = toasts.slice(0, 3);
 
