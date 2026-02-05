@@ -246,7 +246,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
 
                     {/* 4. Client/Company - FOURTH */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa</label>
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa / Prospecto</label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                             <select
