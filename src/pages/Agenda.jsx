@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { format, addDays, startOfWeek, addMonths, subMonths, subWeeks, addWeeks, subDays, startOfMonth, endOfMonth, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
@@ -11,7 +11,6 @@ import { useActivities } from '../hooks/useActivities';
 import { useCompanies } from '../hooks/useCompanies';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useToast } from '../contexts/ToastContext';
-import { useEffect, useRef } from 'react';
 
 
 const Agenda = () => {
