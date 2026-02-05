@@ -177,6 +177,7 @@ const Clients = () => {
                 onClose={() => setIsCreateModalOpen(false)}
                 onConvert={handleSaveClient}
                 prospect={editingClient} // Reusing prospect prop for editing existing client
+                title={editingClient ? 'Editar Cliente' : 'Alta de Cliente'}
             />
         </div>
     );
