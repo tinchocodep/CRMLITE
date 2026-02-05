@@ -8,6 +8,24 @@ export const useCompanies = (type = null) => {
     const [error, setError] = useState(null);
     const { comercialId, isAdmin, isSupervisor } = useAuth();
 
+    // Helper: Map qualification score to status
+    const mapQualificationToStatus = (score) => {
+        if (!score) return 'contacted';
+        if (score <= 1) return 'contacted';
+        if (score === 2) return 'quoted';
+        return 'near_closing';
+    };
+
+    // Helper: Map status to qualification score
+    const mapStatusToQualification = (status) => {
+        const mapping = {
+            'contacted': 1,
+            'quoted': 2,
+            'near_closing': 3
+        };
+        return mapping[status] || 1;
+    };
+
     const fetchCompanies = async () => {
         try {
             setLoading(true);
@@ -25,7 +43,14 @@ export const useCompanies = (type = null) => {
             const { data, error: fetchError } = await query.order('created_at', { ascending: false });
 
             if (fetchError) throw fetchError;
-            setCompanies(data || []);
+
+            // Transform data to include status field from qualification_score
+            const transformedData = (data || []).map(company => ({
+                ...company,
+                status: mapQualificationToStatus(company.qualification_score)
+            }));
+
+            setCompanies(transformedData);
             setError(null);
         } catch (err) {
             console.error('Error fetching companies:', err);
@@ -57,10 +82,17 @@ export const useCompanies = (type = null) => {
 
             if (userError) throw userError;
 
+            // Map status to qualification_score if status is provided
+            const dataToInsert = { ...companyData };
+            if (dataToInsert.status) {
+                dataToInsert.qualification_score = mapStatusToQualification(dataToInsert.status);
+                delete dataToInsert.status; // Remove status as it's not a DB field
+            }
+
             const { data, error: createError } = await supabase
                 .from('companies')
                 .insert([{
-                    ...companyData,
+                    ...dataToInsert,
                     tenant_id: userData.tenant_id,
                     comercial_id: companyData.comercial_id || userData.comercial_id,
                     created_by: user.id
@@ -79,9 +111,24 @@ export const useCompanies = (type = null) => {
 
     const updateCompany = async (id, updates) => {
         try {
+            console.log('🔍 [useCompanies] updateCompany called with:', { id, updates });
+
+            // Map status to qualification_score if status is provided
+            const dataToUpdate = { ...updates };
+            if (dataToUpdate.status) {
+                dataToUpdate.qualification_score = mapStatusToQualification(dataToUpdate.status);
+                console.log('🔍 [useCompanies] Mapped status to qualification_score:', {
+                    status: dataToUpdate.status,
+                    qualification_score: dataToUpdate.qualification_score
+                });
+                delete dataToUpdate.status; // Remove status as it's not a DB field
+            }
+
+            console.log('🔍 [useCompanies] Final data to update in Supabase:', dataToUpdate);
+
             const { data, error: updateError } = await supabase
                 .from('companies')
-                .update(updates)
+                .update(dataToUpdate)
                 .eq('id', id)
                 .select()
                 .single();
