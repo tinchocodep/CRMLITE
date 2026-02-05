@@ -50,9 +50,6 @@ const Prospects = () => {
     };
 
     const handleSaveProspect = async (updatedProspect) => {
-        console.log('🔍 [Prospects] handleSaveProspect called with:', updatedProspect);
-        console.log('🔍 [Prospects] Status value:', updatedProspect.status);
-
         try {
             if (updatedProspect.id && typeof updatedProspect.id === 'number' && updatedProspect.id > 1000000) {
                 // New prospect (temporary ID)

@@ -36,8 +36,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     };
 
     const handleSubmit = () => {
-        console.log('🔍 [EditProspectModal] handleSubmit - formData:', formData);
-        console.log('🔍 [EditProspectModal] formData.status:', formData.status);
         onSave(formData);
         onClose();
     };
@@ -239,9 +237,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                         </div>
 
                         {/* Estado Actual - Status Selector */}
-                        <div className="space-y-3 pt-2 border-4 border-purple-500 bg-purple-50 p-4 rounded-xl">
-                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">⭐ ESTADO ACTUAL ⭐</label>
-                            {console.log('🔍 [EditProspectModal] Rendering Estado Actual section. formData.status:', formData.status, 'statusOptions:', statusOptions)}
+                        <div className="space-y-3 pt-2">
+                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Estado Actual</label>
                             <div className="grid grid-cols-3 gap-3">
                                 {statusOptions.map(option => (
                                     <button
