@@ -592,7 +592,7 @@ const MainLayout = () => {
                                 {/* Header */}
                                 <div className="px-6 pb-4 flex items-center justify-between">
                                     <div>
-                                        <h3 className="text-lg font-bold text-slate-800">MENÚ</h3>
+                                        <h3 className="text-lg font-bold text-slate-800">Menú</h3>
                                     </div>
                                     <button
                                         onClick={() => setMobileNavMenuOpen(false)}

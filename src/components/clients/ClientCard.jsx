@@ -112,7 +112,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                     {/* Legajo Progress - Clickable */}
                     <button
                         onClick={handleLegajoClick}
-                        className="w-full p-2 bg-white dark:bg-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600 transition-all active:scale-95"
+                        className="w-full p-2 hover:bg-slate-50 dark:hover:bg-slate-700/30 rounded-xl transition-all active:scale-95"
                         title="Ver Legajo Completo"
                     >
                         <div className="flex items-center gap-2">
