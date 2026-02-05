@@ -12,7 +12,7 @@ import { useCompanies } from '../hooks/useCompanies';
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
-    const { companies } = useCompanies('client'); // Only fetch clients, not prospects
+    const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
 
