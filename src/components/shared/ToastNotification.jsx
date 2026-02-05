@@ -97,9 +97,11 @@ const ToastNotification = ({ notification, onDismiss }) => {
         >
             <div className="flex items-start gap-3">
                 {/* Icon */}
-                <div className={`${colors.iconBg} ${colors.iconColor} p-2 rounded-lg flex-shrink-0`}>
-                    <IconComponent size={20} strokeWidth={2.5} />
-                </div>
+                {IconComponent && (
+                    <div className={`${colors.iconBg} ${colors.iconColor} p-2 rounded-lg flex-shrink-0`}>
+                        <IconComponent size={20} strokeWidth={2.5} />
+                    </div>
+                )}
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
