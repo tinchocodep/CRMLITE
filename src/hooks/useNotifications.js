@@ -315,12 +315,19 @@ export const useNotifications = () => {
     useEffect(() => {
         if (notifications.length === 0) return;
 
+        console.log('[Toast Debug] Total notifications:', notifications.length);
+        console.log('[Toast Debug] Notifications:', notifications.map(n => ({ id: n.id, priority: n.priority, title: n.title })));
+
         // Only show toasts for high and critical priority notifications
         const toastableNotifications = notifications.filter(
             n => (n.priority === 'high' || n.priority === 'critical') && !shownToastIds.current.has(n.id)
         );
 
+        console.log('[Toast Debug] Toastable notifications:', toastableNotifications.length);
+        console.log('[Toast Debug] Already shown IDs:', Array.from(shownToastIds.current));
+
         toastableNotifications.forEach(notification => {
+            console.log('[Toast Debug] Showing toast for:', notification.title);
             showToast(notification);
             shownToastIds.current.add(notification.id);
         });
