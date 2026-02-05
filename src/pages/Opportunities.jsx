@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Plus, Filter, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
 import CreateOpportunityModal from '../components/opportunities/CreateOpportunityModal';
+import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
 import { useOpportunities } from '../hooks/useOpportunities';
 
 export default function Opportunities() {
@@ -10,6 +11,8 @@ export default function Opportunities() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedOpportunity, setSelectedOpportunity] = useState(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [opportunityToEdit, setOpportunityToEdit] = useState(null);
 
 
     // Listen for custom event from Quick Actions
@@ -218,7 +221,10 @@ export default function Opportunities() {
                             <OpportunityCard
                                 key={opportunity.id}
                                 opportunity={opportunity}
-                                onClick={() => setSelectedOpportunity(opportunity)}
+                                onClick={() => {
+                                    setOpportunityToEdit(opportunity);
+                                    setIsEditModalOpen(true);
+                                }}
                             />
                         ))}
                     </div>
@@ -236,6 +242,25 @@ export default function Opportunities() {
                         setIsCreateModalOpen(false);
                     } else {
                         alert('Error al crear oportunidad: ' + result.error);
+                    }
+                }}
+            />
+
+            {/* Edit Opportunity Modal */}
+            <EditOpportunityModal
+                isOpen={isEditModalOpen}
+                opportunity={opportunityToEdit}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setOpportunityToEdit(null);
+                }}
+                onSave={async (id, updates) => {
+                    const result = await updateOpportunity(id, updates);
+                    if (result.success) {
+                        setIsEditModalOpen(false);
+                        setOpportunityToEdit(null);
+                    } else {
+                        alert('Error al actualizar oportunidad: ' + result.error);
                     }
                 }}
             />
