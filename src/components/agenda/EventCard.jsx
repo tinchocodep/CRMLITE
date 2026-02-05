@@ -29,6 +29,14 @@ const typeConfig = {
     task: { label: 'Tarea', color: 'text-brand-red bg-brand-red/10' },
 };
 
+const opportunityStatusConfig = {
+    iniciado: { label: 'Iniciado', icon: '🚀', color: 'from-blue-50 to-blue-100 border-blue-200' },
+    presupuestado: { label: 'Presupuestado', icon: '📋', color: 'from-yellow-50 to-yellow-100 border-yellow-200' },
+    negociado: { label: 'Negociado', icon: '🤝', color: 'from-orange-50 to-orange-100 border-orange-200' },
+    ganado: { label: 'Ganado', icon: '✅', color: 'from-green-50 to-green-100 border-green-200' },
+    perdido: { label: 'Perdido', icon: '❌', color: 'from-red-50 to-red-100 border-red-200' }
+};
+
 const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
     const [showDetails, setShowDetails] = useState(false);
 
@@ -257,12 +265,14 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                         )
                     )}
 
-                    {/* Opportunity Link Indicator */}
-                    {editedEvent.auto_generated && editedEvent.opportunity_id && (
-                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 shadow-sm">
-                            <Briefcase size={12} className="text-purple-600" />
-                            <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wide">
-                                Oportunidad
+                    {/* Opportunity Link Indicator with Status */}
+                    {editedEvent.auto_generated && editedEvent.opportunity_id && editedEvent.opportunity_status && (
+                        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r border shadow-sm ${opportunityStatusConfig[editedEvent.opportunity_status]?.color || 'from-purple-50 to-pink-50 border-purple-200'}`}>
+                            <span className="text-sm">
+                                {opportunityStatusConfig[editedEvent.opportunity_status]?.icon || '💼'}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-700 uppercase tracking-wide">
+                                {opportunityStatusConfig[editedEvent.opportunity_status]?.label || 'Oportunidad'}
                             </span>
                         </div>
                     )}
