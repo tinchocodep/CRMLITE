@@ -45,7 +45,7 @@ const MainLayout = () => {
     const location = useLocation();
     const { companies, createCompany } = useCompanies();
     const { user } = useAuth();
-    const { notifications, unreadCount } = useNotifications();
+    const { notifications, unreadCount, dismissNotification } = useNotifications();
 
     // Filter only prospects
     const prospects = companies.filter(c => c.company_type === 'prospect');
@@ -269,17 +269,19 @@ const MainLayout = () => {
                                         return (
                                             <div
                                                 key={notification.id}
-                                                onClick={() => {
-                                                    navigate(notification.action);
-                                                    setNotificationsOpen(false);
-                                                }}
-                                                className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
+                                                className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors relative group"
                                             >
-                                                <div className="flex gap-3">
+                                                <div
+                                                    onClick={() => {
+                                                        navigate(notification.action);
+                                                        setNotificationsOpen(false);
+                                                    }}
+                                                    className="flex gap-3 cursor-pointer"
+                                                >
                                                     <div className={`w-10 h-10 rounded-lg ${notification.color} flex items-center justify-center flex-shrink-0`}>
                                                         <IconComponent className="w-5 h-5" />
                                                     </div>
-                                                    <div className="flex-1">
+                                                    <div className="flex-1 pr-6">
                                                         <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
                                                         <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
                                                         <span className={`text-xs font-medium mt-1 inline-block ${notification.priority === 'critical' ? 'text-red-600' :
@@ -291,6 +293,17 @@ const MainLayout = () => {
                                                         </span>
                                                     </div>
                                                 </div>
+                                                {/* Dismiss Button */}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        dismissNotification(notification.id);
+                                                    }}
+                                                    className="absolute top-3 right-3 p-1 rounded-full hover:bg-slate-200 transition-colors opacity-0 group-hover:opacity-100"
+                                                    title="Descartar notificación"
+                                                >
+                                                    <X size={14} className="text-slate-500" />
+                                                </button>
                                             </div>
                                         );
                                     })
