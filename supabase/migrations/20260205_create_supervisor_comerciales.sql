@@ -4,9 +4,9 @@
 
 -- Create the supervisor_comerciales table
 CREATE TABLE IF NOT EXISTS public.supervisor_comerciales (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    supervisor_id UUID NOT NULL REFERENCES public.comerciales(id) ON DELETE CASCADE,
-    comercial_id UUID NOT NULL REFERENCES public.comerciales(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    supervisor_id BIGINT NOT NULL REFERENCES public.comerciales(id) ON DELETE CASCADE,
+    comercial_id BIGINT NOT NULL REFERENCES public.comerciales(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     created_by UUID REFERENCES auth.users(id),
     
