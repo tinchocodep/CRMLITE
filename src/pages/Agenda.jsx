@@ -6,19 +6,33 @@ import EventCard from '../components/agenda/EventCard';
 import WeekView from '../components/agenda/WeekView';
 import DayView from '../components/agenda/DayView';
 import CreateEventModal from '../components/agenda/CreateEventModal';
+import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useActivities } from '../hooks/useActivities';
 import { useCompanies } from '../hooks/useCompanies';
+import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
+
+    // Role-based filtering
+    const {
+        comerciales,
+        selectedComercialId,
+        setSelectedComercialId,
+        canFilter,
+        showAllOption,
+        filterDataByRole,
+        loading: filterLoading
+    } = useRoleBasedFilter();
+
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
 
     // Normalize events to ensure they all have start/end properties
     // This handles both Supabase format (scheduled_date/time) and mock format (start/end)
-    const events = React.useMemo(() => {
+    const normalizedEvents = React.useMemo(() => {
         return rawEvents.map(event => {
             // If event already has start/end, use as is
             if (event.start && event.end) {
@@ -61,6 +75,11 @@ const Agenda = () => {
             return null;
         }).filter(Boolean); // Remove null events
     }, [rawEvents]);
+
+    // Apply role-based filter to normalized events
+    const events = React.useMemo(() => {
+        return filterDataByRole(normalizedEvents);
+    }, [normalizedEvents, selectedComercialId, filterDataByRole]);
 
     const nextDate = () => {
         if (view === 'month') setCurrentDate(addMonths(currentDate, 1));
@@ -336,6 +355,19 @@ const Agenda = () => {
                     <button onClick={() => setView('day')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'day' ? 'bg-white dark:bg-slate-600 shadow text-brand-red dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Día</button>
                     <button onClick={() => setView('list')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'list' ? 'bg-white dark:bg-slate-600 shadow text-brand-red dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Lista</button>
                 </div>
+
+                {/* Comercial Filter (Admin & Supervisor only) */}
+                {canFilter && (
+                    <div className="w-full md:w-auto order-4 md:order-none">
+                        <ComercialFilter
+                            comerciales={comerciales}
+                            selectedComercialId={selectedComercialId}
+                            onComercialChange={setSelectedComercialId}
+                            showAllOption={showAllOption}
+                            loading={filterLoading}
+                        />
+                    </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-2 w-full md:w-auto order-2 md:order-none">
