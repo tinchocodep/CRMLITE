@@ -1,26 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  /* V2 Color Palette - Primary */
-  --color-brand-red: #E76E53;
-  --color-brand-red-hover: #CD5643;
-  
-  /* V2 Color Palette - Backgrounds */
-  --color-bg-coral: #E76E53;
-  --color-bg-light: #F7F7F7;
-  
-  /* V2 Color Palette - Text */
-  --color-text-primary: #333333;
-  --color-text-secondary: #6d6d66;
-  
-  /* V2 Color Palette - Utility */
-  --color-success: #28A745;
-  --color-warning: #FFC107;
-  --color-error: #FD5E5E;
-  --color-info: #17A2B8;
-  --color-border: #DEE2E6;
-  
-  /* Font */
+  --color-brand-red: #D93036;
+  --color-brand-red-hover: #b92b30;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
