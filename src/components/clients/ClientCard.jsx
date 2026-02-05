@@ -14,15 +14,6 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
     const navigate = useNavigate();
     const importance = importanceConfig[client.importance] || importanceConfig.low;
 
-    console.log('🔍 [ClientCard] Rendering client:', {
-        id: client.id,
-        trade_name: client.trade_name,
-        legal_name: client.legal_name,
-        tradeName: client.tradeName,
-        legalName: client.legalName,
-        allKeys: Object.keys(client)
-    });
-
     // Get real legajo progress
     const { getCompletionStats } = useLegajoDocuments(client.id);
     const stats = getCompletionStats();

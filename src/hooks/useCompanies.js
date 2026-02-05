@@ -111,20 +111,12 @@ export const useCompanies = (type = null) => {
 
     const updateCompany = async (id, updates) => {
         try {
-            console.log('🔍 [useCompanies] updateCompany called with:', { id, updates });
-
             // Map status to qualification_score if status is provided
             const dataToUpdate = { ...updates };
             if (dataToUpdate.status) {
                 dataToUpdate.qualification_score = mapStatusToQualification(dataToUpdate.status);
-                console.log('🔍 [useCompanies] Mapped status to qualification_score:', {
-                    status: dataToUpdate.status,
-                    qualification_score: dataToUpdate.qualification_score
-                });
                 delete dataToUpdate.status; // Remove status as it's not a DB field
             }
-
-            console.log('🔍 [useCompanies] Final data to update in Supabase:', dataToUpdate);
 
             const { data, error: updateError } = await supabase
                 .from('companies')
