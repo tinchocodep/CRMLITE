@@ -311,7 +311,11 @@ export const useNotifications = () => {
         dismissedIds
     ]);
 
-    // Show toast notifications for new high/critical priority notifications
+    // DISABLED: Automatic toast notifications
+    // Toasts will now be triggered manually:
+    // 1. When creating a new activity
+    // 2. When entering the Agenda page (show closest activity only)
+    /*
     useEffect(() => {
         if (notifications.length === 0) return;
 
@@ -332,6 +336,7 @@ export const useNotifications = () => {
             shownToastIds.current.add(notification.id);
         });
     }, [notifications, showToast]);
+    */
 
     return {
         notifications,
