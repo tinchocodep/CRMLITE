@@ -6,11 +6,13 @@ import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useCompanies } from '../hooks/useCompanies';
 import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
+import { useSystemToast } from '../hooks/useSystemToast';
 
 const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { companies: clients, loading, createCompany, updateCompany, deleteCompany } = useCompanies('client');
     const { contacts: allContacts } = useContacts();
+    const { showSuccess, showError, showWarning } = useSystemToast();
 
     // Role-based filtering
     const {
@@ -61,7 +63,7 @@ const Clients = () => {
                         c.cuit === clientData.cuit && c.id !== clientData.id
                     );
                     if (existingCompany) {
-                        alert(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        showWarning(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
                         return;
                     }
                 }
@@ -71,7 +73,7 @@ const Clients = () => {
                 if (clientData.cuit && clients && clients.length > 0) {
                     const existingCompany = clients.find(c => c.cuit === clientData.cuit);
                     if (existingCompany) {
-                        alert(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        showWarning(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
                         return;
                     }
                 }
@@ -80,13 +82,13 @@ const Clients = () => {
             }
 
             if (result.success) {
-                alert(clientData.id ? 'Cliente actualizado exitosamente!' : 'Cliente creado exitosamente!');
+                showSuccess(clientData.id ? 'Cliente actualizado exitosamente!' : 'Cliente creado exitosamente!');
             } else {
-                alert('Error: ' + result.error);
+                showError('Error: ' + result.error);
             }
         } catch (error) {
             console.error('Error saving client:', error);
-            alert('Error al guardar cliente');
+            showError('Error al guardar cliente');
         }
         setIsCreateModalOpen(false);
         setEditingClient(null);
@@ -96,7 +98,7 @@ const Clients = () => {
         if (window.confirm('¿Está seguro de eliminar este cliente?')) {
             const result = await deleteCompany(id);
             if (!result.success) {
-                alert('Error al eliminar cliente: ' + result.error);
+                showError('Error al eliminar cliente: ' + result.error);
             }
         }
     };

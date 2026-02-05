@@ -11,12 +11,14 @@ import { useActivities } from '../hooks/useActivities';
 import { useCompanies } from '../hooks/useCompanies';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useToast } from '../contexts/ToastContext';
+import { useSystemToast } from '../hooks/useSystemToast';
 
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
     const { showToast } = useToast();
+    const { showError } = useSystemToast();
     const hasShownInitialToast = useRef(false);
 
     // Role-based filtering
@@ -358,7 +360,7 @@ const Agenda = () => {
                 action: '/agenda'
             });
         } else {
-            alert('Error al crear actividad: ' + result.error);
+            showError('Error al crear actividad: ' + result.error);
         }
     };
 

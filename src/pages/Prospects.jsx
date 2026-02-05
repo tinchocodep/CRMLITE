@@ -7,11 +7,13 @@ import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useCompanies } from '../hooks/useCompanies';
 import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
+import { useSystemToast } from '../hooks/useSystemToast';
 
 const Prospects = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { companies: prospects, loading, createCompany, updateCompany, convertToClient } = useCompanies('prospect');
     const { contacts: allContacts } = useContacts();
+    const { showSuccess, showError, showWarning } = useSystemToast();
 
     // Role-based filtering
     const {
@@ -76,7 +78,7 @@ const Prospects = () => {
                 if (updatedProspect.cuit && prospects && prospects.length > 0) {
                     const existingCompany = prospects.find(c => c.cuit === updatedProspect.cuit);
                     if (existingCompany) {
-                        alert(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        showWarning(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
                         return;
                     }
                 }
@@ -97,9 +99,9 @@ const Prospects = () => {
                 });
 
                 if (result.success) {
-                    alert('Nuevo Prospecto creado exitosamente!');
+                    showSuccess('Nuevo Prospecto creado exitosamente!');
                 } else {
-                    alert('Error al crear prospecto: ' + result.error);
+                    showError('Error al crear prospecto: ' + result.error);
                 }
             } else {
                 // Update existing prospect
@@ -109,7 +111,7 @@ const Prospects = () => {
                         c.cuit === updatedProspect.cuit && c.id !== updatedProspect.id
                     );
                     if (existingCompany) {
-                        alert(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                        showWarning(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
                         return;
                     }
                 }
@@ -127,15 +129,15 @@ const Prospects = () => {
                 });
 
                 if (result.success) {
-                    alert('Prospecto actualizado exitosamente!');
+                    showSuccess('Prospecto actualizado exitosamente!');
                 } else {
-                    alert('Error al actualizar prospecto: ' + result.error);
+                    showError('Error al actualizar prospecto: ' + result.error);
                 }
             }
             setIsEditModalOpen(false);
         } catch (error) {
             console.error('Error saving prospect:', error);
-            alert('Error al guardar prospecto');
+            showError('Error al guardar prospecto');
         }
     };
 
@@ -156,14 +158,14 @@ const Prospects = () => {
             const result = await updateCompany(selectedProspect.id, dataToUpdate);
 
             if (result.success) {
-                alert(`¡Felicitaciones! ${clientData.trade_name || clientData.legal_name} ha sido convertido a Cliente.`);
+                showSuccess(`¡Felicitaciones! ${clientData.trade_name || clientData.legal_name} ha sido convertido a Cliente.`);
                 setIsConvertModalOpen(false);
             } else {
-                alert('Error al convertir a cliente: ' + result.error);
+                showError('Error al convertir a cliente: ' + result.error);
             }
         } catch (error) {
             console.error('Error converting to client:', error);
-            alert('Error al convertir a cliente');
+            showError('Error al convertir a cliente');
         }
     };
 
