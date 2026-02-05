@@ -14,6 +14,8 @@ import Legajos from './pages/Legajos';
 import Opportunities from './pages/Opportunities';
 import Settings from './pages/Settings';
 import UserManagement from './pages/UserManagement';
+import { ToastProvider } from './contexts/ToastContext';
+import ToastContainer from './components/shared/ToastContainer';
 
 // Componente para proteger rutas que requieren autenticación
 function ProtectedRoute({ children }) {
@@ -104,9 +106,12 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          <ToastProvider>
+            <BrowserRouter>
+              <AppRoutes />
+              <ToastContainer />
+            </BrowserRouter>
+          </ToastProvider>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
