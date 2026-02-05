@@ -10,11 +10,15 @@ import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useActivities } from '../hooks/useActivities';
 import { useCompanies } from '../hooks/useCompanies';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
+import { useToast } from '../contexts/ToastContext';
+import { useEffect, useRef } from 'react';
 
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
+    const { showToast } = useToast();
+    const hasShownInitialToast = useRef(false);
 
     // Role-based filtering
     const {
@@ -322,10 +326,85 @@ const Agenda = () => {
         const result = await createActivity(newEvent);
         if (result.success) {
             setIsCreateModalOpen(false);
+
+            // Show toast for the newly created activity
+            const activityDateTime = new Date(`${newEvent.scheduled_date}T${newEvent.scheduled_time}`);
+            const now = new Date();
+            const diffMinutes = Math.floor((activityDateTime - now) / 60000);
+
+            let priority = 'medium';
+            let timeText = '';
+
+            if (activityDateTime < now) {
+                priority = 'critical';
+                timeText = 'vencida';
+            } else if (diffMinutes <= 60) {
+                priority = 'high';
+                timeText = `en ${diffMinutes} min`;
+            } else {
+                const hours = Math.floor(diffMinutes / 60);
+                timeText = `en ${hours} hora${hours > 1 ? 's' : ''}`;
+            }
+
+            showToast({
+                id: `activity-created-${result.data.id}`,
+                type: 'activity_created',
+                priority,
+                title: `${newEvent.activity_type || 'Actividad'} ${timeText}`,
+                description: `${newEvent.title} - ${newEvent.scheduled_time}`,
+                timestamp: activityDateTime,
+                timeAgo: timeText,
+                icon: null,
+                color: priority === 'critical' ? 'bg-red-100 text-red-600' : 'bg-orange-100 text-orange-600',
+                action: '/agenda'
+            });
         } else {
             alert('Error al crear actividad: ' + result.error);
         }
     };
+
+    // Show toast for closest upcoming activity when entering Agenda page (only once)
+    useEffect(() => {
+        if (hasShownInitialToast.current || !rawEvents || rawEvents.length === 0) return;
+
+        const now = new Date();
+        const in60Min = new Date(now.getTime() + 60 * 60 * 1000);
+
+        // Find upcoming activities within next 60 minutes
+        const upcomingActivities = rawEvents
+            .filter(activity => {
+                if (!activity.scheduled_date || !activity.scheduled_time || activity.status === 'completed') return false;
+                const activityDateTime = new Date(`${activity.scheduled_date}T${activity.scheduled_time}`);
+                return activityDateTime >= now && activityDateTime <= in60Min;
+            })
+            .sort((a, b) => {
+                const dateA = new Date(`${a.scheduled_date}T${a.scheduled_time}`);
+                const dateB = new Date(`${b.scheduled_date}T${b.scheduled_time}`);
+                return dateA - dateB;
+            });
+
+        // Show toast for the closest one only
+        if (upcomingActivities.length > 0) {
+            const closest = upcomingActivities[0];
+            const activityDateTime = new Date(`${closest.scheduled_date}T${closest.scheduled_time}`);
+            const diffMinutes = Math.floor((activityDateTime - now) / 60000);
+
+            showToast({
+                id: `upcoming-activity-${closest.id}`,
+                type: 'upcoming_activity',
+                priority: 'high',
+                title: `${closest.activity_type || 'Actividad'} en ${diffMinutes} min`,
+                description: `${closest.title} - ${closest.scheduled_time}`,
+                timestamp: activityDateTime,
+                timeAgo: `en ${diffMinutes} min`,
+                icon: null,
+                color: 'bg-orange-100 text-orange-600',
+                action: '/agenda'
+            });
+
+            hasShownInitialToast.current = true;
+        }
+    }, [rawEvents, showToast]);
 
     return (
         <div className="h-full flex flex-col gap-0 md:gap-6">
