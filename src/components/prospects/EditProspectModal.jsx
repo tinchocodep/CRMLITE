@@ -106,7 +106,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white/50">
                     <div>
                         <h2 className="text-xl font-bold text-slate-800">
-                            {(!prospect.trade_name && !prospect.legal_name) ? 'Crear Prospecto' : 'Editar Prospecto'}
+                            {(!prospect.trade_name && !prospect.legal_name) ? 'Nuevo Prospecto' : 'Editar Prospecto'}
                         </h2>
                     </div>
                     <button
@@ -452,22 +452,7 @@ END:VCARD`;
                         </div>
                     )}
 
-                    {/* Convert to Client Button - At end of scrollable area */}
-                    {prospect.id && (
-                        <div className="pt-6 border-t border-slate-200">
-                            <button
-                                onClick={() => {
-                                    if (window.confirm(`¿Convertir "${formData.trade_name || formData.legal_name}" a Cliente?`)) {
-                                        alert('Funcionalidad de conversión a cliente pendiente de implementación');
-                                    }
-                                }}
-                                className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:from-emerald-600 hover:to-emerald-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
-                            >
-                                <Check size={20} strokeWidth={2.5} />
-                                Convertir a Cliente
-                            </button>
-                        </div>
-                    )}
+
 
                 </div>
 
@@ -484,7 +469,7 @@ END:VCARD`;
                         className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-brand-red text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         <Save size={18} />
-                        Guardar
+                        Confirmar
                     </button>
                 </div>
             </div>
