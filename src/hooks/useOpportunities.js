@@ -96,6 +96,7 @@ export const useOpportunities = () => {
                     status: 'pending',
                     opportunity_id: opportunityId,
                     auto_generated: true,
+                    opportunity_status: opportunity.status || 'iniciado', // NEW: Store opportunity status
                     tenant_id: userData.tenant_id,
                     created_by: user.id
                 });
@@ -116,6 +117,7 @@ export const useOpportunities = () => {
                     status: 'pending',
                     opportunity_id: opportunityId,
                     auto_generated: true,
+                    opportunity_status: opportunity.status || 'iniciado', // NEW: Store opportunity status
                     tenant_id: userData.tenant_id,
                     created_by: user.id
                 });
