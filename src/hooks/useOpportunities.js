@@ -66,6 +66,74 @@ export const useOpportunities = () => {
         }
     }, [comercialId, isAdmin, isSupervisor]);
 
+    // Helper function to create activities from opportunity dates
+    const createActivitiesFromOpportunity = async (opportunity, opportunityId) => {
+        try {
+            const activities = [];
+
+            // Get current user data
+            const { data: { user } } = await supabase.auth.getUser();
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('tenant_id')
+                .eq('id', user.id)
+                .single();
+
+            if (userError) throw userError;
+
+            // 1. Create activity for close date
+            if (opportunity.close_date) {
+                activities.push({
+                    title: `🎯 Cierre: ${opportunity.opportunity_name}`,
+                    activity_type: 'meeting',
+                    priority: 'high',
+                    scheduled_date: opportunity.close_date,
+                    scheduled_time: '09:00', // Default time
+                    duration_minutes: 60,
+                    company_id: opportunity.company_id,
+                    comercial_id: opportunity.comercial_id,
+                    description: `Fecha de cierre de oportunidad: ${opportunity.opportunity_name}\nMonto: $${opportunity.amount || 'N/A'}`,
+                    status: 'pending',
+                    opportunity_id: opportunityId,
+                    auto_generated: true,
+                    tenant_id: userData.tenant_id,
+                    created_by: user.id
+                });
+            }
+
+            // 2. Create activity for next action date (if exists)
+            if (opportunity.next_action_date && opportunity.next_action) {
+                activities.push({
+                    title: `📋 ${opportunity.next_action}`,
+                    activity_type: 'task',
+                    priority: 'medium',
+                    scheduled_date: opportunity.next_action_date,
+                    scheduled_time: '10:00', // Default time
+                    duration_minutes: 30,
+                    company_id: opportunity.company_id,
+                    comercial_id: opportunity.comercial_id,
+                    description: `Próxima acción para: ${opportunity.opportunity_name}\n\n${opportunity.next_action}`,
+                    status: 'pending',
+                    opportunity_id: opportunityId,
+                    auto_generated: true,
+                    tenant_id: userData.tenant_id,
+                    created_by: user.id
+                });
+            }
+
+            // Insert all activities
+            if (activities.length > 0) {
+                const { error: insertError } = await supabase
+                    .from('activities')
+                    .insert(activities);
+
+                if (insertError) throw insertError;
+            }
+        } catch (err) {
+            console.error('Error creating activities from opportunity:', err);
+        }
+    };
+
     const createOpportunity = async (opportunityData) => {
         try {
             // Get current user's tenant_id and comercial_id
@@ -90,6 +158,10 @@ export const useOpportunities = () => {
                 .single();
 
             if (createError) throw createError;
+
+            // Create activities from opportunity dates
+            await createActivitiesFromOpportunity(opportunityData, data.id);
+
             await fetchOpportunities();
             return { success: true, data };
         } catch (err) {
@@ -108,6 +180,17 @@ export const useOpportunities = () => {
                 .single();
 
             if (updateError) throw updateError;
+
+            // Delete old auto-generated activities for this opportunity
+            await supabase
+                .from('activities')
+                .delete()
+                .eq('opportunity_id', id)
+                .eq('auto_generated', true);
+
+            // Create new activities from updated dates
+            await createActivitiesFromOpportunity(updates, id);
+
             await fetchOpportunities();
             return { success: true, data };
         } catch (err) {

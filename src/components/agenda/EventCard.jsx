@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Calendar, Clock, MapPin, Phone, User, CheckCircle2, AlertCircle, X, Maximize2, Trash2, Edit2, Save } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, User, CheckCircle2, AlertCircle, X, Maximize2, Trash2, Edit2, Save, Briefcase } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -255,6 +255,16 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                                 {typeConfig[editedEvent.type || 'task']?.label || 'Tarea'}
                             </span>
                         )
+                    )}
+
+                    {/* Opportunity Link Indicator */}
+                    {editedEvent.auto_generated && editedEvent.opportunity_id && (
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 shadow-sm">
+                            <Briefcase size={12} className="text-purple-600" />
+                            <span className="text-[10px] font-bold text-purple-700 uppercase tracking-wide">
+                                Oportunidad
+                            </span>
+                        </div>
                     )}
 
                     {!isFloating && (
