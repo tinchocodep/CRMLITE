@@ -8,13 +8,19 @@ import ContactModal from '../contacts/ContactModal';
 
 
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
-    const { contacts, unlinkFromCompany, createContact } = useContacts();
+    const { contacts, unlinkFromCompany, createContact, linkToCompany } = useContacts();
 
     const [formData, setFormData] = useState(prospect || {});
 
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [preselectedCompany, setPreselectedCompany] = useState(null);
     const [expandedContacts, setExpandedContacts] = useState({});
+
+    // Contact search and linking states
+    const [contactSearchTerm, setContactSearchTerm] = useState('');
+    const [selectedContactToLink, setSelectedContactToLink] = useState(null);
+    const [linkRole, setLinkRole] = useState('');
+    const [isLinking, setIsLinking] = useState(false);
 
     useEffect(() => {
         setFormData({ ...prospect });
@@ -77,6 +83,56 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         } catch (error) {
             console.error('Error saving contact:', error);
             alert('Error al guardar contacto');
+        }
+    };
+
+    // Filter contacts that are NOT already linked to this prospect
+    const availableContacts = contacts.filter(contact =>
+        !contact.companies.some(c =>
+            c.companyId === prospect?.id && c.companyType === 'prospect'
+        )
+    );
+
+    // Search filter
+    const filteredContacts = availableContacts.filter(contact => {
+        if (!contactSearchTerm) return false;
+        const searchLower = contactSearchTerm.toLowerCase();
+        const fullName = `${contact.firstName} ${contact.lastName}`.toLowerCase();
+        const cuit = contact._original?.cuit || '';
+        return fullName.includes(searchLower) || cuit.includes(contactSearchTerm);
+    });
+
+    // Handle linking existing contact
+    const handleLinkExistingContact = async () => {
+        if (!selectedContactToLink || !linkRole.trim()) {
+            alert('Por favor selecciona un contacto y especifica el rol');
+            return;
+        }
+
+        setIsLinking(true);
+        try {
+            await linkToCompany(
+                selectedContactToLink.id,
+                prospect.id,
+                linkRole,
+                false // isPrimary
+            );
+
+            // Reset states
+            setContactSearchTerm('');
+            setSelectedContactToLink(null);
+            setLinkRole('');
+
+            // Refresh
+            if (onContactsUpdate) {
+                onContactsUpdate();
+            }
+            setFormData({ ...formData });
+        } catch (error) {
+            console.error('Error linking contact:', error);
+            alert('Error al vincular contacto');
+        } finally {
+            setIsLinking(false);
         }
     };
 
@@ -365,6 +421,94 @@ END:VCARD`;
                                                 Agregar Contacto
                                             </div>
 
+                                            {/* Search existing contacts */}
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-500">Buscar contacto existente</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Buscar por nombre o CUIT..."
+                                                        value={contactSearchTerm}
+                                                        onChange={(e) => setContactSearchTerm(e.target.value)}
+                                                        className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:border-brand-red outline-none"
+                                                    />
+                                                    {contactSearchTerm && filteredContacts.length > 0 && (
+                                                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
+                                                            {filteredContacts.map(contact => (
+                                                                <button
+                                                                    key={contact.id}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedContactToLink(contact);
+                                                                        setContactSearchTerm(`${contact.firstName} ${contact.lastName}`);
+                                                                    }}
+                                                                    className="w-full p-3 hover:bg-slate-50 text-left border-b border-slate-100 last:border-0"
+                                                                >
+                                                                    <div className="font-semibold text-sm text-slate-800">
+                                                                        {contact.firstName} {contact.lastName}
+                                                                    </div>
+                                                                    {contact._original?.cuit && (
+                                                                        <div className="text-xs text-slate-500">CUIT: {contact._original.cuit}</div>
+                                                                    )}
+                                                                    {contact.email && (
+                                                                        <div className="text-xs text-slate-400">{contact.email}</div>
+                                                                    )}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Role input when contact selected */}
+                                                {selectedContactToLink && (
+                                                    <div className="space-y-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                        <div className="text-xs font-bold text-blue-700">
+                                                            Vincular: {selectedContactToLink.firstName} {selectedContactToLink.lastName}
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Rol (ej: Gerente, Encargado de Compras...)"
+                                                            value={linkRole}
+                                                            onChange={(e) => setLinkRole(e.target.value)}
+                                                            className="w-full p-2 bg-white border border-blue-300 rounded-lg text-sm focus:border-brand-red outline-none"
+                                                        />
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleLinkExistingContact();
+                                                                }}
+                                                                disabled={isLinking || !linkRole.trim()}
+                                                                className="flex-1 px-3 py-2 bg-brand-red hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            >
+                                                                {isLinking ? 'Vinculando...' : 'Vincular'}
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedContactToLink(null);
+                                                                    setContactSearchTerm('');
+                                                                    setLinkRole('');
+                                                                }}
+                                                                className="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-bold transition-colors"
+                                                            >
+                                                                Cancelar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="relative">
+                                                <div className="absolute inset-0 flex items-center">
+                                                    <div className="w-full border-t border-slate-300"></div>
+                                                </div>
+                                                <div className="relative flex justify-center text-xs">
+                                                    <span className="bg-white px-2 text-slate-500">o</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Create new contact button */}
                                             <button
                                                 onClick={handleCreateContact}
                                                 className="w-full px-4 py-3 bg-brand-red hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
@@ -372,10 +516,6 @@ END:VCARD`;
                                                 <UserPlus size={16} />
                                                 Crear Nuevo Contacto
                                             </button>
-
-                                            <div className="text-xs text-slate-500 text-center">
-                                                También puedes vincular contactos existentes desde la página de Contactos
-                                            </div>
                                         </div>
                                     </>
                                 );
