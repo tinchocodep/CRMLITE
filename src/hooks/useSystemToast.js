@@ -1,4 +1,5 @@
 import { useToast } from '../contexts/ToastContext';
+import { CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react';
 
 /**
  * Hook for showing system message toasts
@@ -16,7 +17,7 @@ export const useSystemToast = () => {
             description: '',
             timestamp: new Date(),
             timeAgo: 'Ahora',
-            icon: null,
+            icon: CheckCircle2,
             color: 'bg-green-100 text-green-600',
             action: null
         });
@@ -31,7 +32,7 @@ export const useSystemToast = () => {
             description: '',
             timestamp: new Date(),
             timeAgo: 'Ahora',
-            icon: null,
+            icon: XCircle,
             color: 'bg-red-100 text-red-600',
             action: null
         });
@@ -46,7 +47,7 @@ export const useSystemToast = () => {
             description: '',
             timestamp: new Date(),
             timeAgo: 'Ahora',
-            icon: null,
+            icon: AlertTriangle,
             color: 'bg-yellow-100 text-yellow-600',
             action: null
         });
@@ -61,7 +62,7 @@ export const useSystemToast = () => {
             description: '',
             timestamp: new Date(),
             timeAgo: 'Ahora',
-            icon: null,
+            icon: Info,
             color: 'bg-blue-100 text-blue-600',
             action: null
         });
