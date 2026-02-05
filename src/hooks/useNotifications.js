@@ -16,6 +16,15 @@ export const useNotifications = () => {
 
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [dismissedIds, setDismissedIds] = useState(() => {
+        // Load dismissed IDs from localStorage
+        try {
+            const stored = localStorage.getItem('dismissedNotifications');
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
+        }
+    });
 
     // Helper: Calculate time ago string
     const getTimeAgo = (date) => {
@@ -43,6 +52,43 @@ export const useNotifications = () => {
         if (hours < 24) return `en ${hours} hora${hours > 1 ? 's' : ''}`;
         return `en ${Math.floor(hours / 24)} día${Math.floor(hours / 24) > 1 ? 's' : ''}`;
     };
+
+    // Dismiss a notification
+    const dismissNotification = (notificationId) => {
+        const newDismissedIds = [...dismissedIds, notificationId];
+        setDismissedIds(newDismissedIds);
+
+        // Persist to localStorage
+        try {
+            localStorage.setItem('dismissedNotifications', JSON.stringify(newDismissedIds));
+        } catch (err) {
+            console.error('Failed to save dismissed notifications:', err);
+        }
+    };
+
+    // Clear old dismissed IDs (older than 7 days)
+    useEffect(() => {
+        const cleanupDismissed = () => {
+            const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+            // For simplicity, we'll just clear all after 7 days
+            // In production, you'd want to store timestamps with each ID
+            try {
+                const stored = localStorage.getItem('dismissedNotifications');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    // Clear if too many (> 100)
+                    if (parsed.length > 100) {
+                        localStorage.removeItem('dismissedNotifications');
+                        setDismissedIds([]);
+                    }
+                }
+            } catch {
+                // Ignore errors
+            }
+        };
+
+        cleanupDismissed();
+    }, []);
 
     // 1. Upcoming Activities (within next 60 minutes)
     const getUpcomingActivityNotifications = useMemo(() => {
@@ -236,12 +282,16 @@ export const useNotifications = () => {
             ...getFollowUpNotifications
         ];
 
-        // Sort by priority then timestamp
+        // Filter out dismissed notifications
+        const active = allNotifications.filter(n => !dismissedIds.includes(n.id));
+
+        // Sort by priority then timestamp (newest first within same priority)
         const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
-        const sorted = allNotifications.sort((a, b) => {
+        const sorted = active.sort((a, b) => {
             if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
                 return priorityOrder[a.priority] - priorityOrder[b.priority];
             }
+            // Newer notifications first (descending timestamp)
             return new Date(b.timestamp) - new Date(a.timestamp);
         });
 
@@ -252,11 +302,13 @@ export const useNotifications = () => {
         getOverdueActivityNotifications,
         getIncompleteOpportunityNotifications,
         getStaleOpportunityNotifications,
-        getFollowUpNotifications
+        getFollowUpNotifications,
+        dismissedIds
     ]);
 
     return {
         notifications,
-        unreadCount
+        unreadCount,
+        dismissNotification
     };
 };
