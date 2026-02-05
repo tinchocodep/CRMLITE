@@ -192,6 +192,29 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                 ${editedEvent.priority === 'high' ? 'bg-red-500 w-40 h-40' : editedEvent.priority === 'medium' ? 'bg-orange-400 w-32 h-32' : 'bg-blue-300 w-24 h-24'}
             `} />
 
+            {/* Quick Action Buttons - Only show in non-floating view */}
+            {!isFloating && (
+                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <button
+                        onClick={handleQuickComplete}
+                        className="p-1.5 rounded-full bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 transition-colors shadow-sm"
+                        title="Marcar como completada"
+                    >
+                        <Check size={14} />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowDatePicker(true);
+                        }}
+                        className="p-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 transition-colors shadow-sm"
+                        title="Cambiar fecha"
+                    >
+                        <CalendarClock size={14} />
+                    </button>
+                </div>
+            )}
+
             {/* Action Buttons (Top Right) */}
             {isFloating && (
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-50">
@@ -458,31 +481,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                 </div>
             );
         }
-        return (
-            <div className="relative">
-                <FullDetailContent />
-                {/* Quick Action Buttons - Positioned absolutely on hover */}
-                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <button
-                        onClick={handleQuickComplete}
-                        className="p-1.5 rounded-full bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 transition-colors shadow-sm"
-                        title="Marcar como completada"
-                    >
-                        <Check size={14} />
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowDatePicker(true);
-                        }}
-                        className="p-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 transition-colors shadow-sm"
-                        title="Cambiar fecha"
-                    >
-                        <CalendarClock size={14} />
-                    </button>
-                </div>
-            </div>
-        );
+        return <FullDetailContent />;
     };
 
     return (
