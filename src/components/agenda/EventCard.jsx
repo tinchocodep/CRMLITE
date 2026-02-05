@@ -136,18 +136,32 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
 
     // Quick date change action - Save button instead of auto-save
     const handleDateChangeSave = async () => {
-        if (!tempDate) return;
+        if (!tempDate) {
+            console.log('No temp date selected');
+            return;
+        }
+
+        console.log('Saving date change:', {
+            eventId: event.id,
+            oldDate: editedEvent.scheduled_date,
+            newDate: tempDate
+        });
+
         try {
+            // Only send the fields that exist in the database
             const updatedEvent = {
-                ...editedEvent,
                 scheduled_date: tempDate
             };
+
+            console.log('Calling onUpdate with:', updatedEvent);
             await onUpdate(event.id, updatedEvent);
+
+            console.log('Date updated successfully');
             setShowDatePicker(false);
             setTempDate('');
         } catch (error) {
             console.error('Error updating date:', error);
-            alert('Error al cambiar la fecha');
+            alert('Error al cambiar la fecha: ' + error.message);
         }
     };
 
