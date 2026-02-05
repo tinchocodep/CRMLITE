@@ -451,7 +451,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                         </div>
                         <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-0.5 truncate leading-none">
                             <User size={10} />
-                            <span className="truncate">{editedEvent.client}</span>
+                            <span className="truncate">{editedEvent.company?.trade_name || editedEvent.company?.legal_name || 'Sin cliente'}</span>
                         </div>
                     </div>
                 )}
@@ -513,7 +513,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                         </p>
                         <input
                             type="date"
-                            defaultValue={editedEvent.scheduled_date}
+                            value={tempDate || editedEvent.scheduled_date}
                             onChange={(e) => setTempDate(e.target.value)}
                             className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
                             autoFocus
