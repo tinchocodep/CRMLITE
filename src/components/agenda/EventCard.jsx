@@ -89,9 +89,14 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
         };
     }, [event]);
 
-    // Local state for editing fields
-    const [editedEvent, setEditedEvent] = useState({ ...normalizedEvent });
+    // Local state for editing fields - FIXED: Don't re-initialize on every render
+    const [editedEvent, setEditedEvent] = useState(() => ({ ...normalizedEvent }));
     const [isEditing, setIsEditing] = useState(false);
+
+    // Update editedEvent only when the event ID changes (new event loaded)
+    React.useEffect(() => {
+        setEditedEvent({ ...normalizedEvent });
+    }, [event.id]); // Only update when event ID changes, not on every render
 
     // Default to 'medium' priority if not set (activities from DB don't have priority yet)
     const config = priorityConfig[editedEvent.priority || 'medium'];
@@ -191,29 +196,6 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
             <div className={`absolute -right-8 -top-8 rounded-full blur-3xl opacity-20 transition-all duration-500
                 ${editedEvent.priority === 'high' ? 'bg-red-500 w-40 h-40' : editedEvent.priority === 'medium' ? 'bg-orange-400 w-32 h-32' : 'bg-blue-300 w-24 h-24'}
             `} />
-
-            {/* Quick Action Buttons - Only show in non-floating view */}
-            {!isFloating && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                    <button
-                        onClick={handleQuickComplete}
-                        className="p-1.5 rounded-full bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 transition-colors shadow-sm"
-                        title="Marcar como completada"
-                    >
-                        <Check size={14} />
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowDatePicker(true);
-                        }}
-                        className="p-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 transition-colors shadow-sm"
-                        title="Cambiar fecha"
-                    >
-                        <CalendarClock size={14} />
-                    </button>
-                </div>
-            )}
 
             {/* Action Buttons (Top Right) */}
             {isFloating && (
@@ -433,6 +415,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                             )}
                         </div>
 
+
                         {/* 4. Footer Info (Static Location) */}
                         <div className="flex items-center gap-4 pt-2 border-t border-slate-100 mt-4">
                             {(editedEvent.type === 'visit' || editedEvent.type === 'meeting') && (
@@ -441,6 +424,30 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                                     <span>Oficina Central</span>
                                 </div>
                             )}
+
+                            {/* Quick Action Buttons - Only in floating view */}
+                            {isFloating && (
+                                <div className="ml-auto flex items-center gap-2">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowDatePicker(true);
+                                        }}
+                                        className="p-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 transition-colors shadow-sm"
+                                        title="Cambiar fecha"
+                                    >
+                                        <CalendarClock size={16} />
+                                    </button>
+                                    <button
+                                        onClick={handleQuickComplete}
+                                        className="p-2 rounded-full bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 transition-colors shadow-sm"
+                                        title="Marcar como completada"
+                                    >
+                                        <Check size={16} />
+                                    </button>
+                                </div>
+                            )}
+
                             <div className="ml-auto text-xs text-slate-300 font-mono">
                                 ID: {editedEvent.id}
                             </div>
