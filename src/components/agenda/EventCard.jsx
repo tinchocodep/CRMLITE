@@ -194,7 +194,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
 
             {/* Quick Action Buttons - Only show in non-floating view */}
             {!isFloating && (
-                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-50">
                     <button
                         onClick={handleQuickComplete}
                         className="p-1.5 rounded-full bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 transition-colors shadow-sm"
@@ -341,7 +341,6 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                         onChange={(e) => setEditedEvent({ ...editedEvent, title: e.target.value })}
                         className="w-full text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-300 dark:border-slate-600 focus:border-brand-red dark:focus:border-red-500 focus:outline-none bg-transparent mb-2 pb-1 pr-24"
                         placeholder="Título de la actividad"
-                        autoFocus
                     />
                 ) : (
                     <h3 className={`font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors ${isFloating ? 'text-xl mb-1 pr-32' : 'text-sm leading-tight mb-0.5 line-clamp-2'}`}>
