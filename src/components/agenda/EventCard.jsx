@@ -40,6 +40,7 @@ const opportunityStatusConfig = {
 const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [tempDate, setTempDate] = useState('');
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
     const normalizedEvent = React.useMemo(() => {
@@ -133,15 +134,17 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
         }
     };
 
-    // Quick date change action
-    const handleDateChange = async (newDate) => {
+    // Quick date change action - Save button instead of auto-save
+    const handleDateChangeSave = async () => {
+        if (!tempDate) return;
         try {
             const updatedEvent = {
                 ...editedEvent,
-                scheduled_date: newDate
+                scheduled_date: tempDate
             };
             await onUpdate(event.id, updatedEvent);
             setShowDatePicker(false);
+            setTempDate('');
         } catch (error) {
             console.error('Error updating date:', error);
             alert('Error al cambiar la fecha');
@@ -372,21 +375,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
 
                         {/* 2. Client & Location */}
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Cliente</label>
-                                <div className={`flex items-center gap-2 p-2 rounded-xl border ${isEditing ? 'bg-white border-slate-300 ring-1 ring-slate-200' : 'bg-slate-50 border-slate-100'}`}>
-                                    <User size={16} className="text-slate-400" />
-                                    {isEditing ? (
-                                        <input
-                                            value={editedEvent.client}
-                                            onChange={(e) => setEditedEvent({ ...editedEvent, client: e.target.value })}
-                                            className="bg-transparent text-sm font-medium w-full focus:outline-none text-slate-700"
-                                        />
-                                    ) : (
-                                        <span className="text-sm font-medium text-slate-700 truncate">{editedEvent.client}</span>
-                                    )}
-                                </div>
-                            </div>
+
 
                             <div className="space-y-1">
                                 <label className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Asignado Por</label>
@@ -525,16 +514,25 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                         <input
                             type="date"
                             defaultValue={editedEvent.scheduled_date}
-                            onChange={(e) => handleDateChange(e.target.value)}
+                            onChange={(e) => setTempDate(e.target.value)}
                             className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
                             autoFocus
                         />
                         <div className="flex gap-2 mt-4">
                             <button
-                                onClick={() => setShowDatePicker(false)}
+                                onClick={() => {
+                                    setShowDatePicker(false);
+                                    setTempDate('');
+                                }}
                                 className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
                             >
                                 Cancelar
+                            </button>
+                            <button
+                                onClick={handleDateChangeSave}
+                                className="flex-1 px-4 py-2 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors font-bold"
+                            >
+                                Guardar
                             </button>
                         </div>
                     </div>
