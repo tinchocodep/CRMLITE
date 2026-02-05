@@ -432,7 +432,7 @@ END:VCARD`;
                                                         onChange={(e) => setContactSearchTerm(e.target.value)}
                                                         className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:border-brand-red outline-none"
                                                     />
-                                                    {contactSearchTerm && filteredContacts.length > 0 && (
+                                                    {contactSearchTerm && filteredContacts.length > 0 && !selectedContactToLink && (
                                                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
                                                             {filteredContacts.map(contact => (
                                                                 <button
