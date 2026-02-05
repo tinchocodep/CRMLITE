@@ -233,7 +233,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 required
                                 value={formData.opportunityName}
                                 onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
-                                placeholder="Buscar cliente/prospecto..."
+                                placeholder="Buscar empresa..."
                                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             />
 
