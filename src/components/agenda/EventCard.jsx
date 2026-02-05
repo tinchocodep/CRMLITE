@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Calendar, Clock, MapPin, Phone, User, CheckCircle2, AlertCircle, X, Maximize2, Trash2, Edit2, Save, Briefcase } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, User, CheckCircle2, AlertCircle, X, Maximize2, Trash2, Edit2, Save, Briefcase, CalendarClock, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -39,6 +39,7 @@ const opportunityStatusConfig = {
 
 const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
     const [showDetails, setShowDetails] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
     const normalizedEvent = React.useMemo(() => {
@@ -116,6 +117,32 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
             }
         }
     };
+
+    // Quick complete action
+    const handleQuickComplete = async (e) => {
+        e.stopPropagation();
+        try {
+            await onDelete(event.id);
+        } catch (error) {
+            console.error('Error completing activity:', error);
+        }
+    };
+
+    // Quick date change action
+    const handleDateChange = async (newDate) => {
+        try {
+            const updatedEvent = {
+                ...editedEvent,
+                scheduled_date: newDate
+            };
+            await onUpdate(event.id, updatedEvent);
+            setShowDatePicker(false);
+        } catch (error) {
+            console.error('Error updating date:', error);
+            alert('Error al cambiar la fecha');
+        }
+    };
+
 
 
     const handleSave = async (e) => {
@@ -431,7 +458,31 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                 </div>
             );
         }
-        return <FullDetailContent />;
+        return (
+            <div className="relative">
+                <FullDetailContent />
+                {/* Quick Action Buttons - Positioned absolutely on hover */}
+                <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <button
+                        onClick={handleQuickComplete}
+                        className="p-1.5 rounded-full bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 transition-colors shadow-sm"
+                        title="Marcar como completada"
+                    >
+                        <Check size={14} />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowDatePicker(true);
+                        }}
+                        className="p-1.5 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 transition-colors shadow-sm"
+                        title="Cambiar fecha"
+                    >
+                        <CalendarClock size={14} />
+                    </button>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -445,6 +496,42 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                 >
                     <div onClick={e => e.stopPropagation()}>
                         <FullDetailContent isFloating={true} onClose={() => setShowDetails(false)} />
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {/* Date Picker Modal */}
+            {showDatePicker && createPortal(
+                <div
+                    className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+                    onClick={() => setShowDatePicker(false)}
+                >
+                    <div
+                        onClick={e => e.stopPropagation()}
+                        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full"
+                    >
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-4">
+                            Cambiar Fecha
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                            {editedEvent.title}
+                        </p>
+                        <input
+                            type="date"
+                            defaultValue={editedEvent.scheduled_date}
+                            onChange={(e) => handleDateChange(e.target.value)}
+                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
+                            autoFocus
+                        />
+                        <div className="flex gap-2 mt-4">
+                            <button
+                                onClick={() => setShowDatePicker(false)}
+                                className="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 </div>,
                 document.body
