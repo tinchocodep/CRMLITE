@@ -604,7 +604,7 @@ const MainLayout = () => {
 
                                 {/* Navigation Grid */}
                                 <div className="px-4 pb-6 grid grid-cols-3 gap-3">
-                                    {/* Dashboard */}
+                                    {/* 1. Dashboard */}
                                     <NavLink
                                         to="/dashboard"
                                         onClick={() => setMobileNavMenuOpen(false)}
@@ -621,24 +621,7 @@ const MainLayout = () => {
                                         )}
                                     </NavLink>
 
-                                    {/* Ficha 360 */}
-                                    <NavLink
-                                        to="/ficha-360"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Search className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Ficha 360</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* Agenda */}
+                                    {/* 2. Agenda */}
                                     <NavLink
                                         to="/agenda"
                                         onClick={() => setMobileNavMenuOpen(false)}
@@ -655,58 +638,7 @@ const MainLayout = () => {
                                         )}
                                     </NavLink>
 
-                                    {/* Legajo */}
-                                    <NavLink
-                                        to="/legajo"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Legajo</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* Contactos */}
-                                    <NavLink
-                                        to="/contactos"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Contactos</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* Usuarios */}
-                                    <NavLink
-                                        to="/usuarios"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <ShieldCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Usuarios</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* Visitas */}
+                                    {/* 3. Visitas */}
                                     <NavLink
                                         to="/visitas"
                                         onClick={() => setMobileNavMenuOpen(false)}
@@ -723,7 +655,75 @@ const MainLayout = () => {
                                         )}
                                     </NavLink>
 
-                                    {/* Objetivos */}
+                                    {/* 4. Ficha 360 */}
+                                    <NavLink
+                                        to="/ficha-360"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <Search className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Ficha 360</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 5. Contactos */}
+                                    <NavLink
+                                        to="/contactos"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Contactos</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 6. Legajo */}
+                                    <NavLink
+                                        to="/legajo"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Legajo</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 7. Territorio (singular) */}
+                                    <NavLink
+                                        to="/territorios"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Territorio</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 8. Objetivos */}
                                     <NavLink
                                         to="/objetivos"
                                         onClick={() => setMobileNavMenuOpen(false)}
@@ -740,24 +740,7 @@ const MainLayout = () => {
                                         )}
                                     </NavLink>
 
-                                    {/* Territorios */}
-                                    <NavLink
-                                        to="/territorios"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Territorios</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* Reclamos */}
+                                    {/* 9. Reclamos */}
                                     <NavLink
                                         to="/reclamos"
                                         onClick={() => setMobileNavMenuOpen(false)}
@@ -774,7 +757,24 @@ const MainLayout = () => {
                                         )}
                                     </NavLink>
 
-                                    {/* Configuración */}
+                                    {/* 10. Usuarios */}
+                                    <NavLink
+                                        to="/usuarios"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <ShieldCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Usuarios</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 11. Configuración */}
                                     <button
                                         onClick={() => {
                                             setMobileNavMenuOpen(false);
