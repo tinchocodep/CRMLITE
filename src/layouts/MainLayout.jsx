@@ -299,10 +299,10 @@ const MainLayout = () => {
                                                         e.stopPropagation();
                                                         dismissNotification(notification.id);
                                                     }}
-                                                    className="absolute top-3 right-3 p-1 rounded-full hover:bg-slate-200 transition-colors opacity-0 group-hover:opacity-100"
+                                                    className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                                                     title="Descartar notificación"
                                                 >
-                                                    <X size={14} className="text-slate-500" />
+                                                    <X size={16} className="stroke-2" />
                                                 </button>
                                             </div>
                                         );
