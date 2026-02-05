@@ -217,7 +217,37 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                         </div>
                     </div>
 
-                    {/* 3. Priority Selection - THIRD */}
+                    {/* 3. Date & Duration - THIRD (right after Type) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Fecha y Hora</label>
+                            <input
+                                type="datetime-local"
+                                value={newEvent.start}
+                                onChange={(e) => setNewEvent({ ...newEvent, start: e.target.value })}
+                                className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-brand-red outline-none"
+                            />
+                        </div>
+                        {/* Duration - Only show for visit, call, meeting */}
+                        {['visit', 'call', 'meeting'].includes(newEvent.type) && (
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Duración</label>
+                                <select
+                                    value={newEvent.duration}
+                                    onChange={(e) => setNewEvent({ ...newEvent, duration: parseInt(e.target.value) })}
+                                    className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-brand-red outline-none"
+                                >
+                                    {durationOptions.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* 4. Priority Selection - FOURTH */}
                     <div className="space-y-2">
                         <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Prioridad</label>
                         <div className="flex gap-3">
@@ -244,7 +274,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                         </div>
                     </div>
 
-                    {/* 4. Client/Company - FOURTH */}
+                    {/* 5. Client/Company - FIFTH */}
                     <div className="space-y-2">
                         <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa / Prospecto</label>
                         <div className="relative">
@@ -262,33 +292,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                 ))}
                             </select>
                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                        </div>
-                    </div>
-
-                    {/* 5. Date & Duration (instead of end date) */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Fecha y Hora</label>
-                            <input
-                                type="datetime-local"
-                                value={newEvent.start}
-                                onChange={(e) => setNewEvent({ ...newEvent, start: e.target.value })}
-                                className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-brand-red outline-none"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Duración</label>
-                            <select
-                                value={newEvent.duration}
-                                onChange={(e) => setNewEvent({ ...newEvent, duration: parseInt(e.target.value) })}
-                                className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-brand-red outline-none"
-                            >
-                                {durationOptions.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
                         </div>
                     </div>
 
