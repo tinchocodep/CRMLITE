@@ -35,25 +35,41 @@ export const useRoleBasedFilter = () => {
                     if (error) throw error;
                     setComerciales(data || []);
                 } else if (isSupervisor) {
-                    // Supervisor ve solo sus comerciales asignados
-                    // TODO: Implementar relación supervisor-comercial en la base de datos
-                    // Por ahora, mostramos todos los comerciales excepto otros supervisores
-                    const { data, error } = await supabase
+                    // Supervisor ve solo sus comerciales asignados desde la tabla supervisor_comerciales
+                    // Primero, obtener el comercial_id del supervisor actual
+                    const { data: supervisorData, error: supervisorError } = await supabase
                         .from('comerciales')
-                        .select(`
-                            id, 
-                            name, 
-                            email,
-                            user_id,
-                            users!inner(role)
-                        `)
-                        .eq('is_active', true)
-                        .neq('users.role', 'admin')
-                        .neq('users.role', 'supervisor')
-                        .order('name');
+                        .select('id')
+                        .eq('user_id', userProfile.id)
+                        .single();
 
-                    if (error) throw error;
-                    setComerciales(data || []);
+                    if (supervisorError) throw supervisorError;
+
+                    if (supervisorData) {
+                        // Obtener los comerciales asignados a este supervisor
+                        const { data: assignedComerciales, error: assignedError } = await supabase
+                            .from('supervisor_comerciales')
+                            .select(`
+                                comercial_id,
+                                comercial:comerciales!supervisor_comerciales_comercial_id_fkey(
+                                    id,
+                                    name,
+                                    email
+                                )
+                            `)
+                            .eq('supervisor_id', supervisorData.id);
+
+                        if (assignedError) throw assignedError;
+
+                        // Extraer los datos del comercial de la relación
+                        const comercialesList = (assignedComerciales || [])
+                            .map(rel => rel.comercial)
+                            .filter(Boolean);
+
+                        setComerciales(comercialesList);
+                    } else {
+                        setComerciales([]);
+                    }
                 } else {
                     // Comercial/User solo ve sus propios datos
                     setComerciales([]);
