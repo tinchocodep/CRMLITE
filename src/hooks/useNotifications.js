@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useActivities } from './useActivities';
 import { useOpportunities } from './useOpportunities';
 import { useCompanies } from './useCompanies';
 import { Calendar, Briefcase, UserCheck, Map, AlertCircle } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
 
 /**
  * Custom hook to generate smart notifications from multiple data sources
@@ -13,6 +14,7 @@ export const useNotifications = () => {
     const { activities } = useActivities();
     const { opportunities } = useOpportunities();
     const { companies } = useCompanies();
+    const { showToast } = useToast();
 
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -25,6 +27,9 @@ export const useNotifications = () => {
             return [];
         }
     });
+
+    // Track which notifications have been shown as toasts in this session
+    const shownToastIds = useRef(new Set());
 
     // Helper: Calculate time ago string
     const getTimeAgo = (date) => {
@@ -305,6 +310,21 @@ export const useNotifications = () => {
         getFollowUpNotifications,
         dismissedIds
     ]);
+
+    // Show toast notifications for new high/critical priority notifications
+    useEffect(() => {
+        if (notifications.length === 0) return;
+
+        // Only show toasts for high and critical priority notifications
+        const toastableNotifications = notifications.filter(
+            n => (n.priority === 'high' || n.priority === 'critical') && !shownToastIds.current.has(n.id)
+        );
+
+        toastableNotifications.forEach(notification => {
+            showToast(notification);
+            shownToastIds.current.add(notification.id);
+        });
+    }, [notifications, showToast]);
 
     return {
         notifications,
