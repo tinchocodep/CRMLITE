@@ -172,13 +172,13 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-end xl:items-center justify-center pb-16 xl:pb-0">
             <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[80vh] flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
+                <div className="bg-slate-50 border-b border-slate-200 p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
                     <div>
-                        <h2 className="text-lg font-bold">Nueva Oportunidad</h2>
-                        <p className="text-red-100 text-xs mt-0.5">Completa la información</p>
+                        <h2 className="text-lg font-bold text-slate-800">Nueva Oportunidad</h2>
+                        <p className="text-slate-500 text-xs mt-0.5">Completa la información</p>
                     </div>
-                    <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-all">
-                        <X size={18} />
+                    <button onClick={onClose} className="w-9 h-9 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-all">
+                        <X size={18} className="text-slate-600" />
                     </button>
                 </div>
 
