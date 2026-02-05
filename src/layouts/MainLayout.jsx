@@ -12,6 +12,7 @@ import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../hooks/useNotifications';
 import { supabase } from '../lib/supabase';
 
 // ========== SHARED CONSTANTS ==========
@@ -44,6 +45,7 @@ const MainLayout = () => {
     const location = useLocation();
     const { companies, createCompany } = useCompanies();
     const { user } = useAuth();
+    const { notifications, unreadCount } = useNotifications();
 
     // Filter only prospects
     const prospects = companies.filter(c => c.company_type === 'prospect');
@@ -220,8 +222,12 @@ const MainLayout = () => {
                                     className="relative p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red transition-colors"
                                 >
                                     <Bell size={20} />
-                                    {/* Badge */}
-                                    <span className="absolute top-1 right-1 w-2 h-2 bg-brand-red rounded-full"></span>
+                                    {/* Dynamic Badge Count */}
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-brand-red text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                                            {unreadCount > 9 ? '9+' : unreadCount}
+                                        </span>
+                                    )}
                                 </button>
 
                                 {/* Logout Button */}
@@ -249,63 +255,46 @@ const MainLayout = () => {
                                 <p className="text-xs text-slate-500 mt-0.5">Mantente al día con tu CRM</p>
                             </div>
 
-                            {/* Notifications List */}
+                            {/* Notifications List - Dynamic */}
                             <div className="max-h-96 overflow-y-auto">
-                                {/* Actividad Próxima */}
-                                <div className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
-                                    <div className="flex gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                            <Calendar className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-semibold text-slate-800">Reunión en 30 minutos</p>
-                                            <p className="text-xs text-slate-500 mt-1">Reunión con Robert Mols - 15:30</p>
-                                            <span className="text-xs text-blue-600 font-medium mt-1 inline-block">Hace 5 min</span>
-                                        </div>
+                                {notifications.length === 0 ? (
+                                    <div className="p-8 text-center">
+                                        <Bell className="w-12 h-12 text-slate-300 mx-auto mb-2" />
+                                        <p className="text-sm text-slate-500">No hay notificaciones</p>
+                                        <p className="text-xs text-slate-400 mt-1">Estás al día con todo</p>
                                     </div>
-                                </div>
-
-                                {/* Recordatorio Oportunidad */}
-                                <div className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
-                                    <div className="flex gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                                            <Briefcase className="w-5 h-5 text-amber-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-semibold text-slate-800">Registrar oportunidad</p>
-                                            <p className="text-xs text-slate-500 mt-1">No olvides anotar la oportunidad de venta con Empresa XYZ</p>
-                                            <span className="text-xs text-amber-600 font-medium mt-1 inline-block">Hace 2 horas</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Seguimiento Prospecto */}
-                                <div className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer">
-                                    <div className="flex gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                                            <UserCheck className="w-5 h-5 text-purple-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-semibold text-slate-800">Seguimiento pendiente</p>
-                                            <p className="text-xs text-slate-500 mt-1">Contactar a Claudia Sharlin - Prospecto caliente</p>
-                                            <span className="text-xs text-purple-600 font-medium mt-1 inline-block">Ayer</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Resumen Visita */}
-                                <div className="p-4 hover:bg-slate-50 transition-colors cursor-pointer">
-                                    <div className="flex gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                                            <Map className="w-5 h-5 text-emerald-600" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-sm font-semibold text-slate-800">Completar resumen de visita</p>
-                                            <p className="text-xs text-slate-500 mt-1">Visita a Donald Cotta - Agregar notas y próximos pasos</p>
-                                            <span className="text-xs text-emerald-600 font-medium mt-1 inline-block">Hace 3 días</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                ) : (
+                                    notifications.map(notification => {
+                                        const IconComponent = notification.icon;
+                                        return (
+                                            <div
+                                                key={notification.id}
+                                                onClick={() => {
+                                                    navigate(notification.action);
+                                                    setNotificationsOpen(false);
+                                                }}
+                                                className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer"
+                                            >
+                                                <div className="flex gap-3">
+                                                    <div className={`w-10 h-10 rounded-lg ${notification.color} flex items-center justify-center flex-shrink-0`}>
+                                                        <IconComponent className="w-5 h-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
+                                                        <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
+                                                        <span className={`text-xs font-medium mt-1 inline-block ${notification.priority === 'critical' ? 'text-red-600' :
+                                                            notification.priority === 'high' ? 'text-orange-600' :
+                                                                notification.priority === 'medium' ? 'text-amber-600' :
+                                                                    'text-blue-600'
+                                                            }`}>
+                                                            {notification.timeAgo}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
                             </div>
 
                             {/* Footer */}
