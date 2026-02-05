@@ -14,11 +14,11 @@ const ToastNotification = ({ notification, onDismiss }) => {
         }
 
         const dismissTime = {
-            high: 8000,
-            medium: 5000,
-            low: 3000,
-            info: 3000
-        }[notification.priority] || 5000;
+            high: 2000,      // 2 segundos
+            medium: 2000,    // 2 segundos
+            low: 2000,       // 2 segundos
+            info: 2000       // 2 segundos
+        }[notification.priority] || 2000;
 
         const timer = setTimeout(() => {
             handleDismiss();
