@@ -3,6 +3,7 @@ import { Search, Plus, UserPlus } from 'lucide-react';
 import ContactCard from '../components/contacts/ContactCard';
 import ContactModal from '../components/contacts/ContactModal';
 import { useContacts } from '../hooks/useContacts';
+import { useSystemToast } from '../hooks/useSystemToast';
 
 const Contacts = () => {
     const { contacts, loading, createContact, updateContact, deleteContact } = useContacts();
@@ -10,6 +11,7 @@ const Contacts = () => {
     const [expandedContactId, setExpandedContactId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState(null);
+    const { showSuccess, showError } = useSystemToast();
 
     // Filter contacts based on search
     const filteredContacts = contacts.filter(contact => {
@@ -38,7 +40,7 @@ const Contacts = () => {
         if (window.confirm('¿Estás seguro de eliminar este contacto?')) {
             const result = await deleteContact(contactId);
             if (!result.success) {
-                alert('Error al eliminar contacto: ' + result.error);
+                showError('Error al eliminar contacto: ' + result.error);
             }
         }
     };
@@ -58,12 +60,13 @@ const Contacts = () => {
             }
 
             if (result.success) {
+                showSuccess(editingContact ? 'Contacto actualizado exitosamente!' : 'Contacto creado exitosamente!');
                 handleCloseModal();
             } else {
-                alert('Error: ' + result.error);
+                showError('Error: ' + result.error);
             }
         } catch (error) {
-            alert('Error al guardar contacto');
+            showError('Error al guardar contacto');
         }
     };
 
