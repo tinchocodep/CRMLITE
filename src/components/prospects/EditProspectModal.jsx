@@ -5,7 +5,11 @@ import { safeFormat } from '../../utils/dateUtils';
 import { useContacts } from '../../hooks/useContacts';
 import ContactModal from '../contacts/ContactModal';
 
-
+const statusOptions = [
+    { id: 'contacted', label: 'Contacto Inicial', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+    { id: 'quoted', label: 'Cotizado', color: 'bg-orange-50 text-orange-700 border-orange-200' },
+    { id: 'near_closing', label: 'Cierre Cercano', color: 'bg-red-50 text-red-700 border-red-200' },
+];
 
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     const { contacts, unlinkFromCompany, createContact, linkToCompany } = useContacts();
@@ -32,6 +36,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     };
 
     const handleSubmit = () => {
+        console.log('🔍 [EditProspectModal] handleSubmit - formData:', formData);
+        console.log('🔍 [EditProspectModal] formData.status:', formData.status);
         onSave(formData);
         onClose();
     };
@@ -229,6 +235,38 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     value={safeFormat(formData.created_at, 'yyyy-MM-dd', {}, '')}
                                     className="w-full p-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-500 cursor-not-allowed"
                                 />
+                            </div>
+                        </div>
+
+                        {/* Estado Actual - Status Selector */}
+                        <div className="space-y-3 pt-2 border-4 border-purple-500 bg-purple-50 p-4 rounded-xl">
+                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">⭐ ESTADO ACTUAL ⭐</label>
+                            {console.log('🔍 [EditProspectModal] Rendering Estado Actual section. formData.status:', formData.status, 'statusOptions:', statusOptions)}
+                            <div className="grid grid-cols-3 gap-3">
+                                {statusOptions.map(option => (
+                                    <button
+                                        key={option.id}
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setFormData(prev => ({ ...prev, status: option.id }));
+                                        }}
+                                        className={`
+                                            relative cursor-pointer rounded-xl p-3 border-2 transition-all duration-200 flex items-center gap-2 justify-center
+                                            ${formData.status === option.id
+                                                ? `${option.color} ring-2 ring-offset-1 ring-brand-red/30`
+                                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
+                                            }
+                                        `}
+                                    >
+                                        <span className={`text-xs font-bold ${formData.status === option.id ? '' : 'text-slate-600'}`}>
+                                            {option.label}
+                                        </span>
+                                        {formData.status === option.id && (
+                                            <Check size={14} strokeWidth={3} className="text-brand-red absolute top-2 right-2" />
+                                        )}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 

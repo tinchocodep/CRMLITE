@@ -14,6 +14,15 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
     const navigate = useNavigate();
     const importance = importanceConfig[client.importance] || importanceConfig.low;
 
+    console.log('🔍 [ClientCard] Rendering client:', {
+        id: client.id,
+        trade_name: client.trade_name,
+        legal_name: client.legal_name,
+        tradeName: client.tradeName,
+        legalName: client.legalName,
+        allKeys: Object.keys(client)
+    });
+
     // Get real legajo progress
     const { getCompletionStats } = useLegajoDocuments(client.id);
     const stats = getCompletionStats();
@@ -45,12 +54,18 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                                 <Pencil size={14} strokeWidth={2.5} />
                             </button>
                             <div className="flex-1 min-w-0">
-                                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">
-                                    {client.tradeName}
-                                </h3>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">
+                                        {client.trade_name || client.legal_name || 'Sin nombre'}
+                                    </h3>
+                                    {/* Importance Badge */}
+                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border ${importance.color} whitespace-nowrap`}>
+                                        {importance.label}
+                                    </span>
+                                </div>
                                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
                                     <Building2 size={12} />
-                                    <span className="truncate">{client.legalName}</span>
+                                    <span className="truncate">{client.legal_name || client.trade_name || '---'}</span>
                                 </p>
 
                                 {/* Inline Info: CUIT, Email, Phone */}
@@ -198,7 +213,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                             <CompanyContactsSection
                                 contacts={allContacts}
                                 companyId={client.id}
-                                companyName={client.tradeName}
+                                companyName={client.trade_name || client.legal_name}
                                 companyType="client"
                                 isCompact={false}
                             />

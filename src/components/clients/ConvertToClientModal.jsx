@@ -130,7 +130,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                                 <input name="legalName" value={formData.legalName} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none" placeholder="Nombre Legal S.A." />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">Nombre de Fantasía</label>
+                                <label className="text-xs font-bold text-slate-500 ml-1">Nombre Comercial</label>
                                 <input name="tradeName" value={formData.tradeName} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none" placeholder="Marca Comercial" />
                             </div>
                             <div className="space-y-1.5">
