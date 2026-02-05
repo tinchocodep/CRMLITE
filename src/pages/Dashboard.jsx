@@ -11,6 +11,7 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { useContacts } from '../hooks/useContacts';
 import { useActivities } from '../hooks/useActivities';
+import { useToast } from '../contexts/ToastContext';
 
 
 const Dashboard = () => {
@@ -26,6 +27,22 @@ const Dashboard = () => {
     const { opportunities, loading: loadingOpportunities } = useOpportunities();
     const { contacts, loading: loadingContacts } = useContacts();
     const { activities, loading: loadingActivities, updateActivity, deleteActivity } = useActivities(7); // Next 7 days
+    const { showToast } = useToast();
+
+    const testToast = () => {
+        showToast({
+            id: `test-${Date.now()}`,
+            type: 'test',
+            priority: 'high',
+            title: '🎉 Toast Test',
+            description: 'Si ves esto, el sistema de toasts funciona correctamente!',
+            timestamp: new Date(),
+            timeAgo: 'Ahora',
+            icon: Bell,
+            color: 'bg-blue-100 text-blue-600',
+            action: '/dashboard'
+        });
+    };
 
     const handleLogout = () => {
         logout();
