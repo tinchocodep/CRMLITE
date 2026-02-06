@@ -208,16 +208,16 @@ export const useUsers = () => {
         }
 
         try {
-            // Use admin API to create user WITHOUT sending confirmation email
-            // This bypasses the email rate limit
-            const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
+            // Use regular signUp (works with Anon Key)
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
                 email: userData.email,
                 password: userData.password,
-                email_confirm: true, // Auto-confirm email
-                user_metadata: {
-                    full_name: userData.fullName,
-                    role: userData.role,
-                    tenant_id: tenantId
+                options: {
+                    data: {
+                        full_name: userData.fullName,
+                        role: userData.role,
+                        tenant_id: tenantId
+                    }
                 }
             });
 
