@@ -91,7 +91,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     return (
         <aside className={`fixed top-0 h-screen w-70 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden transition-all duration-300 ${isMainSidebarExpanded ? 'right-[-280px]' : 'right-0 hidden xl:block'}`}>
             {/* Header */}
-            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700 text-center">
                 <h2 className="text-slate-800 dark:text-slate-100 font-bold text-sm tracking-wide uppercase">Agenda</h2>
                 <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
                     {format(new Date(), "d 'de' MMMM yyyy", { locale: es })}
