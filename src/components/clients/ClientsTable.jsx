@@ -154,7 +154,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                 <SortIcon columnKey="client_since" />
                             </div>
                         </th>
-                        <th className="w-[3%] px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[4%] px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
 
                         </th>
                     </tr>
