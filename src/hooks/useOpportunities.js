@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useOpportunities = (refreshKey = 'default') => {
     const [opportunities, setOpportunities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { comercialId, isAdmin, isSupervisor } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     const fetchOpportunities = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setOpportunities([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             const { data, error: fetchError } = await supabase
                 .from('opportunities')
@@ -19,6 +28,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                     company:companies!company_id(id, trade_name, legal_name, company_type, cuit),
                     contact:contacts!contact_id(id, first_name, last_name, email, phone)
                 `)
+                .eq('tenant_id', tenantId)
                 .order('close_date', { ascending: true });
 
             if (fetchError) throw fetchError;
@@ -63,15 +73,17 @@ export const useOpportunities = (refreshKey = 'default') => {
 
     // Fetch opportunities on mount and when auth state changes
     useEffect(() => {
-        if (comercialId || isAdmin || isSupervisor) {
+        if (tenantId && (comercialId || isAdmin || isSupervisor)) {
             fetchOpportunities();
+        } else if (!tenantLoading) {
+            setLoading(false);
         }
 
         // Cleanup function to ensure fresh data on next mount
         return () => {
             // This ensures the component will fetch fresh data when remounted
         };
-    }, [comercialId, isAdmin, isSupervisor, refreshKey]);
+    }, [comercialId, isAdmin, isSupervisor, refreshKey, tenantId, tenantLoading]);
 
     // Helper function to create activities from opportunity dates
     const createActivitiesFromOpportunity = async (opportunity, opportunityId) => {
