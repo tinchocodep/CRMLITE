@@ -54,7 +54,7 @@ const ComercialesManagement = () => {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-16 h-16 border-4 border-brand-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-slate-600 dark:text-slate-400">Cargando comerciales...</p>
                 </div>
             </div>
@@ -64,10 +64,10 @@ const ComercialesManagement = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen pb-40">
             {/* Header */}
-            <div className="bg-gradient-to-br from-white via-purple-50 to-purple-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-purple-200 dark:border-slate-700">
+            <div className="bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
                             <Users className="w-6 h-6 text-white" />
                         </div>
                         <div>
@@ -81,7 +81,7 @@ const ComercialesManagement = () => {
                     </div>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl font-semibold transition shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-red to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-semibold transition shadow-lg"
                     >
                         <Plus size={20} />
                         <span className="hidden md:inline">Nuevo Comercial</span>
@@ -113,7 +113,7 @@ const ComercialesManagement = () => {
                         </p>
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition"
+                            className="px-6 py-3 bg-brand-red text-white rounded-xl font-semibold hover:bg-red-700 transition"
                         >
                             Crear Primer Comercial
                         </button>
@@ -138,8 +138,8 @@ const ComercialesManagement = () => {
                                     <button
                                         onClick={() => handleToggleActive(comercial.id, comercial.is_active)}
                                         className={`p-2 rounded-lg transition ${comercial.is_active
-                                                ? 'bg-green-50 dark:bg-green-900/20 text-green-600'
-                                                : 'bg-red-50 dark:bg-red-900/20 text-red-600'
+                                            ? 'bg-green-50 dark:bg-green-900/20 text-green-600'
+                                            : 'bg-red-50 dark:bg-red-900/20 text-red-600'
                                             }`}
                                     >
                                         {comercial.is_active ? (
@@ -171,7 +171,7 @@ const ComercialesManagement = () => {
                                 {/* User Link */}
                                 {comercial.user && (
                                     <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                                        <p className="text-xs text-purple-600 dark:text-purple-400">
+                                        <p className="text-xs text-brand-red dark:text-red-400">
                                             👤 Vinculado a: {comercial.user.full_name}
                                         </p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -184,8 +184,8 @@ const ComercialesManagement = () => {
                                 <div className="mt-3">
                                     <span
                                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${comercial.is_active
-                                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                                             }`}
                                     >
                                         {comercial.is_active ? 'Activo' : 'Inactivo'}
