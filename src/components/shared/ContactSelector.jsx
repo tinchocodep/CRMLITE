@@ -109,12 +109,19 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
             {unselectedContacts.length > 0 ? (
                 <select
                     onChange={(e) => {
-                        if (e.target.value) {
-                            handleAddContact(e.target.value);
+                        const selectedId = e.target.value;
+                        console.log('🔍 Contact Selected:', {
+                            selectedId,
+                            type: typeof selectedId,
+                            availableContacts: unselectedContacts.map(c => ({ id: c.id, name: `${c.firstName} ${c.lastName}` }))
+                        });
+
+                        if (selectedId) {
+                            handleAddContact(selectedId);
                             e.target.value = ''; // Reset select
                         }
                     }}
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none cursor-pointer"
                 >
                     <option value="">+ Agregar contacto...</option>
                     {unselectedContacts.map(contact => (
