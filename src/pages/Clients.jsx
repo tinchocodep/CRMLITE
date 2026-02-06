@@ -254,6 +254,7 @@ const Clients = () => {
                     <ClientsTable
                         clients={filteredClients}
                         onEdit={handleEditClient}
+                        onDelete={deleteCompany}
                         allContacts={allContacts}
                     />
                 )}

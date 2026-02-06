@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { User, Mail, Phone, Building2, Edit2, ChevronUp, ChevronDown } from 'lucide-react';
+import { User, Mail, Phone, Building2, Edit2, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-const ContactsTable = ({ contacts, onEdit }) => {
+const ContactsTable = ({ contacts, onEdit, onDelete }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
     // Sorting logic
@@ -237,6 +237,13 @@ const ContactsTable = ({ contacts, onEdit }) => {
                                             title="Editar"
                                         >
                                             <Edit2 size={15} />
+                                        </button>
+                                        <button
+                                            onClick={() => onDelete(contact.id)}
+                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all ml-1"
+                                            title="Eliminar"
+                                        >
+                                            <Trash2 size={15} />
                                         </button>
                                     </td>
                                 </tr>
