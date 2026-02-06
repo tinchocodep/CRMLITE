@@ -51,13 +51,13 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
             </div>
 
             {/* Navigation Items */}
-            <nav className="flex-1 py-4 overflow-y-auto">
+            <nav className="flex-1 py-2 overflow-y-auto">
                 {sidebarModules.map((module) => (
                     <NavLink
                         key={module.path}
                         to={module.path}
                         className={({ isActive }) => `
-                            flex items-center gap-4 px-4 py-3 mx-2 rounded-xl transition-all duration-200
+                            flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200
                             ${isActive || module.isCRM
                                 ? 'bg-gradient-to-r from-brand-red to-red-600 text-white shadow-lg shadow-red-500/30'
                                 : 'text-slate-600 hover:bg-red-50 hover:text-brand-red'
@@ -65,7 +65,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                         `}
                     >
                         <module.icon
-                            size={24}
+                            size={22}
                             className="flex-shrink-0"
                         />
                         <span
@@ -83,9 +83,9 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 mb-2"
                 >
-                    <Plus size={24} className="flex-shrink-0" />
+                    <Plus size={22} className="flex-shrink-0" />
                     <span
                         className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
                             }`}
@@ -97,9 +97,9 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Settings Button */}
                 <NavLink
                     to="/configuracion"
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-100 transition-all duration-200"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-all duration-200"
                 >
-                    <Settings size={24} className="flex-shrink-0" />
+                    <Settings size={22} className="flex-shrink-0" />
                     <span
                         className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
                             }`}
