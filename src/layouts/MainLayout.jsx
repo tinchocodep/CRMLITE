@@ -11,6 +11,7 @@ import ContactModal from '../components/contacts/ContactModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
+import { RightSidebarAgenda } from '../components/RightSidebarAgenda';
 import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
@@ -850,8 +851,11 @@ const MainLayout = () => {
                 {/* CRM Horizontal Navigation - Above Content */}
                 {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={mainSidebarExpanded} />}
 
+                {/* Right Sidebar Agenda */}
+                <RightSidebarAgenda />
+
                 {/* Desktop Main Content */}
-                <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+                <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72 xl:mr-80' : 'ml-20 xl:mr-80'}`}>
                     <Outlet key={location.pathname} />
                 </main>
             </div>
