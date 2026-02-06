@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Lock, Shield } from 'lucide-react';
+
+const STORAGE_KEY = 'createUserFormData';
 
 const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
     const [formData, setFormData] = useState({
@@ -10,6 +12,28 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Load form data from localStorage when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    setFormData(parsedData);
+                } catch (err) {
+                    console.error('Error loading saved form data:', err);
+                }
+            }
+        }
+    }, [isOpen]);
+
+    // Save form data to localStorage whenever it changes
+    useEffect(() => {
+        if (isOpen && (formData.email || formData.password || formData.fullName)) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+        }
+    }, [formData, isOpen]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -32,7 +56,8 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
         const result = await onCreateUser(formData);
 
         if (result.success) {
-            // Reset form
+            // Clear localStorage and reset form on success
+            localStorage.removeItem(STORAGE_KEY);
             setFormData({
                 email: '',
                 password: '',
