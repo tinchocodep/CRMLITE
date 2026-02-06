@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, UserPlus, CheckCircle2, Building2, MapPin, FileText, Tractor, Leaf, DollarSign, User, Briefcase, Target, Map, Plus, Trash2 } from 'lucide-react';
+import ComercialSelector from '../shared/ComercialSelector';
 
 const importanceConfig = [
     { id: 'low', label: 'Baja', color: 'bg-blue-50 border-blue-200 text-blue-700' },
@@ -26,7 +27,10 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
         segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
 
         // Importance
-        importance: 'medium'
+        importance: 'medium',
+
+        // Comercial assignment
+        comercialId: null
     });
 
     useEffect(() => {
@@ -57,7 +61,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 legalName: '', tradeName: '', cuit: '', city: '', province: '', address: '',
                 paymentTerms: '', creditLimit: '', detail: '',
                 segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
-                importance: 'medium'
+                importance: 'medium',
+                comercialId: null
             });
         }
     }, [prospect]);
@@ -89,7 +94,9 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             })(),
             payment_terms: formData.paymentTerms || null,
-            credit_limit: formData.creditLimit || null
+            credit_limit: formData.creditLimit || null,
+            // Comercial assignment
+            comercial_id: formData.comercialId || null
         };
         onConvert(dataToSubmit);
     };
@@ -283,6 +290,18 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                                 </div>
                             </div>
                         </div>
+                    </section>
+
+                    {/* Comercial Assignment */}
+                    <section className="pt-4 border-t border-slate-100">
+                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <User size={16} /> Asignación Comercial
+                        </h4>
+                        <ComercialSelector
+                            value={formData.comercialId}
+                            onChange={(value) => setFormData(prev => ({ ...prev, comercialId: value }))}
+                            label="Asignar a Comercial"
+                        />
                     </section>
 
                     {/* 4. Importancia (Logos) */}
