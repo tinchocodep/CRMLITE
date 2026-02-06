@@ -177,31 +177,68 @@ const Opportunities = () => {
                                 key={opportunity.id}
                                 className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow"
                             >
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="font-bold text-slate-800 dark:text-slate-100">
+                                <div className="flex justify-between items-start mb-3">
+                                    <h3 className="font-bold text-slate-800 dark:text-slate-100 flex-1">
                                         {opportunity.opportunity_name || 'Sin nombre'}
                                     </h3>
-                                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1`}>
-                                        <span>{status.icon}</span>
-                                        <span>{status.label}</span>
-                                    </span>
+                                    <div className="relative status-dropdown-container ml-2">
+                                        <button
+                                            onClick={() => setStatusDropdownOpen(statusDropdownOpen === opportunity.id ? null : opportunity.id)}
+                                            className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 hover:opacity-80 transition-opacity`}
+                                        >
+                                            <span>{status.icon}</span>
+                                            <span>{status.label}</span>
+                                            <ChevronDown size={12} />
+                                        </button>
+                                        {statusDropdownOpen === opportunity.id && (
+                                            <div className="absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
+                                                {Object.entries(statusConfig).map(([key, config]) => (
+                                                    <button
+                                                        key={key}
+                                                        onClick={() => handleStatusChange(opportunity.id, key)}
+                                                        className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
+                                                    >
+                                                        <span>{config.icon}</span>
+                                                        <span className={config.color.split(' ')[1]}>{config.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                                    {opportunity.company?.trade_name || opportunity.company?.legal_name || 'N/A'}
-                                </p>
-                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                                    Monto: <span className="font-semibold text-green-600">{formatCurrency(opportunity.amount || 0)}</span>
-                                </p>
-                                <div className="flex items-center gap-2">
+
+                                <div className="space-y-2 mb-3">
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="font-medium">Unidad de Negocio:</span> {opportunity.business_unit || 'N/A'}
+                                    </p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="font-medium">Producto:</span> {opportunity.product || 'N/A'}
+                                    </p>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                        <span className="font-medium">Monto:</span> <span className="font-semibold text-green-600 dark:text-green-400">{formatCurrency(opportunity.amount || 0)}</span>
+                                    </p>
+                                </div>
+
+                                <div className="flex items-center gap-2 mb-3">
                                     <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                         <div
                                             className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full transition-all"
                                             style={{ width: `${opportunity.probability || 0}%` }}
                                         />
                                     </div>
-                                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
                                         {opportunity.probability || 0}%
                                     </span>
+                                </div>
+
+                                <div className="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-700">
+                                    <button
+                                        onClick={() => handleEdit(opportunity)}
+                                        className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center gap-1"
+                                    >
+                                        <Edit2 size={14} />
+                                        <span>Editar</span>
+                                    </button>
                                 </div>
                             </div>
                         );
