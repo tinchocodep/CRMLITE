@@ -60,196 +60,198 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden pl-4">
-            <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
-                    <tr>
-                        <th
-                            onClick={() => handleSort('trade_name')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Comercial
-                                <SortIcon columnKey="trade_name" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => handleSort('legal_name')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Razón Social
-                                <SortIcon columnKey="legal_name" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => handleSort('cuit')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                CUIT
-                                <SortIcon columnKey="cuit" />
-                            </div>
-                        </th>
-                        <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
-                            Dirección
-                        </th>
-                        <th
-                            onClick={() => handleSort('city')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Ciudad
-                                <SortIcon columnKey="city" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => handleSort('province')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Provincia
-                                <SortIcon columnKey="province" />
-                            </div>
-                        </th>
-                        <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
-                            Email
-                        </th>
-                        <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
-                            Teléfono
-                        </th>
-                        <th
-                            onClick={() => handleSort('comercial_name')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Vendedor
-                                <SortIcon columnKey="comercial_name" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => handleSort('payment_terms')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Pago
-                                <SortIcon columnKey="payment_terms" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => handleSort('credit_limit')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Crédito
-                                <SortIcon columnKey="credit_limit" />
-                            </div>
-                        </th>
-                        <th
-                            onClick={() => handleSort('client_since')}
-                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                        >
-                            <div className="flex items-center gap-1.5">
-                                Desde
-                                <SortIcon columnKey="client_since" />
-                            </div>
-                        </th>
-                        <th className="px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
-
-                        </th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                    {sortedClients.map((client) => {
-                        return (
-                            <tr
-                                key={client.id}
-                                className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="overflow-x-auto">
+                <table className="w-full min-w-[1400px]">
+                    <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+                        <tr>
+                            <th
+                                onClick={() => handleSort('trade_name')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
-                                <td className="px-3 py-2.5 text-[13px] font-medium text-slate-900 dark:text-slate-100">
-                                    <div className="flex items-center gap-2">
-                                        <Building2 size={15} className="text-brand-red flex-shrink-0" />
-                                        <span className="truncate" title={client.trade_name}>
-                                            {client.trade_name || '-'}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td className="px-3 py-2.5 text-[13px] text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block" title={client.legal_name}>
-                                        {client.legal_name || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-3 py-2.5 text-[12px] text-slate-600 dark:text-slate-400 font-mono">
-                                    <span className="truncate block">
-                                        {client.cuit || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-3 py-2.5 text-[13px] text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block" title={client.address}>
-                                        {client.address || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.city || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.province || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block" title={client.email}>
-                                        {client.email || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.phone || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.comercial_name || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.payment_terms || '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.credit_limit ? `$${(client.credit_limit / 1000).toFixed(0)}k` : '-'}
-                                    </span>
-                                </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                    <span className="truncate block">
-                                        {client.client_since ? new Date(client.client_since).toLocaleDateString('es-AR', { month: 'short', year: '2-digit' }) : '-'}
-                                    </span>
-                                </td>
-                                <td className="px-3 py-2.5 text-center">
-                                    <button
-                                        onClick={() => onEdit(client)}
-                                        className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
-                                        title="Editar"
-                                    >
-                                        <Edit2 size={15} />
-                                    </button>
-                                </td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+                                <div className="flex items-center gap-1.5">
+                                    Comercial
+                                    <SortIcon columnKey="trade_name" />
+                                </div>
+                            </th>
+                            <th
+                                onClick={() => handleSort('legal_name')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Razón Social
+                                    <SortIcon columnKey="legal_name" />
+                                </div>
+                            </th>
+                            <th
+                                onClick={() => handleSort('cuit')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    CUIT
+                                    <SortIcon columnKey="cuit" />
+                                </div>
+                            </th>
+                            <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
+                                Dirección
+                            </th>
+                            <th
+                                onClick={() => handleSort('city')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Ciudad
+                                    <SortIcon columnKey="city" />
+                                </div>
+                            </th>
+                            <th
+                                onClick={() => handleSort('province')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Provincia
+                                    <SortIcon columnKey="province" />
+                                </div>
+                            </th>
+                            <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
+                                Email
+                            </th>
+                            <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
+                                Teléfono
+                            </th>
+                            <th
+                                onClick={() => handleSort('comercial_name')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Vendedor
+                                    <SortIcon columnKey="comercial_name" />
+                                </div>
+                            </th>
+                            <th
+                                onClick={() => handleSort('payment_terms')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Pago
+                                    <SortIcon columnKey="payment_terms" />
+                                </div>
+                            </th>
+                            <th
+                                onClick={() => handleSort('credit_limit')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Crédito
+                                    <SortIcon columnKey="credit_limit" />
+                                </div>
+                            </th>
+                            <th
+                                onClick={() => handleSort('client_since')}
+                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-1.5">
+                                    Desde
+                                    <SortIcon columnKey="client_since" />
+                                </div>
+                            </th>
+                            <th className="px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
 
-            {/* Empty State */}
-            {sortedClients.length === 0 && (
-                <div className="text-center py-12 text-slate-400 dark:text-slate-500">
-                    No se encontraron clientes
-                </div>
-            )}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                        {sortedClients.map((client) => {
+                            return (
+                                <tr
+                                    key={client.id}
+                                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                                >
+                                    <td className="px-3 py-2.5 text-[13px] font-medium text-slate-900 dark:text-slate-100">
+                                        <div className="flex items-center gap-2">
+                                            <Building2 size={15} className="text-brand-red flex-shrink-0" />
+                                            <span className="truncate" title={client.trade_name}>
+                                                {client.trade_name || '-'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-[13px] text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block" title={client.legal_name}>
+                                            {client.legal_name || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-[12px] text-slate-600 dark:text-slate-400 font-mono">
+                                        <span className="truncate block">
+                                            {client.cuit || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-[13px] text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block" title={client.address}>
+                                            {client.address || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.city || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.province || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block" title={client.email}>
+                                            {client.email || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.phone || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.comercial_name || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.payment_terms || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.credit_limit ? `$${(client.credit_limit / 1000).toFixed(0)}k` : '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                        <span className="truncate block">
+                                            {client.client_since ? new Date(client.client_since).toLocaleDateString('es-AR', { month: 'short', year: '2-digit' }) : '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                        <button
+                                            onClick={() => onEdit(client)}
+                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
+                                            title="Editar"
+                                        >
+                                            <Edit2 size={15} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+
+                {/* Empty State */}
+                {sortedClients.length === 0 && (
+                    <div className="text-center py-12 text-slate-400 dark:text-slate-500">
+                        No se encontraron clientes
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
