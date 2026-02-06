@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake, ChevronDown, UserPlus } from 'lucide-react';
+import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake, ChevronDown, UserPlus, AlertCircle } from 'lucide-react';
 import { format, addHours, addMinutes } from 'date-fns';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { ValidationDialog } from '../ValidationDialog'; // Assuming ValidationDialog is in a components folder
 
 const priorityConfig = {
     high: {
@@ -47,6 +48,7 @@ const durationOptions = [
 const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
     const { user } = useAuth();
     const [teamMembers, setTeamMembers] = useState([]);
+    const [validationDialog, setValidationDialog] = useState({ isOpen: false, message: '' });
     const [newEvent, setNewEvent] = useState({
         title: '',
         priority: 'medium',
@@ -128,12 +130,12 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
         });
 
         if (!newEvent.title || !newEvent.company_id) {
-            alert('Por favor completa el título y selecciona una empresa.');
+            setValidationDialog({ isOpen: true, message: 'Por favor completa el título y selecciona una empresa.' });
             return;
         }
 
         if (!newEvent.assignedTo || newEvent.assignedTo.length === 0) {
-            alert('Por favor asigna al menos un comercial.');
+            setValidationDialog({ isOpen: true, message: 'Por favor asigna al menos un comercial.' });
             return;
         }
 
@@ -431,6 +433,13 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
 
                 </div>
             </div>
+
+            {/* Validation Dialog */}
+            <ValidationDialog
+                isOpen={validationDialog.isOpen}
+                onClose={() => setValidationDialog({ isOpen: false, message: '' })}
+                message={validationDialog.message}
+            />
         </div>,
         document.body
     );
