@@ -24,6 +24,17 @@ const Opportunities = () => {
         return () => console.log('🔴 Opportunities component UNMOUNTED');
     }, []);
 
+    // Listen for global opportunity creation event from Quick Actions
+    useEffect(() => {
+        const handleOpenModal = () => {
+            console.log('📢 Received openOpportunityModal event');
+            setIsCreateModalOpen(true);
+        };
+
+        window.addEventListener('openOpportunityModal', handleOpenModal);
+        return () => window.removeEventListener('openOpportunityModal', handleOpenModal);
+    }, []);
+
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {

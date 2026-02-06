@@ -3,21 +3,21 @@ import { NavLink } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package, TrendingUp,
     Megaphone, Truck, Leaf, DollarSign, Building2,
-    Plus, Settings, ShieldCheck
+    Plus, Settings, ShieldCheck, Lock
 } from 'lucide-react';
 
 const sidebarModules = [
-    { name: 'Home', path: '/dashboard', icon: Home },
-    { name: 'Portal Clientes', path: '/portal-clientes', icon: Users },
-    { name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true },
-    { name: 'Usuarios', path: '/usuarios', icon: ShieldCheck },
-    { name: 'Cotizador Insumos', path: '/cotizador', icon: Package },
-    { name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp },
-    { name: 'Marketing', path: '/marketing', icon: Megaphone },
-    { name: 'Logística (TMS)', path: '/logistica', icon: Truck },
-    { name: 'Sustentabilidad', path: '/sustentabilidad', icon: Leaf },
-    { name: 'Soluciones Financieras', path: '/finanzas', icon: DollarSign },
-    { name: 'Portal Proveedores', path: '/proveedores', icon: Building2 }
+    { name: 'Home', path: '/dashboard', icon: Home, locked: false },
+    { name: 'Portal Clientes', path: '/portal-clientes', icon: Users, locked: true },
+    { name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true, locked: false },
+    { name: 'Usuarios', path: '/usuarios', icon: ShieldCheck, locked: false },
+    { name: 'Cotizador Insumos', path: '/cotizador', icon: Package, locked: true },
+    { name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp, locked: true },
+    { name: 'Marketing', path: '/marketing', icon: Megaphone, locked: true },
+    { name: 'Logística (TMS)', path: '/logistica', icon: Truck, locked: true },
+    { name: 'Sustentabilidad', path: '/sustentabilidad', icon: Leaf, locked: true },
+    { name: 'Soluciones Financieras', path: '/finanzas', icon: DollarSign, locked: true },
+    { name: 'Portal Proveedores', path: '/proveedores', icon: Building2, locked: true }
 ];
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
@@ -52,30 +52,52 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
 
             {/* Navigation Items */}
             <nav className="flex-1 py-2 overflow-y-auto">
-                {sidebarModules.map((module) => (
-                    <NavLink
-                        key={module.path}
-                        to={module.path}
-                        className={({ isActive }) => `
-                            flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200
-                            ${isActive || module.isCRM
-                                ? 'bg-gradient-to-r from-brand-red to-red-600 text-white shadow-lg shadow-red-500/30'
-                                : 'text-slate-600 hover:bg-red-50 hover:text-brand-red'
+                {sidebarModules.map((module) => {
+                    const LinkComponent = module.locked ? 'div' : NavLink;
+                    const linkProps = module.locked
+                        ? {
+                            onClick: (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                             }
-                        `}
-                    >
-                        <module.icon
-                            size={22}
-                            className="flex-shrink-0"
-                        />
-                        <span
-                            className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                                }`}
+                        }
+                        : {
+                            to: module.path
+                        };
+
+                    return (
+                        <LinkComponent
+                            key={module.path}
+                            {...linkProps}
+                            className={({ isActive } = {}) => `
+                                flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative
+                                ${module.locked
+                                    ? 'opacity-50 cursor-not-allowed bg-slate-50 text-slate-400'
+                                    : isActive || module.isCRM
+                                        ? 'bg-gradient-to-r from-brand-red to-red-600 text-white shadow-lg shadow-red-500/30'
+                                        : 'text-slate-600 hover:bg-red-50 hover:text-brand-red'
+                                }
+                            `}
                         >
-                            {module.name}
-                        </span>
-                    </NavLink>
-                ))}
+                            <module.icon
+                                size={22}
+                                className="flex-shrink-0"
+                            />
+                            <span
+                                className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                                    }`}
+                            >
+                                {module.name}
+                            </span>
+                            {module.locked && isHovered && (
+                                <Lock
+                                    size={16}
+                                    className="ml-auto flex-shrink-0 text-slate-400"
+                                />
+                            )}
+                        </LinkComponent>
+                    );
+                })}
             </nav>
 
             {/* Bottom Actions */}
