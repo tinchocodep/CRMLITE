@@ -59,7 +59,7 @@ export default function Opportunities() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 pb-20">
+        <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 overflow-y-auto">
             {/* Header */}
             <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-6 pb-8">
                 <h1 className="text-2xl font-bold mb-2">Oportunidades</h1>
@@ -202,7 +202,7 @@ export default function Opportunities() {
             </div>
 
             {/* Opportunities List */}
-            <div className="px-4">
+            <div className="px-4 flex-1 pb-20">
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="text-slate-400">Cargando oportunidades...</div>
