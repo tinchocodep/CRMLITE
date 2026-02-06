@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Search, Plus, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
 import CreateOpportunityModal from '../components/opportunities/CreateOpportunityModal';
@@ -7,8 +6,7 @@ import EditOpportunityModal from '../components/opportunities/EditOpportunityMod
 import { useOpportunities } from '../hooks/useOpportunities';
 
 export default function Opportunities() {
-    const location = useLocation();
-    const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities(location.pathname);
+    const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -49,7 +47,7 @@ export default function Opportunities() {
         <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:px-0">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
-                <div className="text-center md:text-left">
+                <div className="text-center w-full md:w-auto md:text-left">
                     <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Oportunidades</h1>
                 </div>
 
