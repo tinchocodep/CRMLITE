@@ -96,11 +96,23 @@ const Clients = () => {
             if (result.success && savedClientId) {
                 // Handle contact-company relationships
                 if (contactIds && contactIds.length >= 0) {
+                    console.log('💾 Saving contact-company relationships:', {
+                        clientId: savedClientId,
+                        selectedContactIds: contactIds,
+                        allContacts: allContacts.length
+                    });
+
                     // Get current contacts for this client
                     const currentContacts = allContacts.filter(contact =>
                         contact.companies?.some(company => company.companyId === savedClientId)
                     );
                     const currentContactIds = currentContacts.map(c => c.id);
+
+                    console.log('📊 Current vs New contacts:', {
+                        currentContactIds,
+                        newContactIds: contactIds,
+                        currentContacts: currentContacts.map(c => ({ id: c.id, name: `${c.firstName} ${c.lastName}` }))
+                    });
 
                     // Find contacts to add (in contactIds but not in currentContactIds)
                     const contactsToAdd = contactIds.filter(id => !currentContactIds.includes(id));
@@ -108,23 +120,34 @@ const Clients = () => {
                     // Find contacts to remove (in currentContactIds but not in contactIds)
                     const contactsToRemove = currentContactIds.filter(id => !contactIds.includes(id));
 
+                    console.log('🔄 Contacts to add/remove:', {
+                        toAdd: contactsToAdd,
+                        toRemove: contactsToRemove
+                    });
+
                     // Add new contacts
                     for (const contactId of contactsToAdd) {
                         try {
+                            console.log('➕ Linking contact to company:', { contactId, companyId: savedClientId });
                             await linkToCompany(contactId, savedClientId, 'client', false);
+                            console.log('✅ Successfully linked contact:', contactId);
                         } catch (err) {
-                            console.error('Error linking contact:', err);
+                            console.error('❌ Error linking contact:', contactId, err);
                         }
                     }
 
                     // Remove unselected contacts
                     for (const contactId of contactsToRemove) {
                         try {
+                            console.log('➖ Unlinking contact from company:', { contactId, companyId: savedClientId });
                             await unlinkFromCompany(contactId, savedClientId);
+                            console.log('✅ Successfully unlinked contact:', contactId);
                         } catch (err) {
-                            console.error('Error unlinking contact:', err);
+                            console.error('❌ Error unlinking contact:', contactId, err);
                         }
                     }
+
+                    console.log('✅ Finished processing contact relationships');
                 }
 
                 showSuccess(clientData.id ? 'Cliente actualizado exitosamente!' : 'Cliente creado exitosamente!');
