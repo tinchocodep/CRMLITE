@@ -329,8 +329,7 @@ export const useUsers = () => {
                         email: userData.email,
                         phone: userData.phone || null,
                         tenant_id: tenantId,
-                        is_active: true,
-                        created_by: user.id
+                        is_active: true
                     }])
                     .select()
                     .single();
