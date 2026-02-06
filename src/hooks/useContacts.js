@@ -7,7 +7,7 @@ export const useContacts = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { user } = useAuth();
+    const { user, comercialId, isAdmin, isSupervisor } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Fetch all contacts with their companies
@@ -23,11 +23,20 @@ export const useContacts = () => {
             setLoading(true);
             setError(null);
 
-            // Fetch contacts with explicit tenant filter
-            const { data: contactsData, error: contactsError } = await supabase
+            // Build query with tenant filter
+            let query = supabase
                 .from('contacts')
                 .select('*')
-                .eq('tenant_id', tenantId) // ← EXPLICIT TENANT FILTER
+                .eq('tenant_id', tenantId); // ← EXPLICIT TENANT FILTER
+
+            // Filter by comercial_id for non-admin/non-supervisor users
+            // Admins and supervisors see all contacts in their tenant
+            // Regular comerciales see only their own contacts
+            if (!isAdmin && !isSupervisor && comercialId) {
+                query = query.eq('comercial_id', comercialId);
+            }
+
+            const { data: contactsData, error: contactsError } = await query
                 .order('created_at', { ascending: false });
 
             if (contactsError) throw contactsError;
