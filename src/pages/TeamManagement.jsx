@@ -31,7 +31,7 @@ const TeamManagement = () => {
                     full_name,
                     email,
                     comercial_id,
-                    comercial:comerciales!users_comercial_id_fkey(id, name)
+                    comercial:comerciales(id, name)
                 `)
                 .eq('role', 'supervisor')
                 .eq('is_active', true)
