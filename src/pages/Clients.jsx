@@ -120,7 +120,7 @@ const Clients = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:pr-0">
+        <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:px-0">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
                 <div className="text-center md:text-left">
