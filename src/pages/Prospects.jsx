@@ -12,7 +12,7 @@ import { useSystemToast } from '../hooks/useSystemToast';
 
 const Prospects = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { companies: prospects, loading, createCompany, updateCompany, convertToClient } = useCompanies('prospect');
+    const { companies: prospects, loading, createCompany, updateCompany, deleteCompany, convertToClient } = useCompanies('prospect');
     const { contacts: allContacts } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
 
@@ -251,6 +251,7 @@ const Prospects = () => {
                         prospects={filteredProspects}
                         onEdit={handleEditClick}
                         onPromote={handlePromoteClick}
+                        onDelete={deleteCompany}
                         allContacts={allContacts}
                     />
                 )}

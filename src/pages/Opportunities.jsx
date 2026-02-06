@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, ChevronDown, X } from 'lucide-react';
+import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X } from 'lucide-react';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
 
@@ -13,7 +13,7 @@ const statusConfig = {
 
 const Opportunities = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities();
+    const { opportunities, loading, createOpportunity, updateOpportunity, deleteOpportunity } = useOpportunities();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [opportunityToEdit, setOpportunityToEdit] = useState(null);
@@ -242,13 +242,20 @@ const Opportunities = () => {
                                     </span>
                                 </div>
 
-                                <div className="flex justify-end pt-2 border-t border-slate-200 dark:border-slate-700">
+                                <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
                                     <button
                                         onClick={() => handleEdit(opportunity)}
                                         className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center gap-1"
                                     >
                                         <Edit2 size={14} />
                                         <span>Editar</span>
+                                    </button>
+                                    <button
+                                        onClick={() => deleteOpportunity(opportunity.id)}
+                                        className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1"
+                                    >
+                                        <Trash2 size={14} />
+                                        <span>Eliminar</span>
                                     </button>
                                 </div>
                             </div>
@@ -361,13 +368,20 @@ const Opportunities = () => {
                                                 </p>
                                             </td>
                                             <td className="py-3 px-4">
-                                                <div className="flex items-center justify-center">
+                                                <div className="flex items-center justify-center gap-1">
                                                     <button
                                                         onClick={() => handleEdit(opp)}
                                                         className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                                         title="Editar"
                                                     >
                                                         <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteOpportunity(opp.id)}
+                                                        className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                                        title="Eliminar"
+                                                    >
+                                                        <Trash2 size={16} className="text-red-600 dark:text-red-400" />
                                                     </button>
                                                 </div>
                                             </td>

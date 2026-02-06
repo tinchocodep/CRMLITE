@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Edit2, UserPlus, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Edit2, UserPlus, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-const ProspectsTable = ({ prospects, onEdit, onPromote, allContacts }) => {
+const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, allContacts }) => {
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
     // Status badge configuration
@@ -199,6 +199,13 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, allContacts }) => {
                                                 title="Convertir a Cliente"
                                             >
                                                 <UserPlus size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => onDelete(prospect.id)}
+                                                className="p-2 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                                title="Eliminar"
+                                            >
+                                                <Trash2 size={16} />
                                             </button>
                                         </div>
                                     </td>
