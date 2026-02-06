@@ -91,15 +91,15 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     return (
         <aside className={`fixed top-0 h-screen w-70 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden transition-all duration-300 ${isMainSidebarExpanded ? 'right-[-280px]' : 'right-0 hidden xl:block'}`}>
             {/* Header */}
-            <div className="bg-gradient-to-r from-[#E76E53] to-[#CD5643] px-5 py-3.5 shadow-md">
-                <h2 className="text-white font-bold text-base tracking-wide">AGENDA</h2>
-                <p className="text-white/90 text-xs mt-0.5">
+            <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+                <h2 className="text-slate-800 dark:text-slate-100 font-bold text-sm tracking-wide uppercase">Agenda</h2>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">
                     {format(new Date(), "d 'de' MMMM yyyy", { locale: es })}
                 </p>
             </div>
 
             {/* Activities List */}
-            <div className="overflow-y-auto h-[calc(100vh-72px)] px-3 py-4 space-y-4">
+            <div className="overflow-y-auto h-[calc(100vh-76px)] px-3 py-4 space-y-4">
                 {sortedDates.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 px-4">
                         <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
