@@ -852,10 +852,10 @@ const MainLayout = () => {
                 {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Right Sidebar Agenda */}
-                <RightSidebarAgenda />
+                <RightSidebarAgenda isMainSidebarExpanded={mainSidebarExpanded} />
 
                 {/* Desktop Main Content */}
-                <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72 xl:mr-80' : 'ml-20 xl:mr-80'}`}>
+                <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-80'}`}>
                     <Outlet key={location.pathname} />
                 </main>
             </div>

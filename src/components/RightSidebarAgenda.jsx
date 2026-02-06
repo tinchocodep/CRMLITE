@@ -4,7 +4,7 @@ import { es } from 'date-fns/locale';
 import { Clock, MoreVertical } from 'lucide-react';
 import { useActivities } from '../hooks/useActivities';
 
-export function RightSidebarAgenda() {
+export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const { activities, loading } = useActivities(7); // Get next 7 days of activities
 
     // Group activities by date
@@ -80,7 +80,7 @@ export function RightSidebarAgenda() {
 
     if (loading) {
         return (
-            <aside className="hidden xl:block fixed right-0 top-0 h-screen w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-xl">
+            <aside className={`fixed right-0 top-0 h-screen w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-xl transition-all duration-300 ${isMainSidebarExpanded ? 'hidden' : 'hidden xl:block'}`}>
                 <div className="flex items-center justify-center h-full">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E76E53]"></div>
                 </div>
@@ -89,7 +89,7 @@ export function RightSidebarAgenda() {
     }
 
     return (
-        <aside className="hidden xl:block fixed right-0 top-0 h-screen w-80 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border-l border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden">
+        <aside className={`fixed right-0 top-0 h-screen w-80 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 border-l border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden transition-all duration-300 ${isMainSidebarExpanded ? 'hidden' : 'hidden xl:block'}`}>
             {/* Header */}
             <div className="bg-gradient-to-r from-[#E76E53] to-[#CD5643] px-6 py-5 shadow-lg">
                 <h2 className="text-white font-bold text-lg tracking-wide">AGENDA</h2>
