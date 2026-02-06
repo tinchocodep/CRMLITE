@@ -28,7 +28,8 @@ export const useActivities = (daysAhead = 30) => {
             const futureDateObj = new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000);
             const futureDate = `${futureDateObj.getFullYear()}-${String(futureDateObj.getMonth() + 1).padStart(2, '0')}-${String(futureDateObj.getDate()).padStart(2, '0')}`;
 
-            const { data, error: fetchError } = await supabase
+            // Build query
+            let query = supabase
                 .from('activities')
                 .select(`
                     *,
@@ -37,7 +38,16 @@ export const useActivities = (daysAhead = 30) => {
                 `)
                 .eq('tenant_id', tenantId)
                 .gte('scheduled_date', today)
-                .lte('scheduled_date', futureDate)
+                .lte('scheduled_date', futureDate);
+
+            // Filter by comercial_id for non-admin users
+            // Admins see all activities in their tenant
+            // Regular users and supervisors see only their own activities
+            if (!isAdmin && comercialId) {
+                query = query.eq('comercial_id', comercialId);
+            }
+
+            const { data, error: fetchError } = await query
                 .order('scheduled_date', { ascending: true })
                 .order('scheduled_time', { ascending: true });
 
