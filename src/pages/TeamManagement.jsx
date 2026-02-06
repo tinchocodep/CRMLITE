@@ -80,6 +80,8 @@ const TeamManagement = () => {
 
     const handleAssignComercial = async (supervisorId, comercialId) => {
         try {
+            console.log('Attempting to assign:', { supervisorId, comercialId, userId: userProfile.id, isAdmin });
+
             const { error } = await supabase
                 .from('supervisor_comerciales')
                 .insert([{
@@ -88,7 +90,15 @@ const TeamManagement = () => {
                     created_by: userProfile.id
                 }]);
 
-            if (error) throw error;
+            if (error) {
+                console.error('Insert error details:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                });
+                throw error;
+            }
 
             showSuccess('Comercial asignado exitosamente');
             fetchData();
