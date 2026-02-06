@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Search, Plus, Filter, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Search, Plus, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
 import CreateOpportunityModal from '../components/opportunities/CreateOpportunityModal';
 import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
@@ -8,49 +8,34 @@ import { useOpportunities } from '../hooks/useOpportunities';
 
 export default function Opportunities() {
     const location = useLocation();
-    // Pass location.pathname as refreshKey to trigger refetch when navigating to this page
     const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities(location.pathname);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [selectedOpportunity, setSelectedOpportunity] = useState(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [opportunityToEdit, setOpportunityToEdit] = useState(null);
 
-
-    // Listen for custom event from Quick Actions
-    useEffect(() => {
-        const handleOpenModal = () => {
-            setIsCreateModalOpen(true);
-        };
-
-        window.addEventListener('openOpportunityModal', handleOpenModal);
-
-        return () => {
-            window.removeEventListener('openOpportunityModal', handleOpenModal);
-        };
-    }, []);
-
     // Filter opportunities
-    const filteredOpportunities = opportunities.filter(opp => {
-        const matchesSearch = (opp.opportunity_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (opp.company_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (opp.product_type || '').toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || opp.status === statusFilter;
-        return matchesSearch && matchesStatus;
-    });
-
+    const filteredOpportunities = useMemo(() => {
+        return opportunities.filter(opp => {
+            const matchesSearch = (opp.opportunity_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (opp.company_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (opp.product_type || '').toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesStatus = statusFilter === 'all' || opp.status === statusFilter;
+            return matchesSearch && matchesStatus;
+        });
+    }, [opportunities, searchTerm, statusFilter]);
 
     // Calculate stats
-    const stats = {
+    const stats = useMemo(() => ({
         total: opportunities.length,
         totalAmount: opportunities.reduce((sum, opp) => sum + opp.amount, 0),
         won: opportunities.filter(opp => opp.status === 'ganado').length,
         wonAmount: opportunities.filter(opp => opp.status === 'ganado').reduce((sum, opp) => sum + opp.amount, 0),
         lost: opportunities.filter(opp => opp.status === 'perdido').length,
         inProgress: opportunities.filter(opp => ['iniciado', 'presupuestado', 'negociado'].includes(opp.status)).length,
-        avgProbability: Math.round(opportunities.reduce((sum, opp) => sum + opp.probability, 0) / opportunities.length)
-    };
+        avgProbability: opportunities.length > 0 ? Math.round(opportunities.reduce((sum, opp) => sum + opp.probability, 0) / opportunities.length) : 0
+    }), [opportunities]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('es-AR', {
@@ -61,164 +46,159 @@ export default function Opportunities() {
     };
 
     return (
-        <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 overflow-y-auto">
+        <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:px-0">
             {/* Header */}
-            <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-6 pb-8">
-                <h1 className="text-2xl font-bold mb-2">Oportunidades</h1>
-                <p className="text-red-100 text-sm">Gestiona tu pipeline de ventas</p>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="px-4 -mt-4 mb-6">
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                    {/* Total Opportunities */}
-                    <div className="bg-white rounded-xl p-4 shadow-md border border-slate-200">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                                <TrendingUp size={16} className="text-blue-600" />
-                            </div>
-                            <span className="text-xs text-slate-600 font-medium">Total</span>
-                        </div>
-                        <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
-                        <p className="text-xs text-slate-500 mt-1">{formatCurrency(stats.totalAmount)}</p>
-                    </div>
-
-                    {/* Won */}
-                    <div className="bg-white rounded-xl p-4 shadow-md border border-slate-200">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
-                                <CheckCircle size={16} className="text-green-600" />
-                            </div>
-                            <span className="text-xs text-slate-600 font-medium">Ganadas</span>
-                        </div>
-                        <p className="text-2xl font-bold text-green-600">{stats.won}</p>
-                        <p className="text-xs text-slate-500 mt-1">{formatCurrency(stats.wonAmount)}</p>
-                    </div>
-
-                    {/* In Progress */}
-                    <div className="bg-white rounded-xl p-4 shadow-md border border-slate-200">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                                <Clock size={16} className="text-orange-600" />
-                            </div>
-                            <span className="text-xs text-slate-600 font-medium">En Proceso</span>
-                        </div>
-                        <p className="text-2xl font-bold text-orange-600">{stats.inProgress}</p>
-                        <p className="text-xs text-slate-500 mt-1">{stats.avgProbability}% prob. promedio</p>
-                    </div>
-
-                    {/* Lost */}
-                    <div className="bg-white rounded-xl p-4 shadow-md border border-slate-200">
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                                <XCircle size={16} className="text-red-600" />
-                            </div>
-                            <span className="text-xs text-slate-600 font-medium">Perdidas</span>
-                        </div>
-                        <p className="text-2xl font-bold text-red-600">{stats.lost}</p>
-                        <p className="text-xs text-slate-500 mt-1">Seguimiento activo</p>
-                    </div>
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
+                <div className="text-center md:text-left">
+                    <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">Oportunidades</h1>
                 </div>
-            </div>
 
-            {/* Search & Filter */}
-            <div className="px-4 mb-6">
-                {/* Search Bar with New Button */}
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+                <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm w-full md:w-auto">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex-1 md:w-80 border border-slate-100 dark:border-slate-600 focus-within:ring-2 ring-brand-red/10 dark:ring-red-500/20 transition-all">
+                        <Search size={20} className="text-slate-400 dark:text-slate-500" />
                         <input
                             type="text"
                             placeholder="Buscar oportunidades..."
+                            className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none w-full"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none transition-all bg-white"
                         />
                     </div>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="px-4 py-3 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                        className="px-4 py-2.5 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                     >
                         <Plus size={18} />
                         <span className="hidden md:inline">Nuevo</span>
                     </button>
                 </div>
+            </div>
 
-                {/* Status Filter */}
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                    <button
-                        onClick={() => setStatusFilter('all')}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'all'
-                            ? 'bg-gradient-to-r from-[#E76E53] to-red-600 text-white shadow-md'
-                            : 'bg-white text-slate-600 border border-slate-200'
-                            }`}
-                    >
-                        Todas ({opportunities.length})
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('iniciado')}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'iniciado'
-                            ? 'bg-blue-500 text-white shadow-md'
-                            : 'bg-white text-slate-600 border border-slate-200'
-                            }`}
-                    >
-                        🚀 Iniciado
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('presupuestado')}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'presupuestado'
-                            ? 'bg-yellow-500 text-white shadow-md'
-                            : 'bg-white text-slate-600 border border-slate-200'
-                            }`}
-                    >
-                        📋 Presupuestado
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('negociado')}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'negociado'
-                            ? 'bg-orange-500 text-white shadow-md'
-                            : 'bg-white text-slate-600 border border-slate-200'
-                            }`}
-                    >
-                        🤝 Negociado
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('ganado')}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'ganado'
-                            ? 'bg-green-500 text-white shadow-md'
-                            : 'bg-white text-slate-600 border border-slate-200'
-                            }`}
-                    >
-                        ✅ Ganado
-                    </button>
-                    <button
-                        onClick={() => setStatusFilter('perdido')}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'perdido'
-                            ? 'bg-red-500 text-white shadow-md'
-                            : 'bg-white text-slate-600 border border-slate-200'
-                            }`}
-                    >
-                        ❌ Perdido
-                    </button>
+            {/* Stats Cards - More Compact */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {/* Total Opportunities */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                            <TrendingUp size={14} className="text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Total</span>
+                    </div>
+                    <p className="text-xl font-bold text-slate-800 dark:text-slate-100">{stats.total}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{formatCurrency(stats.totalAmount)}</p>
+                </div>
+
+                {/* Won */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-7 h-7 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                            <CheckCircle size={14} className="text-green-600 dark:text-green-400" />
+                        </div>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Ganadas</span>
+                    </div>
+                    <p className="text-xl font-bold text-green-600 dark:text-green-400">{stats.won}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{formatCurrency(stats.wonAmount)}</p>
+                </div>
+
+                {/* In Progress */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                            <Clock size={14} className="text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">En Proceso</span>
+                    </div>
+                    <p className="text-xl font-bold text-orange-600 dark:text-orange-400">{stats.inProgress}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{stats.avgProbability}% prob.</p>
+                </div>
+
+                {/* Lost */}
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+                    <div className="flex items-center gap-2 mb-1">
+                        <div className="w-7 h-7 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                            <XCircle size={14} className="text-red-600 dark:text-red-400" />
+                        </div>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Perdidas</span>
+                    </div>
+                    <p className="text-xl font-bold text-red-600 dark:text-red-400">{stats.lost}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Seguimiento</p>
                 </div>
             </div>
 
+            {/* Status Filter */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                <button
+                    onClick={() => setStatusFilter('all')}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'all'
+                        ? 'bg-gradient-to-r from-[#E76E53] to-red-600 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                        }`}
+                >
+                    Todas ({opportunities.length})
+                </button>
+                <button
+                    onClick={() => setStatusFilter('iniciado')}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'iniciado'
+                        ? 'bg-blue-500 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                        }`}
+                >
+                    🚀 Iniciado
+                </button>
+                <button
+                    onClick={() => setStatusFilter('presupuestado')}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'presupuestado'
+                        ? 'bg-yellow-500 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                        }`}
+                >
+                    📋 Presupuestado
+                </button>
+                <button
+                    onClick={() => setStatusFilter('negociado')}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'negociado'
+                        ? 'bg-orange-500 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                        }`}
+                >
+                    🤝 Negociado
+                </button>
+                <button
+                    onClick={() => setStatusFilter('ganado')}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'ganado'
+                        ? 'bg-green-500 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                        }`}
+                >
+                    ✅ Ganado
+                </button>
+                <button
+                    onClick={() => setStatusFilter('perdido')}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'perdido'
+                        ? 'bg-red-500 text-white shadow-md'
+                        : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                        }`}
+                >
+                    ❌ Perdido
+                </button>
+            </div>
+
             {/* Opportunities List */}
-            <div className="px-4 flex-1 pb-20">
+            <div className="flex-1 overflow-y-auto">
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="text-slate-400">Cargando oportunidades...</div>
+                        <div className="text-slate-400 dark:text-slate-500">Cargando oportunidades...</div>
                     </div>
                 ) : filteredOpportunities.length === 0 ? (
                     <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <TrendingUp size={32} className="text-slate-400" />
+                        <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <TrendingUp size={32} className="text-slate-400 dark:text-slate-500" />
                         </div>
-                        <p className="text-slate-500 font-medium">No se encontraron oportunidades</p>
-                        <p className="text-slate-400 text-sm mt-1">Intenta con otros filtros</p>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">No se encontraron oportunidades</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">Intenta con otros filtros</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-20">
                         {filteredOpportunities.map(opportunity => (
                             <OpportunityCard
                                 key={opportunity.id}
@@ -232,7 +212,6 @@ export default function Opportunities() {
                     </div>
                 )}
             </div>
-
 
             {/* Create Opportunity Modal */}
             <CreateOpportunityModal
