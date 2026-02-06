@@ -848,7 +848,7 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* CRM Horizontal Navigation - Above Content */}
-                {isCRMActive && <HorizontalCRMNav />}
+                {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Desktop Main Content */}
                 <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
