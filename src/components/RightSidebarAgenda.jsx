@@ -3,13 +3,16 @@ import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Clock, MoreVertical, Check, CalendarClock, Trash2 } from 'lucide-react';
 import { useActivities } from '../hooks/useActivities';
+import { ConfirmDialog } from './ConfirmDialog';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const { activities, loading, updateActivity, deleteActivity } = useActivities(7);
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
     const [tempDate, setTempDate] = useState('');
+    const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, activityId: null });
     const menuRef = useRef(null);
+
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -109,15 +112,17 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         }
     };
 
-    const handleDelete = async (activityId, e) => {
+    const handleDelete = (activityId, e) => {
         e.stopPropagation();
-        if (window.confirm('¿Estás seguro de eliminar esta actividad?')) {
-            try {
-                await deleteActivity(activityId);
-                setOpenMenuId(null);
-            } catch (error) {
-                console.error('Error deleting activity:', error);
-            }
+        setConfirmDialog({ isOpen: true, activityId });
+    };
+
+    const confirmDelete = async () => {
+        try {
+            await deleteActivity(confirmDialog.activityId);
+            setOpenMenuId(null);
+        } catch (error) {
+            console.error('Error deleting activity:', error);
         }
     };
 
@@ -321,6 +326,18 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                     )}
                 </div>
             </aside>
+
+            {/* Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                onClose={() => setConfirmDialog({ isOpen: false, activityId: null })}
+                onConfirm={confirmDelete}
+                title="Eliminar actividad"
+                message="¿Estás seguro de eliminar esta actividad? Esta acción no se puede deshacer."
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                variant="danger"
+            />
         </>
     );
 }
