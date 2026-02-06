@@ -166,27 +166,6 @@ const MainLayout = () => {
         setMobileMenuOpen(false);
     };
 
-    // ========== NAVIGATION SAFETY FIX ==========
-    const safeNavigate = (path) => {
-        console.log('👆 [NAV] Manual navigation requested to:', path);
-        // Loose check for opportunities path to ensure it catches all variations
-        if (location.pathname && location.pathname.toLowerCase().includes('oportunidades')) {
-            console.log('⚠️ [NAV] Force reloading to bypass Router freeze:', path);
-            window.location.href = path;
-            return;
-        }
-        navigate(path);
-    };
-
-    const safeNavLinkClick = (e, targetPath) => {
-        if (location.pathname && location.pathname.toLowerCase().includes('oportunidades')) {
-            console.log('⚠️ [NAV] Force reloading Link to:', targetPath);
-            e.preventDefault();
-            e.stopPropagation(); // Ensure no other handlers fire
-            window.location.href = targetPath;
-        }
-    };
-
     // Desktop: Split modules for central logo
     const leftModules = modules.slice(0, 5);
     const rightModules = modules.slice(5);
