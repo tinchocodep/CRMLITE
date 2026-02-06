@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useCompanies } from '../../hooks/useCompanies';
+import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 // Porcentajes de referencia por status (sugerencias, no obligatorios)
 const statusProbabilityReference = {
@@ -11,10 +13,17 @@ const statusProbabilityReference = {
 };
 
 export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = null }) => {
+    const { companies } = useCompanies();
+
+    // Filter companies by type
+    const clients = companies.filter(c => c.company_type === 'client');
+    const prospects = companies.filter(c => c.company_type === 'prospect');
+
     const [formData, setFormData] = useState({
         opportunity_name: opportunity?.opportunity_name || '',
-        business_unit: opportunity?.business_unit || '',
-        product: opportunity?.product || '',
+        linkedEntityId: opportunity?.company_id?.toString() || '',
+        linkedEntityType: opportunity?.company?.company_type || '',
+        product: opportunity?.product_type || '',
         amount: opportunity?.amount || '',
         probability: opportunity?.probability || 50,
         close_date: opportunity?.close_date || '',
@@ -26,8 +35,9 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
         if (opportunity) {
             setFormData({
                 opportunity_name: opportunity.opportunity_name || '',
-                business_unit: opportunity.business_unit || '',
-                product: opportunity.product || '',
+                linkedEntityId: opportunity.company_id?.toString() || '',
+                linkedEntityType: opportunity.company?.company_type || '',
+                product: opportunity.product_type || '',
                 amount: opportunity.amount || '',
                 probability: opportunity.probability || 50,
                 close_date: opportunity.close_date || '',
@@ -40,7 +50,19 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(formData);
+
+        // Transform formData to match database schema
+        const submitData = {
+            opportunity_name: formData.opportunity_name,
+            company_id: formData.linkedEntityId ? parseInt(formData.linkedEntityId) : null,
+            product_type: formData.product,
+            amount: formData.amount ? parseFloat(formData.amount) : null,
+            probability: formData.probability,
+            close_date: formData.close_date || null,
+            status: formData.status
+        };
+
+        onSave(submitData);
     };
 
     const handleChange = (e) => {
@@ -91,19 +113,23 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                         />
                     </div>
 
+                    {/* Business Unit and Product */}
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                Unidad de Negocio
-                            </label>
-                            <input
-                                type="text"
-                                name="business_unit"
-                                value={formData.business_unit}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
+                        <BusinessUnitPicker
+                            value={formData.linkedEntityId}
+                            entityType={formData.linkedEntityType}
+                            onChange={(entityId, entityType, entity) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    linkedEntityId: entityId,
+                                    linkedEntityType: entityType
+                                }));
+                            }}
+                            clients={clients}
+                            prospects={prospects}
+                            required={true}
+                            label="Unidad de Negocio"
+                        />
 
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -207,7 +233,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
