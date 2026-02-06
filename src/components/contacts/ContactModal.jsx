@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { X, Building2, UserPlus, Plus, Trash2, Star, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCompanies } from '../../hooks/useCompanies';
+import { useContacts } from '../../hooks/useContacts';
+
 
 const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedCompany = null }) => {
     const { companies } = useCompanies();
+    const { createContact, updateContact } = useContacts();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -185,22 +188,37 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!validate()) {
             return;
         }
 
-        const contactData = {
-            id: contact?.id || Date.now(),
-            ...formData,
-            createdAt: contact?.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-
-        onSave(contactData);
-        onClose();
+        try {
+            if (contact?.id) {
+                // Update existing contact
+                const result = await updateContact(contact.id, formData);
+                if (result.success) {
+                    onSave?.(result.data); // Call optional callback
+                    onClose();
+                } else {
+                    alert('Error al actualizar contacto: ' + result.error);
+                }
+            } else {
+                // Create new contact
+                const result = await createContact(formData);
+                if (result.success) {
+                    onSave?.(result.data); // Call optional callback
+                    onClose();
+                } else {
+                    alert('Error al crear contacto: ' + result.error);
+                }
+            }
+        } catch (error) {
+            console.error('Error in handleSubmit:', error);
+            alert('Error inesperado: ' + error.message);
+        }
     };
 
     if (!isOpen) return null;
