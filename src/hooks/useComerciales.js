@@ -60,6 +60,7 @@ export const useComerciales = () => {
         }
 
         try {
+            // 1. Create the comercial
             const { data, error: createError } = await supabase
                 .from('comerciales')
                 .insert([{
@@ -74,6 +75,22 @@ export const useComerciales = () => {
                 .single();
 
             if (createError) throw createError;
+
+            // 2. If supervisorId is provided, assign this comercial to that supervisor
+            if (comercialData.supervisorId && data) {
+                const { error: assignError } = await supabase
+                    .from('supervisor_comerciales')
+                    .insert([{
+                        supervisor_id: comercialData.supervisorId,
+                        comercial_id: data.id,
+                        created_by: user.id
+                    }]);
+
+                if (assignError) {
+                    console.error('Error assigning to supervisor:', assignError);
+                    // Don't fail the whole operation, just log the error
+                }
+            }
 
             await fetchComerciales();
             return { success: true, data };
