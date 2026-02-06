@@ -21,7 +21,7 @@ export function HorizontalCRMNav({ isMainSidebarExpanded }) {
     const location = useLocation();
 
     return (
-        <nav className={`bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 ${isMainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'}`}>
+        <nav className={`bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 ${isMainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
             <div className="w-full px-4 pr-6">
                 <div className="flex items-center gap-2 overflow-x-auto py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: '#E76E53 transparent' }}>
                     {crmModules.map((module, index) => {
