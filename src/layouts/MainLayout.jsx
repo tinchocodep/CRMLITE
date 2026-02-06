@@ -818,7 +818,7 @@ const MainLayout = () => {
 
                 {/* Desktop Main Content */}
                 <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'}`}>
-                    <Outlet key={location.pathname} />
+                    <Outlet />
                 </main>
             </div>
 
