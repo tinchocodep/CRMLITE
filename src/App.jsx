@@ -15,6 +15,7 @@ import Opportunities from './pages/Opportunities';
 import Settings from './pages/Settings';
 import UserManagement from './pages/UserManagement';
 import TeamManagement from './pages/TeamManagement';
+import ComercialesManagement from './pages/ComercialesManagement';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/shared/ToastContainer';
 
@@ -88,6 +89,7 @@ function AppRoutes() {
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />
           <Route path="equipos" element={<TeamManagement />} />
+          <Route path="comerciales" element={<ComercialesManagement />} />
           {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
             <Route
               key={name}
