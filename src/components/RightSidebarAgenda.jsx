@@ -3,15 +3,33 @@ import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Clock, MoreVertical, Check, CalendarClock, Trash2 } from 'lucide-react';
 import { useActivities } from '../hooks/useActivities';
+import { useOpportunities } from '../hooks/useOpportunities';
 import { ConfirmDialog } from './ConfirmDialog';
+import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
-    const { activities, loading, updateActivity, deleteActivity } = useActivities(7);
+    const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(7);
+    const { opportunities, loading: opportunitiesLoading } = useOpportunities();
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
     const [tempDate, setTempDate] = useState('');
     const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, activityId: null });
     const menuRef = useRef(null);
+
+    // Combine activities and opportunities
+    const combinedEvents = useMemo(() => {
+        return combineEventsAndOpportunities(rawActivities, opportunities);
+    }, [rawActivities, opportunities]);
+
+    // Convert combined events back to activity format for the sidebar
+    const activities = useMemo(() => {
+        return combinedEvents.map(event => ({
+            ...event,
+            scheduled_date: event.start ? format(event.start, 'yyyy-MM-dd') : null,
+            scheduled_time: event.start ? format(event.start, 'HH:mm') : null,
+            company_name: event.client
+        }));
+    }, [combinedEvents]);
 
 
     // Close menu when clicking outside
