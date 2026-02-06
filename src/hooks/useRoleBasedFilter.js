@@ -132,14 +132,14 @@ export const useRoleBasedFilter = () => {
         if (isAdmin) {
             // Admin: Si seleccionó un comercial específico, filtrar por él
             if (selectedComercialId !== 'all') {
-                return data.filter(item => item.comercial_id === selectedComercialId);
+                return data.filter(item => item.comercial_id === parseInt(selectedComercialId));
             }
             // Si es 'all', devolver todo
             return data;
         } else if (isSupervisor) {
             // Supervisor: Ve lo suyo + lo de sus comerciales
             if (selectedComercialId !== 'all') {
-                return data.filter(item => item.comercial_id === selectedComercialId);
+                return data.filter(item => item.comercial_id === parseInt(selectedComercialId));
             } else {
                 const comercialIds = comerciales.map(c => c.id);
                 if (comercialId) {
