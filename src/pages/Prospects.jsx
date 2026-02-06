@@ -96,7 +96,8 @@ const Prospects = () => {
                     notes: updatedProspect.notes,
                     status: updatedProspect.status || 'contacted',
                     prospect_source: updatedProspect.source,
-                    qualification_score: updatedProspect.qualification_score || 0
+                    qualification_score: updatedProspect.qualification_score || 0,
+                    comercial_id: updatedProspect.comercial_id
                 });
 
                 if (result.success) {
@@ -126,7 +127,8 @@ const Prospects = () => {
                     city: updatedProspect.city,
                     province: updatedProspect.province,
                     notes: updatedProspect.notes,
-                    status: updatedProspect.status
+                    status: updatedProspect.status,
+                    comercial_id: updatedProspect.comercial_id
                 });
 
                 if (result.success) {
