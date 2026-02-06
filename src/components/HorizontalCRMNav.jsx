@@ -1,12 +1,11 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-    LayoutDashboard, UserCheck, Users, User, Calendar,
+    UserCheck, Users, User, Calendar,
     Briefcase, Map, Target, AlertCircle, ShieldCheck
 } from 'lucide-react';
 
 const crmModules = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Prospectos', path: '/prospectos', icon: UserCheck },
     { name: 'Clientes', path: '/clientes', icon: Users },
     { name: 'Contactos', path: '/contactos', icon: User },
@@ -22,12 +21,11 @@ export function HorizontalCRMNav() {
     const location = useLocation();
 
     return (
-        <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm sticky top-0 z-30">
+        <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
             <div className="max-w-[1920px] mx-auto px-6">
                 <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-4">
                     {crmModules.map((module) => {
-                        const isActive = location.pathname === module.path ||
-                            (module.path === '/dashboard' && location.pathname === '/');
+                        const isActive = location.pathname === module.path;
 
                         return (
                             <NavLink
