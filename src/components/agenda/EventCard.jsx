@@ -38,7 +38,7 @@ const opportunityStatusConfig = {
     perdido: { label: 'Perdido', icon: '❌', color: 'from-red-50 to-red-100 border-red-200' }
 };
 
-const EventCard = ({ event, onUpdate, onDelete, onExpand }) => {
+const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
