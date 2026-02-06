@@ -55,13 +55,13 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         switch (priority?.toLowerCase()) {
             case 'high':
             case 'alta':
-                return 'border-l-[#E76E53]';
+                return 'border-l-[#E76E53]'; // Brand red
             case 'medium':
             case 'media':
-                return 'border-l-amber-500';
+                return 'border-l-[#E76E53]/60'; // Brand red at 60% opacity
             case 'low':
             case 'baja':
-                return 'border-l-green-500';
+                return 'border-l-[#E76E53]/30'; // Brand red at 30% opacity
             default:
                 return 'border-l-slate-300';
         }
