@@ -60,13 +60,13 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <table className="w-full table-fixed">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden pl-4">
+            <table className="w-full">
                 <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
                     <tr>
                         <th
                             onClick={() => handleSort('trade_name')}
-                            className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Comercial
@@ -75,7 +75,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('legal_name')}
-                            className="w-[14%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Razón Social
@@ -84,19 +84,19 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('cuit')}
-                            className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 CUIT
                                 <SortIcon columnKey="cuit" />
                             </div>
                         </th>
-                        <th className="w-[15%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
                             Dirección
                         </th>
                         <th
                             onClick={() => handleSort('city')}
-                            className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Ciudad
@@ -105,22 +105,22 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('province')}
-                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Provincia
                                 <SortIcon columnKey="province" />
                             </div>
                         </th>
-                        <th className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
                             Email
                         </th>
-                        <th className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
                             Teléfono
                         </th>
                         <th
                             onClick={() => handleSort('comercial_name')}
-                            className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Vendedor
@@ -129,7 +129,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('payment_terms')}
-                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Pago
@@ -138,7 +138,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('credit_limit')}
-                            className="w-[6%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Crédito
@@ -147,14 +147,14 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('client_since')}
-                            className="w-[6%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                         >
                             <div className="flex items-center gap-1.5">
                                 Desde
                                 <SortIcon columnKey="client_since" />
                             </div>
                         </th>
-                        <th className="w-[4%] px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight whitespace-nowrap">
 
                         </th>
                     </tr>
