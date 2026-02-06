@@ -458,15 +458,32 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                     </div>
                 ) : (
                     // --- COMPACT STANDARD CONTENT (Day/Week/List) ---
-                    <div className="mt-auto pt-1">
-                        <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium leading-none">
-                            <Clock size={10} className="text-slate-400" />
-                            <span className="truncate">{format(editedEvent.start, 'HH:mm')} - {format(editedEvent.end, 'HH:mm')}</span>
+                    <div className="mt-auto pt-1 flex items-end justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium leading-none">
+                                <Clock size={10} className="text-slate-400" />
+                                <span className="truncate">{format(editedEvent.start, 'HH:mm')} - {format(editedEvent.end, 'HH:mm')}</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-0.5 truncate leading-none">
+                                <User size={10} />
+                                <span className="truncate">{editedEvent.company?.trade_name || editedEvent.company?.legal_name || 'Sin cliente'}</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-0.5 truncate leading-none">
-                            <User size={10} />
-                            <span className="truncate">{editedEvent.company?.trade_name || editedEvent.company?.legal_name || 'Sin cliente'}</span>
-                        </div>
+                        {/* Three-dot menu button */}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowDetails(true);
+                            }}
+                            className="flex-shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-brand-red dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                            title="Opciones"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="1"></circle>
+                                <circle cx="12" cy="5" r="1"></circle>
+                                <circle cx="12" cy="19" r="1"></circle>
+                            </svg>
+                        </button>
                     </div>
                 )}
             </div>
