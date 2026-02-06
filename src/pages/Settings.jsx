@@ -13,10 +13,12 @@ const Settings = () => {
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const handleLogout = () => {
+        console.log('handleLogout called, setting showLogoutConfirm to true');
         setShowLogoutConfirm(true);
     };
 
     const confirmLogout = () => {
+        console.log('confirmLogout called');
         logout();
         navigate('/login', { replace: true });
     };
@@ -111,16 +113,21 @@ const Settings = () => {
             </div>
 
             {/* Logout Confirmation Dialog */}
-            <ConfirmDialog
-                isOpen={showLogoutConfirm}
-                onClose={() => setShowLogoutConfirm(false)}
-                onConfirm={confirmLogout}
-                title="Cerrar sesión"
-                message="¿Estás seguro que deseas cerrar sesión?"
-                confirmText="Cerrar sesión"
-                cancelText="Cancelar"
-                variant="warning"
-            />
+            {showLogoutConfirm && (
+                <ConfirmDialog
+                    isOpen={showLogoutConfirm}
+                    onClose={() => {
+                        console.log('ConfirmDialog onClose called');
+                        setShowLogoutConfirm(false);
+                    }}
+                    onConfirm={confirmLogout}
+                    title="Cerrar sesión"
+                    message="¿Estás seguro que deseas cerrar sesión?"
+                    confirmText="Cerrar sesión"
+                    cancelText="Cancelar"
+                    variant="warning"
+                />
+            )}
         </div>
     );
 };
