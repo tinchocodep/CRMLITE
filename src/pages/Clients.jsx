@@ -120,7 +120,7 @@ const Clients = () => {
     };
 
     return (
-        <div className="h-full flex flex-col gap-6 p-4 md:p-6">
+        <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:pr-0">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4">
                 <div className="text-center md:text-left">
@@ -181,7 +181,7 @@ const Clients = () => {
             </div>
 
             {/* Desktop: Table View (>= xl) */}
-            <div className="hidden xl:block overflow-y-auto pr-2 pb-20 custom-scrollbar">
+            <div className="hidden xl:block overflow-y-auto pb-20 custom-scrollbar">
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <div className="text-slate-400 dark:text-slate-500">Cargando clientes...</div>
