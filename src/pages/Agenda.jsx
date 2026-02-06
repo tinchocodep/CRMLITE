@@ -8,14 +8,17 @@ import DayView from '../components/agenda/DayView';
 import CreateEventModal from '../components/agenda/CreateEventModal';
 import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useActivities } from '../hooks/useActivities';
+import { useOpportunities } from '../hooks/useOpportunities';
 import { useCompanies } from '../hooks/useCompanies';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useToast } from '../contexts/ToastContext';
 import { useSystemToast } from '../hooks/useSystemToast';
+import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
+    const { opportunities, loading: opportunitiesLoading } = useOpportunities();
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
     const { showToast } = useToast();
     const { showError } = useSystemToast();
@@ -35,51 +38,10 @@ const Agenda = () => {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [view, setView] = useState('month'); // month, week, day, list
 
-    // Normalize events to ensure they all have start/end properties
-    // This handles both Supabase format (scheduled_date/time) and mock format (start/end)
+    // Combine activities and opportunities into normalized events
     const normalizedEvents = React.useMemo(() => {
-        return rawEvents.map(event => {
-            // If event already has start/end, use as is
-            if (event.start && event.end) {
-                return event;
-            }
-
-            // If event has scheduled_date/time (Supabase), convert to start/end
-            if (event.scheduled_date) {
-                try {
-                    // Parse date manually to avoid timezone issues
-                    // scheduled_date is in format "YYYY-MM-DD"
-                    const [year, month, day] = event.scheduled_date.split('-').map(Number);
-                    if (!year || !month || !day) {
-                        console.warn('Invalid scheduled_date format for event:', event.id);
-                        return null;
-                    }
-
-                    const [hours, minutes] = (event.scheduled_time || '09:00').split(':').map(Number);
-
-                    // Create date in local timezone
-                    const start = new Date(year, month - 1, day, hours, minutes, 0, 0);
-
-                    // Calculate end time
-                    const durationMinutes = event.duration_minutes || 60;
-                    const end = new Date(start.getTime() + durationMinutes * 60000);
-
-                    return {
-                        ...event,
-                        start,
-                        end
-                    };
-                } catch (error) {
-                    console.error('Error normalizing event:', event.id, error);
-                    return null;
-                }
-            }
-
-            // Event has neither format, skip it
-            console.warn('Event missing date fields:', event.id);
-            return null;
-        }).filter(Boolean); // Remove null events
-    }, [rawEvents]);
+        return combineEventsAndOpportunities(rawEvents, opportunities);
+    }, [rawEvents, opportunities]);
 
     // Apply role-based filter to normalized events
     const events = React.useMemo(() => {
