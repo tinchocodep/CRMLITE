@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, Plus, UserPlus, CheckCircle2, X } from 'lucide-react';
 import ProspectCard from '../components/prospects/ProspectCard';
+import ProspectsTable from '../components/prospects/ProspectsTable';
 import EditProspectModal from '../components/prospects/EditProspectModal';
 import ConvertToClientModal from '../components/clients/ConvertToClientModal';
 import { ComercialFilter } from '../components/shared/ComercialFilter';
@@ -214,8 +215,8 @@ const Prospects = () => {
                 </div>
             </div>
 
-            {/* Content Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar">
+            {/* Mobile: Card Grid (< xl) */}
+            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar">
                 {loading ? (
                     <div className="col-span-full flex items-center justify-center py-20">
                         <div className="text-slate-400 dark:text-slate-500">Cargando prospectos...</div>
@@ -234,6 +235,22 @@ const Prospects = () => {
                             allContacts={allContacts}
                         />
                     ))
+                )}
+            </div>
+
+            {/* Desktop: Table View (>= xl) */}
+            <div className="hidden xl:block overflow-y-auto pr-2 pb-20 custom-scrollbar">
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-slate-400 dark:text-slate-500">Cargando prospectos...</div>
+                    </div>
+                ) : (
+                    <ProspectsTable
+                        prospects={filteredProspects}
+                        onEdit={handleEditClick}
+                        onPromote={handlePromoteClick}
+                        allContacts={allContacts}
+                    />
                 )}
             </div>
 
