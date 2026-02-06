@@ -154,9 +154,9 @@ const TeamManagement = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen pb-40">
             {/* Header */}
-            <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-blue-200 dark:border-slate-700">
+            <div className="bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
                         <Users className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -181,7 +181,7 @@ const TeamManagement = () => {
                     </div>
                     <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
                         <p className="text-xs text-slate-500 dark:text-slate-400">Asignaciones</p>
-                        <p className="text-2xl font-bold text-blue-600">{assignments.length}</p>
+                        <p className="text-2xl font-bold text-brand-red">{assignments.length}</p>
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@ const TeamManagement = () => {
                                             setSelectedSupervisor(supervisor);
                                             setIsAssignModalOpen(true);
                                         }}
-                                        className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                                        className="flex items-center gap-2 px-3 py-2 bg-brand-red text-white rounded-lg hover:bg-red-700 transition text-sm"
                                         disabled={!supervisorComercialId || availableComerciales.length === 0}
                                     >
                                         <UserPlus size={16} />
@@ -300,7 +300,7 @@ const TeamManagement = () => {
                                 <button
                                     key={comercial.id}
                                     onClick={() => handleAssignComercial(selectedSupervisor.comercial?.id, comercial.id)}
-                                    className="w-full text-left p-3 bg-slate-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition"
+                                    className="w-full text-left p-3 bg-slate-50 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
                                 >
                                     <p className="font-medium text-slate-800 dark:text-white">{comercial.name}</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">{comercial.email}</p>
