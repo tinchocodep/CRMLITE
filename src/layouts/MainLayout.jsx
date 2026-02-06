@@ -56,7 +56,7 @@ const MainLayout = () => {
     const isDashboard = location.pathname === '/dashboard' || location.pathname === '/';
 
     // Check if we're in CRM module (any CRM submodule)
-    const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/territorios', '/reclamos', '/ficha-360', '/usuarios'];
+    const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/territorios', '/reclamos', '/ficha-360'];
     const isCRMActive = crmPaths.includes(location.pathname) || location.pathname === '/';
 
     // ========== MOBILE STATE (Separate) ==========

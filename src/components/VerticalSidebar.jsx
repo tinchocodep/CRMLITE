@@ -3,13 +3,14 @@ import { NavLink } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package, TrendingUp,
     Megaphone, Truck, Leaf, DollarSign, Building2,
-    Plus, Settings
+    Plus, Settings, ShieldCheck
 } from 'lucide-react';
 
 const sidebarModules = [
     { name: 'Home', path: '/dashboard', icon: Home },
     { name: 'Portal Clientes', path: '/portal-clientes', icon: Users },
     { name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true },
+    { name: 'Usuarios', path: '/usuarios', icon: ShieldCheck },
     { name: 'Cotizador Insumos', path: '/cotizador', icon: Package },
     { name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp },
     { name: 'Marketing', path: '/marketing', icon: Megaphone },
