@@ -1,16 +1,25 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useProspects = () => {
     const [prospects, setProspects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { user } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Fetch all prospects for current tenant
     const fetchProspects = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setProspects([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setError(null);
 
@@ -22,6 +31,7 @@ export const useProspects = () => {
                 `)
                 .eq('company_type', 'prospect')
                 .eq('is_active', true)
+                .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 
             if (fetchError) throw fetchError;
@@ -199,10 +209,12 @@ export const useProspects = () => {
 
     // Load prospects on mount
     useEffect(() => {
-        if (user) {
+        if (tenantId) {
             fetchProspects();
+        } else if (!tenantLoading) {
+            setLoading(false);
         }
-    }, [user]);
+    }, [tenantId, tenantLoading]);
 
     return {
         prospects,

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useCompanies = (type = null) => {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { comercialId, isAdmin, isSupervisor } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Helper: Map qualification score to status
     const mapQualificationToStatus = (score) => {
@@ -28,11 +30,19 @@ export const useCompanies = (type = null) => {
 
     const fetchCompanies = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setCompanies([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             let query = supabase
                 .from('companies_full')
                 .select('*')
-                .eq('is_active', true);
+                .eq('is_active', true)
+                .eq('tenant_id', tenantId); // ← EXPLICIT TENANT FILTER
 
             // Filter by type if specified
             if (type) {
@@ -41,6 +51,7 @@ export const useCompanies = (type = null) => {
 
             // Apply RLS - Supabase will handle this automatically
             const { data, error: fetchError } = await query.order('created_at', { ascending: false });
+
 
             if (fetchError) throw fetchError;
 
@@ -61,14 +72,15 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
-        if (comercialId || isAdmin || isSupervisor) {
+        if (tenantId && (comercialId || isAdmin || isSupervisor)) {
             fetchCompanies();
-        } else {
+        } else if (!tenantLoading) {
             // If we have Auth but no permissions yet, or simply not logged in, we shouldn't hang
             const timer = setTimeout(() => setLoading(false), 2000); // Fail-safe
             return () => clearTimeout(timer);
         }
-    }, [comercialId, type, isAdmin, isSupervisor]);
+    }, [comercialId, type, isAdmin, isSupervisor, tenantId, tenantLoading]);
+
 
     const createCompany = async (companyData) => {
         try {

@@ -1,36 +1,48 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useContacts = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { user } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Fetch all contacts with their companies
     const fetchContacts = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setContacts([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setError(null);
 
-            // Fetch contacts
+            // Fetch contacts with explicit tenant filter
             const { data: contactsData, error: contactsError } = await supabase
                 .from('contacts')
                 .select('*')
+                .eq('tenant_id', tenantId) // ← EXPLICIT TENANT FILTER
                 .order('created_at', { ascending: false });
 
             if (contactsError) throw contactsError;
 
-            // Fetch contact-company relationships
+            // Fetch contact-company relationships with explicit tenant filter
             const { data: relationsData, error: relationsError } = await supabase
                 .from('contact_companies')
                 .select(`
                     *,
                     company:companies(id, trade_name, legal_name, company_type)
-                `);
+                `)
+                .eq('tenant_id', tenantId); // ← EXPLICIT TENANT FILTER
 
             if (relationsError) throw relationsError;
+
 
             // Transform to match mock data structure
             const transformedData = contactsData.map(contact => {
@@ -279,12 +291,13 @@ export const useContacts = () => {
 
     // Load contacts on mount
     useEffect(() => {
-        if (user) {
+        if (tenantId) {
             fetchContacts();
-        } else {
+        } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [user]);
+    }, [tenantId, tenantLoading]);
+
 
     return {
         contacts,

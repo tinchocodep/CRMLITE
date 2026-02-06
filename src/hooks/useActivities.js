@@ -1,15 +1,24 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useActivities = (daysAhead = 30) => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { comercialId, isAdmin, isSupervisor } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     const fetchActivities = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setActivities([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
 
             // Calculate date range using local timezone
@@ -26,6 +35,7 @@ export const useActivities = (daysAhead = 30) => {
                     company:companies!activities_company_id_fkey(id, legal_name, trade_name),
                     comercial:comerciales!activities_comercial_id_fkey(id, name)
                 `)
+                .eq('tenant_id', tenantId)
                 .gte('scheduled_date', today)
                 .lte('scheduled_date', futureDate)
                 .order('scheduled_date', { ascending: true })
@@ -51,10 +61,12 @@ export const useActivities = (daysAhead = 30) => {
     };
 
     useEffect(() => {
-        if (comercialId || isAdmin || isSupervisor) {
+        if (tenantId && (comercialId || isAdmin || isSupervisor)) {
             fetchActivities();
+        } else if (!tenantLoading) {
+            setLoading(false);
         }
-    }, [comercialId, daysAhead, isAdmin, isSupervisor]);
+    }, [comercialId, daysAhead, isAdmin, isSupervisor, tenantId, tenantLoading]);
 
     const createActivity = async (activityData) => {
         try {
