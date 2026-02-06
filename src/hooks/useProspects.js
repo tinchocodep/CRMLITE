@@ -79,6 +79,7 @@ export const useProspects = () => {
                 prospect_source: prospectData.source || 'manual',
                 qualification_score: mapStatusToQualification(prospectData.status),
                 comercial_id: prospectData.comercialId,
+                tenant_id: tenantId, // CRITICAL: Required for RLS INSERT policy
                 is_active: true,
                 created_by: user?.id
             };
