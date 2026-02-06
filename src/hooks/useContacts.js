@@ -33,13 +33,18 @@ export const useContacts = () => {
             // Admins and supervisors see all contacts in their tenant
             // Regular comerciales see only their own contacts
             if (!isAdmin && !isSupervisor && comercialId) {
+                console.log('🔍 Filtering contacts by comercial_id:', comercialId);
                 query = query.eq('comercial_id', comercialId);
+            } else {
+                console.log('🔍 Admin/Supervisor - showing all contacts in tenant:', tenantId);
             }
 
             const { data: contactsData, error: contactsError } = await query
                 .order('created_at', { ascending: false });
 
             if (contactsError) throw contactsError;
+
+            console.log('📋 Fetched contacts from Supabase:', contactsData?.length || 0, contactsData);
 
             // Fetch contact-company relationships with explicit tenant filter
             const { data: relationsData, error: relationsError } = await supabase
