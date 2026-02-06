@@ -216,7 +216,8 @@ export const useUsers = () => {
                 options: {
                     data: {
                         full_name: userData.fullName,
-                        role: userData.role
+                        role: userData.role,
+                        tenant_id: tenantId  // ← PASS TENANT_ID IN METADATA
                     },
                     emailRedirectTo: window.location.origin
                 }
@@ -232,23 +233,35 @@ export const useUsers = () => {
             }
 
             // Wait a bit for the trigger to create the user in public.users
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-            // Update the user's role, full_name, and tenant_id in public.users
-            // (The trigger creates it with default values)
-            const { error: updateError } = await supabase
+            // Verify the user was created with correct tenant_id
+            const { data: verifyData, error: verifyError } = await supabase
                 .from('users')
-                .update({
-                    role: userData.role,
-                    full_name: userData.fullName,
-                    tenant_id: tenantId  // ← ASSIGN SAME TENANT AS ADMIN
-                })
-                .eq('id', signUpData.user.id);
+                .select('id, email, full_name, role, tenant_id')
+                .eq('id', signUpData.user.id)
+                .single();
 
-            if (updateError) {
-                console.error('Role update error:', updateError);
-                // Don't throw here - user was created, just role update failed
-                // Admin can manually update the role
+            if (verifyError) {
+                console.error('Verification error:', verifyError);
+                throw new Error('User created but verification failed');
+            }
+
+            // If tenant_id is still wrong, update it (fallback)
+            if (verifyData.tenant_id !== tenantId) {
+                console.warn('Tenant ID mismatch, updating...');
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({
+                        role: userData.role,
+                        full_name: userData.fullName,
+                        tenant_id: tenantId
+                    })
+                    .eq('id', signUpData.user.id);
+
+                if (updateError) {
+                    console.error('Role update error:', updateError);
+                }
             }
 
             await fetchUsers(); // Refresh list
