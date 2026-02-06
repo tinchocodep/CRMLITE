@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
 import { supabase } from '../../lib/supabase';
+import ComercialSelector from '../shared/ComercialSelector';
 
 export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const location = useLocation();
@@ -14,28 +15,12 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const clients = companies.filter(c => c.company_type === 'client');
     const prospects = companies.filter(c => c.company_type === 'prospect');
 
-    // State for users (comerciales)
-    const [comerciales, setComerciales] = useState([]);
-
     // Auto-close modal when route changes (fixes navigation blocking)
     useEffect(() => {
         if (isOpen) {
             onClose();
         }
     }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    // Fetch comerciales (active only)
-    useEffect(() => {
-        const fetchComerciales = async () => {
-            const { data } = await supabase
-                .from('comerciales')
-                .select('id, name, email')
-                .eq('is_active', true)
-                .order('name');
-            if (data) setComerciales(data);
-        };
-        fetchComerciales();
-    }, []);
 
     const [formData, setFormData] = useState({
         comercialId: '',
@@ -145,13 +130,12 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
         console.log('=== CREATING OPPORTUNITY ===');
         console.log('Form Data:', formData);
 
-        const comercial = comerciales.find(c => c.id === formData.comercialId);
         const linkedEntity = formData.linkedEntityType === 'client'
             ? clients.find(c => c.id === parseInt(formData.linkedEntityId))
             : prospects.find(p => p.id === parseInt(formData.linkedEntityId));
         const contact = contacts.find(c => c.id === parseInt(formData.contactId));
 
-        console.log('Resolved entities:', { comercial, linkedEntity, contact });
+        console.log('Resolved entities:', { linkedEntity, contact });
 
         // Transform to database schema (only IDs, no nested objects)
         const newOpportunity = {
@@ -195,25 +179,12 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
                     <div className="p-4 space-y-4 overflow-y-auto flex-1">
                         {/* Comercial */}
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <User size={14} className="inline mr-1.5" />
-                                Comercial *
-                            </label>
-                            <select
-                                required
-                                value={formData.comercialId}
-                                onChange={(e) => setFormData({ ...formData, comercialId: e.target.value })}
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
-                            >
-                                <option value="">Seleccionar comercial</option>
-                                {comerciales.map(comercial => (
-                                    <option key={comercial.id} value={comercial.id}>
-                                        {comercial.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <ComercialSelector
+                            value={formData.comercialId}
+                            onChange={(value) => setFormData({ ...formData, comercialId: value })}
+                            required={true}
+                            label="Asignar a Comercial"
+                        />
 
                         {/* Product Type */}
                         <div>
