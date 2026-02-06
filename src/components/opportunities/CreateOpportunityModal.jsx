@@ -5,6 +5,7 @@ import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
 import { supabase } from '../../lib/supabase';
 import ComercialSelector from '../shared/ComercialSelector';
+import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const location = useLocation();
@@ -38,40 +39,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
         notes: ''
     });
 
-    const [searchResults, setSearchResults] = useState([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
     const [availableContacts, setAvailableContacts] = useState([]);
-
-    // Auto-search when opportunity name changes
-    useEffect(() => {
-        if (formData.opportunityName.length >= 3) {
-            const clientResults = clients.map(c => ({
-                ...c,
-                type: 'client',
-                displayName: c.trade_name || c.legal_name
-            }));
-            const prospectResults = prospects.map(p => ({
-                ...p,
-                type: 'prospect',
-                displayName: p.trade_name
-            }));
-
-            const allResults = [...clientResults, ...prospectResults];
-            const searchTerm = formData.opportunityName.toLowerCase();
-
-            const filtered = allResults.filter(entity => {
-                const nameMatch = entity.displayName && entity.displayName.toLowerCase().includes(searchTerm);
-                const cuitMatch = entity.cuit && entity.cuit.toLowerCase().includes(searchTerm);
-                return nameMatch || cuitMatch;
-            });
-
-            setSearchResults(filtered);
-            setShowSuggestions(filtered.length > 0);
-        } else {
-            setSearchResults([]);
-            setShowSuggestions(false);
-        }
-    }, [formData.opportunityName, clients, prospects]);
 
     // Update available contacts when entity is selected
     useEffect(() => {
@@ -113,16 +81,6 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             probability: probabilityDefaults[prev.status] || 20
         }));
     }, [formData.status]);
-
-    const handleSelectEntity = (entity) => {
-        setFormData(prev => ({
-            ...prev,
-            linkedEntityType: entity.type,
-            linkedEntityId: entity.id,
-            opportunityName: `${formData.productType || 'Oportunidad'} - ${entity.displayName}`
-        }));
-        setShowSuggestions(false);
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -202,10 +160,30 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             />
                         </div>
 
-                        {/* Opportunity Name with Auto-search */}
-                        <div className="relative">
+                        {/* Business Unit Picker */}
+                        <BusinessUnitPicker
+                            value={formData.linkedEntityId}
+                            entityType={formData.linkedEntityType}
+                            onChange={(entityId, entityType, entity) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    linkedEntityId: entityId,
+                                    linkedEntityType: entityType,
+                                    // Auto-fill opportunity name if empty
+                                    opportunityName: prev.opportunityName ||
+                                        (entity ? `${prev.productType || 'Oportunidad'} - ${entity.displayName || entity.trade_name}` : '')
+                                }));
+                            }}
+                            clients={clients}
+                            prospects={prospects}
+                            required={true}
+                            label="Unidad de Negocio"
+                        />
+
+                        {/* Opportunity Name */}
+                        <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <Search size={14} className="inline mr-1.5" />
+                                <FileText size={14} className="inline mr-1.5" />
                                 Nombre de Oportunidad *
                             </label>
                             <input
@@ -213,57 +191,9 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 required
                                 value={formData.opportunityName}
                                 onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
-                                placeholder="Buscar empresa..."
+                                placeholder="Ej: Venta de fertilizantes Q1 2024"
                                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
                             />
-
-                            {/* Auto-suggestions */}
-                            {showSuggestions && (
-                                <div className="absolute z-10 w-full mt-1.5 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                                    {searchResults.map(entity => (
-                                        <button
-                                            key={`${entity.type}-${entity.id}`}
-                                            type="button"
-                                            onClick={() => handleSelectEntity(entity)}
-                                            className="w-full px-3 py-2.5 text-left hover:bg-slate-50 flex items-center gap-2.5 border-b border-slate-100 last:border-0"
-                                        >
-                                            <div className={`w-8 h-8 rounded-lg ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
-                                                {entity.type === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-sm text-slate-800 truncate">{entity.displayName}</p>
-                                                <div className="flex items-center gap-2">
-                                                    <p className="text-xs text-slate-500 capitalize">{entity.type === 'client' ? 'Cliente' : 'Prospecto'}</p>
-                                                    {entity.cuit && (
-                                                        <>
-                                                            <span className="text-xs text-slate-300">•</span>
-                                                            <p className="text-xs text-slate-500 font-mono">CUIT: {entity.cuit}</p>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Selected Entity Display */}
-                            {formData.linkedEntityId && (
-                                <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2.5">
-                                    <div className={`w-8 h-8 rounded-lg ${formData.linkedEntityType === 'client' ? 'bg-emerald-100' : 'bg-purple-100'} flex items-center justify-center flex-shrink-0`}>
-                                        {formData.linkedEntityType === 'client' ? <Users size={16} className="text-emerald-600" /> : <User size={16} className="text-purple-600" />}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-emerald-700 font-medium capitalize">Vinculado a {formData.linkedEntityType === 'client' ? 'Cliente' : 'Prospecto'}</p>
-                                        <p className="font-semibold text-sm text-emerald-900 truncate">
-                                            {formData.linkedEntityType === 'client'
-                                                ? clients.find(c => c.id === parseInt(formData.linkedEntityId))?.trade_name
-                                                : prospects.find(p => p.id === parseInt(formData.linkedEntityId))?.trade_name
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* Contact */}
