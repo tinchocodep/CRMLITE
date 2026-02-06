@@ -248,7 +248,7 @@ const Agenda = () => {
     };
 
     const renderFilters = () => (
-        <div className="flex flex-wrap gap-4 bg-white/60 p-4 rounded-xl border border-white/50 mb-4 items-center">
+        <div className="flex flex-wrap gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-4 items-center shadow-sm">
             <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-slate-500 uppercase">Año:</span>
                 <select
@@ -410,7 +410,7 @@ const Agenda = () => {
     return (
         <div className="h-full flex flex-col gap-0 md:gap-6">
             {/* Header Controls */}
-            <div className="flex flex-col md:flex-row justify-between items-center bg-white/95 dark:bg-slate-800/95 md:bg-white/50 md:dark:bg-slate-800/50 backdrop-blur-sm p-4 md:p-2 border-b border-slate-200 dark:border-slate-700 md:border md:border-white/50 md:dark:border-slate-700/50 shadow-sm md:shadow-md md:rounded-2xl gap-4 md:gap-0 sticky top-0 md:static z-20">
+            <div className="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 md:p-4 border-b border-slate-200 dark:border-slate-700 md:border md:border-slate-200 md:dark:border-slate-700 shadow-sm md:rounded-xl gap-4 md:gap-0 sticky top-0 md:static z-20">
 
                 {/* Date Navigation */}
                 <div className="flex items-center justify-between w-full md:w-auto gap-4 order-1 md:order-none">
@@ -465,7 +465,7 @@ const Agenda = () => {
             </div>
 
             {/* Calendar Content */}
-            <div className="flex-1 overflow-auto h-full min-h-0 bg-white dark:bg-slate-900 md:bg-white/40 md:dark:bg-slate-900/40 backdrop-blur-sm rounded-none md:rounded-2xl border-0 md:border border-white/40 md:dark:border-slate-700/40 shadow-none md:shadow-sm p-0 md:p-1 relative">
+            <div className="flex-1 overflow-auto h-full min-h-0 bg-white dark:bg-slate-900 rounded-none md:rounded-xl border-0 md:border border-slate-200 md:dark:border-slate-700 shadow-none md:shadow-sm p-0 md:p-2 relative">
                 {view === 'month' && (
                     <div className="h-full overflow-auto p-0 md:p-2">
                         {renderWeekDays()}
