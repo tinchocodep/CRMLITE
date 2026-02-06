@@ -66,7 +66,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                     <tr>
                         <th
                             onClick={() => handleSort('trade_name')}
-                            className="w-[10%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <div className="flex items-center gap-1.5">
                                 Comercial
@@ -75,7 +75,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('legal_name')}
-                            className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[14%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <div className="flex items-center gap-1.5">
                                 Razón Social
@@ -91,12 +91,12 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                 <SortIcon columnKey="cuit" />
                             </div>
                         </th>
-                        <th className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[15%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
                             Dirección
                         </th>
                         <th
                             onClick={() => handleSort('city')}
-                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <div className="flex items-center gap-1.5">
                                 Ciudad
@@ -112,15 +112,15 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                 <SortIcon columnKey="province" />
                             </div>
                         </th>
-                        <th className="w-[10%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
                             Email
                         </th>
-                        <th className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
                             Teléfono
                         </th>
                         <th
                             onClick={() => handleSort('comercial_name')}
-                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <div className="flex items-center gap-1.5">
                                 Vendedor
@@ -129,7 +129,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         </th>
                         <th
                             onClick={() => handleSort('payment_terms')}
-                            className="w-[6%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
                             <div className="flex items-center gap-1.5">
                                 Pago
@@ -154,7 +154,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                 <SortIcon columnKey="client_since" />
                             </div>
                         </th>
-                        <th className="w-[2%] px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[3%] px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
 
                         </th>
                     </tr>
