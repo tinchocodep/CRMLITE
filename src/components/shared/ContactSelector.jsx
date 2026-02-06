@@ -127,7 +127,10 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
                         });
 
                         if (selectedId) {
-                            handleAddContact(selectedId);
+                            // Convert string ID to number to match contact.id type
+                            const contactId = parseInt(selectedId, 10);
+                            console.log('🔢 Converted ID:', { original: selectedId, converted: contactId, type: typeof contactId });
+                            handleAddContact(contactId);
                             e.target.value = ''; // Reset select
                         }
                     }}
