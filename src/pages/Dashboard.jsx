@@ -158,6 +158,14 @@ const Dashboard = () => {
         return format(date, "EEE d 'de' MMM", { locale: es });
     };
 
+    // Safe format wrapper to prevent RangeError
+    const safeFormat = (date, formatStr, options = {}) => {
+        if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+            return 'Fecha inválida';
+        }
+        return format(date, formatStr, options);
+    };
+
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -266,10 +274,10 @@ const Dashboard = () => {
 
                     {/* Date & Time */}
                     <p className="text-xs text-[#666666] dark:text-slate-300 font-medium">
-                        {format(currentTime, "EEEE, d 'de' MMMM", { locale: es })}
+                        {safeFormat(currentTime, "EEEE, d 'de' MMMM", { locale: es })}
                     </p>
                     <p className="text-[10px] text-[#666666] dark:text-slate-400 mt-0.5">
-                        {format(currentTime, "HH:mm")}
+                        {safeFormat(currentTime, "HH:mm")}
                     </p>
                 </motion.div>
 
