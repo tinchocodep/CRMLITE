@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
@@ -10,23 +10,23 @@ export const useCompanies = (type = null) => {
     const { comercialId, isAdmin, isSupervisor } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
-    // Helper: Map qualification score to status
-    const mapQualificationToStatus = (score) => {
+    // Helper: Map qualification score to status (memoized)
+    const mapQualificationToStatus = useCallback((score) => {
         if (!score) return 'contacted';
         if (score <= 1) return 'contacted';
         if (score === 2) return 'quoted';
         return 'near_closing';
-    };
+    }, []);
 
-    // Helper: Map status to qualification score
-    const mapStatusToQualification = (status) => {
+    // Helper: Map status to qualification score (memoized)
+    const mapStatusToQualification = useCallback((status) => {
         const mapping = {
             'contacted': 1,
             'quoted': 2,
             'near_closing': 3
         };
         return mapping[status] || 1;
-    };
+    }, []);
 
     const fetchCompanies = async () => {
         try {
