@@ -23,7 +23,7 @@ export function HorizontalCRMNav({ isMainSidebarExpanded }) {
     return (
         <nav className={`bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 ${isMainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
             <div className="w-full px-4">
-                <div className="flex items-center justify-start gap-2 overflow-x-auto scrollbar-hide py-4">
+                <div className="flex items-center justify-start gap-1.5 overflow-x-auto scrollbar-hide py-4">
                     {crmModules.map((module, index) => {
                         const isActive = location.pathname === module.path;
 
@@ -35,7 +35,7 @@ export function HorizontalCRMNav({ isMainSidebarExpanded }) {
                                     animationDelay: `${index * 50}ms`
                                 }}
                                 className={`
-                                    flex items-center gap-2.5 px-5 py-2.5 rounded-lg whitespace-nowrap transition-all duration-200 font-medium text-sm
+                                    flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-all duration-200 font-medium text-sm
                                     animate-[slideInRight_0.3s_ease-out_forwards]
                                     ${isActive
                                         ? 'bg-[#E76E53] text-white shadow-md'
