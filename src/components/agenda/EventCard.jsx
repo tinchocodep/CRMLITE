@@ -556,6 +556,18 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                 </div>,
                 document.body
             )}
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDelete}
+                onClose={() => setConfirmDelete(false)}
+                onConfirm={confirmDeleteEvent}
+                title="Eliminar actividad"
+                message="¿Estás seguro de que deseas eliminar esta actividad?"
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                variant="danger"
+            />
         </>
     );
 };
