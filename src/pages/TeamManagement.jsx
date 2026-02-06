@@ -66,7 +66,13 @@ const TeamManagement = () => {
             setAssignments(assignmentsData || []);
         } catch (error) {
             console.error('Error fetching team data:', error);
-            showError('Error al cargar datos del equipo');
+            console.error('Error details:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
+            showError(`Error al cargar datos del equipo: ${error.message || 'Error desconocido'}`);
         } finally {
             setLoading(false);
         }
