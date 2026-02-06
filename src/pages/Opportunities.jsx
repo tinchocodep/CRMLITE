@@ -1,6 +1,14 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock } from 'lucide-react';
+import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2 } from 'lucide-react';
 import { useOpportunities } from '../hooks/useOpportunities';
+
+const statusConfig = {
+    iniciado: { label: 'Iniciado', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🚀' },
+    presupuestado: { label: 'Presupuestado', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '📋' },
+    negociado: { label: 'Negociado', color: 'bg-orange-100 text-orange-700 border-orange-200', icon: '🤝' },
+    ganado: { label: 'Ganado', color: 'bg-green-100 text-green-700 border-green-200', icon: '✅' },
+    perdido: { label: 'Perdido', color: 'bg-red-100 text-red-700 border-red-200', icon: '❌' }
+};
 
 const Opportunities = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -103,8 +111,9 @@ const Opportunities = () => {
                 </div>
             </div>
 
-            {/* Opportunities List */}
-            <div className="flex-1 overflow-y-auto pb-20">
+
+            {/* Mobile: Cards (< xl) */}
+            <div className="xl:hidden flex-1 overflow-y-auto pb-20 space-y-4">
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="text-slate-400 dark:text-slate-500">Cargando oportunidades...</div>
@@ -118,8 +127,9 @@ const Opportunities = () => {
                         <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">Crea tu primera oportunidad</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {filteredOpportunities.map(opportunity => (
+                    filteredOpportunities.map(opportunity => {
+                        const status = statusConfig[opportunity.status] || statusConfig.iniciado;
+                        return (
                             <div
                                 key={opportunity.id}
                                 className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 hover:shadow-md transition-shadow"
@@ -128,21 +138,133 @@ const Opportunities = () => {
                                     <h3 className="font-bold text-slate-800 dark:text-slate-100">
                                         {opportunity.opportunity_name || 'Sin nombre'}
                                     </h3>
-                                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${opportunity.status === 'ganado' ? 'bg-green-100 text-green-700' :
-                                            opportunity.status === 'perdido' ? 'bg-red-100 text-red-700' :
-                                                'bg-blue-100 text-blue-700'
-                                        }`}>
-                                        {opportunity.status || 'iniciado'}
+                                    <span className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1`}>
+                                        <span>{status.icon}</span>
+                                        <span>{status.label}</span>
                                     </span>
                                 </div>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                                    {opportunity.company?.trade_name || opportunity.company?.legal_name || 'N/A'}
+                                </p>
                                 <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                                    Monto: {formatCurrency(opportunity.amount || 0)}
+                                    Monto: <span className="font-semibold text-green-600">{formatCurrency(opportunity.amount || 0)}</span>
                                 </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-500">
-                                    Probabilidad: {opportunity.probability || 0}%
-                                </p>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                        <div
+                                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full transition-all"
+                                            style={{ width: `${opportunity.probability || 0}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                        {opportunity.probability || 0}%
+                                    </span>
+                                </div>
                             </div>
-                        ))}
+                        );
+                    })
+                )}
+            </div>
+
+            {/* Desktop: Table (>= xl) */}
+            <div className="hidden xl:block flex-1 overflow-y-auto pb-20">
+                {loading ? (
+                    <div className="text-center py-12">
+                        <div className="text-slate-400 dark:text-slate-500">Cargando oportunidades...</div>
+                    </div>
+                ) : filteredOpportunities.length === 0 ? (
+                    <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <TrendingUp size={32} className="text-slate-400 dark:text-slate-500" />
+                        </div>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">No se encontraron oportunidades</p>
+                    </div>
+                ) : (
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <table className="w-full">
+                            <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Estado</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Oportunidad</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Empresa</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Producto</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Monto</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Probabilidad</th>
+                                    <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Cierre</th>
+                                    <th className="text-center py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredOpportunities.map((opp, index) => {
+                                    const status = statusConfig[opp.status] || statusConfig.iniciado;
+                                    const closeDate = opp.close_date ? new Date(opp.close_date) : null;
+
+                                    return (
+                                        <tr
+                                            key={opp.id}
+                                            className={`border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'
+                                                }`}
+                                        >
+                                            <td className="py-3 px-4">
+                                                <span className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit`}>
+                                                    <span>{status.icon}</span>
+                                                    <span>{status.label}</span>
+                                                </span>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <p className="font-semibold text-sm text-slate-800 dark:text-slate-100">
+                                                    {opp.opportunity_name || 'Sin nombre'}
+                                                </p>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <p className="text-sm text-slate-700 dark:text-slate-300">
+                                                    {opp.company?.trade_name || opp.company?.legal_name || 'N/A'}
+                                                </p>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                                    {opp.product_type || 'N/A'}
+                                                </p>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <p className="font-semibold text-sm text-green-600 dark:text-green-400">
+                                                    {formatCurrency(opp.amount || 0)}
+                                                </p>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden max-w-[80px]">
+                                                        <div
+                                                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all"
+                                                            style={{ width: `${opp.probability || 0}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
+                                                        {opp.probability || 0}%
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                                    {closeDate ? closeDate.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                                </p>
+                                            </td>
+                                            <td className="py-3 px-4">
+                                                <div className="flex items-center justify-center">
+                                                    <button
+                                                        onClick={() => console.log('Edit', opp.id)}
+                                                        className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                                        title="Editar"
+                                                    >
+                                                        <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>
