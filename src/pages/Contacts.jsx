@@ -37,10 +37,11 @@ const Contacts = () => {
     // Filter contacts based on debounced search
     const filteredContacts = filteredByRole.filter(contact => {
         const searchLower = debouncedSearch.toLowerCase();
-        const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.toLowerCase();
+        const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
         const email = (contact.email || '').toLowerCase();
         const phone = (contact.phone || '').toLowerCase();
-        const companyName = (contact.company_name || '').toLowerCase();
+        // Get company name from first company
+        const companyName = (contact.companies?.[0]?.companyName || '').toLowerCase();
 
         return fullName.includes(searchLower) ||
             email.includes(searchLower) ||
