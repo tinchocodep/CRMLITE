@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Plus, UserPlus } from 'lucide-react';
 import ContactCard from '../components/contacts/ContactCard';
+import ContactsTable from '../components/contacts/ContactsTable';
 import ContactModal from '../components/contacts/ContactModal';
 import { useContacts } from '../hooks/useContacts';
 import { useSystemToast } from '../hooks/useSystemToast';
@@ -127,8 +128,8 @@ const Contacts = () => {
                 </div>
             </div>
 
-            {/* Contacts Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar items-start">
+            {/* Mobile: Card Grid (< xl) */}
+            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar items-start">
                 {loading ? (
                     <div className="col-span-full flex items-center justify-center py-20">
                         <div className="text-slate-400">Cargando contactos...</div>
@@ -154,6 +155,20 @@ const Contacts = () => {
                     </div>
                     <span className="text-slate-500 font-bold group-hover:text-brand-red transition-colors">Nuevo Contacto</span>
                 </button>
+            </div>
+
+            {/* Desktop: Table View (>= xl) */}
+            <div className="hidden xl:block overflow-y-auto pb-20 custom-scrollbar">
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-slate-400">Cargando contactos...</div>
+                    </div>
+                ) : (
+                    <ContactsTable
+                        contacts={filteredContacts}
+                        onEdit={handleEditContact}
+                    />
+                )}
             </div>
 
             {/* No Results */}
