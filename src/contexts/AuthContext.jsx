@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
     const loadUserProfile = async (userId) => {
         try {
-            // Get user profile
+            // Get user profile (includes comercial_id)
             const { data: profile, error: profileError } = await supabase
                 .from('users')
                 .select('*')
@@ -59,19 +59,8 @@ export const AuthProvider = ({ children }) => {
             if (profileError) throw profileError;
             setUserProfile(profile);
 
-            // Get comercial ID if exists (optional - user may not be a comercial)
-            const { data: comercial, error: comercialError } = await supabase
-                .from('comerciales')
-                .select('id')
-                .eq('user_id', userId)
-                .maybeSingle(); // Use maybeSingle() instead of single() to handle no results
-
-            // Only set comercialId if a record exists and no error
-            if (!comercialError && comercial) {
-                setComercialId(comercial.id);
-            } else {
-                setComercialId(null); // Explicitly set to null if no comercial record
-            }
+            // Set comercial_id directly from user profile
+            setComercialId(profile.comercial_id || null);
         } catch (error) {
             console.error('Error loading user profile:', error);
         }
