@@ -216,6 +216,7 @@ const Contacts = () => {
                     <ContactsTable
                         contacts={filteredContacts}
                         onEdit={handleEditContact}
+                        onDelete={deleteContact}
                     />
                 )}
             </div>
