@@ -147,6 +147,11 @@ const Dashboard = () => {
     };
 
     const getDateLabel = (date) => {
+        // Validate date first
+        if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+            return 'Fecha inválida';
+        }
+
         // date is already a Date object
         if (isToday(date)) return 'Hoy';
         if (isTomorrow(date)) return 'Mañana';
