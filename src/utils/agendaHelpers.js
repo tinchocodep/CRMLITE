@@ -20,9 +20,20 @@ export const convertOpportunityToEvent = (opportunity) => {
             opportunity.business_unit ||
             'Sin empresa';
 
+        // Map status to icon
+        const statusIcons = {
+            'iniciado': '🚀',
+            'presupuestado': '📋',
+            'negociado': '🤝',
+            'ganado': '✅',
+            'perdido': '❌'
+        };
+
+        const statusIcon = statusIcons[opportunity.status] || '💼';
+
         return {
             id: `opp-${opportunity.id}`,
-            title: opportunity.opportunity_name || 'Oportunidad sin nombre',
+            title: `${statusIcon} ${opportunity.opportunity_name || 'Oportunidad sin nombre'}`,
             description: `${companyName} - ${opportunity.product_type || 'Sin producto'}`,
             start,
             end,
