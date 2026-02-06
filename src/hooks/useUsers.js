@@ -116,12 +116,51 @@ export const useUsers = () => {
         }
 
         try {
+            // Get current user data
+            const { data: currentUser, error: fetchError } = await supabase
+                .from('users')
+                .select('role, comercial_id, full_name, email')
+                .eq('id', userId)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            const oldRole = currentUser.role;
+
+            // Update role
             const { error: updateError } = await supabase
                 .from('users')
                 .update({ role: newRole })
                 .eq('id', userId);
 
             if (updateError) throw updateError;
+
+            // Handle comercial creation/deletion based on role change
+            // If changing TO supervisor or user, create comercial if doesn't exist
+            if ((newRole === 'supervisor' || newRole === 'user') && !currentUser.comercial_id) {
+                const { data: comercialData, error: comercialError } = await supabase
+                    .from('comerciales')
+                    .insert([{
+                        name: currentUser.full_name,
+                        email: currentUser.email,
+                        tenant_id: tenantId,
+                        is_active: true,
+                        created_by: user.id
+                    }])
+                    .select()
+                    .single();
+
+                if (!comercialError && comercialData) {
+                    // Link comercial to user
+                    await supabase
+                        .from('users')
+                        .update({ comercial_id: comercialData.id })
+                        .eq('id', userId);
+                }
+            }
+
+            // If changing FROM supervisor/user TO admin, optionally keep or remove comercial
+            // For now, we'll keep the comercial but you can add logic to deactivate it
 
             await fetchUsers(); // Refresh list
             return { success: true };
@@ -208,6 +247,9 @@ export const useUsers = () => {
         }
 
         try {
+            // Save current session before creating new user
+            const { data: { session: currentSession } } = await supabase.auth.getSession();
+
             // Use regular signUp (works with Anon Key)
             const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
                 email: userData.email,
@@ -228,6 +270,14 @@ export const useUsers = () => {
 
             if (!signUpData.user) {
                 throw new Error('User creation failed - no user returned');
+            }
+
+            // Restore admin session immediately (signUp auto-logs in the new user)
+            if (currentSession) {
+                await supabase.auth.setSession({
+                    access_token: currentSession.access_token,
+                    refresh_token: currentSession.refresh_token
+                });
             }
 
             // Wait a bit for the trigger to create the user in public.users
@@ -253,25 +303,45 @@ export const useUsers = () => {
                     .update({
                         role: userData.role,
                         full_name: userData.fullName,
-                        tenant_id: tenantId,
-                        comercial_id: userData.comercialId || null
+                        tenant_id: tenantId
                     })
                     .eq('id', signUpData.user.id);
 
                 if (updateError) {
                     console.error('Role update error:', updateError);
                 }
-            } else if (userData.comercialId) {
-                // Update comercial_id if provided
-                const { error: updateError } = await supabase
-                    .from('users')
-                    .update({
-                        comercial_id: userData.comercialId
-                    })
-                    .eq('id', signUpData.user.id);
+            }
 
-                if (updateError) {
-                    console.error('Comercial ID update error:', updateError);
+            // Auto-create comercial for supervisor and user roles
+            let comercialId = null;
+            if (userData.role === 'supervisor' || userData.role === 'user') {
+                const { data: comercialData, error: comercialError } = await supabase
+                    .from('comerciales')
+                    .insert([{
+                        name: userData.fullName,
+                        email: userData.email,
+                        phone: userData.phone || null,
+                        tenant_id: tenantId,
+                        is_active: true,
+                        created_by: user.id
+                    }])
+                    .select()
+                    .single();
+
+                if (comercialError) {
+                    console.error('Error creating comercial:', comercialError);
+                } else {
+                    comercialId = comercialData.id;
+
+                    // Link comercial to user
+                    const { error: linkError } = await supabase
+                        .from('users')
+                        .update({ comercial_id: comercialId })
+                        .eq('id', signUpData.user.id);
+
+                    if (linkError) {
+                        console.error('Error linking comercial to user:', linkError);
+                    }
                 }
             }
 

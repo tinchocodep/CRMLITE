@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Lock, Shield } from 'lucide-react';
-import ComercialSelector from '../shared/ComercialSelector';
 
 const STORAGE_KEY = 'createUserFormData';
 
@@ -9,8 +8,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
         email: '',
         password: '',
         fullName: '',
-        role: 'user',
-        comercialId: null
+        role: 'user'
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -64,8 +62,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                 email: '',
                 password: '',
                 fullName: '',
-                role: 'user',
-                comercialId: null
+                role: 'user'
             });
             onClose();
         } else {
@@ -181,17 +178,13 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         </div>
                     </div>
 
-                    {/* Comercial Assignment */}
-                    <ComercialSelector
-                        value={formData.comercialId}
-                        onChange={(value) => setFormData({ ...formData, comercialId: value })}
-                        required={formData.role === 'supervisor' || formData.role === 'user'}
-                        label="Asignar a Comercial"
-                    />
+                    {/* Auto-create Comercial Note */}
                     {(formData.role === 'supervisor' || formData.role === 'user') && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 -mt-2">
-                            {formData.role === 'supervisor' ? 'El supervisor será vinculado a este comercial' : 'El usuario será vinculado a este comercial'}
-                        </p>
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3">
+                            <p className="text-xs text-blue-700 dark:text-blue-300">
+                                ℹ️ Se creará automáticamente un registro de comercial para este usuario
+                            </p>
+                        </div>
                     )}
 
                     {/* Buttons */}
