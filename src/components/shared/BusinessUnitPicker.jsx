@@ -96,8 +96,8 @@ const BusinessUnitPicker = ({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`w-full px-3 py-2.5 text-sm rounded-xl border ${selectedEntity
-                        ? 'border-emerald-300 bg-emerald-50'
-                        : 'border-slate-300 bg-white'
+                    ? 'border-emerald-300 bg-emerald-50'
+                    : 'border-slate-300 bg-white'
                     } focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none text-left flex items-center justify-between gap-2 transition-all`}
             >
                 {selectedEntity ? (
@@ -155,8 +155,8 @@ const BusinessUnitPicker = ({
                             type="button"
                             onClick={() => setActiveTab('all')}
                             className={`flex-1 px-4 py-2.5 text-xs font-semibold transition-colors ${activeTab === 'all'
-                                    ? 'text-brand-red border-b-2 border-brand-red bg-white'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'text-brand-red border-b-2 border-brand-red bg-white'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             Todos ({allEntities.length})
@@ -165,8 +165,8 @@ const BusinessUnitPicker = ({
                             type="button"
                             onClick={() => setActiveTab('clients')}
                             className={`flex-1 px-4 py-2.5 text-xs font-semibold transition-colors ${activeTab === 'clients'
-                                    ? 'text-brand-red border-b-2 border-brand-red bg-white'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'text-brand-red border-b-2 border-brand-red bg-white'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             Clientes ({clients.length})
@@ -175,55 +175,79 @@ const BusinessUnitPicker = ({
                             type="button"
                             onClick={() => setActiveTab('prospects')}
                             className={`flex-1 px-4 py-2.5 text-xs font-semibold transition-colors ${activeTab === 'prospects'
-                                    ? 'text-brand-red border-b-2 border-brand-red bg-white'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'text-brand-red border-b-2 border-brand-red bg-white'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             Prospectos ({prospects.length})
                         </button>
                     </div>
 
-                    {/* Results List */}
-                    <div className="max-h-64 overflow-y-auto custom-scrollbar">
+                    {/* Results List - Table Style */}
+                    <div className="max-h-80 overflow-y-auto">
                         {filteredEntities.length === 0 ? (
                             <div className="p-8 text-center text-slate-400 text-sm">
                                 No se encontraron resultados
                             </div>
                         ) : (
-                            filteredEntities.map(entity => (
-                                <button
-                                    key={`${entity.type}-${entity.id}`}
-                                    type="button"
-                                    onClick={() => handleSelect(entity)}
-                                    className="w-full px-3 py-2.5 text-left hover:bg-slate-50 flex items-center gap-2.5 border-b border-slate-100 last:border-0 transition-colors group"
-                                >
-                                    <div className={`w-8 h-8 rounded-lg ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'
-                                        } flex items-center justify-center flex-shrink-0`}>
-                                        {entity.type === 'client'
-                                            ? <Users size={16} className="text-emerald-600" />
-                                            : <User size={16} className="text-purple-600" />
-                                        }
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-sm text-slate-800 truncate group-hover:text-brand-red transition-colors">
-                                            {entity.displayName}
-                                        </p>
-                                        <div className="flex items-center gap-2">
-                                            <p className="text-xs text-slate-500 capitalize">
-                                                {entity.type === 'client' ? 'Cliente' : 'Prospecto'}
-                                            </p>
-                                            {entity.cuit && (
-                                                <>
-                                                    <span className="text-xs text-slate-300">•</span>
-                                                    <p className="text-xs text-slate-500 font-mono">
-                                                        CUIT: {entity.cuit}
+                            <table className="w-full">
+                                <thead className="bg-slate-50 sticky top-0 z-10">
+                                    <tr className="border-b border-slate-200">
+                                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                            Tipo
+                                        </th>
+                                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                            Nombre Comercial
+                                        </th>
+                                        <th className="text-left py-2 px-3 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                            CUIT
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {filteredEntities.map((entity, index) => (
+                                        <tr
+                                            key={`${entity.type}-${entity.id}`}
+                                            onClick={() => handleSelect(entity)}
+                                            className={`cursor-pointer border-b border-slate-100 last:border-0 hover:bg-blue-50 transition-colors group ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'
+                                                }`}
+                                        >
+                                            <td className="py-2.5 px-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-6 h-6 rounded-md ${entity.type === 'client' ? 'bg-emerald-100' : 'bg-purple-100'
+                                                        } flex items-center justify-center flex-shrink-0`}>
+                                                        {entity.type === 'client'
+                                                            ? <Users size={12} className="text-emerald-600" />
+                                                            : <User size={12} className="text-purple-600" />
+                                                        }
+                                                    </div>
+                                                    <span className={`text-xs font-semibold px-2 py-0.5 rounded ${entity.type === 'client'
+                                                            ? 'bg-emerald-100 text-emerald-700'
+                                                            : 'bg-purple-100 text-purple-700'
+                                                        }`}>
+                                                        {entity.type === 'client' ? 'Cliente' : 'Prospecto'}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="py-2.5 px-3">
+                                                <p className="font-semibold text-sm text-slate-800 group-hover:text-brand-red transition-colors truncate">
+                                                    {entity.displayName}
+                                                </p>
+                                                {entity.legal_name && entity.legal_name !== entity.displayName && (
+                                                    <p className="text-xs text-slate-500 truncate">
+                                                        {entity.legal_name}
                                                     </p>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                </button>
-                            ))
+                                                )}
+                                            </td>
+                                            <td className="py-2.5 px-3">
+                                                <p className="text-sm text-slate-600 font-mono">
+                                                    {entity.cuit || '-'}
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         )}
                     </div>
                 </div>
