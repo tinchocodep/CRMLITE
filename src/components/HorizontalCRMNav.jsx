@@ -17,11 +17,11 @@ const crmModules = [
     { name: 'Reclamos', path: '/reclamos', icon: AlertCircle }
 ];
 
-export function HorizontalCRMNav() {
+export function HorizontalCRMNav({ isMainSidebarExpanded }) {
     const location = useLocation();
 
     return (
-        <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <nav className={`bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 ${isMainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
             <div className="max-w-[1920px] mx-auto px-6">
                 <div className="flex items-center justify-end gap-2 overflow-x-auto scrollbar-hide py-4">
                     {crmModules.map((module, index) => {
