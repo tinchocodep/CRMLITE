@@ -97,16 +97,7 @@ const MainLayout = () => {
         };
     }, []);
 
-    // Force Outlet re-render when location changes
-    const [outletKey, setOutletKey] = useState(0);
-
-    // Debug: Log location changes
-    useEffect(() => {
-        console.log('🔍 [DEBUG] React Router location changed:', location.pathname);
-        console.log('🔍 [DEBUG] Window location:', window.location.pathname);
-        // Force Outlet to re-render by incrementing key
-        setOutletKey(prev => prev + 1);
-    }, [location.pathname]);
+    // Outlet will automatically re-render when location changes via React Router
 
     // ========== SHARED HANDLERS ==========
     const handleLogout = () => {
@@ -303,13 +294,7 @@ const MainLayout = () => {
 
                 {/* Mobile Main Content */}
                 <main className="flex-1 w-full overflow-y-auto">
-                    <Outlet key={outletKey} />
-                    {/* Debug: Log route changes */}
-                    {(() => {
-                        console.log('🔍 [DEBUG] Current route:', location.pathname);
-                        console.log('🔍 [DEBUG] Outlet key:', outletKey);
-                        return null;
-                    })()}
+                    <Outlet />
                 </main>
 
                 {/* Bottom Navigation Bar */}
