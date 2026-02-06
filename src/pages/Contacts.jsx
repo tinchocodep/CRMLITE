@@ -49,6 +49,15 @@ const Contacts = () => {
             companyName.includes(searchLower);
     });
 
+    // Debug logging
+    console.log('🔍 Contacts Page Debug:', {
+        rawContacts: contacts?.length || 0,
+        afterRoleFilter: filteredByRole?.length || 0,
+        afterSearchFilter: filteredContacts?.length || 0,
+        searchTerm: debouncedSearch,
+        sampleContact: filteredContacts?.[0]
+    });
+
     const handleToggleExpand = (contactId) => {
         setExpandedContactId(expandedContactId === contactId ? null : contactId);
     };
