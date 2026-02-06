@@ -321,7 +321,6 @@ const MainLayout = () => {
                             <NavLink
                                 to="/prospectos"
                                 end
-                                onClick={(e) => safeNavLinkClick(e, '/prospectos')}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
                                     ${isActive ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'}
@@ -339,7 +338,6 @@ const MainLayout = () => {
                             <NavLink
                                 to="/clientes"
                                 end
-                                onClick={(e) => safeNavLinkClick(e, '/clientes')}
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
                                     ${isActive ? 'text-brand-red' : 'text-slate-600'}
