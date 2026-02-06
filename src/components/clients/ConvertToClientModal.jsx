@@ -42,6 +42,13 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
     const [selectedContactIds, setSelectedContactIds] = useState([]);
 
     useEffect(() => {
+        console.log('🔄 ConvertToClientModal useEffect triggered:', {
+            hasProspect: !!prospect,
+            prospectId: prospect?.id,
+            contactsCount: contacts?.length || 0,
+            prospect: prospect
+        });
+
         if (prospect) {
             setFormData(prev => ({
                 ...prev,
