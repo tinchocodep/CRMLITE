@@ -172,7 +172,7 @@ const MainLayout = () => {
                         <div className="flex items-center justify-between h-16 px-4">
                             {/* Logo SAILO - Clickable to Home */}
                             <button
-                                onClick={() => safeNavigate('/dashboard')}
+                                onClick={() => navigate('/dashboard')}
                                 className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                             >
                                 <img src="/logo.png" alt="SAILO" className="w-9 h-9 object-contain drop-shadow-sm" />
@@ -182,7 +182,7 @@ const MainLayout = () => {
                             <div className="flex items-center gap-2">
                                 {/* Agenda Button */}
                                 <button
-                                    onClick={() => safeNavigate('/agenda')}
+                                    onClick={() => navigate('/agenda')}
                                     className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red transition-colors"
                                 >
                                     <Calendar size={20} />
