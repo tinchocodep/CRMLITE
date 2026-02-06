@@ -40,10 +40,10 @@ export const useActivities = (daysAhead = 30) => {
                 .gte('scheduled_date', today)
                 .lte('scheduled_date', futureDate);
 
-            // Filter by comercial_id for non-admin users
-            // Admins see all activities in their tenant
-            // Regular users and supervisors see only their own activities
-            if (!isAdmin && comercialId) {
+            // Filter by comercial_id for non-admin/non-supervisor users
+            // Admins and supervisors see all activities in their tenant
+            // Regular comerciales see only their own activities
+            if (!isAdmin && !isSupervisor && comercialId) {
                 query = query.eq('comercial_id', comercialId);
             }
 
