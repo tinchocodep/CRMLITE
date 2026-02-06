@@ -7,6 +7,8 @@ import { useContacts } from '../hooks/useContacts';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useDebounce } from '../hooks/useDebounce';
+import { ComercialFilter } from '../components/shared/ComercialFilter';
+import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 
 const Contacts = () => {
     const { contacts, loading, createContact, updateContact, deleteContact } = useContacts();
@@ -18,8 +20,22 @@ const Contacts = () => {
     const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, contactId: null });
     const { showSuccess, showError } = useSystemToast();
 
+    // Role-based filtering
+    const {
+        comerciales,
+        selectedComercialId,
+        setSelectedComercialId,
+        canFilter,
+        showAllOption,
+        filterDataByRole,
+        loading: filterLoading
+    } = useRoleBasedFilter();
+
+    // Apply role-based filter to contacts
+    const filteredByRole = filterDataByRole(contacts);
+
     // Filter contacts based on debounced search
-    const filteredContacts = contacts.filter(contact => {
+    const filteredContacts = filteredByRole.filter(contact => {
         const searchLower = debouncedSearch.toLowerCase();
         const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.toLowerCase();
         const email = (contact.email || '').toLowerCase();
@@ -90,16 +106,30 @@ const Contacts = () => {
                     <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Contactos</h1>
                 </div>
 
-                <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-brand-red/10 transition-all">
-                        <Search size={20} className="text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Buscar contacto..."
-                            className="bg-transparent text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none w-full"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    {/* Comercial Filter (Admin & Supervisor only) */}
+                    {canFilter && (
+                        <ComercialFilter
+                            comerciales={comerciales}
+                            selectedComercialId={selectedComercialId}
+                            onComercialChange={setSelectedComercialId}
+                            showAllOption={showAllOption}
+                            loading={filterLoading}
                         />
+                    )}
+
+                    {/* Search */}
+                    <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm flex-1 md:flex-none">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-brand-red/10 transition-all">
+                            <Search size={20} className="text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Buscar contacto..."
+                                className="bg-transparent text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none w-full"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
