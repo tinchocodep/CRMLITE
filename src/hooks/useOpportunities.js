@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-export const useOpportunities = () => {
+export const useOpportunities = (refreshKey = 'default') => {
     const [opportunities, setOpportunities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -71,7 +71,7 @@ export const useOpportunities = () => {
         return () => {
             // This ensures the component will fetch fresh data when remounted
         };
-    }, [comercialId, isAdmin, isSupervisor]);
+    }, [comercialId, isAdmin, isSupervisor, refreshKey]);
 
     // Helper function to create activities from opportunity dates
     const createActivitiesFromOpportunity = async (opportunity, opportunityId) => {
