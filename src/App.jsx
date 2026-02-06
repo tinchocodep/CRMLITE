@@ -14,6 +14,7 @@ import Legajos from './pages/Legajos';
 import Opportunities from './pages/Opportunities';
 import Settings from './pages/Settings';
 import UserManagement from './pages/UserManagement';
+import TeamManagement from './pages/TeamManagement';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/shared/ToastContainer';
 
@@ -86,6 +87,7 @@ function AppRoutes() {
           <Route path="legajo" element={<Legajos />} />
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />
+          <Route path="equipos" element={<TeamManagement />} />
           {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
             <Route
               key={name}
