@@ -315,6 +315,13 @@ export const useUsers = () => {
             // Auto-create comercial for supervisor and user roles
             let comercialId = null;
             if (userData.role === 'supervisor' || userData.role === 'user') {
+                console.log('Creating comercial for user:', {
+                    name: userData.fullName,
+                    email: userData.email,
+                    role: userData.role,
+                    tenant_id: tenantId
+                });
+
                 const { data: comercialData, error: comercialError } = await supabase
                     .from('comerciales')
                     .insert([{
@@ -329,9 +336,17 @@ export const useUsers = () => {
                     .single();
 
                 if (comercialError) {
-                    console.error('Error creating comercial:', comercialError);
+                    console.error('❌ Error creating comercial:', comercialError);
+                    console.error('Comercial error details:', {
+                        message: comercialError.message,
+                        details: comercialError.details,
+                        hint: comercialError.hint,
+                        code: comercialError.code
+                    });
+                    throw new Error(`Failed to create comercial: ${comercialError.message}`);
                 } else {
                     comercialId = comercialData.id;
+                    console.log('✅ Comercial created successfully:', comercialId);
 
                     // Link comercial to user
                     const { error: linkError } = await supabase
@@ -340,8 +355,11 @@ export const useUsers = () => {
                         .eq('id', signUpData.user.id);
 
                     if (linkError) {
-                        console.error('Error linking comercial to user:', linkError);
+                        console.error('❌ Error linking comercial to user:', linkError);
+                        throw new Error(`Failed to link comercial: ${linkError.message}`);
                     }
+
+                    console.log('✅ Comercial linked to user successfully');
                 }
             }
 
