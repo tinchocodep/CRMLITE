@@ -217,50 +217,19 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
             {/* Action Buttons (Top Right) */}
             {isFloating && (
                 <div className="absolute top-4 right-4 flex items-center gap-2 z-50">
-                    {!isEditing ? (
-                        <>
-                            <button
-                                onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
-                                className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 hover:text-brand-red dark:hover:text-red-400 transition-colors"
-                                title="Editar Actividad"
-                            >
-                                <Edit2 size={18} />
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                title="Eliminar Actividad"
-                            >
-                                <Trash2 size={18} />
-                            </button>
-                            <button
-                                onClick={(e) => { e.stopPropagation(); onClose(); }}
-                                className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
-                            >
-                                <X size={20} />
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button
-                                onClick={handleSave}
-                                className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-brand-red text-white text-xs font-bold shadow-md hover:bg-red-700 transition-colors"
-                            >
-                                <Save size={14} />
-                                Guardar
-                            </button>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditedEvent({ ...event }); // Reset changes
-                                    setIsEditing(false);
-                                }}
-                                className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 transition-colors"
-                            >
-                                <X size={20} />
-                            </button>
-                        </>
-                    )}
+                    <button
+                        onClick={handleDelete}
+                        className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        title="Eliminar Actividad"
+                    >
+                        <Trash2 size={18} />
+                    </button>
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onClose(); }}
+                        className="p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
             )}
 
