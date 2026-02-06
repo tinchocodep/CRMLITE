@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Lock, Shield } from 'lucide-react';
+import ComercialSelector from '../shared/ComercialSelector';
 
 const STORAGE_KEY = 'createUserFormData';
 
@@ -8,7 +9,8 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
         email: '',
         password: '',
         fullName: '',
-        role: 'user'
+        role: 'user',
+        comercialId: null
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -62,7 +64,8 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                 email: '',
                 password: '',
                 fullName: '',
-                role: 'user'
+                role: 'user',
+                comercialId: null
             });
             onClose();
         } else {
@@ -177,6 +180,19 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                             </select>
                         </div>
                     </div>
+
+                    {/* Comercial Assignment */}
+                    <ComercialSelector
+                        value={formData.comercialId}
+                        onChange={(value) => setFormData({ ...formData, comercialId: value })}
+                        required={formData.role === 'supervisor' || formData.role === 'user'}
+                        label="Asignar a Comercial"
+                    />
+                    {(formData.role === 'supervisor' || formData.role === 'user') && (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 -mt-2">
+                            {formData.role === 'supervisor' ? 'El supervisor será vinculado a este comercial' : 'El usuario será vinculado a este comercial'}
+                        </p>
+                    )}
 
                     {/* Buttons */}
                     <div className="flex gap-3 pt-4">
