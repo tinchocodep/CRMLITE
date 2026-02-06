@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2 } from 'lucide-react';
 import { useOpportunities } from '../hooks/useOpportunities';
 
@@ -13,6 +13,11 @@ const statusConfig = {
 const Opportunities = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const { opportunities, loading } = useOpportunities();
+
+    useEffect(() => {
+        console.log('🟢 Opportunities component MOUNTED');
+        return () => console.log('🔴 Opportunities component UNMOUNTED');
+    }, []);
 
     // Filter opportunities
     const filteredOpportunities = useMemo(() => {
