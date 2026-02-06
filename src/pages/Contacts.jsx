@@ -6,19 +6,21 @@ import ContactModal from '../components/contacts/ContactModal';
 import { useContacts } from '../hooks/useContacts';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useDebounce } from '../hooks/useDebounce';
 
 const Contacts = () => {
     const { contacts, loading, createContact, updateContact, deleteContact } = useContacts();
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 300); // Debounce search
     const [expandedContactId, setExpandedContactId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, contactId: null });
     const { showSuccess, showError } = useSystemToast();
 
-    // Filter contacts based on search
+    // Filter contacts based on debounced search
     const filteredContacts = contacts.filter(contact => {
-        const searchLower = searchTerm.toLowerCase();
+        const searchLower = debouncedSearch.toLowerCase();
         const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.toLowerCase();
         const email = (contact.email || '').toLowerCase();
         const phone = (contact.phone || '').toLowerCase();

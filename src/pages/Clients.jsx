@@ -9,10 +9,12 @@ import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useDebounce } from '../hooks/useDebounce';
 
 
 const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearch = useDebounce(searchTerm, 300); // Debounce search
     const { companies: clients, loading, createCompany, updateCompany, deleteCompany } = useCompanies('client');
     const { contacts: allContacts } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
@@ -38,10 +40,10 @@ const Clients = () => {
         return filterDataByRole(clients);
     }, [clients, selectedComercialId, filterDataByRole]);
 
-    // Then apply search filter
+    // Then apply search filter with debounced value
     const filteredClients = roleFilteredClients.filter(c =>
-        (c.trade_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (c.legal_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+        (c.trade_name || '').toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        (c.legal_name || '').toLowerCase().includes(debouncedSearch.toLowerCase())
     );
 
     const handleToggleExpand = (id) => {
