@@ -121,8 +121,8 @@ export const useContacts = () => {
             const { data: newContact, error: contactError } = await supabase
                 .from('contacts')
                 .insert([{
-                    first_name: contactData.firstName,
-                    last_name: contactData.lastName,
+                    first_name: contactData.firstName || contactData.first_name,
+                    last_name: contactData.lastName || contactData.last_name,
                     email: contactData.email,
                     phone: contactData.phone,
                     notes: contactData.notes,
