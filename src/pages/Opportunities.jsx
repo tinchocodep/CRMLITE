@@ -135,7 +135,7 @@ export default function Opportunities() {
                     </div>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="px-4 py-3 bg-brand-red hover:bg-red-600 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                        className="px-4 py-3 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                     >
                         <Plus size={18} />
                         <span className="hidden md:inline">Nuevo</span>
@@ -147,7 +147,7 @@ export default function Opportunities() {
                     <button
                         onClick={() => setStatusFilter('all')}
                         className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all ${statusFilter === 'all'
-                            ? 'bg-brand-red text-white shadow-md'
+                            ? 'bg-gradient-to-r from-[#E76E53] to-red-600 text-white shadow-md'
                             : 'bg-white text-slate-600 border border-slate-200'
                             }`}
                     >
