@@ -408,7 +408,7 @@ const Agenda = () => {
     }, [rawEvents, showToast]);
 
     return (
-        <div className="h-full flex flex-col gap-0 md:gap-6">
+        <div className="h-full flex flex-col gap-0 md:gap-6 p-0 md:p-0 xl:px-6 xl:pt-6">
             {/* Header Controls */}
             <div className="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 md:p-4 border-b border-slate-200 dark:border-slate-700 md:border md:border-slate-200 md:dark:border-slate-700 shadow-sm md:rounded-xl gap-4 md:gap-0 sticky top-0 md:static z-20">
 
