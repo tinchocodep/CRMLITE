@@ -26,7 +26,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
         detail: '',
 
         // Segment (Multiple Units) - will be saved separately
-        segments: [{ id: Date.now(), name: 'Principal', hectares: '', crops: '', machinery: '' }],
+        segments: [{ id: Date.now(), name: 'Principal', location: '', campaign: '', hectares: '', crop_type: '' }],
 
         // Importance
         importance: 'medium',
@@ -171,7 +171,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                                 type="button"
                                 onClick={() => setFormData(prev => ({
                                     ...prev,
-                                    segments: [...prev.segments, { id: Date.now(), name: '', hectares: '', crops: '', machinery: '' }]
+                                    segments: [...prev.segments, { id: Date.now(), name: '', location: '', campaign: '', hectares: '', crop_type: '' }]
                                 }))}
                                 className="text-xs font-bold text-brand-red hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
                             >
@@ -194,7 +194,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
 
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                                         <div className="md:col-span-3 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Nombre / Ubicación</label>
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Nombre</label>
                                             <input
                                                 value={segment.name}
                                                 onChange={(e) => {
@@ -204,6 +204,32 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                                                 }}
                                                 className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-red outline-none"
                                                 placeholder="Ej. Campo Norte"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-3 space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Ubicación</label>
+                                            <input
+                                                value={segment.location}
+                                                onChange={(e) => {
+                                                    const newSegments = [...formData.segments];
+                                                    newSegments[index].location = e.target.value;
+                                                    setFormData(prev => ({ ...prev, segments: newSegments }));
+                                                }}
+                                                className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-red outline-none"
+                                                placeholder="Ej. Pergamino, BA"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2 space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Campaña</label>
+                                            <input
+                                                value={segment.campaign}
+                                                onChange={(e) => {
+                                                    const newSegments = [...formData.segments];
+                                                    newSegments[index].campaign = e.target.value;
+                                                    setFormData(prev => ({ ...prev, segments: newSegments }));
+                                                }}
+                                                className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-red outline-none"
+                                                placeholder="2024/25"
                                             />
                                         </div>
                                         <div className="md:col-span-2 space-y-1">
@@ -223,30 +249,17 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                                                 />
                                             </div>
                                         </div>
-                                        <div className="md:col-span-3 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Cultivos</label>
+                                        <div className="md:col-span-2 space-y-1">
+                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Tipo de Cultivo</label>
                                             <input
-                                                value={segment.crops}
+                                                value={segment.crop_type}
                                                 onChange={(e) => {
                                                     const newSegments = [...formData.segments];
-                                                    newSegments[index].crops = e.target.value;
+                                                    newSegments[index].crop_type = e.target.value;
                                                     setFormData(prev => ({ ...prev, segments: newSegments }));
                                                 }}
                                                 className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-red outline-none"
                                                 placeholder="Soja, Maíz..."
-                                            />
-                                        </div>
-                                        <div className="md:col-span-4 space-y-1">
-                                            <label className="text-[10px] font-bold text-slate-400 uppercase">Maquinaria</label>
-                                            <input
-                                                value={segment.machinery}
-                                                onChange={(e) => {
-                                                    const newSegments = [...formData.segments];
-                                                    newSegments[index].machinery = e.target.value;
-                                                    setFormData(prev => ({ ...prev, segments: newSegments }));
-                                                }}
-                                                className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-red outline-none"
-                                                placeholder="Tractores..."
                                             />
                                         </div>
                                     </div>
