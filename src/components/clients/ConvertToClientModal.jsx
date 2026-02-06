@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, UserPlus, CheckCircle2, Building2, MapPin, FileText, Tractor, Leaf, DollarSign, User, Briefcase, Target, Map, Plus, Trash2 } from 'lucide-react';
 import ComercialSelector from '../shared/ComercialSelector';
+import { useAuth } from '../../contexts/AuthContext';
 
 const importanceConfig = [
     { id: 'low', label: 'Baja', color: 'bg-blue-50 border-blue-200 text-blue-700' },
@@ -9,6 +10,7 @@ const importanceConfig = [
 ];
 
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) => {
+    const { comercialId } = useAuth();
     const [formData, setFormData] = useState({
         // Basic Info (Inherited from prospect)
         legalName: '',
@@ -95,8 +97,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             })(),
             payment_terms: formData.paymentTerms || null,
             credit_limit: formData.creditLimit || null,
-            // Comercial assignment
-            comercial_id: formData.comercialId || null
+            // Comercial assignment - use current user's comercial_id
+            comercial_id: formData.comercialId || comercialId
         };
         onConvert(dataToSubmit);
     };
