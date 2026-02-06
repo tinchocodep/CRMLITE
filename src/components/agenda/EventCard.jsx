@@ -469,10 +469,25 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
                     }}
                     className="group relative bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg p-1.5 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex items-center gap-2 hover:border-brand-red/30 dark:hover:border-red-500/30"
                 >
-                    <div className="min-w-0">
+                    <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">{editedEvent.title}</p>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{format(editedEvent.start, 'HH:mm')}</p>
                     </div>
+                    {/* Three-dot menu button */}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowDetails(true);
+                        }}
+                        className="flex-shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-brand-red dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                        title="Opciones"
+                    >
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </button>
                 </div>
             );
         }
