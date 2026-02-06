@@ -66,13 +66,39 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 comercialId: prospect.comercial_id || null
             }));
 
+
             // Load existing contacts for this client
             if (prospect.id && contacts.length > 0) {
-                const clientContacts = contacts.filter(contact =>
-                    contact.companies?.some(company => company.companyId === prospect.id)
-                );
+                console.log('🔍 Loading contacts for client:', {
+                    clientId: prospect.id,
+                    totalContacts: contacts.length,
+                    contacts: contacts,
+                    prospectData: prospect
+                });
+
+                const clientContacts = contacts.filter(contact => {
+                    const hasCompany = contact.companies?.some(company => {
+                        console.log('Checking company:', {
+                            contactId: contact.id,
+                            contactName: `${contact.firstName} ${contact.lastName}`,
+                            companyId: company.companyId,
+                            clientId: prospect.id,
+                            matches: company.companyId === prospect.id
+                        });
+                        return company.companyId === prospect.id;
+                    });
+                    return hasCompany;
+                });
+
+                console.log('✅ Found client contacts:', {
+                    count: clientContacts.length,
+                    contactIds: clientContacts.map(c => c.id),
+                    contacts: clientContacts
+                });
+
                 setSelectedContactIds(clientContacts.map(c => c.id));
             } else {
+                console.log('⚠️ No contacts to load:', { hasId: !!prospect.id, contactsLength: contacts.length });
                 setSelectedContactIds([]);
             }
         } else {

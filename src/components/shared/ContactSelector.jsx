@@ -38,10 +38,20 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     }, [availableContacts, selectedContactIds]);
 
     const handleAddContact = (contactId) => {
+        console.log('➕ Adding contact:', {
+            contactId,
+            currentSelection: selectedContactIds,
+            newSelection: [...selectedContactIds, contactId]
+        });
         onChange([...selectedContactIds, contactId]);
     };
 
     const handleRemoveContact = (contactId) => {
+        console.log('➖ Removing contact:', {
+            contactId,
+            currentSelection: selectedContactIds,
+            newSelection: selectedContactIds.filter(id => id !== contactId)
+        });
         onChange(selectedContactIds.filter(id => id !== contactId));
     };
 
