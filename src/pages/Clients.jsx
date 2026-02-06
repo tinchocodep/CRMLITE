@@ -7,6 +7,8 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+
 
 const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -28,6 +30,7 @@ const Clients = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [editingClient, setEditingClient] = useState(null);
     const [expandedClientId, setExpandedClientId] = useState(null);
+    const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, clientId: null });
 
     // Apply role-based filter first
     const roleFilteredClients = useMemo(() => {
@@ -94,12 +97,14 @@ const Clients = () => {
         setEditingClient(null);
     };
 
-    const handleDeleteClient = async (id) => {
-        if (window.confirm('¿Está seguro de eliminar este cliente?')) {
-            const result = await deleteCompany(id);
-            if (!result.success) {
-                showError('Error al eliminar cliente: ' + result.error);
-            }
+    const handleDeleteClient = (id) => {
+        setConfirmDelete({ isOpen: true, clientId: id });
+    };
+
+    const confirmDeleteClient = async () => {
+        const result = await deleteCompany(confirmDelete.clientId);
+        if (!result.success) {
+            showError('Error al eliminar cliente: ' + result.error);
         }
     };
 
@@ -180,6 +185,18 @@ const Clients = () => {
                 onConvert={handleSaveClient}
                 prospect={editingClient} // Reusing prospect prop for editing existing client
                 title={editingClient ? 'Editar Cliente' : 'Alta de Cliente'}
+            />
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDelete.isOpen}
+                onClose={() => setConfirmDelete({ isOpen: false, clientId: null })}
+                onConfirm={confirmDeleteClient}
+                title="Eliminar cliente"
+                message="¿Está seguro de eliminar este cliente? Esta acción no se puede deshacer."
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                variant="danger"
             />
         </div>
     );
