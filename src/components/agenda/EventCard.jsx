@@ -5,6 +5,14 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ConfirmDialog } from '../ConfirmDialog';
 
+// Safe format wrapper to prevent RangeError
+const safeFormat = (date, formatStr, options = {}) => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+        return '--:--';
+    }
+    return format(date, formatStr, options);
+};
+
 const priorityConfig = {
     high: {
         label: 'Alta',
@@ -332,20 +340,20 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                                         <div className="flex gap-1 items-center">
                                             <input
                                                 type="time"
-                                                value={format(editedEvent.start, 'HH:mm')}
+                                                value={safeFormat(editedEvent.start, 'HH:mm')}
                                                 onChange={() => { }} // This is a mock specific, implies date logic
                                                 className="bg-transparent text-xs font-semibold focus:outline-none w-16 text-slate-700 dark:text-slate-300"
                                             />
                                             <span className="text-slate-400 dark:text-slate-500">-</span>
                                             <input
                                                 type="time"
-                                                value={format(editedEvent.end, 'HH:mm')}
+                                                value={safeFormat(editedEvent.end, 'HH:mm')}
                                                 onChange={() => { }}
                                                 className="bg-transparent text-xs font-semibold focus:outline-none w-16 text-slate-700 dark:text-slate-300"
                                             />
                                         </div>
                                     ) : (
-                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{format(editedEvent.start, 'HH:mm')} - {format(editedEvent.end, 'HH:mm')}</span>
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{safeFormat(editedEvent.start, 'HH:mm')} - {safeFormat(editedEvent.end, 'HH:mm')}</span>
                                     )}
                                 </div>
                             </div>
@@ -433,7 +441,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1 text-[9px] text-slate-500 font-medium leading-none">
                                 <Clock size={10} className="text-slate-400" />
-                                <span className="truncate">{format(editedEvent.start, 'HH:mm')} - {format(editedEvent.end, 'HH:mm')}</span>
+                                <span className="truncate">{safeFormat(editedEvent.start, 'HH:mm')} - {safeFormat(editedEvent.end, 'HH:mm')}</span>
                             </div>
                             <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-0.5 truncate leading-none">
                                 <User size={10} />
@@ -473,7 +481,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                 >
                     <div className="flex-1 min-w-0">
                         <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">{editedEvent.title}</p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{format(editedEvent.start, 'HH:mm')}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{safeFormat(editedEvent.start, 'HH:mm')}</p>
                     </div>
                     {/* Three-dot menu button */}
                     <button
