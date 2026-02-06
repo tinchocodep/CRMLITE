@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+
+// Porcentajes de referencia por status (sugerencias, no obligatorios)
+const statusProbabilityReference = {
+    iniciado: 10,
+    presupuestado: 30,
+    negociado: 60,
+    ganado: 100,
+    perdido: 0
+};
 
 export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = null }) => {
     const [formData, setFormData] = useState({
@@ -12,6 +21,21 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
         status: opportunity?.status || 'iniciado'
     });
 
+    // Actualizar formData cuando cambia opportunity (para edit)
+    useEffect(() => {
+        if (opportunity) {
+            setFormData({
+                opportunity_name: opportunity.opportunity_name || '',
+                business_unit: opportunity.business_unit || '',
+                product: opportunity.product || '',
+                amount: opportunity.amount || '',
+                probability: opportunity.probability || 50,
+                close_date: opportunity.close_date || '',
+                status: opportunity.status || 'iniciado'
+            });
+        }
+    }, [opportunity]);
+
     if (!isOpen) return null;
 
     const handleSubmit = (e) => {
@@ -22,6 +46,22 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleStatusChange = (e) => {
+        const newStatus = e.target.value;
+        // Sugerir probabilidad de referencia pero permitir que el usuario la cambie después
+        const suggestedProbability = statusProbabilityReference[newStatus] || 50;
+        setFormData(prev => ({
+            ...prev,
+            status: newStatus,
+            probability: suggestedProbability
+        }));
+    };
+
+    const handleProbabilityChange = (e) => {
+        const value = parseInt(e.target.value);
+        setFormData(prev => ({ ...prev, probability: value }));
     };
 
     return (
@@ -79,33 +119,62 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                Monto
-                            </label>
-                            <input
-                                type="number"
-                                name="amount"
-                                value={formData.amount}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                            Monto
+                        </label>
+                        <input
+                            type="number"
+                            name="amount"
+                            value={formData.amount}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                    </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                Probabilidad (%)
-                            </label>
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                            Estado
+                        </label>
+                        <select
+                            name="status"
+                            value={formData.status}
+                            onChange={handleStatusChange}
+                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="iniciado">🚀 Iniciado (ref: 10%)</option>
+                            <option value="presupuestado">📋 Presupuestado (ref: 30%)</option>
+                            <option value="negociado">🤝 Negociado (ref: 60%)</option>
+                            <option value="ganado">✅ Ganado (ref: 100%)</option>
+                            <option value="perdido">❌ Perdido (ref: 0%)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                            Probabilidad: {formData.probability}%
+                        </label>
+                        <div className="space-y-2">
                             <input
-                                type="number"
+                                type="range"
                                 name="probability"
                                 value={formData.probability}
-                                onChange={handleChange}
+                                onChange={handleProbabilityChange}
                                 min="0"
                                 max="100"
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                step="5"
+                                className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                style={{
+                                    background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${formData.probability}%, #e2e8f0 ${formData.probability}%, #e2e8f0 100%)`
+                                }}
                             />
+                            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                                <span>0%</span>
+                                <span>25%</span>
+                                <span>50%</span>
+                                <span>75%</span>
+                                <span>100%</span>
+                            </div>
                         </div>
                     </div>
 
@@ -120,24 +189,6 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                             onChange={handleChange}
                             className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                            Estado
-                        </label>
-                        <select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            <option value="iniciado">🚀 Iniciado</option>
-                            <option value="presupuestado">📋 Presupuestado</option>
-                            <option value="negociado">🤝 Negociado</option>
-                            <option value="ganado">✅ Ganado</option>
-                            <option value="perdido">❌ Perdido</option>
-                        </select>
                     </div>
 
                     <div className="flex gap-3 pt-4">
