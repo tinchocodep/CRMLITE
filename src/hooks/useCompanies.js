@@ -49,6 +49,12 @@ export const useCompanies = (type = null) => {
                 query = query.eq('company_type', type);
             }
 
+            // Filter by comercial_id if user is NOT admin or supervisor
+            // Admins and supervisors can see all companies in their tenant
+            if (!isAdmin && !isSupervisor && comercialId) {
+                query = query.eq('comercial_id', comercialId);
+            }
+
             // Apply RLS - Supabase will handle this automatically
             const { data, error: fetchError } = await query.order('created_at', { ascending: false });
 
