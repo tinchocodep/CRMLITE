@@ -100,11 +100,17 @@ export const useContacts = () => {
             // Get current user's tenant_id and comercial_id
             const { data: userData, error: userError } = await supabase
                 .from('users')
-                .select('tenant_id, comercial_id')
+                .select('tenant_id, comercial_id, role')
                 .eq('id', user?.id)
                 .single();
 
             if (userError) throw userError;
+
+            console.log('🔍 Contact Creation Debug:', {
+                userId: user?.id,
+                userData,
+                contactData
+            });
 
             // Insert contact
             const { data: newContact, error: contactError } = await supabase
@@ -122,7 +128,12 @@ export const useContacts = () => {
                 .select()
                 .single();
 
-            if (contactError) throw contactError;
+            if (contactError) {
+                console.error('❌ Contact Insert Error:', contactError);
+                throw contactError;
+            }
+
+            console.log('✅ Contact Created Successfully:', newContact);
 
             // Insert company relationships
             if (contactData.companies && contactData.companies.length > 0) {
