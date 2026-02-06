@@ -59,6 +59,7 @@ function MobileRedirect({ children }) {
 }
 
 function AppRoutes() {
+  const location = useLocation();
   const modules = [
     'Ficha 360°', 'Agenda', 'Prospectos', 'Clientes', 'Legajo',
     'Visitas', 'Oportunidades', 'Objetivos', 'Territorios', 'Reclamos'
@@ -82,7 +83,7 @@ function AppRoutes() {
           <Route path="prospectos" element={<Prospects />} />
           <Route path="clientes" element={<Clients />} />
           <Route path="contactos" element={<Contacts />} />
-          <Route path="oportunidades" element={<Opportunities />} />
+          <Route path="oportunidades" element={<Opportunities key={location.pathname} />} />
           <Route path="legajo" element={<Legajos />} />
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />

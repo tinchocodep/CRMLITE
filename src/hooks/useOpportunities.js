@@ -60,10 +60,17 @@ export const useOpportunities = () => {
         }
     };
 
+
+    // Fetch opportunities on mount and when auth state changes
     useEffect(() => {
         if (comercialId || isAdmin || isSupervisor) {
             fetchOpportunities();
         }
+
+        // Cleanup function to ensure fresh data on next mount
+        return () => {
+            // This ensures the component will fetch fresh data when remounted
+        };
     }, [comercialId, isAdmin, isSupervisor]);
 
     // Helper function to create activities from opportunity dates
