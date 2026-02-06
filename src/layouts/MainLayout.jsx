@@ -313,7 +313,7 @@ const MainLayout = () => {
                 </main>
 
                 {/* Bottom Navigation Bar */}
-                <nav className="fixed bottom-0 left-0 right-0 z-[9999] pointer-events-auto bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
+                <nav className="fixed bottom-0 left-0 right-0 z-[20000] pointer-events-auto bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
                     <div className="relative flex items-center justify-between h-16 px-4">
                         {/* Left Side - 2 buttons */}
                         <div className="flex items-center gap-2 flex-1 justify-start relative z-10">
