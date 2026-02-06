@@ -253,12 +253,25 @@ export const useUsers = () => {
                     .update({
                         role: userData.role,
                         full_name: userData.fullName,
-                        tenant_id: tenantId
+                        tenant_id: tenantId,
+                        comercial_id: userData.comercialId || null
                     })
                     .eq('id', signUpData.user.id);
 
                 if (updateError) {
                     console.error('Role update error:', updateError);
+                }
+            } else if (userData.comercialId) {
+                // Update comercial_id if provided
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({
+                        comercial_id: userData.comercialId
+                    })
+                    .eq('id', signUpData.user.id);
+
+                if (updateError) {
+                    console.error('Comercial ID update error:', updateError);
                 }
             }
 
