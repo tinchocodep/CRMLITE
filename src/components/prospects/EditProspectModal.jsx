@@ -517,7 +517,7 @@ END:VCARD`;
                                                                             handleLinkExistingContact();
                                                                         }}
                                                                         disabled={isLinking || !linkRole.trim()}
-                                                                        className="flex-1 px-3 py-2 bg-brand-red hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                        className="flex-1 px-3 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                     >
                                                                         {isLinking ? 'Vinculando...' : 'Vincular'}
                                                                     </button>
@@ -555,7 +555,7 @@ END:VCARD`;
                                             {/* Create new contact button */}
                                             <button
                                                 onClick={handleCreateContact}
-                                                className="w-full px-4 py-3 bg-brand-red hover:bg-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                className="w-full px-4 py-3 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <UserPlus size={16} />
                                                 Crear Nuevo Contacto
@@ -596,7 +596,7 @@ END:VCARD`;
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-brand-red text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#E76E53] to-red-600 text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:from-[#D55E43] hover:to-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         <Save size={18} />
                         Confirmar
