@@ -4,6 +4,7 @@ import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check
 import { safeFormat } from '../../utils/dateUtils';
 import { useContacts } from '../../hooks/useContacts';
 import ContactModal from '../contacts/ContactModal';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 const statusOptions = [
     { id: 'contacted', label: 'Contacto Inicial', color: 'bg-blue-50 text-blue-700 border-blue-200' },
@@ -13,8 +14,17 @@ const statusOptions = [
 
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     const { contacts, unlinkFromCompany, createContact, linkToCompany } = useContacts();
-
-    const [formData, setFormData] = useState(prospect || {});
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [showLinkContactModal, setShowLinkContactModal] = useState(false);
+    const [confirmUnlink, setConfirmUnlink] = useState({ isOpen: false, contactId: null, contactName: '' });
+    const [formData, setFormData] = useState({
+        name: '',
+        status: 'contacted',
+        notes: '',
+        next_contact_date: '',
+        last_contact_date: '',
+        potential_value: ''
+    });
 
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [preselectedCompany, setPreselectedCompany] = useState(null);
@@ -40,21 +50,25 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         onClose();
     };
 
-    const handleUnlinkContact = async (contactId, contactName) => {
-        if (window.confirm(`¿Desvincular a ${contactName}?`)) {
-            try {
-                await unlinkFromCompany(contactId, prospect.id);
+    const handleUnlinkContact = (contactId, contactName) => {
+        setConfirmUnlink({ isOpen: true, contactId, contactName });
+    };
 
-                // Notify parent to refresh
-                if (onContactsUpdate) {
-                    onContactsUpdate();
-                }
-            } catch (error) {
-                alert('Error al desvincular contacto');
+    const confirmUnlinkContact = async () => {
+        try {
+            await unlinkFromCompany(confirmUnlink.contactId, prospect.id);
+
+            // Notify parent to refresh
+            if (onContactsUpdate) {
+                onContactsUpdate();
             }
-
             // Force re-render by updating formData
             setFormData({ ...formData });
+        } catch (error) {
+            console.error('Error unlinking contact:', error);
+            alert('Error al desvincular contacto');
+        } finally {
+            setConfirmUnlink({ isOpen: false, contactId: null, contactName: '' });
         }
     };
 

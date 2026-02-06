@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Calendar, Clock, MapPin, Phone, User, CheckCircle2, AlertCircle, X, Maximize2, Trash2, Edit2, Save, Briefcase, CalendarClock, Check } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 const priorityConfig = {
     high: {
@@ -37,10 +38,11 @@ const opportunityStatusConfig = {
     perdido: { label: 'Perdido', icon: '❌', color: 'from-red-50 to-red-100 border-red-200' }
 };
 
-const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
+const EventCard = ({ event, onUpdate, onDelete, onExpand }) => {
     const [showDetails, setShowDetails] = useState(false);
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [tempDate, setTempDate] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [editedEvent, setEditedEvent] = useState(event);
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
     const normalizedEvent = React.useMemo(() => {
@@ -90,10 +92,6 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
         };
     }, [event]);
 
-    // Local state for editing fields - FIXED: Don't re-initialize on every render
-    const [editedEvent, setEditedEvent] = useState(() => ({ ...normalizedEvent }));
-    const [isEditing, setIsEditing] = useState(false);
-
     // Update editedEvent only when the event ID changes (new event loaded)
     React.useEffect(() => {
         setEditedEvent({ ...normalizedEvent });
@@ -103,7 +101,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
     const config = priorityConfig[editedEvent.priority || 'medium'];
     const isCompactView = view === 'month';
 
-    const handleDelete = async (e) => {
+    const handleDelete = (e) => {
         e.stopPropagation();
 
         if (!onDelete) {
@@ -112,15 +110,17 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete }) => {
             return;
         }
 
-        if (window.confirm('¿Estás seguro de que deseas eliminar esta actividad?')) {
-            try {
-                console.log('Deleting event:', event.id);
-                await onDelete(event.id);
-                setShowDetails(false);
-            } catch (error) {
-                console.error('Error deleting activity:', error);
-                alert('Error al eliminar la actividad');
-            }
+        setConfirmDelete(true);
+    };
+
+    const confirmDeleteEvent = async () => {
+        try {
+            console.log('Deleting event:', event.id);
+            await onDelete(event.id);
+            setShowDetails(false);
+        } catch (error) {
+            console.error('Error deleting event:', error);
+            alert('Error al eliminar la actividad');
         }
     };
 
