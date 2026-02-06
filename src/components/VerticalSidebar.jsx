@@ -53,29 +53,47 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
             {/* Navigation Items */}
             <nav className="flex-1 py-2 overflow-y-auto">
                 {sidebarModules.map((module) => {
-                    const LinkComponent = module.locked ? 'div' : NavLink;
-                    const linkProps = module.locked
-                        ? {
-                            onClick: (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }
-                        }
-                        : {
-                            to: module.path
-                        };
+                    if (module.locked) {
+                        // Render locked modules as divs
+                        return (
+                            <div
+                                key={module.path}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}
+                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-50 cursor-not-allowed bg-slate-50 text-slate-400"
+                            >
+                                <module.icon
+                                    size={22}
+                                    className="flex-shrink-0"
+                                />
+                                <span
+                                    className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                                        }`}
+                                >
+                                    {module.name}
+                                </span>
+                                {isHovered && (
+                                    <Lock
+                                        size={16}
+                                        className="ml-auto flex-shrink-0 text-slate-400"
+                                    />
+                                )}
+                            </div>
+                        );
+                    }
 
+                    // Render unlocked modules as NavLinks
                     return (
-                        <LinkComponent
+                        <NavLink
                             key={module.path}
-                            {...linkProps}
-                            className={({ isActive } = {}) => `
+                            to={module.path}
+                            className={({ isActive }) => `
                                 flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative
-                                ${module.locked
-                                    ? 'opacity-50 cursor-not-allowed bg-slate-50 text-slate-400'
-                                    : isActive || module.isCRM
-                                        ? 'bg-gradient-to-r from-brand-red to-red-600 text-white shadow-lg shadow-red-500/30'
-                                        : 'text-slate-600 hover:bg-red-50 hover:text-brand-red'
+                                ${isActive || module.isCRM
+                                    ? 'bg-gradient-to-r from-brand-red to-red-600 text-white shadow-lg shadow-red-500/30'
+                                    : 'text-slate-600 hover:bg-red-50 hover:text-brand-red'
                                 }
                             `}
                         >
@@ -89,13 +107,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             >
                                 {module.name}
                             </span>
-                            {module.locked && isHovered && (
-                                <Lock
-                                    size={16}
-                                    className="ml-auto flex-shrink-0 text-slate-400"
-                                />
-                            )}
-                        </LinkComponent>
+                        </NavLink>
                     );
                 })}
             </nav>
