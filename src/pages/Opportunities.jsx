@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2 } from 'lucide-react';
+import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, ChevronDown, X } from 'lucide-react';
 import { useOpportunities } from '../hooks/useOpportunities';
+import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
 
 const statusConfig = {
     iniciado: { label: 'Iniciado', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🚀' },
@@ -12,12 +13,27 @@ const statusConfig = {
 
 const Opportunities = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { opportunities, loading } = useOpportunities();
+    const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities();
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [opportunityToEdit, setOpportunityToEdit] = useState(null);
+    const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
 
     useEffect(() => {
         console.log('🟢 Opportunities component MOUNTED');
         return () => console.log('🔴 Opportunities component UNMOUNTED');
     }, []);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (statusDropdownOpen && !event.target.closest('.status-dropdown-container')) {
+                setStatusDropdownOpen(null);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [statusDropdownOpen]);
 
     // Filter opportunities
     const filteredOpportunities = useMemo(() => {
@@ -42,6 +58,27 @@ const Opportunities = () => {
         }).format(amount);
     };
 
+    const handleEdit = (opportunity) => {
+        setOpportunityToEdit(opportunity);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveOpportunity = async (opportunityData) => {
+        if (opportunityToEdit) {
+            await updateOpportunity(opportunityToEdit.id, opportunityData);
+        } else {
+            await createOpportunity(opportunityData);
+        }
+        setIsCreateModalOpen(false);
+        setIsEditModalOpen(false);
+        setOpportunityToEdit(null);
+    };
+
+    const handleStatusChange = async (opportunityId, newStatus) => {
+        await updateOpportunity(opportunityId, { status: newStatus });
+        setStatusDropdownOpen(null);
+    };
+
     return (
         <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:px-0">
             {/* Header */}
@@ -62,6 +99,7 @@ const Opportunities = () => {
                         />
                     </div>
                     <button
+                        onClick={() => setIsCreateModalOpen(true)}
                         className="px-4 py-2.5 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                     >
                         <Plus size={18} />
@@ -211,10 +249,30 @@ const Opportunities = () => {
                                                 }`}
                                         >
                                             <td className="py-3 px-4">
-                                                <span className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit`}>
-                                                    <span>{status.icon}</span>
-                                                    <span>{status.label}</span>
-                                                </span>
+                                                <div className="relative status-dropdown-container">
+                                                    <button
+                                                        onClick={() => setStatusDropdownOpen(statusDropdownOpen === opp.id ? null : opp.id)}
+                                                        className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit hover:opacity-80 transition-opacity`}
+                                                    >
+                                                        <span>{status.icon}</span>
+                                                        <span>{status.label}</span>
+                                                        <ChevronDown size={12} />
+                                                    </button>
+                                                    {statusDropdownOpen === opp.id && (
+                                                        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
+                                                            {Object.entries(statusConfig).map(([key, config]) => (
+                                                                <button
+                                                                    key={key}
+                                                                    onClick={() => handleStatusChange(opp.id, key)}
+                                                                    className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
+                                                                >
+                                                                    <span>{config.icon}</span>
+                                                                    <span className={config.color.split(' ')[1]}>{config.label}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="font-semibold text-sm text-slate-800 dark:text-slate-100">
@@ -257,7 +315,7 @@ const Opportunities = () => {
                                             <td className="py-3 px-4">
                                                 <div className="flex items-center justify-center">
                                                     <button
-                                                        onClick={() => console.log('Edit', opp.id)}
+                                                        onClick={() => handleEdit(opp)}
                                                         className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                                         title="Editar"
                                                     >
@@ -273,6 +331,23 @@ const Opportunities = () => {
                     </div>
                 )}
             </div>
+
+            {/* Modals */}
+            <SimpleOpportunityModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                onSave={handleSaveOpportunity}
+            />
+
+            <SimpleOpportunityModal
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setOpportunityToEdit(null);
+                }}
+                onSave={handleSaveOpportunity}
+                opportunity={opportunityToEdit}
+            />
         </div>
     );
 };
