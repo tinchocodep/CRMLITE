@@ -10,6 +10,7 @@ import ProspectPickerModal from '../components/prospects/ProspectPickerModal';
 import ContactModal from '../components/contacts/ContactModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
+import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
 import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
@@ -846,14 +847,11 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
-                {/* CRM Submodule Sidebar - Conditional */}
-                {isCRMActive && <CRMSubmoduleSidebar isMainSidebarExpanded={mainSidebarExpanded} />}
+                {/* CRM Horizontal Navigation - Above Content */}
+                {isCRMActive && <HorizontalCRMNav />}
 
                 {/* Desktop Main Content */}
-                <main className={`min-h-screen transition-all duration-300 ${isCRMActive
-                    ? (mainSidebarExpanded ? 'ml-[324px]' : 'ml-72')
-                    : (mainSidebarExpanded ? 'ml-72' : 'ml-20')
-                    }`}>
+                <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
                     <Outlet key={location.pathname} />
                 </main>
             </div>
