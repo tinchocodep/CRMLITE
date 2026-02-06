@@ -4,6 +4,7 @@ import ContactCard from '../components/contacts/ContactCard';
 import ContactModal from '../components/contacts/ContactModal';
 import { useContacts } from '../hooks/useContacts';
 import { useSystemToast } from '../hooks/useSystemToast';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 const Contacts = () => {
     const { contacts, loading, createContact, updateContact, deleteContact } = useContacts();
@@ -11,6 +12,7 @@ const Contacts = () => {
     const [expandedContactId, setExpandedContactId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState(null);
+    const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, contactId: null });
     const { showSuccess, showError } = useSystemToast();
 
     // Filter contacts based on search
@@ -36,12 +38,14 @@ const Contacts = () => {
         setIsModalOpen(true);
     };
 
-    const handleDeleteContact = async (contactId) => {
-        if (window.confirm('¿Estás seguro de eliminar este contacto?')) {
-            const result = await deleteContact(contactId);
-            if (!result.success) {
-                showError('Error al eliminar contacto: ' + result.error);
-            }
+    const handleDeleteContact = (contactId) => {
+        setConfirmDelete({ isOpen: true, contactId });
+    };
+
+    const confirmDeleteContact = async () => {
+        const result = await deleteContact(confirmDelete.contactId);
+        if (!result.success) {
+            showError('Error al eliminar contacto: ' + result.error);
         }
     };
 
@@ -166,6 +170,18 @@ const Contacts = () => {
                 onClose={handleCloseModal}
                 onSave={handleSaveContact}
                 contact={editingContact}
+            />
+
+            {/* Delete Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDelete.isOpen}
+                onClose={() => setConfirmDelete({ isOpen: false, contactId: null })}
+                onConfirm={confirmDeleteContact}
+                title="Eliminar contacto"
+                message="¿Estás seguro de eliminar este contacto? Esta acción no se puede deshacer."
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                variant="danger"
             />
         </div>
     );

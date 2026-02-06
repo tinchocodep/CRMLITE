@@ -1,20 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings as SettingsIcon, Moon, Sun, Clock, Palette, LogOut } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 const Settings = () => {
     const { theme, themeMode } = useTheme();
     const { logout, user } = useAuth();
     const navigate = useNavigate();
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const handleLogout = () => {
-        if (window.confirm('¿Estás seguro que deseas cerrar sesión?')) {
-            logout();
-            navigate('/login', { replace: true });
-        }
+        setShowLogoutConfirm(true);
+    };
+
+    const confirmLogout = () => {
+        logout();
+        navigate('/login', { replace: true });
     };
 
     return (
@@ -105,6 +109,18 @@ const Settings = () => {
                     </p>
                 </div>
             </div>
+
+            {/* Logout Confirmation Dialog */}
+            <ConfirmDialog
+                isOpen={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={confirmLogout}
+                title="Cerrar sesión"
+                message="¿Estás seguro que deseas cerrar sesión?"
+                confirmText="Cerrar sesión"
+                cancelText="Cancelar"
+                variant="warning"
+            />
         </div>
     );
 };
