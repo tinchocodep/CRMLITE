@@ -56,40 +56,30 @@ export const useUsers = () => {
         try {
             setLoading(true);
 
-            // Get all users with their comercial info - FILTERED BY TENANT
+            // Get all users with their comercial info using JOIN
             const { data: usersData, error: usersError } = await supabase
                 .from('users')
                 .select(`
-          id,
-          email,
-          full_name,
-          role,
-          is_active,
-          created_at,
-          tenant_id
-        `)
-                .eq('tenant_id', tenantId)  // ← EXPLICIT TENANT FILTER
+                    id,
+                    email,
+                    full_name,
+                    role,
+                    is_active,
+                    created_at,
+                    tenant_id,
+                    comercial_id,
+                    comercial:comerciales(id, name, email)
+                `)
+                .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 
             if (usersError) throw usersError;
 
-            // Get comerciales separately - FILTERED BY TENANT
-            const { data: comercialesData, error: comercialesError } = await supabase
-                .from('comerciales')
-                .select('id, user_id, name, email')
-                .eq('tenant_id', tenantId);  // ← EXPLICIT TENANT FILTER
-
-            if (comercialesError) throw comercialesError;
-
-            // Merge data
-            const usersWithComerciales = usersData.map(user => {
-                const comercial = comercialesData.find(c => c.user_id === user.id);
-                return {
-                    ...user,
-                    comercial_id: comercial?.id || null,
-                    comercial_name: comercial?.name || null
-                };
-            });
+            // Map data to include comercial_name
+            const usersWithComerciales = usersData.map(user => ({
+                ...user,
+                comercial_name: user.comercial?.name || null
+            }));
 
             setUsers(usersWithComerciales);
             setError(null);
@@ -312,54 +302,52 @@ export const useUsers = () => {
                 }
             }
 
-            // Auto-create comercial for supervisor and user roles
+            // Auto-create comercial for ALL users (admin, supervisor, user)
             let comercialId = null;
-            if (userData.role === 'supervisor' || userData.role === 'user') {
-                console.log('Creating comercial for user:', {
+            console.log('Creating comercial for user:', {
+                name: userData.fullName,
+                email: userData.email,
+                role: userData.role,
+                tenant_id: tenantId
+            });
+
+            const { data: comercialData, error: comercialError } = await supabase
+                .from('comerciales')
+                .insert([{
                     name: userData.fullName,
                     email: userData.email,
-                    role: userData.role,
-                    tenant_id: tenantId
+                    phone: userData.phone || null,
+                    tenant_id: tenantId,
+                    is_active: true
+                }])
+                .select()
+                .single();
+
+            if (comercialError) {
+                console.error('❌ Error creating comercial:', comercialError);
+                console.error('Comercial error details:', {
+                    message: comercialError.message,
+                    details: comercialError.details,
+                    hint: comercialError.hint,
+                    code: comercialError.code
                 });
+                throw new Error(`Failed to create comercial: ${comercialError.message}`);
+            } else {
+                comercialId = comercialData.id;
+                console.log('✅ Comercial created successfully:', comercialId);
 
-                const { data: comercialData, error: comercialError } = await supabase
-                    .from('comerciales')
-                    .insert([{
-                        name: userData.fullName,
-                        email: userData.email,
-                        phone: userData.phone || null,
-                        tenant_id: tenantId,
-                        is_active: true
-                    }])
-                    .select()
-                    .single();
+                // Link comercial to user
+                const { error: linkError } = await supabase
+                    .from('users')
+                    .update({ comercial_id: comercialId })
+                    .eq('id', signUpData.user.id);
 
-                if (comercialError) {
-                    console.error('❌ Error creating comercial:', comercialError);
-                    console.error('Comercial error details:', {
-                        message: comercialError.message,
-                        details: comercialError.details,
-                        hint: comercialError.hint,
-                        code: comercialError.code
-                    });
-                    throw new Error(`Failed to create comercial: ${comercialError.message}`);
-                } else {
-                    comercialId = comercialData.id;
-                    console.log('✅ Comercial created successfully:', comercialId);
-
-                    // Link comercial to user
-                    const { error: linkError } = await supabase
-                        .from('users')
-                        .update({ comercial_id: comercialId })
-                        .eq('id', signUpData.user.id);
-
-                    if (linkError) {
-                        console.error('❌ Error linking comercial to user:', linkError);
-                        throw new Error(`Failed to link comercial: ${linkError.message}`);
-                    }
-
-                    console.log('✅ Comercial linked to user successfully');
+                if (linkError) {
+                    console.error('❌ Error linking comercial to user:', linkError);
+                    throw new Error(`Failed to link comercial: ${linkError.message}`);
                 }
+
+                console.log('✅ Comercial linked to user successfully');
             }
 
             await fetchUsers(); // Refresh list
