@@ -23,16 +23,20 @@ export function HorizontalCRMNav() {
     return (
         <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
             <div className="max-w-[1920px] mx-auto px-6">
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-4">
-                    {crmModules.map((module) => {
+                <div className="flex items-center justify-end gap-2 overflow-x-auto scrollbar-hide py-4">
+                    {crmModules.map((module, index) => {
                         const isActive = location.pathname === module.path;
 
                         return (
                             <NavLink
                                 key={module.path}
                                 to={module.path}
+                                style={{
+                                    animationDelay: `${index * 50}ms`
+                                }}
                                 className={`
                                     flex items-center gap-2.5 px-5 py-2.5 rounded-lg whitespace-nowrap transition-all duration-200 font-medium text-sm
+                                    animate-[slideInRight_0.3s_ease-out_forwards]
                                     ${isActive
                                         ? 'bg-[#E76E53] text-white shadow-md'
                                         : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white'
