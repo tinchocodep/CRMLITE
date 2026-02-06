@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Search, Plus, Filter, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
@@ -8,6 +8,7 @@ import { useOpportunities } from '../hooks/useOpportunities';
 
 export default function Opportunities() {
     const location = useLocation();
+    const prevPathRef = useRef(location.pathname);
     const { opportunities, loading, createOpportunity, updateOpportunity, refetch } = useOpportunities();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -30,11 +31,19 @@ export default function Opportunities() {
         };
     }, []);
 
-    // Refetch opportunities when navigating to this page
+    // Refetch opportunities when navigating TO this page from another page
     useEffect(() => {
-        if (location.pathname === '/oportunidades') {
+        const currentPath = location.pathname;
+        const prevPath = prevPathRef.current;
+
+        // Only refetch if we're coming FROM a different page TO /oportunidades
+        if (currentPath === '/oportunidades' && prevPath !== '/oportunidades') {
+            console.log('🔄 Navigated to Opportunities from:', prevPath);
             refetch();
         }
+
+        // Update the ref for next comparison
+        prevPathRef.current = currentPath;
     }, [location.pathname, refetch]);
 
     // Filter opportunities
