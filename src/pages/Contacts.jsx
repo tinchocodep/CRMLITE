@@ -106,7 +106,7 @@ const Contacts = () => {
                     <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Contactos</h1>
                 </div>
 
-                <div className="flex items-center gap-3 w-full md:w-auto">
+                <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 w-full md:w-auto">
                     {/* Comercial Filter (Admin & Supervisor only) */}
                     {canFilter && (
                         <ComercialFilter
@@ -118,8 +118,8 @@ const Contacts = () => {
                         />
                     )}
 
-                    {/* Search */}
-                    <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm flex-1 md:flex-none">
+                    {/* Search and Create Button */}
+                    <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">
                         <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-brand-red/10 transition-all">
                             <Search size={20} className="text-slate-400" />
                             <input
@@ -130,6 +130,13 @@ const Contacts = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
+                        <button
+                            onClick={handleCreateContact}
+                            className="px-4 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                        >
+                            <Plus size={18} />
+                            <span className="hidden md:inline">Nuevo</span>
+                        </button>
                     </div>
                 </div>
             </div>

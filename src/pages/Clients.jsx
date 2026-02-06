@@ -16,7 +16,7 @@ const Clients = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearch = useDebounce(searchTerm, 300); // Debounce search
     const { companies: clients, loading, createCompany, updateCompany, deleteCompany } = useCompanies('client');
-    const { contacts: allContacts } = useContacts();
+    const { contacts: allContacts, linkToCompany, unlinkFromCompany } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
 
     // Role-based filtering
@@ -52,13 +52,17 @@ const Clients = () => {
 
     const handleSaveClient = async (clientData) => {
         try {
+            // Extract contactIds before preparing data
+            const { contactIds, ...restClientData } = clientData;
+
             // Prepare the data with correct field names and company_type
             const dataToSave = {
-                ...clientData,
+                ...restClientData,
                 company_type: 'client'
             };
 
             let result;
+            let savedClientId;
 
             // Check if this is a new client (no id) or updating existing
             if (clientData.id) {
@@ -74,6 +78,7 @@ const Clients = () => {
                     }
                 }
                 result = await updateCompany(clientData.id, dataToSave);
+                savedClientId = clientData.id;
             } else {
                 // Before creating, check if CUIT already exists
                 if (clientData.cuit && clients && clients.length > 0) {
@@ -85,9 +90,43 @@ const Clients = () => {
                 }
                 // Create new client
                 result = await createCompany(dataToSave);
+                savedClientId = result.data?.id;
             }
 
-            if (result.success) {
+            if (result.success && savedClientId) {
+                // Handle contact-company relationships
+                if (contactIds && contactIds.length >= 0) {
+                    // Get current contacts for this client
+                    const currentContacts = allContacts.filter(contact =>
+                        contact.companies?.some(company => company.companyId === savedClientId)
+                    );
+                    const currentContactIds = currentContacts.map(c => c.id);
+
+                    // Find contacts to add (in contactIds but not in currentContactIds)
+                    const contactsToAdd = contactIds.filter(id => !currentContactIds.includes(id));
+
+                    // Find contacts to remove (in currentContactIds but not in contactIds)
+                    const contactsToRemove = currentContactIds.filter(id => !contactIds.includes(id));
+
+                    // Add new contacts
+                    for (const contactId of contactsToAdd) {
+                        try {
+                            await linkToCompany(contactId, savedClientId, 'client', false);
+                        } catch (err) {
+                            console.error('Error linking contact:', err);
+                        }
+                    }
+
+                    // Remove unselected contacts
+                    for (const contactId of contactsToRemove) {
+                        try {
+                            await unlinkFromCompany(contactId, savedClientId);
+                        } catch (err) {
+                            console.error('Error unlinking contact:', err);
+                        }
+                    }
+                }
+
                 showSuccess(clientData.id ? 'Cliente actualizado exitosamente!' : 'Cliente creado exitosamente!');
             } else {
                 showError('Error: ' + result.error);

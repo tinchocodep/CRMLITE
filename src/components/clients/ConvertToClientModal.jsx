@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, UserPlus, CheckCircle2, Building2, MapPin, FileText, Tractor, Leaf, DollarSign, User, Briefcase, Target, Map, Plus, Trash2 } from 'lucide-react';
 import ComercialSelector from '../shared/ComercialSelector';
+import ContactSelector from '../shared/ContactSelector';
 import { useAuth } from '../../contexts/AuthContext';
+import { useContacts } from '../../hooks/useContacts';
 
 const importanceConfig = [
     { id: 'low', label: 'Baja', color: 'bg-blue-50 border-blue-200 text-blue-700' },
@@ -11,6 +13,7 @@ const importanceConfig = [
 
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) => {
     const { comercialId } = useAuth();
+    const { contacts } = useContacts();
     const [formData, setFormData] = useState({
         // Basic Info (Inherited from prospect)
         legalName: '',
@@ -35,6 +38,9 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
         comercialId: null
     });
 
+    // Contact assignment state
+    const [selectedContactIds, setSelectedContactIds] = useState([]);
+
     useEffect(() => {
         if (prospect) {
             setFormData(prev => ({
@@ -56,7 +62,19 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 importance: prospect.importance || 'medium',
                 // Keep ID if exists
                 id: prospect.id,
+                // Load comercial_id if editing
+                comercialId: prospect.comercial_id || null
             }));
+
+            // Load existing contacts for this client
+            if (prospect.id && contacts.length > 0) {
+                const clientContacts = contacts.filter(contact =>
+                    contact.companies?.some(company => company.companyId === prospect.id)
+                );
+                setSelectedContactIds(clientContacts.map(c => c.id));
+            } else {
+                setSelectedContactIds([]);
+            }
         } else {
             // Reset form for new entry
             setFormData({
@@ -66,8 +84,9 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 importance: 'medium',
                 comercialId: null
             });
+            setSelectedContactIds([]);
         }
-    }, [prospect]);
+    }, [prospect, contacts]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -98,7 +117,9 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             payment_terms: formData.paymentTerms || null,
             credit_limit: formData.creditLimit || null,
             // Comercial assignment - use current user's comercial_id
-            comercial_id: formData.comercialId || comercialId
+            comercial_id: formData.comercialId || comercialId,
+            // Contact assignments
+            contactIds: selectedContactIds
         };
         onConvert(dataToSubmit);
     };
@@ -316,6 +337,19 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                             value={formData.comercialId}
                             onChange={(value) => setFormData(prev => ({ ...prev, comercialId: value }))}
                             label="Asignar a Comercial"
+                        />
+                    </section>
+
+                    {/* Contact Assignment */}
+                    <section className="pt-4 border-t border-slate-100">
+                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <UserPlus size={16} /> Contactos Asignados
+                        </h4>
+                        <ContactSelector
+                            comercialId={formData.comercialId}
+                            selectedContactIds={selectedContactIds}
+                            onChange={setSelectedContactIds}
+                            label="Seleccionar Contactos"
                         />
                     </section>
 
