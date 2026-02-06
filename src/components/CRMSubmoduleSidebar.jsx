@@ -13,6 +13,8 @@ const crmSubmodules = [
     { name: 'Agenda', path: '/agenda', icon: Calendar },
     { name: 'Oportunidades', path: '/oportunidades', icon: Briefcase },
     { name: 'Usuarios', path: '/usuarios', icon: ShieldCheck },
+    { name: 'Comerciales', path: '/comerciales', icon: Users },
+    { name: 'Equipos', path: '/equipos', icon: Users },
     { name: 'Visitas', path: '/visitas', icon: Map },
     { name: 'Territorios', path: '/territorios', icon: Target },
     { name: 'Reclamos', path: '/reclamos', icon: AlertCircle }
