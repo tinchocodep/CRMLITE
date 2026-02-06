@@ -36,16 +36,8 @@ export const useRoleBasedFilter = () => {
                     setComerciales(data || []);
                 } else if (isSupervisor) {
                     // Supervisor ve solo sus comerciales asignados desde la tabla supervisor_comerciales
-                    // Primero, obtener el comercial_id del supervisor actual
-                    const { data: supervisorData, error: supervisorError } = await supabase
-                        .from('comerciales')
-                        .select('id')
-                        .eq('user_id', userProfile.id)
-                        .single();
-
-                    if (supervisorError) throw supervisorError;
-
-                    if (supervisorData) {
+                    // Usar el comercial_id del usuario actual (ya disponible en el contexto)
+                    if (comercialId) {
                         // Obtener los comerciales asignados a este supervisor
                         const { data: assignedComerciales, error: assignedError } = await supabase
                             .from('supervisor_comerciales')
@@ -57,7 +49,7 @@ export const useRoleBasedFilter = () => {
                                     email
                                 )
                             `)
-                            .eq('supervisor_id', supervisorData.id);
+                            .eq('supervisor_id', comercialId);
 
                         if (assignedError) throw assignedError;
 
