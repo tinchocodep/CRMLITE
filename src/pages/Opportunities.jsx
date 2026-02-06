@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, Plus, Filter, TrendingUp, DollarSign, CheckCircle, XCircle, Clock } from 'lucide-react';
 import OpportunityCard from '../components/opportunities/OpportunityCard';
 import CreateOpportunityModal from '../components/opportunities/CreateOpportunityModal';
@@ -6,7 +7,8 @@ import EditOpportunityModal from '../components/opportunities/EditOpportunityMod
 import { useOpportunities } from '../hooks/useOpportunities';
 
 export default function Opportunities() {
-    const { opportunities, loading, createOpportunity, updateOpportunity } = useOpportunities();
+    const location = useLocation();
+    const { opportunities, loading, createOpportunity, updateOpportunity, refetch } = useOpportunities();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedOpportunity, setSelectedOpportunity] = useState(null);
@@ -28,6 +30,12 @@ export default function Opportunities() {
         };
     }, []);
 
+    // Refetch opportunities when navigating to this page
+    useEffect(() => {
+        if (location.pathname === '/oportunidades') {
+            refetch();
+        }
+    }, [location.pathname, refetch]);
 
     // Filter opportunities
     const filteredOpportunities = opportunities.filter(opp => {
