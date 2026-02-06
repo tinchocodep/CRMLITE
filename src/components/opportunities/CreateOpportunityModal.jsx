@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, User, Users, Briefcase, DollarSign, Calendar, TrendingUp, FileText, Clock } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
 import { supabase } from '../../lib/supabase';
 
 export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
+    const location = useLocation();
     const { companies } = useCompanies();
     const { contacts } = useContacts();
 
@@ -14,6 +16,13 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
     // State for users (comerciales)
     const [comerciales, setComerciales] = useState([]);
+
+    // Auto-close modal when route changes (fixes navigation blocking)
+    useEffect(() => {
+        if (isOpen) {
+            onClose();
+        }
+    }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch comerciales (active only)
     useEffect(() => {
