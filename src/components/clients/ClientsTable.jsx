@@ -66,95 +66,95 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                     <tr>
                         <th
                             onClick={() => handleSort('trade_name')}
-                            className="w-[10%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[10%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Comercial
                                 <SortIcon columnKey="trade_name" />
                             </div>
                         </th>
                         <th
                             onClick={() => handleSort('legal_name')}
-                            className="w-[12%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Razón Social
                                 <SortIcon columnKey="legal_name" />
                             </div>
                         </th>
                         <th
                             onClick={() => handleSort('cuit')}
-                            className="w-[8%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[8%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 CUIT
                                 <SortIcon columnKey="cuit" />
                             </div>
                         </th>
-                        <th className="w-[12%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[12%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
                             Dirección
                         </th>
                         <th
                             onClick={() => handleSort('city')}
-                            className="w-[7%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Ciudad
                                 <SortIcon columnKey="city" />
                             </div>
                         </th>
                         <th
                             onClick={() => handleSort('province')}
-                            className="w-[7%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Provincia
                                 <SortIcon columnKey="province" />
                             </div>
                         </th>
-                        <th className="w-[10%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[10%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
                             Email
                         </th>
-                        <th className="w-[7%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
                             Teléfono
                         </th>
                         <th
                             onClick={() => handleSort('comercial_name')}
-                            className="w-[7%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[7%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Vendedor
                                 <SortIcon columnKey="comercial_name" />
                             </div>
                         </th>
                         <th
                             onClick={() => handleSort('payment_terms')}
-                            className="w-[6%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[6%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Pago
                                 <SortIcon columnKey="payment_terms" />
                             </div>
                         </th>
                         <th
                             onClick={() => handleSort('credit_limit')}
-                            className="w-[6%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[6%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Crédito
                                 <SortIcon columnKey="credit_limit" />
                             </div>
                         </th>
                         <th
                             onClick={() => handleSort('client_since')}
-                            className="w-[6%] px-2 py-2 text-left text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                            className="w-[6%] px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                         >
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1.5">
                                 Desde
                                 <SortIcon columnKey="client_since" />
                             </div>
                         </th>
-                        <th className="w-[2%] px-2 py-2 text-center text-[10px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
+                        <th className="w-[2%] px-3 py-2.5 text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight">
 
                         </th>
                     </tr>
@@ -166,25 +166,25 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                 key={client.id}
                                 className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
-                                <td className="px-2 py-2 text-xs font-medium text-slate-900 dark:text-slate-100">
-                                    <div className="flex items-center gap-1.5">
-                                        <Building2 size={14} className="text-brand-red flex-shrink-0" />
+                                <td className="px-3 py-2.5 text-[13px] font-medium text-slate-900 dark:text-slate-100">
+                                    <div className="flex items-center gap-2">
+                                        <Building2 size={15} className="text-brand-red flex-shrink-0" />
                                         <span className="truncate" title={client.trade_name}>
                                             {client.trade_name || '-'}
                                         </span>
                                     </div>
                                 </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-2.5 text-[13px] text-slate-600 dark:text-slate-400">
                                     <span className="truncate block" title={client.legal_name}>
                                         {client.legal_name || '-'}
                                     </span>
                                 </td>
-                                <td className="px-2 py-2 text-[11px] text-slate-600 dark:text-slate-400 font-mono">
+                                <td className="px-3 py-2.5 text-[12px] text-slate-600 dark:text-slate-400 font-mono">
                                     <span className="truncate block">
                                         {client.cuit || '-'}
                                     </span>
                                 </td>
-                                <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-2.5 text-[13px] text-slate-600 dark:text-slate-400">
                                     <span className="truncate block" title={client.address}>
                                         {client.address || '-'}
                                     </span>
@@ -229,13 +229,13 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                         {client.client_since ? new Date(client.client_since).toLocaleDateString('es-AR', { month: 'short', year: '2-digit' }) : '-'}
                                     </span>
                                 </td>
-                                <td className="px-2 py-2 text-center">
+                                <td className="px-3 py-2.5 text-center">
                                     <button
                                         onClick={() => onEdit(client)}
                                         className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
                                         title="Editar"
                                     >
-                                        <Edit2 size={14} />
+                                        <Edit2 size={15} />
                                     </button>
                                 </td>
                             </tr>
