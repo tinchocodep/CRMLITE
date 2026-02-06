@@ -42,6 +42,8 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
     const [showDetails, setShowDetails] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [tempDate, setTempDate] = useState('');
     const [editedEvent, setEditedEvent] = useState(event);
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
