@@ -67,7 +67,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                         <tr>
                             <th
                                 onClick={() => handleSort('trade_name')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Nombre Comercial
@@ -76,7 +76,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                             </th>
                             <th
                                 onClick={() => handleSort('legal_name')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Razón Social
@@ -85,16 +85,19 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                             </th>
                             <th
                                 onClick={() => handleSort('cuit')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     CUIT
                                     <SortIcon columnKey="cuit" />
                                 </div>
                             </th>
+                            <th className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                                Dirección
+                            </th>
                             <th
                                 onClick={() => handleSort('city')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Ciudad
@@ -103,16 +106,22 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                             </th>
                             <th
                                 onClick={() => handleSort('province')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Provincia
                                     <SortIcon columnKey="province" />
                                 </div>
                             </th>
+                            <th className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                                Email
+                            </th>
+                            <th className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                                Teléfono
+                            </th>
                             <th
                                 onClick={() => handleSort('comercial_name')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Comercial
@@ -121,7 +130,7 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                             </th>
                             <th
                                 onClick={() => handleSort('payment_terms')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Condición Pago
@@ -129,66 +138,87 @@ const ClientsTable = ({ clients, onEdit, allContacts }) => {
                                 </div>
                             </th>
                             <th
+                                onClick={() => handleSort('credit_limit')}
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
+                            >
+                                <div className="flex items-center gap-2">
+                                    Límite Crédito
+                                    <SortIcon columnKey="credit_limit" />
+                                </div>
+                            </th>
+                            <th
                                 onClick={() => handleSort('client_since')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
                             >
                                 <div className="flex items-center gap-2">
                                     Cliente Desde
                                     <SortIcon columnKey="client_since" />
                                 </div>
                             </th>
-                            <th
-                                onClick={() => handleSort('created_at')}
-                                className="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                            >
-                                <div className="flex items-center gap-2">
-                                    Fecha Creación
-                                    <SortIcon columnKey="created_at" />
-                                </div>
-                            </th>
-                            <th className="px-4 py-3 text-right text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
+                            <th className="px-3 py-3 text-right text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">
                                 Acciones
                             </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                         {sortedClients.map((client) => {
+                            const fullAddress = [client.address, client.city, client.province]
+                                .filter(Boolean)
+                                .join(', ');
+
                             return (
                                 <tr
                                     key={client.id}
                                     className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                                 >
-                                    <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">
+                                    <td className="px-3 py-3 text-sm font-medium text-slate-900 dark:text-slate-100 whitespace-nowrap">
                                         <div className="flex items-center gap-2">
-                                            <Building2 size={16} className="text-brand-red" />
-                                            {client.trade_name || '-'}
+                                            <Building2 size={16} className="text-brand-red flex-shrink-0" />
+                                            <span className="truncate max-w-[150px]" title={client.trade_name}>
+                                                {client.trade_name || '-'}
+                                            </span>
                                         </div>
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                                        {client.legal_name || '-'}
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 max-w-[180px]">
+                                        <span className="truncate block" title={client.legal_name}>
+                                            {client.legal_name || '-'}
+                                        </span>
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 font-mono">
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 font-mono whitespace-nowrap">
                                         {client.cuit || '-'}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 max-w-[200px]">
+                                        <span className="truncate block" title={client.address}>
+                                            {client.address || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                                         {client.city || '-'}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                                         {client.province || '-'}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 max-w-[180px]">
+                                        <span className="truncate block" title={client.email}>
+                                            {client.email || '-'}
+                                        </span>
+                                    </td>
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                        {client.phone || '-'}
+                                    </td>
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                                         {client.comercial_name || '-'}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                                         {client.payment_terms || '-'}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                        {client.credit_limit ? `$${client.credit_limit.toLocaleString()}` : '-'}
+                                    </td>
+                                    <td className="px-3 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
                                         {formatDate(client.client_since)}
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-                                        {formatDate(client.created_at)}
-                                    </td>
-                                    <td className="px-4 py-3 text-right">
+                                    <td className="px-3 py-3 text-right whitespace-nowrap">
                                         <button
                                             onClick={() => onEdit(client)}
                                             className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
