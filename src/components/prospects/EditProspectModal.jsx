@@ -5,6 +5,7 @@ import { safeFormat } from '../../utils/dateUtils';
 import { useContacts } from '../../hooks/useContacts';
 import ContactModal from '../contacts/ContactModal';
 import { ConfirmDialog } from '../ConfirmDialog';
+import ComercialSelector from '../shared/ComercialSelector';
 
 const statusOptions = [
     { id: 'contacted', label: 'Contacto Inicial', color: 'bg-blue-50 text-blue-700 border-blue-200' },
@@ -23,7 +24,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         notes: '',
         next_contact_date: '',
         last_contact_date: '',
-        potential_value: ''
+        potential_value: '',
+        comercial_id: null
     });
 
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -579,6 +581,15 @@ END:VCARD`;
                                 );
                             })()}
                         </div>
+                    </div>
+
+                    {/* Comercial Assignment */}
+                    <div className="space-y-3 pt-4">
+                        <ComercialSelector
+                            value={formData.comercial_id}
+                            onChange={(value) => setFormData(prev => ({ ...prev, comercial_id: value }))}
+                            label="Asignar a Comercial"
+                        />
                     </div>
 
                     {/* Notas */}
