@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, X, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { useToast } from '../hooks/useToast';
+import { useSystemToast } from '../hooks/useSystemToast';
 
 const TeamManagement = () => {
     const { userProfile, isAdmin } = useAuth();
-    const { showToast } = useToast();
+    const { showSuccess, showError } = useSystemToast();
     const [loading, setLoading] = useState(true);
     const [supervisors, setSupervisors] = useState([]);
     const [comerciales, setComerciales] = useState([]);
@@ -66,7 +66,7 @@ const TeamManagement = () => {
             setAssignments(assignmentsData || []);
         } catch (error) {
             console.error('Error fetching team data:', error);
-            showToast('Error al cargar datos del equipo', 'error');
+            showError('Error al cargar datos del equipo');
         } finally {
             setLoading(false);
         }
@@ -84,12 +84,12 @@ const TeamManagement = () => {
 
             if (error) throw error;
 
-            showToast('Comercial asignado exitosamente', 'success');
+            showSuccess('Comercial asignado exitosamente');
             fetchData();
             setIsAssignModalOpen(false);
         } catch (error) {
             console.error('Error assigning comercial:', error);
-            showToast('Error al asignar comercial: ' + error.message, 'error');
+            showError('Error al asignar comercial: ' + error.message);
         }
     };
 
@@ -104,11 +104,11 @@ const TeamManagement = () => {
 
             if (error) throw error;
 
-            showToast('Asignación eliminada', 'success');
+            showSuccess('Asignación eliminada');
             fetchData();
         } catch (error) {
             console.error('Error removing assignment:', error);
-            showToast('Error al eliminar asignación', 'error');
+            showError('Error al eliminar asignación');
         }
     };
 
