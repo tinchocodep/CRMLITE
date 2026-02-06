@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { X, User, Mail, Phone } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, User, Mail, Phone, UserCheck } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+import { useCurrentTenant } from '../../hooks/useCurrentTenant';
 
 const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
+    const { tenantId } = useCurrentTenant();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: ''
+        phone: '',
+        supervisorId: null
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [supervisors, setSupervisors] = useState([]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,6 +43,35 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
 
         setLoading(false);
     };
+
+    // Load supervisors
+    useEffect(() => {
+        const fetchSupervisors = async () => {
+            if (!tenantId) return;
+
+            const { data, error } = await supabase
+                .from('users')
+                .select(`
+                    id,
+                    full_name,
+                    email,
+                    comercial_id,
+                    comercial:comerciales!users_comercial_id_fkey(id, name)
+                `)
+                .eq('role', 'supervisor')
+                .eq('is_active', true)
+                .eq('tenant_id', tenantId)
+                .order('full_name');
+
+            if (!error && data) {
+                setSupervisors(data);
+            }
+        };
+
+        if (isOpen) {
+            fetchSupervisors();
+        }
+    }, [isOpen, tenantId]);
 
     if (!isOpen) return null;
 
@@ -119,6 +153,31 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                                 className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-300 placeholder:text-slate-400 focus:outline-none w-full"
                             />
                         </div>
+                    </div>
+
+                    {/* Supervisor Assignment (Optional) */}
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                            Asignar a Supervisor (Opcional)
+                        </label>
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-purple-600/20">
+                            <UserCheck size={18} className="text-slate-400" />
+                            <select
+                                value={formData.supervisorId || ''}
+                                onChange={(e) => setFormData({ ...formData, supervisorId: e.target.value || null })}
+                                className="bg-transparent text-sm font-medium text-slate-700 dark:text-slate-300 focus:outline-none w-full"
+                            >
+                                <option value="">Sin supervisor</option>
+                                {supervisors.map((supervisor) => (
+                                    <option key={supervisor.id} value={supervisor.comercial?.id}>
+                                        {supervisor.full_name} ({supervisor.email})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 ml-1">
+                            Si seleccionas un supervisor, este comercial será asignado automáticamente a él
+                        </p>
                     </div>
 
                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
