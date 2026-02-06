@@ -9,7 +9,7 @@ BEGIN
         WHERE table_name = 'contacts' AND column_name = 'comercial_id'
     ) THEN
         ALTER TABLE contacts 
-        ADD COLUMN comercial_id uuid REFERENCES comerciales(id);
+        ADD COLUMN comercial_id bigint REFERENCES comerciales(id);
         
         -- Create index for better query performance
         CREATE INDEX IF NOT EXISTS idx_contacts_comercial_id ON contacts(comercial_id);
