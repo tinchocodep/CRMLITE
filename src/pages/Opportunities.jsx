@@ -353,3 +353,4 @@ const Opportunities = () => {
 };
 
 export default Opportunities;
+// Force deployment Fri Feb  6 04:37:04 -03 2026
