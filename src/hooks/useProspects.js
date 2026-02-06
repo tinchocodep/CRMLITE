@@ -13,16 +13,12 @@ export const useProspects = () => {
     // Fetch all prospects for current tenant
     const fetchProspects = async () => {
         try {
-            // Don't fetch if tenant_id is not available yet
-            if (!tenantId) {
-                setProspects([]);
-                setLoading(false);
-                return;
-            }
-
             setLoading(true);
             setError(null);
 
+            // RLS policies will automatically filter by:
+            // - tenant_id (from user's tenant)
+            // - comercial_id (based on user role: admin sees all, supervisor sees team, user sees own)
             const { data, error: fetchError } = await supabase
                 .from('companies')
                 .select(`
@@ -31,13 +27,12 @@ export const useProspects = () => {
                 `)
                 .eq('company_type', 'prospect')
                 .eq('is_active', true)
-                .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 
             if (fetchError) throw fetchError;
 
             // Transform to match mock data structure
-            const transformedData = data.map(company => ({
+            const transformedData = (data || []).map(company => ({
                 id: company.id,
                 tradeName: company.trade_name,
                 companyName: company.legal_name,
