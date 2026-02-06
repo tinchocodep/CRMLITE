@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus } from 'lucide-react';
 import ClientCard from '../components/clients/ClientCard';
+import ClientsTable from '../components/clients/ClientsTable';
 import ConvertToClientModal from '../components/clients/ConvertToClientModal';
 import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useCompanies } from '../hooks/useCompanies';
@@ -160,8 +161,8 @@ const Clients = () => {
                 </div>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar items-start">
+            {/* Mobile: Card Grid (< xl) */}
+            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto pr-2 pb-20 custom-scrollbar items-start">
                 {loading ? (
                     <div className="col-span-full flex items-center justify-center py-20">
                         <div className="text-slate-400 dark:text-slate-500">Cargando clientes...</div>
@@ -177,6 +178,21 @@ const Clients = () => {
                         allContacts={allContacts}
                     />
                 ))}
+            </div>
+
+            {/* Desktop: Table View (>= xl) */}
+            <div className="hidden xl:block overflow-y-auto pr-2 pb-20 custom-scrollbar">
+                {loading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-slate-400 dark:text-slate-500">Cargando clientes...</div>
+                    </div>
+                ) : (
+                    <ClientsTable
+                        clients={filteredClients}
+                        onEdit={handleEditClient}
+                        allContacts={allContacts}
+                    />
+                )}
             </div>
 
             <ConvertToClientModal
