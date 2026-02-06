@@ -208,18 +208,16 @@ export const useUsers = () => {
         }
 
         try {
-            // Create user using Supabase Auth signUp
-            // The database trigger will automatically create the user in public.users
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            // Use admin API to create user WITHOUT sending confirmation email
+            // This bypasses the email rate limit
+            const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
                 email: userData.email,
                 password: userData.password,
-                options: {
-                    data: {
-                        full_name: userData.fullName,
-                        role: userData.role,
-                        tenant_id: tenantId  // ← PASS TENANT_ID IN METADATA
-                    },
-                    emailRedirectTo: window.location.origin
+                email_confirm: true, // Auto-confirm email
+                user_metadata: {
+                    full_name: userData.fullName,
+                    role: userData.role,
+                    tenant_id: tenantId
                 }
             });
 
