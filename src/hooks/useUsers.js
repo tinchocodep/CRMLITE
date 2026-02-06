@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useUsers = () => {
     const [users, setUsers] = useState([]);
@@ -8,6 +9,7 @@ export const useUsers = () => {
     const [error, setError] = useState(null);
     const [currentUserRole, setCurrentUserRole] = useState(null);
     const { user } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Detect current user role
     useEffect(() => {
@@ -44,10 +46,17 @@ export const useUsers = () => {
             return;
         }
 
+        // Don't fetch if tenant_id is not available yet
+        if (!tenantId) {
+            setUsers([]);
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
 
-            // Get all users with their comercial info
+            // Get all users with their comercial info - FILTERED BY TENANT
             const { data: usersData, error: usersError } = await supabase
                 .from('users')
                 .select(`
@@ -56,16 +65,19 @@ export const useUsers = () => {
           full_name,
           role,
           is_active,
-          created_at
+          created_at,
+          tenant_id
         `)
+                .eq('tenant_id', tenantId)  // ← EXPLICIT TENANT FILTER
                 .order('created_at', { ascending: false });
 
             if (usersError) throw usersError;
 
-            // Get comerciales separately
+            // Get comerciales separately - FILTERED BY TENANT
             const { data: comercialesData, error: comercialesError } = await supabase
                 .from('comerciales')
-                .select('id, user_id, name, email');
+                .select('id, user_id, name, email')
+                .eq('tenant_id', tenantId);  // ← EXPLICIT TENANT FILTER
 
             if (comercialesError) throw comercialesError;
 
@@ -90,11 +102,13 @@ export const useUsers = () => {
     };
 
     useEffect(() => {
-        // Fetch users once we know the current user's role
-        if (currentUserRole !== null && user) {
+        // Fetch users once we know the current user's role and tenant
+        if (currentUserRole !== null && user && tenantId) {
             fetchUsers();
+        } else if (!tenantLoading && currentUserRole !== null) {
+            setLoading(false);
         }
-    }, [currentUserRole, user]);
+    }, [currentUserRole, user, tenantId, tenantLoading]);
 
     const updateUserRole = async (userId, newRole) => {
         if (!isAdmin) {
@@ -220,13 +234,14 @@ export const useUsers = () => {
             // Wait a bit for the trigger to create the user in public.users
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // Update the user's role and full_name in public.users
+            // Update the user's role, full_name, and tenant_id in public.users
             // (The trigger creates it with default values)
             const { error: updateError } = await supabase
                 .from('users')
                 .update({
                     role: userData.role,
-                    full_name: userData.fullName
+                    full_name: userData.fullName,
+                    tenant_id: tenantId  // ← ASSIGN SAME TENANT AS ADMIN
                 })
                 .eq('id', signUpData.user.id);
 
