@@ -62,7 +62,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                     e.preventDefault();
                                     e.stopPropagation();
                                 }}
-                                style={{ backgroundColor: '#6a8532' }}
+                                style={{ backgroundColor: '#a1c349' }}
                                 className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-60 cursor-not-allowed text-slate-800"
                             >
                                 <module.icon
