@@ -98,7 +98,7 @@ const UserManagement = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-40">
             {/* Header */}
-            <div className="bg-gradient-to-br from-white via-red-50 to-green-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
+            <div className="bg-gradient-to-br from-white via-green-50 to-green-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-green-200 dark:border-slate-700">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-advanta-green rounded-xl flex items-center justify-center">
@@ -114,7 +114,7 @@ const UserManagement = () => {
                     {isAdmin && (
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-advanta-green text-white rounded-xl font-semibold hover:bg-red-700 transition shadow-lg"
+                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white rounded-xl font-semibold hover:from-[#3a9120] hover:to-[#3d8a1f] transition shadow-lg"
                         >
                             <UserPlus size={20} />
                             <span className="hidden sm:inline">Crear Usuario</span>
