@@ -78,7 +78,7 @@ export const useContacts = () => {
                     lastName: contact.last_name,
                     email: contact.email,
                     phone: contact.phone,
-                    notes: contact.notes,
+                    position: contact.position,
                     companies: contactCompanies,
                     createdAt: contact.created_at,
                     updatedAt: contact.updated_at,
@@ -118,7 +118,7 @@ export const useContacts = () => {
                     last_name: contactData.lastName || contactData.last_name,
                     email: contactData.email,
                     phone: contactData.phone,
-                    notes: contactData.notes,
+                    position: contactData.position || null,
                     tenant_id: userData.tenant_id,
                     comercial_id: userData.comercial_id
                 }])
@@ -180,7 +180,7 @@ export const useContacts = () => {
                     last_name: contactData.lastName,
                     email: contactData.email,
                     phone: contactData.phone,
-                    notes: contactData.notes,
+                    position: contactData.position || null,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
