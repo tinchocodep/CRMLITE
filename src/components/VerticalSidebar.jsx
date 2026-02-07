@@ -92,9 +92,9 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             className={({ isActive }) => {
                                 const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
                                 if (isActive || module.isCRM) {
-                                    return `${baseClasses} bg-advanta-green text-white shadow-lg`;
+                                    return `${baseClasses} bg-advanta-green-dark text-slate-800 shadow-lg`;
                                 }
-                                return `${baseClasses} bg-advanta-green-dark text-white hover:bg-advanta-green`;
+                                return `${baseClasses} bg-advanta-green-dark text-slate-800 hover:opacity-80`;
                             }}
                         >
                             <module.icon
@@ -117,7 +117,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green text-white hover:shadow-lg transition-all duration-200 mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green-dark text-slate-800 hover:opacity-80 transition-all duration-200 mb-2"
                 >
                     <Plus size={22} className="flex-shrink-0" />
                     <span
@@ -131,7 +131,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Settings Button */}
                 <NavLink
                     to="/configuracion"
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green-dark text-white hover:bg-advanta-green transition-all duration-200"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green-dark text-slate-800 hover:opacity-80 transition-all duration-200"
                 >
                     <Settings size={22} className="flex-shrink-0" />
                     <span
