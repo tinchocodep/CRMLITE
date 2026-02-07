@@ -117,12 +117,12 @@ const Login = () => {
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="w-full lg:w-1/2 h-[200px] md:h-[300px] lg:h-[600px] flex items-center justify-center relative"
+                    className="w-full lg:w-1/2 h-[200px] md:h-[300px] lg:h-[600px] flex items-center justify-center relative px-8"
                 >
                     <img
                         src={sailoLogo}
                         alt="Advanta CRM"
-                        className="w-full max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto object-contain drop-shadow-2xl"
+                        className="w-full max-w-[350px] md:max-w-[450px] lg:max-w-[550px] h-auto object-contain drop-shadow-2xl"
                     />
                 </motion.div>
 
