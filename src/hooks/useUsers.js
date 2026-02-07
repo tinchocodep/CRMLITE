@@ -55,7 +55,6 @@ export const useUsers = () => {
 
         try {
             setLoading(true);
-            console.log('🔵 [useUsers] Starting fetchUsers:', { tenantId, user: user?.email });
 
             // Get all users with their comercial info using JOIN
             const { data: usersData, error: usersError } = await supabase
@@ -82,11 +81,10 @@ export const useUsers = () => {
                 comercial_name: user.comercial?.name || null
             }));
 
-            console.log('✅ [useUsers] Fetched users:', usersWithComerciales.length, usersWithComerciales);
             setUsers(usersWithComerciales);
             setError(null);
         } catch (err) {
-            console.error('❌ [useUsers] Error fetching users:', err);
+            console.error('Error fetching users:', err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -94,13 +92,10 @@ export const useUsers = () => {
     };
 
     useEffect(() => {
-        console.log('🔄 [useUsers] useEffect triggered:', { currentUserRole, user: user?.email, tenantId, tenantLoading });
         // Fetch users once we know the current user's role and tenant
         if (currentUserRole !== null && user && tenantId) {
-            console.log('✅ [useUsers] All conditions met, calling fetchUsers');
             fetchUsers();
         } else if (!tenantLoading) {
-            console.log('⚠️ [useUsers] Conditions not met, stopping loading:', { currentUserRole, user: user?.email, tenantId });
             // If tenant loading is done but we don't have all required data, stop loading
             setLoading(false);
         }
