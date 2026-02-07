@@ -175,7 +175,7 @@ const MainLayout = () => {
                                 onClick={() => navigate('/dashboard')}
                                 className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                             >
-                                <img src="/logo.png" alt="SAILO" className="w-9 h-9 object-contain drop-shadow-sm" />
+                                <img src="/logo-advanta.png" alt="Advanta" className="w-9 h-9 object-contain drop-shadow-sm" />
                             </button>
 
                             {/* Right Actions */}

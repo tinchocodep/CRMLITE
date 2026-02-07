@@ -201,7 +201,7 @@ const Dashboard = () => {
                     className="absolute left-4 top-4 z-10"
                 >
                     <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform border border-[#DEE2E6] dark:border-slate-700">
-                        <img src="/logo.png" alt="SAILO" className="w-9 h-9 object-contain" />
+                        <img src="/logo-advanta.png" alt="Advanta" className="w-9 h-9 object-contain" />
                     </div>
                 </motion.div>
 
