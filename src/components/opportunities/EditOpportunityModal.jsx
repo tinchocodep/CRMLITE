@@ -142,7 +142,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-end xl:items-center justify-center">
             <div className="bg-white w-full xl:max-w-2xl xl:rounded-2xl rounded-t-3xl max-h-[80vh] flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-brand-red to-red-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
+                <div className="bg-gradient-to-r from-advanta-green to-green-600 text-white p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
                     <div>
                         <h2 className="text-lg font-bold">Editar Oportunidad</h2>
                         <p className="text-red-100 text-xs mt-0.5">Modifica la información</p>
@@ -165,7 +165,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 required
                                 value={formData.comercialId}
                                 onChange={(e) => setFormData({ ...formData, comercialId: e.target.value })}
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                             >
                                 <option value="">Seleccionar comercial</option>
                                 {comerciales.map(comercial => (
@@ -188,7 +188,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 value={formData.productType}
                                 onChange={(e) => setFormData({ ...formData, productType: e.target.value })}
                                 placeholder="Ej: Fertilizantes, Semillas..."
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                             />
                         </div>
 
@@ -221,7 +221,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 value={formData.opportunityName}
                                 onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
                                 placeholder="Ej: Venta de fertilizantes Q1 2024"
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                             />
                         </div>
 
@@ -235,7 +235,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 <select
                                     value={formData.contactId}
                                     onChange={(e) => setFormData({ ...formData, contactId: e.target.value })}
-                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                                 >
                                     <option value="">Seleccionar contacto</option>
                                     {availableContacts.map(contact => {
@@ -271,7 +271,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     value={formData.amount}
                                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                                     placeholder="0"
-                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                                 />
                             </div>
                             <div>
@@ -284,7 +284,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     required
                                     value={formData.closeDate}
                                     onChange={(e) => setFormData({ ...formData, closeDate: e.target.value })}
-                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                                 />
                             </div>
                         </div>
@@ -299,7 +299,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     required
                                     value={formData.status}
                                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                                 >
                                     <option value="iniciado">🚀 Iniciado</option>
                                     <option value="presupuestado">📋 Presupuestado</option>
@@ -320,7 +320,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     step="5"
                                     value={formData.probability}
                                     onChange={(e) => setFormData({ ...formData, probability: parseInt(e.target.value) })}
-                                    className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-red mt-1"
+                                    className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-advanta-green mt-1"
                                 />
                             </div>
                         </div>
@@ -336,7 +336,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 onChange={(e) => setFormData({ ...formData, nextAction: e.target.value })}
                                 placeholder="Describe la próxima acción..."
                                 rows="2"
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none resize-none"
                             />
                         </div>
 
@@ -351,7 +351,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     type="date"
                                     value={formData.nextActionDate}
                                     onChange={(e) => setFormData({ ...formData, nextActionDate: e.target.value })}
-                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                                 />
                             </div>
                         )}
@@ -366,7 +366,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                 placeholder="Información adicional..."
                                 rows="2"
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none resize-none"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none resize-none"
                             />
                         </div>
                     </div>
@@ -382,7 +382,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 text-sm rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white font-semibold hover:shadow-lg transition-all"
+                            className="flex-1 px-4 py-2.5 text-sm rounded-xl bg-gradient-to-r from-advanta-green to-green-600 text-white font-semibold hover:shadow-lg transition-all"
                         >
                             Guardar Cambios
                         </button>

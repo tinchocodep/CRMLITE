@@ -27,7 +27,7 @@ export function ComercialFilter({
                 value={selectedComercialId}
                 onChange={(e) => onComercialChange(e.target.value)}
                 disabled={loading}
-                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-brand-red/20 outline-none min-w-[150px] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-advanta-green/20 outline-none min-w-[150px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {showAllOption && <option value="all">Todos los comerciales</option>}
                 {comerciales.map(comercial => (

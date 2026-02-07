@@ -27,7 +27,7 @@ class ErrorBoundary extends React.Component {
             return (
                 <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
                     <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-8 border border-red-100 dark:border-red-900/30">
-                        <div className="w-16 h-16 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <div className="w-16 h-16 bg-red-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
                             <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
                         </div>
 
@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
 
                         <button
                             onClick={this.handleReload}
-                            className="w-full py-3 bg-brand-red hover:bg-red-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                            className="w-full py-3 bg-advanta-green hover:bg-red-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
                         >
                             <RefreshCw size={18} />
                             Recargar Aplicación

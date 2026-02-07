@@ -26,7 +26,7 @@ export function CRMSubmoduleSidebar({ isMainSidebarExpanded }) {
             {/* Header */}
             <div className="h-20 flex items-center px-4 border-b border-slate-700">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center shadow-lg">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-advanta-green to-green-600 flex items-center justify-center shadow-lg">
                         <Briefcase className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -49,14 +49,14 @@ export function CRMSubmoduleSidebar({ isMainSidebarExpanded }) {
                             className={`
                                 flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-all duration-200
                                 ${isActive
-                                    ? 'bg-slate-700 text-white border-l-4 border-brand-red shadow-lg'
+                                    ? 'bg-slate-700 text-white border-l-4 border-advanta-green shadow-lg'
                                     : 'text-slate-300 hover:bg-slate-700/50 hover:text-white border-l-4 border-transparent'
                                 }
                             `}
                         >
                             <module.icon
                                 size={18}
-                                className={`flex-shrink-0 ${isActive ? 'text-brand-red' : ''}`}
+                                className={`flex-shrink-0 ${isActive ? 'text-advanta-green' : ''}`}
                             />
                             <span className="font-medium text-sm">{module.name}</span>
                         </NavLink>

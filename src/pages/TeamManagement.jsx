@@ -160,7 +160,7 @@ const TeamManagement = () => {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-brand-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-16 h-16 border-4 border-advanta-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-slate-600 dark:text-slate-400">Cargando equipos...</p>
                 </div>
             </div>
@@ -170,9 +170,9 @@ const TeamManagement = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen pb-40">
             {/* Header */}
-            <div className="bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
+            <div className="bg-gradient-to-br from-white via-red-50 to-green-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-advanta-green rounded-xl flex items-center justify-center">
                         <Users className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -197,7 +197,7 @@ const TeamManagement = () => {
                     </div>
                     <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
                         <p className="text-xs text-slate-500 dark:text-slate-400">Asignaciones</p>
-                        <p className="text-2xl font-bold text-brand-red">{assignments.length}</p>
+                        <p className="text-2xl font-bold text-advanta-green">{assignments.length}</p>
                     </div>
                 </div>
             </div>
@@ -242,7 +242,7 @@ const TeamManagement = () => {
                                             setSelectedSupervisor(supervisor);
                                             setIsAssignModalOpen(true);
                                         }}
-                                        className="flex items-center gap-2 px-3 py-2 bg-brand-red text-white rounded-lg hover:bg-red-700 transition text-sm"
+                                        className="flex items-center gap-2 px-3 py-2 bg-advanta-green text-white rounded-lg hover:bg-red-700 transition text-sm"
                                         disabled={!supervisorComercialId || availableComerciales.length === 0}
                                     >
                                         <UserPlus size={16} />

@@ -34,19 +34,19 @@ const WeekView = ({ currentDate, events, onUpdate, onDelete }) => {
                 return (
                     <div key={i} className={`mb-2 bg-white border-y border-slate-100 ${isToday ? 'bg-red-50/10' : ''}`}>
                         {/* Mobile Day Header */}
-                        <div className={`sticky top-0 z-10 px-4 py-2 flex items-center justify-between border-b border-slate-50/50 backdrop-blur-sm bg-white/90 ${isToday ? 'text-brand-red' : 'text-slate-500'}`}>
+                        <div className={`sticky top-0 z-10 px-4 py-2 flex items-center justify-between border-b border-slate-50/50 backdrop-blur-sm bg-white/90 ${isToday ? 'text-advanta-green' : 'text-slate-500'}`}>
                             <div className="flex items-baseline gap-2">
                                 <span className="text-lg font-bold capitalize">{format(day, 'EEEE', { locale: es })}</span>
                                 <span className="text-sm font-semibold opacity-70">{format(day, 'd MMM')}</span>
                             </div>
-                            {isToday && <span className="text-[10px] font-bold bg-brand-red text-white px-2 py-0.5 rounded-full uppercase">Hoy</span>}
+                            {isToday && <span className="text-[10px] font-bold bg-advanta-green text-white px-2 py-0.5 rounded-full uppercase">Hoy</span>}
                         </div>
 
                         {/* Events List */}
                         <div className="p-2 space-y-2 min-h-[60px]">
                             {dayEvents.length > 0 ? (
                                 dayEvents.map(event => (
-                                    <div key={event.id} className="pl-2 border-l-2 border-brand-red/30">
+                                    <div key={event.id} className="pl-2 border-l-2 border-advanta-green/30">
                                         <EventCard event={event} view="list" onUpdate={onUpdate} onDelete={onDelete} />
                                     </div>
                                 ))
@@ -72,10 +72,10 @@ const WeekView = ({ currentDate, events, onUpdate, onDelete }) => {
                             key={i}
                             className={`flex-1 text-center py-3 border-r border-slate-100 last:border-r-0 ${isSameDay(date, new Date()) ? 'bg-red-50/30' : ''}`}
                         >
-                            <p className={`text-xs font-semibold uppercase mb-1 ${isSameDay(date, new Date()) ? 'text-brand-red' : 'text-slate-400'}`}>
+                            <p className={`text-xs font-semibold uppercase mb-1 ${isSameDay(date, new Date()) ? 'text-advanta-green' : 'text-slate-400'}`}>
                                 {format(date, 'EEE', { locale: es })}
                             </p>
-                            <p className={`text-xl font-bold ${isSameDay(date, new Date()) ? 'text-brand-red' : 'text-slate-700'}`}>
+                            <p className={`text-xl font-bold ${isSameDay(date, new Date()) ? 'text-advanta-green' : 'text-slate-700'}`}>
                                 {format(date, 'd')}
                             </p>
                         </div>
@@ -145,10 +145,10 @@ const WeekView = ({ currentDate, events, onUpdate, onDelete }) => {
                                         {/* Current Time Indicator */}
                                         {isSameDay(day, new Date()) && (
                                             <div
-                                                className="absolute w-full border-t-2 border-brand-red z-20 pointer-events-none"
+                                                className="absolute w-full border-t-2 border-advanta-green z-20 pointer-events-none"
                                                 style={{ top: `${(getHours(new Date()) * PIXELS_PER_HOUR) + ((getMinutes(new Date()) / 60) * PIXELS_PER_HOUR)}px` }}
                                             >
-                                                <div className="-mt-1.5 -ml-1.5 w-3 h-3 rounded-full bg-brand-red shadow-sm" />
+                                                <div className="-mt-1.5 -ml-1.5 w-3 h-3 rounded-full bg-advanta-green shadow-sm" />
                                             </div>
                                         )}
 

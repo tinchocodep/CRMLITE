@@ -14,7 +14,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateEvent?.();
                 setIsOpen(false);
             },
-            color: 'from-white to-brand-red'
+            color: 'from-white to-advanta-green'
         },
         {
             icon: UserCheck,
@@ -23,7 +23,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateProspect?.();
                 setIsOpen(false);
             },
-            color: 'from-white to-brand-red'
+            color: 'from-white to-advanta-green'
         },
         {
             icon: UserPlus,
@@ -32,7 +32,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onConvertProspect?.();
                 setIsOpen(false);
             },
-            color: 'from-white to-brand-red'
+            color: 'from-white to-advanta-green'
         },
         {
             icon: Users,
@@ -41,7 +41,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 onCreateClient?.();
                 setIsOpen(false);
             },
-            color: 'from-white to-brand-red'
+            color: 'from-white to-advanta-green'
         },
         {
             icon: Map,
@@ -50,7 +50,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 navigate('/visitas');
                 setIsOpen(false);
             },
-            color: 'from-white to-brand-red'
+            color: 'from-white to-advanta-green'
         },
         {
             icon: Briefcase,
@@ -59,7 +59,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
                 navigate('/oportunidades');
                 setIsOpen(false);
             },
-            color: 'from-white to-brand-red'
+            color: 'from-white to-advanta-green'
         }
     ];
 
@@ -90,7 +90,7 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
             {/* Main FAB Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-16 h-16 rounded-full bg-gradient-to-r from-brand-red to-red-600 shadow-2xl shadow-red-500/50 flex items-center justify-center hover:scale-110 transition-all duration-300`}
+                className={`w-16 h-16 rounded-full bg-gradient-to-r from-advanta-green to-green-600 shadow-2xl shadow-green-500/50 flex items-center justify-center hover:scale-110 transition-all duration-300`}
             >
                 {isOpen ? (
                     <X className="w-8 h-8 text-white" />

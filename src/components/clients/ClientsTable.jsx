@@ -46,8 +46,8 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
             return <ArrowUpDown size={14} className="opacity-40" />;
         }
         return sortConfig.direction === 'asc'
-            ? <ArrowUp size={14} className="text-brand-red" />
-            : <ArrowDown size={14} className="text-brand-red" />;
+            ? <ArrowUp size={14} className="text-advanta-green" />
+            : <ArrowDown size={14} className="text-advanta-green" />;
     };
 
     const formatDate = (dateString) => {
@@ -169,7 +169,7 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
                                 >
                                     <td className="px-3 py-2.5 text-[13px] font-medium text-slate-900 dark:text-slate-100">
                                         <div className="flex items-center gap-2">
-                                            <Building2 size={15} className="text-brand-red flex-shrink-0" />
+                                            <Building2 size={15} className="text-advanta-green flex-shrink-0" />
                                             <span className="truncate" title={client.trade_name}>
                                                 {client.trade_name || '-'}
                                             </span>
@@ -233,7 +233,7 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
                                     <td className="px-3 py-2.5 text-center">
                                         <button
                                             onClick={() => onEdit(client)}
-                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
+                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-advanta-green dark:hover:text-advanta-green hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
                                             title="Editar"
                                         >
                                             <Edit2 size={15} />

@@ -227,7 +227,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                         >
                             {opportunity ? 'Actualizar' : 'Crear'}
                         </button>

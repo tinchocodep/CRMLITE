@@ -28,12 +28,12 @@ const priorityConfig = {
 };
 
 const typeConfig = [
-    { id: 'visit', label: 'Visita', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'call', label: 'Llamada', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'meeting', label: 'Reunión', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'email', label: 'Email', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'task', label: 'Tarea', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
-    { id: 'other', label: 'Otro', color: 'bg-brand-red/10 text-brand-red border-brand-red/20 hover:bg-brand-red/20' },
+    { id: 'visit', label: 'Visita', color: 'bg-advanta-green/10 text-advanta-green border-advanta-green/20 hover:bg-advanta-green/20' },
+    { id: 'call', label: 'Llamada', color: 'bg-advanta-green/10 text-advanta-green border-advanta-green/20 hover:bg-advanta-green/20' },
+    { id: 'meeting', label: 'Reunión', color: 'bg-advanta-green/10 text-advanta-green border-advanta-green/20 hover:bg-advanta-green/20' },
+    { id: 'email', label: 'Email', color: 'bg-advanta-green/10 text-advanta-green border-advanta-green/20 hover:bg-advanta-green/20' },
+    { id: 'task', label: 'Tarea', color: 'bg-advanta-green/10 text-advanta-green border-advanta-green/20 hover:bg-advanta-green/20' },
+    { id: 'other', label: 'Otro', color: 'bg-advanta-green/10 text-advanta-green border-advanta-green/20 hover:bg-advanta-green/20' },
 ];
 
 const durationOptions = [
@@ -195,7 +195,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                             placeholder="Ej: Visita Comercial TechSolutions"
                             value={newEvent.title}
                             onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                            className="w-full text-lg font-bold p-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-brand-red/50 focus:bg-white focus:outline-none transition-all placeholder:font-normal"
+                            className="w-full text-lg font-bold p-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-advanta-green/50 focus:bg-white focus:outline-none transition-all placeholder:font-normal"
                             autoFocus
                         />
                     </div>
@@ -227,7 +227,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                 type="datetime-local"
                                 value={newEvent.start}
                                 onChange={(e) => setNewEvent({ ...newEvent, start: e.target.value })}
-                                className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-brand-red outline-none"
+                                className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-advanta-green outline-none"
                             />
                         </div>
                         {/* Duration - Only show for visit, call, meeting */}
@@ -237,7 +237,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                 <select
                                     value={newEvent.duration}
                                     onChange={(e) => setNewEvent({ ...newEvent, duration: parseInt(e.target.value) })}
-                                    className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-brand-red outline-none"
+                                    className="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 focus:border-advanta-green outline-none"
                                 >
                                     {durationOptions.map((opt) => (
                                         <option key={opt.value} value={opt.value}>
@@ -268,7 +268,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                             {p.label}
                                         </span>
                                         {isActive && (
-                                            <Check size={14} strokeWidth={3} className="text-brand-red absolute top-2 right-2" />
+                                            <Check size={14} strokeWidth={3} className="text-advanta-green absolute top-2 right-2" />
                                         )}
                                     </button>
                                 );
@@ -284,7 +284,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                             <select
                                 value={newEvent.company_id}
                                 onChange={(e) => setNewEvent({ ...newEvent, company_id: e.target.value })}
-                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-red/20 outline-none font-medium appearance-none"
+                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-advanta-green/20 outline-none font-medium appearance-none"
                             >
                                 <option value="">Seleccionar Empresa...</option>
                                 {companies.map(company => (
@@ -304,7 +304,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                             placeholder="Describe brevemente el objetivo de la reunión o detalles importantes..."
                             value={newEvent.description}
                             onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-brand-red focus:ring-1 focus:ring-brand-red/50 outline-none text-sm min-h-[100px] resize-none"
+                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-advanta-green focus:ring-1 focus:ring-advanta-green/50 outline-none text-sm min-h-[100px] resize-none"
                         />
                     </div>
 
@@ -320,9 +320,9 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                 return (
                                     <div
                                         key={userId}
-                                        className="flex items-center gap-2 bg-brand-red/10 border border-brand-red/20 rounded-full px-3 py-1.5"
+                                        className="flex items-center gap-2 bg-advanta-green/10 border border-advanta-green/20 rounded-full px-3 py-1.5"
                                     >
-                                        <div className="w-5 h-5 rounded-full bg-brand-red text-white flex items-center justify-center text-[10px] font-bold">
+                                        <div className="w-5 h-5 rounded-full bg-advanta-green text-white flex items-center justify-center text-[10px] font-bold">
                                             {user.name.charAt(0)}
                                         </div>
                                         <span className="text-xs font-medium text-slate-700">
@@ -351,7 +351,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                         <div className="relative">
                             <button
                                 onClick={() => setShowUserSelector(!showUserSelector)}
-                                className="w-full flex items-center justify-between gap-2 p-3 bg-white border border-slate-200 rounded-xl hover:border-brand-red/50 transition-colors"
+                                className="w-full flex items-center justify-between gap-2 p-3 bg-white border border-slate-200 rounded-xl hover:border-advanta-green/50 transition-colors"
                             >
                                 <div className="flex items-center gap-2 text-slate-600">
                                     <UserPlus size={16} />
@@ -385,14 +385,14 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                                                         });
                                                     }
                                                 }}
-                                                className={`w-full flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0 ${isSelected ? 'bg-brand-red/5' : ''
+                                                className={`w-full flex items-center gap-3 p-3 hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-b-0 ${isSelected ? 'bg-advanta-green/5' : ''
                                                     }`}
                                             >
-                                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${isSelected ? 'bg-brand-red border-brand-red' : 'border-slate-300'
+                                                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${isSelected ? 'bg-advanta-green border-advanta-green' : 'border-slate-300'
                                                     }`}>
                                                     {isSelected && <Check size={12} className="text-white" strokeWidth={3} />}
                                                 </div>
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-red to-orange-500 flex items-center justify-center text-white text-sm font-bold">
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-advanta-green to-orange-500 flex items-center justify-center text-white text-sm font-bold">
                                                     {user.name.charAt(0)}
                                                 </div>
                                                 <div className="flex-1 text-left">
@@ -424,7 +424,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                className="px-8 py-2.5 rounded-xl bg-brand-red text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                                className="px-8 py-2.5 rounded-xl bg-advanta-green text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 Crear Actividad
                             </button>

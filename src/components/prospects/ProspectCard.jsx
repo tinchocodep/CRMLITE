@@ -54,7 +54,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                             e.stopPropagation();
                             onEdit(prospect);
                         }}
-                        className="p-1.5 mr-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-brand-red dark:hover:bg-red-600 hover:text-white text-slate-400 dark:text-slate-500 transition-all shadow-sm group-hover:shadow-md"
+                        className="p-1.5 mr-1 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-advanta-green dark:hover:bg-red-600 hover:text-white text-slate-400 dark:text-slate-500 transition-all shadow-sm group-hover:shadow-md"
                         title="Editar Prospecto Completo"
                     >
                         <Pencil size={14} strokeWidth={2.5} />
@@ -79,7 +79,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                 className="space-y-2 mb-3 cursor-pointer"
             >
                 <div>
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-advanta-green dark:group-hover:text-red-400 transition-colors">
                         {prospect.trade_name}
                     </h3>
                     <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
@@ -103,7 +103,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                                 <a
                                     href={`mailto:${prospect.contact}`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="hover:text-brand-red dark:hover:text-red-400 transition-colors truncate"
+                                    className="hover:text-advanta-green dark:hover:text-red-400 transition-colors truncate"
                                     title={prospect.contact}
                                 >
                                     {prospect.contact}
@@ -118,7 +118,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                                 <a
                                     href={`tel:${prospect.phone}`}
                                     onClick={(e) => e.stopPropagation()}
-                                    className="hover:text-brand-red dark:hover:text-red-400 transition-colors"
+                                    className="hover:text-advanta-green dark:hover:text-red-400 transition-colors"
                                 >
                                     {prospect.phone}
                                 </a>
@@ -142,7 +142,7 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                             e.stopPropagation();
                             setShowContacts(!showContacts);
                         }}
-                        className="w-full flex items-center justify-between px-3 py-2 bg-brand-red/10 hover:bg-brand-red/20 rounded-xl transition-colors text-brand-red font-bold text-xs"
+                        className="w-full flex items-center justify-between px-3 py-2 bg-advanta-green/10 hover:bg-advanta-green/20 rounded-xl transition-colors text-advanta-green font-bold text-xs"
                     >
                         <span>Contactos ({prospectContacts.length})</span>
                         {showContacts ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -177,8 +177,8 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
                     className="relative group/btn flex-shrink-0"
                     title="Convertir a Cliente"
                 >
-                    <div className="absolute inset-0 bg-brand-red/20 blur-xl rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500" />
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-red to-red-600 flex items-center justify-center relative z-10 transition-transform duration-300 group-hover/btn:scale-110 shadow-md hover:shadow-xl">
+                    <div className="absolute inset-0 bg-advanta-green/20 blur-xl rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500" />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-advanta-green to-green-600 flex items-center justify-center relative z-10 transition-transform duration-300 group-hover/btn:scale-110 shadow-md hover:shadow-xl">
                         <UserCheck className="w-5 h-5 text-white" strokeWidth={2.5} />
                     </div>
                 </button>

@@ -130,7 +130,7 @@ const Contacts = () => {
 
                     {/* Search and Create Button */}
                     <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">
-                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-brand-red/10 transition-all">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-advanta-green/10 transition-all">
                             <Search size={20} className="text-slate-400" />
                             <input
                                 type="text"
@@ -142,7 +142,7 @@ const Contacts = () => {
                         </div>
                         <button
                             onClick={handleCreateContact}
-                            className="px-4 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                            className="px-4 py-2 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                         >
                             <Plus size={18} />
                             <span className="hidden md:inline">Nuevo</span>
@@ -197,12 +197,12 @@ const Contacts = () => {
                 {/* Add New Contact Placeholder */}
                 <button
                     onClick={handleCreateContact}
-                    className="group border-2 border-dashed border-slate-200 rounded-3xl p-6 flex flex-col items-center justify-center gap-4 hover:border-brand-red/50 hover:bg-red-50/30 transition-all min-h-[200px]"
+                    className="group border-2 border-dashed border-slate-200 rounded-3xl p-6 flex flex-col items-center justify-center gap-4 hover:border-advanta-green/50 hover:bg-red-50/30 transition-all min-h-[200px]"
                 >
-                    <div className="w-16 h-16 rounded-full bg-slate-50 group-hover:bg-white border-2 border-slate-100 group-hover:border-brand-red/20 flex items-center justify-center text-slate-400 group-hover:text-brand-red transition-all shadow-sm">
+                    <div className="w-16 h-16 rounded-full bg-slate-50 group-hover:bg-white border-2 border-slate-100 group-hover:border-advanta-green/20 flex items-center justify-center text-slate-400 group-hover:text-advanta-green transition-all shadow-sm">
                         <UserPlus size={32} />
                     </div>
-                    <span className="text-slate-500 font-bold group-hover:text-brand-red transition-colors">Nuevo Contacto</span>
+                    <span className="text-slate-500 font-bold group-hover:text-advanta-green transition-colors">Nuevo Contacto</span>
                 </button>
             </div>
 

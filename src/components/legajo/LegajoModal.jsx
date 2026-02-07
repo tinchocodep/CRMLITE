@@ -61,7 +61,7 @@ const LegajoModal = ({ isOpen, onClose, client }) => {
                                 Legajo Digital
                             </span>
                             <span className="text-slate-300">|</span>
-                            <span className="text-xs font-bold text-brand-red">LEG: {client.file_number || 'PENDIENTE'}</span>
+                            <span className="text-xs font-bold text-advanta-green">LEG: {client.file_number || 'PENDIENTE'}</span>
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800">{client.trade_name}</h2>
                         <p className="text-sm text-slate-500">{client.legal_name}</p>
@@ -73,7 +73,7 @@ const LegajoModal = ({ isOpen, onClose, client }) => {
                             </span>
                             <div className="h-2 w-24 bg-slate-200 rounded-full overflow-hidden">
                                 <div
-                                    className={`h-full transition-all duration-500 ${stats.isComplete ? 'bg-emerald-500' : 'bg-brand-red'}`}
+                                    className={`h-full transition-all duration-500 ${stats.isComplete ? 'bg-emerald-500' : 'bg-advanta-green'}`}
                                     style={{ width: `${stats.percentage}%` }}
                                 />
                             </div>
@@ -90,7 +90,7 @@ const LegajoModal = ({ isOpen, onClose, client }) => {
 
                     {loading ? (
                         <div className="flex items-center justify-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-red"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-advanta-green"></div>
                         </div>
                     ) : (
                         <>

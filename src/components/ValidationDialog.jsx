@@ -52,7 +52,7 @@ export function ValidationDialog({
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 flex gap-3 justify-end">
                     <button
                         onClick={onClose}
-                        className="px-6 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-lg transition-all font-bold shadow-lg shadow-red-500/30"
+                        className="px-6 py-2 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-lg transition-all font-bold shadow-lg shadow-red-500/30"
                     >
                         Aceptar
                     </button>

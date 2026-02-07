@@ -80,7 +80,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-advanta-green rounded-xl flex items-center justify-center">
                             <User className="w-5 h-5 text-white" />
                         </div>
                         <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Crear Usuario</h2>
@@ -106,7 +106,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Nombre Completo *
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <User size={18} className="text-slate-400" />
                             <input
                                 type="text"
@@ -124,7 +124,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Email *
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <Mail size={18} className="text-slate-400" />
                             <input
                                 type="email"
@@ -142,7 +142,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Contraseña *
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <Lock size={18} className="text-slate-400" />
                             <input
                                 type="password"
@@ -164,7 +164,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Rol *
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <Shield size={18} className="text-slate-400" />
                             <select
                                 value={formData.role}
@@ -199,7 +199,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Creando...' : 'Crear Usuario'}
                         </button>

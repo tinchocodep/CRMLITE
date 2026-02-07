@@ -43,7 +43,7 @@ const CompanyContactsSection = ({
                 {onAddContact && (
                     <button
                         onClick={onAddContact}
-                        className="flex items-center gap-1 px-2 py-1 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg text-xs font-bold transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 bg-advanta-green/10 hover:bg-advanta-green/20 text-advanta-green rounded-lg text-xs font-bold transition-colors"
                     >
                         <Plus size={12} />
                         Agregar
@@ -122,7 +122,7 @@ const CompanyContactsSection = ({
                                                     {contact.email && (
                                                         <a
                                                             href={`mailto:${contact.email}`}
-                                                            className="p-1.5 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                            className="p-1.5 bg-advanta-green/10 hover:bg-advanta-green/20 text-advanta-green rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
                                                             title="Enviar email"
                                                         >
                                                             <Mail size={12} />
@@ -149,7 +149,7 @@ END:VCARD`;
                                                             a.click();
                                                             window.URL.revokeObjectURL(url);
                                                         }}
-                                                        className="p-1.5 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                        className="p-1.5 bg-advanta-green/10 hover:bg-advanta-green/20 text-advanta-green rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
                                                         title="Agregar a contactos"
                                                     >
                                                         <UserPlus size={12} />

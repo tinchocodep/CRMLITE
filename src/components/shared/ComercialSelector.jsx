@@ -73,7 +73,7 @@ const ComercialSelector = ({
                     {label} {required && <span className="text-red-500">*</span>}
                 </label>
                 <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
-                    <div className="w-4 h-4 border-2 border-brand-red border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-advanta-green border-t-transparent rounded-full animate-spin"></div>
                     <span className="text-sm text-slate-500 dark:text-slate-400">Cargando comerciales...</span>
                 </div>
             </div>
@@ -121,7 +121,7 @@ const ComercialSelector = ({
                     value={value || ''}
                     onChange={(e) => onChange(e.target.value ? parseInt(e.target.value) : null)}
                     required={required}
-                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-red text-slate-800 dark:text-white appearance-none cursor-pointer"
+                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-advanta-green text-slate-800 dark:text-white appearance-none cursor-pointer"
                 >
                     <option value="">Seleccionar comercial...</option>
                     {comerciales.map((comercial) => (

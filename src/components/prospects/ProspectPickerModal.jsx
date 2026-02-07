@@ -32,7 +32,7 @@ const ProspectPickerModal = ({ isOpen, onClose, prospects, onSelect }) => {
                             autoFocus
                             type="text"
                             placeholder="Buscar por nombre o empresa..."
-                            className="w-full pl-10 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-brand-red outline-none"
+                            className="w-full pl-10 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-advanta-green outline-none"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -50,14 +50,14 @@ const ProspectPickerModal = ({ isOpen, onClose, prospects, onSelect }) => {
                                 className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl group transition-colors border border-transparent hover:border-slate-100 text-left"
                             >
                                 <div>
-                                    <div className="font-bold text-slate-700 text-sm group-hover:text-brand-red transition-colors">
+                                    <div className="font-bold text-slate-700 text-sm group-hover:text-advanta-green transition-colors">
                                         {prospect.trade_name || prospect.tradeName}
                                     </div>
                                     <div className="text-xs text-slate-500">
                                         {prospect.legal_name || prospect.companyName}
                                     </div>
                                 </div>
-                                <div className="text-slate-300 group-hover:text-brand-red transition-colors">
+                                <div className="text-slate-300 group-hover:text-advanta-green transition-colors">
                                     <ArrowRight size={16} />
                                 </div>
                             </button>

@@ -57,7 +57,7 @@ const DayView = ({ currentDate, events, onUpdate, onDelete }) => {
                                     )}
 
                                     {/* Timeline Dot */}
-                                    <div className="absolute top-4 left-[7.5px] w-2.5 h-2.5 rounded-full border border-slate-50 bg-brand-red z-10 shadow-sm" />
+                                    <div className="absolute top-4 left-[7.5px] w-2.5 h-2.5 rounded-full border border-slate-50 bg-advanta-green z-10 shadow-sm" />
 
                                     <div className="rounded-2xl overflow-hidden shadow-sm shadow-slate-200/50 ring-1 ring-slate-100 bg-white">
                                         <EventCard event={event} view="list" onUpdate={onUpdate} onDelete={onDelete} />
@@ -107,11 +107,11 @@ const DayView = ({ currentDate, events, onUpdate, onDelete }) => {
                             {/* Current Time Indicator */}
                             {isSameDay(currentDate, new Date()) && (
                                 <div
-                                    className="absolute w-full border-t-2 border-brand-red z-20 pointer-events-none flex items-center"
+                                    className="absolute w-full border-t-2 border-advanta-green z-20 pointer-events-none flex items-center"
                                     style={{ top: `${(getHours(new Date()) * PIXELS_PER_HOUR) + ((getMinutes(new Date()) / 60) * PIXELS_PER_HOUR)}px` }}
                                 >
-                                    <div className="-ml-1 w-2 h-2 rounded-full bg-brand-red" />
-                                    <span className="ml-2 text-xs font-bold text-brand-red bg-white px-1 rounded shadow-sm">
+                                    <div className="-ml-1 w-2 h-2 rounded-full bg-advanta-green" />
+                                    <span className="ml-2 text-xs font-bold text-advanta-green bg-white px-1 rounded shadow-sm">
                                         {format(new Date(), 'HH:mm')}
                                     </span>
                                 </div>
@@ -156,7 +156,7 @@ const DayView = ({ currentDate, events, onUpdate, onDelete }) => {
                                         return (
                                             <div
                                                 key={event.id}
-                                                className="absolute rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all z-10 hover:z-20 cursor-pointer border-l-4 border-brand-red"
+                                                className="absolute rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all z-10 hover:z-20 cursor-pointer border-l-4 border-advanta-green"
                                                 style={{
                                                     ...baseStyle,
                                                     width: `calc(${width}% - 8px)`, // localized gap

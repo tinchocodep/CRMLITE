@@ -86,7 +86,7 @@ const Legajos = () => {
                 <div className="flex items-center gap-3 text-center md:text-left">
                     <button
                         onClick={() => navigate('/clientes')}
-                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-600 hover:text-brand-red"
+                        className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-600 hover:text-advanta-green"
                         title="Volver a Clientes"
                     >
                         <ArrowLeft size={24} />
@@ -97,7 +97,7 @@ const Legajos = () => {
                 </div>
 
                 <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-brand-red/10 transition-all">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-advanta-green/10 transition-all">
                         <Search size={20} className="text-slate-400" />
                         <input
                             type="text"
@@ -119,19 +119,19 @@ const Legajos = () => {
                     <div
                         key={client.id}
                         onClick={() => handleOpenLegajo(client)}
-                        className="bg-white p-4 rounded-2xl border border-slate-100 hover:border-brand-red/30 hover:shadow-lg transition-all cursor-pointer group flex flex-col md:flex-row items-center gap-4 md:gap-6"
+                        className="bg-white p-4 rounded-2xl border border-slate-100 hover:border-advanta-green/30 hover:shadow-lg transition-all cursor-pointer group flex flex-col md:flex-row items-center gap-4 md:gap-6"
                     >
                         {/* Icon Status */}
                         <div className={`
                             w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-colors
-                            ${client.legajoStatus === 'complete' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400 group-hover:text-brand-red group-hover:bg-red-50'}
+                            ${client.legajoStatus === 'complete' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400 group-hover:text-advanta-green group-hover:bg-red-50'}
                         `}>
                             {client.legajoStatus === 'complete' ? <FileCheck size={24} /> : <FolderOpen size={24} />}
                         </div>
 
                         {/* Info */}
                         <div className="flex-1 min-w-0 text-center md:text-left">
-                            <h3 className="text-lg font-bold text-slate-800 group-hover:text-brand-red transition-colors">{client.trade_name}</h3>
+                            <h3 className="text-lg font-bold text-slate-800 group-hover:text-advanta-green transition-colors">{client.trade_name}</h3>
                             <p className="text-sm text-slate-500">{client.legal_name}</p>
                         </div>
 
@@ -148,7 +148,7 @@ const Legajos = () => {
                             </div>
                             <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                 <div
-                                    className={`h-full rounded-full transition-all duration-500 ${client.legajoStatus === 'complete' ? 'bg-emerald-500' : 'bg-brand-red'}`}
+                                    className={`h-full rounded-full transition-all duration-500 ${client.legajoStatus === 'complete' ? 'bg-emerald-500' : 'bg-advanta-green'}`}
                                     style={{ width: `${(client.progress.current / client.progress.total) * 100}%` }}
                                 />
                             </div>

@@ -81,7 +81,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-brand-red rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-advanta-green rounded-xl flex items-center justify-center">
                             <User className="w-5 h-5 text-white" />
                         </div>
                         <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Crear Comercial</h2>
@@ -107,7 +107,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Nombre Completo *
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <User size={18} className="text-slate-400" />
                             <input
                                 type="text"
@@ -125,7 +125,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Email *
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <Mail size={18} className="text-slate-400" />
                             <input
                                 type="email"
@@ -143,7 +143,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Teléfono
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <Phone size={18} className="text-slate-400" />
                             <input
                                 type="tel"
@@ -160,7 +160,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                             Asignar a Supervisor (Opcional)
                         </label>
-                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-brand-red/20">
+                        <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:ring-2 ring-advanta-green/20">
                             <UserCheck size={18} className="text-slate-400" />
                             <select
                                 value={formData.supervisorId || ''}
@@ -198,7 +198,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-brand-red to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-advanta-green to-green-700 hover:from-red-700 hover:to-green-800 text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Creando...' : 'Crear Comercial'}
                         </button>

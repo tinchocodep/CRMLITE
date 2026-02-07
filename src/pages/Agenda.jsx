@@ -98,7 +98,7 @@ const Agenda = () => {
                         key={day}
                         onClick={() => { setView('day'); setCurrentDate(cloneDay); }}
                     >
-                        <span className={`text-xs md:text-sm font-medium block mb-1 md:mb-2 ${isSameDay(day, new Date()) ? "text-brand-red dark:text-red-400" : ""}`}>
+                        <span className={`text-xs md:text-sm font-medium block mb-1 md:mb-2 ${isSameDay(day, new Date()) ? "text-advanta-green dark:text-red-400" : ""}`}>
                             {formattedDate}
                         </span>
 
@@ -216,7 +216,7 @@ const Agenda = () => {
                 <select
                     value={filters.year}
                     onChange={(e) => handleFilterChange('year', e.target.value)}
-                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-brand-red/20 outline-none"
+                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-advanta-green/20 outline-none"
                 >
                     {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
@@ -227,7 +227,7 @@ const Agenda = () => {
                 <select
                     value={filters.month}
                     onChange={(e) => handleFilterChange('month', e.target.value)}
-                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-brand-red/20 outline-none"
+                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-advanta-green/20 outline-none"
                 >
                     {Array.from({ length: 12 }, (_, i) => (
                         <option key={i} value={i}>{format(new Date(2024, i, 1), 'MMMM', { locale: es })}</option>
@@ -240,7 +240,7 @@ const Agenda = () => {
                 <select
                     value={filters.quincena}
                     onChange={(e) => handleFilterChange('quincena', e.target.value)}
-                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-brand-red/20 outline-none"
+                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-advanta-green/20 outline-none"
                 >
                     <option value="all">Todas</option>
                     <option value="1">1ª Quincena (1-15)</option>
@@ -253,7 +253,7 @@ const Agenda = () => {
                 <select
                     value={filters.day}
                     onChange={(e) => handleFilterChange('day', e.target.value)}
-                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-brand-red/20 outline-none"
+                    className="bg-white border border-slate-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-advanta-green/20 outline-none"
                 >
                     <option value="all">Todos</option>
                     {Array.from({ length: 31 }, (_, i) => (
@@ -376,7 +376,7 @@ const Agenda = () => {
 
                 {/* Date Navigation */}
                 <div className="flex items-center justify-between w-full md:w-auto gap-4 order-1 md:order-none">
-                    <button onClick={prevDate} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-500 dark:text-slate-400 hover:text-brand-red dark:hover:text-red-400">
+                    <button onClick={prevDate} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-500 dark:text-slate-400 hover:text-advanta-green dark:hover:text-red-400">
                         <ChevronLeft size={20} />
                     </button>
                     <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 capitalize flex-1 text-center md:min-w-[200px]">
@@ -385,17 +385,17 @@ const Agenda = () => {
                             : format(currentDate, view === 'day' ? "d 'de' MMMM" : 'MMMM yyyy', { locale: es })
                         }
                     </h2>
-                    <button onClick={nextDate} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-500 dark:text-slate-400 hover:text-brand-red dark:hover:text-red-400">
+                    <button onClick={nextDate} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-500 dark:text-slate-400 hover:text-advanta-green dark:hover:text-red-400">
                         <ChevronRight size={20} />
                     </button>
                 </div>
 
                 {/* View Switcher */}
                 <div className="flex bg-slate-100/80 dark:bg-slate-700/80 p-1 rounded-xl gap-1 overflow-x-auto max-w-full w-full md:w-auto order-3 md:order-none no-scrollbar">
-                    <button onClick={() => setView('month')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'month' ? 'bg-white dark:bg-slate-600 shadow text-brand-red dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Mes</button>
-                    <button onClick={() => setView('week')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'week' ? 'bg-white dark:bg-slate-600 shadow text-brand-red dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Semana</button>
-                    <button onClick={() => setView('day')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'day' ? 'bg-white dark:bg-slate-600 shadow text-brand-red dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Día</button>
-                    <button onClick={() => setView('list')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'list' ? 'bg-white dark:bg-slate-600 shadow text-brand-red dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Lista</button>
+                    <button onClick={() => setView('month')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'month' ? 'bg-white dark:bg-slate-600 shadow text-advanta-green dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Mes</button>
+                    <button onClick={() => setView('week')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'week' ? 'bg-white dark:bg-slate-600 shadow text-advanta-green dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Semana</button>
+                    <button onClick={() => setView('day')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'day' ? 'bg-white dark:bg-slate-600 shadow text-advanta-green dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Día</button>
+                    <button onClick={() => setView('list')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'list' ? 'bg-white dark:bg-slate-600 shadow text-advanta-green dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Lista</button>
                 </div>
 
                 {/* Comercial Filter (Admin & Supervisor only) */}
@@ -418,7 +418,7 @@ const Agenda = () => {
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-brand-red/20 hover:shadow-brand-red/40 hover:from-[#D55E43] hover:to-red-700 transition-all"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-[#87a330] to-green-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-advanta-green/20 hover:shadow-advanta-green/40 hover:from-[#6a8532] hover:to-green-700 transition-all"
                     >
                         <Plus size={18} strokeWidth={3} />
                         <span className="inline">Nuevo</span>

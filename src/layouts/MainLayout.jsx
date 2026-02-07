@@ -168,7 +168,7 @@ const MainLayout = () => {
             <div className="xl:hidden flex flex-col h-screen">
                 {/* Mobile Header - Simple Top Bar (Hidden on Dashboard) */}
                 {!isDashboard && (
-                    <header className="sticky top-0 z-[60] bg-gradient-to-r from-white via-red-50 to-red-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-red-200 dark:border-slate-700 shadow-md">
+                    <header className="sticky top-0 z-[60] bg-gradient-to-r from-white via-red-50 to-green-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-red-200 dark:border-slate-700 shadow-md">
                         <div className="flex items-center justify-between h-16 px-4">
                             {/* Logo SAILO - Clickable to Home */}
                             <button
@@ -298,7 +298,7 @@ const MainLayout = () => {
                 </main>
 
                 {/* Bottom Navigation Bar */}
-                <nav className="fixed bottom-0 left-0 right-0 z-[20000] pointer-events-auto bg-gradient-to-r from-white via-white to-red-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
+                <nav className="fixed bottom-0 left-0 right-0 z-[20000] pointer-events-auto bg-gradient-to-r from-white via-white to-green-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
                     <div className="relative flex items-center justify-between h-16 px-4">
                         {/* Left Side - 2 buttons */}
                         <div className="flex items-center gap-2 flex-1 justify-start relative z-10">
@@ -308,7 +308,7 @@ const MainLayout = () => {
                                 end
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-brand-red' : 'text-slate-600 dark:text-slate-400'}
+                                    ${isActive ? 'text-advanta-green' : 'text-slate-600 dark:text-slate-400'}
                                 `}
                             >
                                 {({ isActive }) => (
@@ -325,7 +325,7 @@ const MainLayout = () => {
                                 end
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-brand-red' : 'text-slate-600'}
+                                    ${isActive ? 'text-advanta-green' : 'text-slate-600'}
                                 `}
                             >
                                 {({ isActive }) => (
@@ -341,7 +341,7 @@ const MainLayout = () => {
                         <div className="absolute left-1/2 -translate-x-1/2 -top-6 z-20">
                             <button
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                className="relative w-16 h-16 rounded-full bg-gradient-to-br from-brand-red to-red-700 shadow-2xl shadow-red-500/50 dark:shadow-red-900/50 flex items-center justify-center hover:scale-110 transition-all duration-300 border-4 border-white dark:border-slate-800"
+                                className="relative w-16 h-16 rounded-full bg-gradient-to-br from-advanta-green to-green-700 shadow-2xl shadow-green-500/50 dark:shadow-green-900/50 flex items-center justify-center hover:scale-110 transition-all duration-300 border-4 border-white dark:border-slate-800"
                             >
                                 <AnimatePresence mode="wait">
                                     {mobileMenuOpen ? (
@@ -377,7 +377,7 @@ const MainLayout = () => {
                                 end
                                 className={({ isActive }) => `
                                     flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-brand-red' : 'text-slate-600'}
+                                    ${isActive ? 'text-advanta-green' : 'text-slate-600'}
                                 `}
                             >
                                 {({ isActive }) => (
@@ -391,7 +391,7 @@ const MainLayout = () => {
                             {/* Menu Button */}
                             <button
                                 onClick={() => setMobileNavMenuOpen(!mobileNavMenuOpen)}
-                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${mobileNavMenuOpen ? 'text-brand-red' : 'text-slate-600'
+                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${mobileNavMenuOpen ? 'text-advanta-green' : 'text-slate-600'
                                     }`}
                             >
                                 <Menu size={22} strokeWidth={mobileNavMenuOpen ? 2.5 : 2} className={`transition-all duration-200 ${mobileNavMenuOpen ? 'scale-110' : 'scale-100'}`} />
@@ -574,13 +574,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <LayoutDashboard className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Dashboard</span>
+                                                <LayoutDashboard className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Dashboard</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -591,13 +591,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Calendar className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Agenda</span>
+                                                <Calendar className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Agenda</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -608,13 +608,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Visitas</span>
+                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Visitas</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -625,13 +625,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Search className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Ficha 360</span>
+                                                <Search className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Ficha 360</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -642,13 +642,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Contactos</span>
+                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Contactos</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -659,13 +659,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Legajo</span>
+                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Legajo</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -676,13 +676,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Territorio</span>
+                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Territorio</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -693,13 +693,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <Target className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Objetivos</span>
+                                                <Target className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Objetivos</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -710,13 +710,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <AlertCircle className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Reclamos</span>
+                                                <AlertCircle className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Reclamos</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -727,13 +727,13 @@ const MainLayout = () => {
                                         onClick={() => setMobileNavMenuOpen(false)}
                                         className={({ isActive }) => `
                                             flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-red-50 to-red-100 border-brand-red shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
                                         `}
                                     >
                                         {({ isActive }) => (
                                             <>
-                                                <ShieldCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-brand-red' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-brand-red' : 'text-slate-800'}`}>Usuarios</span>
+                                                <ShieldCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Usuarios</span>
                                             </>
                                         )}
                                     </NavLink>
@@ -796,9 +796,9 @@ const MainLayout = () => {
                                                 else if (action.label === 'Nueva Oportunidad') handleGlobalCreateOpportunity();
                                                 setDesktopActionMenuOpen(false);
                                             }}
-                                            className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
+                                            className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                         >
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-red-700 flex items-center justify-center mb-2 shadow-md">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-green-700 flex items-center justify-center mb-2 shadow-md">
                                                 <action.icon className="w-6 h-6 text-white" />
                                             </div>
                                             <span className="text-xs font-bold text-slate-800 text-center">{action.label}</span>

@@ -26,9 +26,9 @@ const Settings = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-40">
             {/* Header */}
-            <div className="bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
+            <div className="bg-gradient-to-br from-white via-red-50 to-green-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-advanta-green rounded-xl flex items-center justify-center">
                         <SettingsIcon className="w-6 h-6 text-white" />
                     </div>
                     <div>
@@ -43,7 +43,7 @@ const Settings = () => {
                 {/* Appearance Section */}
                 <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-3 mb-4">
-                        <Palette className="w-5 h-5 text-brand-red" />
+                        <Palette className="w-5 h-5 text-advanta-green" />
                         <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200">Apariencia</h2>
                     </div>
 
@@ -95,7 +95,7 @@ const Settings = () => {
 
                     <button
                         onClick={handleLogout}
-                        className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group touch-manipulation"
+                        className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-red-600 hover:to-green-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-500/30 hover:shadow-green-500/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group touch-manipulation"
                     >
                         <LogOut size={20} className="group-hover:rotate-12 transition-transform" />
                         Cerrar Sesión

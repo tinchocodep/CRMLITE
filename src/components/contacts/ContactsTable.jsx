@@ -62,8 +62,8 @@ const ContactsTable = ({ contacts, onEdit, onDelete }) => {
     const SortIcon = ({ columnKey }) => {
         if (sortConfig.key !== columnKey) return null;
         return sortConfig.direction === 'asc' ?
-            <ChevronUp size={14} className="text-brand-red" /> :
-            <ChevronDown size={14} className="text-brand-red" />;
+            <ChevronUp size={14} className="text-advanta-green" /> :
+            <ChevronDown size={14} className="text-advanta-green" />;
     };
 
     const getPrimaryCompany = (contact) => {
@@ -160,7 +160,7 @@ const ContactsTable = ({ contacts, onEdit, onDelete }) => {
                                 >
                                     <td className="px-3 py-2.5 text-[13px] font-medium text-slate-900 dark:text-slate-100">
                                         <div className="flex items-center gap-2">
-                                            <User size={15} className="text-brand-red flex-shrink-0" />
+                                            <User size={15} className="text-advanta-green flex-shrink-0" />
                                             <span className="truncate" title={fullName}>
                                                 {fullName || '-'}
                                             </span>
@@ -211,7 +211,7 @@ const ContactsTable = ({ contacts, onEdit, onDelete }) => {
                                     </td>
                                     <td className="px-3 py-2.5 text-[13px] text-slate-700 dark:text-slate-300">
                                         <div className="flex items-center gap-1">
-                                            <span className="font-semibold text-brand-red">
+                                            <span className="font-semibold text-advanta-green">
                                                 {contact.companies.length}
                                             </span>
                                             {contact.companies.length > 1 && (
@@ -233,7 +233,7 @@ const ContactsTable = ({ contacts, onEdit, onDelete }) => {
                                     <td className="px-3 py-2.5 text-center">
                                         <button
                                             onClick={() => onEdit(contact)}
-                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
+                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-advanta-green dark:hover:text-advanta-green hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
                                             title="Editar"
                                         >
                                             <Edit2 size={15} />

@@ -39,7 +39,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                         <div className="flex items-start gap-2 flex-1 min-w-0">
                             <button
                                 onClick={(e) => { e.stopPropagation(); onEdit(client); }}
-                                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-brand-red dark:hover:bg-red-600 hover:text-white text-slate-400 dark:text-slate-500 transition-all shadow-sm"
+                                className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-advanta-green dark:hover:bg-red-600 hover:text-white text-slate-400 dark:text-slate-500 transition-all shadow-sm"
                                 title="Editar Cliente"
                             >
                                 <Pencil size={14} strokeWidth={2.5} />
@@ -75,7 +75,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                                             <a
                                                 href={`mailto:${client.email}`}
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="hover:text-brand-red dark:hover:text-red-400 transition-colors truncate"
+                                                className="hover:text-advanta-green dark:hover:text-red-400 transition-colors truncate"
                                                 title={client.email}
                                             >
                                                 {client.email}
@@ -90,7 +90,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                                             <a
                                                 href={`tel:${client.phone}`}
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="hover:text-brand-red dark:hover:text-red-400 transition-colors"
+                                                className="hover:text-advanta-green dark:hover:text-red-400 transition-colors"
                                             >
                                                 {client.phone}
                                             </a>
@@ -167,7 +167,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                                         <div key={segment.id} className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm">
                                             <div className="flex justify-between items-center mb-1">
                                                 <span className="font-bold text-xs text-slate-700 dark:text-slate-200 uppercase">{segment.name}</span>
-                                                <span className="text-xs font-bold text-brand-red dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md">{segment.hectares} Has</span>
+                                                <span className="text-xs font-bold text-advanta-green dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-md">{segment.hectares} Has</span>
                                             </div>
                                             <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-3">
                                                 <span className="flex items-center gap-1"><Leaf size={10} /> {segment.crops || 'N/A'}</span>
@@ -216,7 +216,7 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                 {/* Footer Toggle */}
                 <button
                     onClick={onToggleExpand}
-                    className="w-full py-2.5 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-brand-red dark:hover:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-t-2 border-slate-200 dark:border-slate-700"
+                    className="w-full py-2.5 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-advanta-green dark:hover:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors border-t-2 border-slate-200 dark:border-slate-700"
                 >
                     {isExpanded ? 'Ver Menos' : 'Ver Detalles'}
                     {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}

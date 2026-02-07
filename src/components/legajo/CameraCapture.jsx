@@ -117,7 +117,7 @@ const CameraCapture = ({ onCapture, onClose }) => {
                         <p className="mb-4">{error}</p>
                         <button
                             onClick={startCamera}
-                            className="px-6 py-3 bg-brand-red text-white rounded-xl font-bold hover:bg-red-600 transition-colors"
+                            className="px-6 py-3 bg-advanta-green text-white rounded-xl font-bold hover:bg-red-600 transition-colors"
                         >
                             Reintentar
                         </button>
@@ -137,9 +137,9 @@ const CameraCapture = ({ onCapture, onClose }) => {
                 <div className="p-6 flex justify-center bg-black/50">
                     <button
                         onClick={capturePhoto}
-                        className="w-16 h-16 bg-white rounded-full border-4 border-brand-red hover:bg-red-50 transition-all shadow-lg flex items-center justify-center"
+                        className="w-16 h-16 bg-white rounded-full border-4 border-advanta-green hover:bg-red-50 transition-all shadow-lg flex items-center justify-center"
                     >
-                        <Camera size={32} className="text-brand-red" />
+                        <Camera size={32} className="text-advanta-green" />
                     </button>
                 </div>
             )}

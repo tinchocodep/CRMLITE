@@ -32,10 +32,10 @@ const priorityConfig = {
 };
 
 const typeConfig = {
-    visit: { label: 'Visita', color: 'text-brand-red bg-brand-red/10' },
-    call: { label: 'Llamada', color: 'text-brand-red bg-brand-red/10' },
-    meeting: { label: 'Reunión', color: 'text-brand-red bg-brand-red/10' },
-    task: { label: 'Tarea', color: 'text-brand-red bg-brand-red/10' },
+    visit: { label: 'Visita', color: 'text-advanta-green bg-advanta-green/10' },
+    call: { label: 'Llamada', color: 'text-advanta-green bg-advanta-green/10' },
+    meeting: { label: 'Reunión', color: 'text-advanta-green bg-advanta-green/10' },
+    task: { label: 'Tarea', color: 'text-advanta-green bg-advanta-green/10' },
 };
 
 const opportunityStatusConfig = {
@@ -43,7 +43,7 @@ const opportunityStatusConfig = {
     presupuestado: { label: 'Presupuestado', icon: '📋', color: 'from-yellow-50 to-yellow-100 border-yellow-200' },
     negociado: { label: 'Negociado', icon: '🤝', color: 'from-orange-50 to-orange-100 border-orange-200' },
     ganado: { label: 'Ganado', icon: '✅', color: 'from-green-50 to-green-100 border-green-200' },
-    perdido: { label: 'Perdido', icon: '❌', color: 'from-red-50 to-red-100 border-red-200' }
+    perdido: { label: 'Perdido', icon: '❌', color: 'from-green-50 to-green-100 border-red-200' }
 };
 
 const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
@@ -211,7 +211,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
         <div
             className={`
                 group relative overflow-hidden bg-white/80 dark:bg-slate-800/90 backdrop-blur-md border border-white/60 dark:border-slate-700 
-                ${isFloating ? 'w-[500px] max-w-[95vw] shadow-2xl rounded-3xl animate-in zoom-in-95 fade-in duration-200' : 'hover:border-brand-red/30 dark:hover:border-red-500/30 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer h-full'}
+                ${isFloating ? 'w-[500px] max-w-[95vw] shadow-2xl rounded-3xl animate-in zoom-in-95 fade-in duration-200' : 'hover:border-advanta-green/30 dark:hover:border-red-500/30 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer h-full'}
                 ${isFloating ? 'p-6' : 'p-1.5'}
             `}
             onClick={(e) => {
@@ -253,7 +253,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                         <select
                             value={editedEvent.priority}
                             onChange={(e) => setEditedEvent({ ...editedEvent, priority: e.target.value })}
-                            className="text-[10px] font-bold uppercase rounded-full border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-2 py-1 focus:ring-1 focus:ring-brand-red dark:focus:ring-red-500 outline-none"
+                            className="text-[10px] font-bold uppercase rounded-full border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-slate-100 px-2 py-1 focus:ring-1 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
                         >
                             <option value="low">Baja</option>
                             <option value="medium">Media</option>
@@ -280,7 +280,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                             <select
                                 value={editedEvent.type}
                                 onChange={(e) => setEditedEvent({ ...editedEvent, type: e.target.value })}
-                                className="text-xs font-bold rounded-full border border-slate-200 bg-slate-50 px-2 py-1 focus:ring-1 focus:ring-brand-red outline-none"
+                                className="text-xs font-bold rounded-full border border-slate-200 bg-slate-50 px-2 py-1 focus:ring-1 focus:ring-advanta-green outline-none"
                             >
                                 {Object.entries(typeConfig).map(([key, value]) => (
                                     <option key={key} value={key}>{value.label}</option>
@@ -306,7 +306,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                     )}
 
                     {!isFloating && (
-                        <div className="ml-auto text-slate-400 hover:text-brand-red transition-colors opacity-0 group-hover:opacity-100">
+                        <div className="ml-auto text-slate-400 hover:text-advanta-green transition-colors opacity-0 group-hover:opacity-100">
                             <Maximize2 size={14} />
                         </div>
                     )}
@@ -317,11 +317,11 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                     <input
                         value={editedEvent.title}
                         onChange={(e) => setEditedEvent({ ...editedEvent, title: e.target.value })}
-                        className="w-full text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-300 dark:border-slate-600 focus:border-brand-red dark:focus:border-red-500 focus:outline-none bg-transparent mb-2 pb-1 pr-24"
+                        className="w-full text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-300 dark:border-slate-600 focus:border-advanta-green dark:focus:border-red-500 focus:outline-none bg-transparent mb-2 pb-1 pr-24"
                         placeholder="Título de la actividad"
                     />
                 ) : (
-                    <h3 className={`font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors ${isFloating ? 'text-xl mb-1 pr-32' : 'text-sm leading-tight mb-0.5 line-clamp-2'}`}>
+                    <h3 className={`font-bold text-slate-800 dark:text-slate-100 leading-tight group-hover:text-advanta-green dark:group-hover:text-red-400 transition-colors ${isFloating ? 'text-xl mb-1 pr-32' : 'text-sm leading-tight mb-0.5 line-clamp-2'}`}>
                         {editedEvent.title}
                     </h3>
                 )}
@@ -360,7 +360,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                             <div className="space-y-1">
                                 <label className="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-500 tracking-wider">Tiempo Estimado</label>
                                 <div className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600">
-                                    <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 border-t-brand-red dark:border-t-red-500 animate-spin opacity-50" />
+                                    <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-600 border-t-advanta-green dark:border-t-red-500 animate-spin opacity-50" />
                                     <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{durationString}</span>
                                 </div>
                             </div>
@@ -388,7 +388,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                                 <textarea
                                     value={editedEvent.description}
                                     onChange={(e) => setEditedEvent({ ...editedEvent, description: e.target.value })}
-                                    className="w-full p-3 bg-white rounded-xl border border-slate-300 focus:border-brand-red focus:ring-1 focus:ring-brand-red outline-none text-sm text-slate-600 min-h-[100px]"
+                                    className="w-full p-3 bg-white rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-1 focus:ring-advanta-green outline-none text-sm text-slate-600 min-h-[100px]"
                                 />
                             ) : (
                                 <div className="p-3 bg-white dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600 shadow-sm text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-h-[120px] overflow-y-auto">
@@ -454,7 +454,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                                 e.stopPropagation();
                                 setShowDetails(true);
                             }}
-                            className="flex-shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-brand-red dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                            className="flex-shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-advanta-green dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
                             title="Opciones"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -477,10 +477,10 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                         e.stopPropagation();
                         setShowDetails(true);
                     }}
-                    className="group relative bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg p-1.5 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex items-center gap-2 hover:border-brand-red/30 dark:hover:border-red-500/30"
+                    className="group relative bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-lg p-1.5 shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex items-center gap-2 hover:border-advanta-green/30 dark:hover:border-red-500/30"
                 >
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight group-hover:text-brand-red dark:group-hover:text-red-400 transition-colors">{editedEvent.title}</p>
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate leading-tight group-hover:text-advanta-green dark:group-hover:text-red-400 transition-colors">{editedEvent.title}</p>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{safeFormat(editedEvent.start, 'HH:mm')}</p>
                     </div>
                     {/* Three-dot menu button */}
@@ -489,7 +489,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                             e.stopPropagation();
                             setShowDetails(true);
                         }}
-                        className="flex-shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-brand-red dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                        className="flex-shrink-0 p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-advanta-green dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
                         title="Opciones"
                     >
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -540,7 +540,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                             type="date"
                             value={tempDate || editedEvent.scheduled_date}
                             onChange={(e) => setTempDate(e.target.value)}
-                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
+                            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-advanta-green focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
                             autoFocus
                         />
                         <div className="flex gap-2 mt-4">
@@ -555,7 +555,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                             </button>
                             <button
                                 onClick={handleDateChangeSave}
-                                className="flex-1 px-4 py-2 bg-brand-red text-white rounded-lg hover:bg-red-700 transition-colors font-bold"
+                                className="flex-1 px-4 py-2 bg-advanta-green text-white rounded-lg hover:bg-red-700 transition-colors font-bold"
                             >
                                 Guardar
                             </button>

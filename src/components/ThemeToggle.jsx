@@ -20,7 +20,7 @@ const ThemeToggle = () => {
                     className={`
                         flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all
                         ${themeMode === value
-                            ? 'bg-white dark:bg-slate-700 text-brand-red shadow-sm'
+                            ? 'bg-white dark:bg-slate-700 text-advanta-green shadow-sm'
                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                         }
                     `}

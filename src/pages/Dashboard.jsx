@@ -249,7 +249,7 @@ const Dashboard = () => {
                         onTouchStart={(e) => {
                             e.stopPropagation();
                         }}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#E76E53] dark:hover:bg-[#D55E43] hover:text-white transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 group cursor-pointer touch-manipulation"
+                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#87a330] dark:hover:bg-[#6a8532] hover:text-white transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 group cursor-pointer touch-manipulation"
                         title="Cerrar Sesión"
                         type="button"
                         aria-label="Cerrar Sesión"
@@ -403,11 +403,11 @@ const Dashboard = () => {
                     {/* Contactos */}
                     <motion.div
                         variants={itemVariants}
-                        className="bg-[#E76E53]/10 dark:from-teal-900 dark:via-teal-800 dark:to-teal-900 border border-[#E76E53]/30 dark:border-teal-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-[#87a330]/10 dark:from-teal-900 dark:via-teal-800 dark:to-teal-900 border border-[#87a330]/30 dark:border-teal-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
                     >
                         <div className="flex items-start justify-between mb-3">
-                            <div className="w-10 h-10 bg-[#E76E53]/20 dark:bg-teal-600/40 rounded-xl flex items-center justify-center">
-                                <Users className="w-5 h-5 text-[#E76E53] dark:text-teal-200" />
+                            <div className="w-10 h-10 bg-[#87a330]/20 dark:bg-teal-600/40 rounded-xl flex items-center justify-center">
+                                <Users className="w-5 h-5 text-[#87a330] dark:text-teal-200" />
                             </div>
                             <div className="flex items-center gap-1 bg-[#28A745]/20 dark:bg-teal-600/40 px-2 py-1 rounded-full">
                                 <TrendingUp className="w-3 h-3 text-[#28A745] dark:text-teal-200" />

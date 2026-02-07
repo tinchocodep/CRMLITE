@@ -202,7 +202,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     name="trade_name"
                                     value={formData.trade_name || ''}
                                     onChange={handleChange}
-                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -211,7 +211,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     name="legal_name"
                                     value={formData.legal_name || ''}
                                     onChange={handleChange}
-                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -220,7 +220,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     name="cuit"
                                     value={formData.cuit}
                                     onChange={handleChange}
-                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -229,7 +229,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     name="city"
                                     value={formData.city || ''}
                                     onChange={handleChange}
-                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -238,7 +238,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                     name="province"
                                     value={formData.province || ''}
                                     onChange={handleChange}
-                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red outline-none"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -267,7 +267,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                         className={`
                                             relative cursor-pointer rounded-xl p-3 border-2 transition-all duration-200 flex items-center gap-2 justify-center
                                             ${formData.status === option.id
-                                                ? `${option.color} ring-2 ring-offset-1 ring-brand-red/30`
+                                                ? `${option.color} ring-2 ring-offset-1 ring-advanta-green/30`
                                                 : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
                                             }
                                         `}
@@ -276,7 +276,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                             {option.label}
                                         </span>
                                         {formData.status === option.id && (
-                                            <Check size={14} strokeWidth={3} className="text-brand-red absolute top-2 right-2" />
+                                            <Check size={14} strokeWidth={3} className="text-advanta-green absolute top-2 right-2" />
                                         )}
                                     </button>
                                 ))}
@@ -405,7 +405,7 @@ END:VCARD`;
                                                                                 a.click();
                                                                                 window.URL.revokeObjectURL(url);
                                                                             }}
-                                                                            className="p-1.5 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
+                                                                            className="p-1.5 bg-advanta-green/10 hover:bg-advanta-green/20 text-advanta-green rounded-lg transition-colors flex items-center gap-1 text-[10px] font-bold"
                                                                             title="Agregar a contactos"
                                                                         >
                                                                             <UserPlus size={12} />
@@ -484,7 +484,7 @@ END:VCARD`;
                                                                 placeholder="Buscar por nombre o CUIT..."
                                                                 value={contactSearchTerm}
                                                                 onChange={(e) => setContactSearchTerm(e.target.value)}
-                                                                className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:border-brand-red outline-none"
+                                                                className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:border-advanta-green outline-none"
                                                             />
                                                             {contactSearchTerm && filteredContacts.length > 0 && !selectedContactToLink && (
                                                                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
@@ -524,7 +524,7 @@ END:VCARD`;
                                                                     placeholder="Rol (ej: Gerente, Encargado de Compras...)"
                                                                     value={linkRole}
                                                                     onChange={(e) => setLinkRole(e.target.value)}
-                                                                    className="w-full p-2 bg-white border border-blue-300 rounded-lg text-sm focus:border-brand-red outline-none"
+                                                                    className="w-full p-2 bg-white border border-blue-300 rounded-lg text-sm focus:border-advanta-green outline-none"
                                                                 />
                                                                 <div className="flex gap-2">
                                                                     <button
@@ -533,7 +533,7 @@ END:VCARD`;
                                                                             handleLinkExistingContact();
                                                                         }}
                                                                         disabled={isLinking || !linkRole.trim()}
-                                                                        className="flex-1 px-3 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                        className="flex-1 px-3 py-2 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                     >
                                                                         {isLinking ? 'Vinculando...' : 'Vincular'}
                                                                     </button>
@@ -571,7 +571,7 @@ END:VCARD`;
                                             {/* Create new contact button */}
                                             <button
                                                 onClick={handleCreateContact}
-                                                className="w-full px-4 py-3 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                className="w-full px-4 py-3 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <UserPlus size={16} />
                                                 Crear Nuevo Contacto
@@ -601,7 +601,7 @@ END:VCARD`;
                                 value={formData.notes}
                                 onChange={handleChange}
                                 placeholder="Escribe aquí cualquier información relevante sobre el prospecto..."
-                                className="w-full h-48 p-4 bg-yellow-50/30 border border-yellow-200 rounded-xl focus:bg-white focus:border-brand-red focus:ring-1 focus:ring-brand-red/50 outline-none text-sm leading-relaxed resize-none"
+                                className="w-full h-48 p-4 bg-yellow-50/30 border border-yellow-200 rounded-xl focus:bg-white focus:border-advanta-green focus:ring-1 focus:ring-advanta-green/50 outline-none text-sm leading-relaxed resize-none"
                             />
                         </div>
                     </div>
@@ -621,7 +621,7 @@ END:VCARD`;
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#E76E53] to-red-600 text-white font-bold shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 hover:from-[#D55E43] hover:to-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#87a330] to-green-600 text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#6a8532] hover:to-green-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         <Save size={18} />
                         Confirmar

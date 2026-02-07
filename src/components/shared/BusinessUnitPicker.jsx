@@ -98,7 +98,7 @@ const BusinessUnitPicker = ({
                 className={`w-full px-3 py-2.5 text-sm rounded-xl border ${selectedEntity
                     ? 'border-emerald-300 bg-emerald-50'
                     : 'border-slate-300 bg-white'
-                    } focus:border-brand-red focus:ring-2 focus:ring-red-100 outline-none text-left flex items-center justify-between gap-2 transition-all`}
+                    } focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none text-left flex items-center justify-between gap-2 transition-all`}
             >
                 {selectedEntity ? (
                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
@@ -143,7 +143,7 @@ const BusinessUnitPicker = ({
                                 placeholder="Buscar por nombre o CUIT..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:border-brand-red outline-none"
+                                className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-200 rounded-lg focus:border-advanta-green outline-none"
                                 autoFocus
                             />
                         </div>
@@ -155,7 +155,7 @@ const BusinessUnitPicker = ({
                             type="button"
                             onClick={() => setActiveTab('all')}
                             className={`flex-1 px-4 py-2.5 text-xs font-semibold transition-colors ${activeTab === 'all'
-                                ? 'text-brand-red border-b-2 border-brand-red bg-white'
+                                ? 'text-advanta-green border-b-2 border-advanta-green bg-white'
                                 : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
@@ -165,7 +165,7 @@ const BusinessUnitPicker = ({
                             type="button"
                             onClick={() => setActiveTab('clients')}
                             className={`flex-1 px-4 py-2.5 text-xs font-semibold transition-colors ${activeTab === 'clients'
-                                ? 'text-brand-red border-b-2 border-brand-red bg-white'
+                                ? 'text-advanta-green border-b-2 border-advanta-green bg-white'
                                 : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
@@ -175,7 +175,7 @@ const BusinessUnitPicker = ({
                             type="button"
                             onClick={() => setActiveTab('prospects')}
                             className={`flex-1 px-4 py-2.5 text-xs font-semibold transition-colors ${activeTab === 'prospects'
-                                ? 'text-brand-red border-b-2 border-brand-red bg-white'
+                                ? 'text-advanta-green border-b-2 border-advanta-green bg-white'
                                 : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
@@ -230,7 +230,7 @@ const BusinessUnitPicker = ({
                                                 </div>
                                             </td>
                                             <td className="py-2.5 px-3">
-                                                <p className="font-semibold text-sm text-slate-800 group-hover:text-brand-red transition-colors truncate">
+                                                <p className="font-semibold text-sm text-slate-800 group-hover:text-advanta-green transition-colors truncate">
                                                     {entity.displayName}
                                                 </p>
                                                 {entity.legal_name && entity.legal_name !== entity.displayName && (

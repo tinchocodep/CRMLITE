@@ -53,8 +53,8 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, allContacts })
             return <ArrowUpDown size={14} className="opacity-40" />;
         }
         return sortConfig.direction === 'asc'
-            ? <ArrowUp size={14} className="text-brand-red" />
-            : <ArrowDown size={14} className="text-brand-red" />;
+            ? <ArrowUp size={14} className="text-advanta-green" />
+            : <ArrowDown size={14} className="text-advanta-green" />;
     };
 
     const formatDate = (dateString) => {
@@ -188,7 +188,7 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, allContacts })
                                         <div className="flex items-center justify-end gap-2">
                                             <button
                                                 onClick={() => onEdit(prospect)}
-                                                className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
+                                                className="p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-green dark:hover:text-advanta-green hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
                                                 title="Editar"
                                             >
                                                 <Edit2 size={16} />

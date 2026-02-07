@@ -88,10 +88,10 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
                     {selectedContacts.map(contact => (
                         <div
                             key={contact.id}
-                            className="flex items-center justify-between p-3 bg-brand-red/5 border border-brand-red/20 rounded-xl group hover:bg-brand-red/10 transition-colors"
+                            className="flex items-center justify-between p-3 bg-advanta-green/5 border border-advanta-green/20 rounded-xl group hover:bg-advanta-green/10 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-brand-red/20 text-brand-red flex items-center justify-center font-bold text-sm">
+                                <div className="w-8 h-8 rounded-full bg-advanta-green/20 text-advanta-green flex items-center justify-center font-bold text-sm">
                                     {contact.firstName?.[0]}{contact.lastName?.[0]}
                                 </div>
                                 <div>
@@ -134,7 +134,7 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
                             e.target.value = ''; // Reset select
                         }
                     }}
-                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-brand-red focus:bg-white focus:ring-4 ring-brand-red/5 transition-all outline-none cursor-pointer"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green focus:bg-white focus:ring-4 ring-advanta-green/5 transition-all outline-none cursor-pointer"
                 >
                     <option value="">+ Agregar contacto...</option>
                     {unselectedContacts.map(contact => (

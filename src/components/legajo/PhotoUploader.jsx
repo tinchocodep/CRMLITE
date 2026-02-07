@@ -140,7 +140,7 @@ const PhotoUploader = ({
                     ? 'bg-emerald-50/50 border-emerald-200'
                     : hasNewFile
                         ? 'bg-blue-50/50 border-blue-300'
-                        : 'bg-slate-50 border-slate-200 hover:border-brand-red/30 hover:bg-red-50/10'
+                        : 'bg-slate-50 border-slate-200 hover:border-advanta-green/30 hover:bg-red-50/10'
                 }
             `}>
                 {/* Status Indicator */}
@@ -179,7 +179,7 @@ const PhotoUploader = ({
                     <div className="w-full mt-3">
                         <div className="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-brand-red transition-all duration-300"
+                                className="h-full bg-advanta-green transition-all duration-300"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
@@ -198,7 +198,7 @@ const PhotoUploader = ({
                             <>
                                 <button
                                     onClick={() => setShowCamera(true)}
-                                    className="flex-1 px-4 py-2 bg-brand-red text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                                    className="flex-1 px-4 py-2 bg-advanta-green text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Camera size={16} />
                                     Tomar Foto

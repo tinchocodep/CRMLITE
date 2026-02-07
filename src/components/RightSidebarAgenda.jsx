@@ -93,13 +93,13 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         switch (priority?.toLowerCase()) {
             case 'high':
             case 'alta':
-                return 'border-l-[#E76E53]';
+                return 'border-l-[#87a330]';
             case 'medium':
             case 'media':
-                return 'border-l-[#E76E53]/60';
+                return 'border-l-[#87a330]/60';
             case 'low':
             case 'baja':
-                return 'border-l-[#E76E53]/30';
+                return 'border-l-[#87a330]/30';
             default:
                 return 'border-l-slate-300';
         }
@@ -169,7 +169,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         return (
             <aside className={`fixed top-0 h-screen w-64 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-xl transition-all duration-300 ${isMainSidebarExpanded ? 'right-[-256px]' : 'right-0 hidden lg:block'}`}>
                 <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E76E53]"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#87a330]"></div>
                 </div>
             </aside>
         );
@@ -238,7 +238,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                             onClick={(e) => toggleMenu(activity.id, e)}
                                                             className="p-0.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-all"
                                                         >
-                                                            <MoreVertical size={12} className="text-slate-400 hover:text-brand-red dark:hover:text-red-400" />
+                                                            <MoreVertical size={12} className="text-slate-400 hover:text-advanta-green dark:hover:text-red-400" />
                                                         </button>
                                                     </div>
 
@@ -308,7 +308,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                                 type="date"
                                                                 value={tempDate}
                                                                 onChange={(e) => setTempDate(e.target.value)}
-                                                                className="w-full px-2 py-1 text-[11px] border border-slate-300 dark:border-slate-600 rounded focus:ring-1 focus:ring-brand-red focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
+                                                                className="w-full px-2 py-1 text-[11px] border border-slate-300 dark:border-slate-600 rounded focus:ring-1 focus:ring-advanta-green focus:border-transparent dark:bg-slate-700 dark:text-slate-100"
                                                                 onClick={(e) => e.stopPropagation()}
                                                             />
                                                             <div className="flex gap-1">
@@ -324,7 +324,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => handleDateChange(activity.id, e)}
-                                                                    className="flex-1 px-2 py-1 text-[10px] bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded transition-colors font-bold"
+                                                                    className="flex-1 px-2 py-1 text-[10px] bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded transition-colors font-bold"
                                                                 >
                                                                     Guardar
                                                                 </button>

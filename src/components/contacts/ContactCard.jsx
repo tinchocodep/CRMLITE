@@ -54,7 +54,7 @@ const ContactCard = ({ contact, onEdit, onDelete, isExpanded, onToggleExpand }) 
                             {contact.email && (
                                 <a
                                     href={`mailto:${contact.email}`}
-                                    className="p-2 bg-brand-red/10 hover:bg-brand-red/20 text-brand-red rounded-lg transition-colors flex items-center gap-1"
+                                    className="p-2 bg-advanta-green/10 hover:bg-advanta-green/20 text-advanta-green rounded-lg transition-colors flex items-center gap-1"
                                     title="Enviar email"
                                     onClick={(e) => e.stopPropagation()}
                                 >
@@ -128,7 +128,7 @@ END:VCARD`;
                     <div className="flex items-center gap-2 pt-2">
                         <button
                             onClick={(e) => { e.stopPropagation(); onEdit(contact); }}
-                            className="flex-1 px-3 py-2 bg-slate-100 hover:bg-brand-red hover:text-white text-slate-700 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5"
+                            className="flex-1 px-3 py-2 bg-slate-100 hover:bg-advanta-green hover:text-white text-slate-700 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5"
                         >
                             <Pencil size={14} />
                             Editar
@@ -209,7 +209,7 @@ END:VCARD`;
                 {/* Footer Toggle */}
                 <button
                     onClick={onToggleExpand}
-                    className="w-full py-2.5 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 hover:text-brand-red hover:bg-slate-50 transition-colors border-t-2 border-slate-200"
+                    className="w-full py-2.5 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 hover:text-advanta-green hover:bg-slate-50 transition-colors border-t-2 border-slate-200"
                 >
                     {isExpanded ? 'Ver Menos' : 'Ver Detalles'}
                     {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}

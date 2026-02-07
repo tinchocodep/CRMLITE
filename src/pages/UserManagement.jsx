@@ -81,7 +81,7 @@ const UserManagement = () => {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-brand-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <div className="w-16 h-16 border-4 border-advanta-green border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-slate-600 dark:text-slate-400">Cargando usuarios...</p>
                 </div>
             </div>
@@ -98,10 +98,10 @@ const UserManagement = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 pb-40">
             {/* Header */}
-            <div className="bg-gradient-to-br from-white via-red-50 to-red-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
+            <div className="bg-gradient-to-br from-white via-red-50 to-green-100 dark:from-slate-800 dark:via-slate-900 dark:to-black px-4 pt-6 pb-8 border-b border-red-200 dark:border-slate-700">
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-brand-red rounded-xl flex items-center justify-center">
+                        <div className="w-12 h-12 bg-advanta-green rounded-xl flex items-center justify-center">
                             <Shield className="w-6 h-6 text-white" />
                         </div>
                         <div>
@@ -114,7 +114,7 @@ const UserManagement = () => {
                     {isAdmin && (
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-brand-red text-white rounded-xl font-semibold hover:bg-red-700 transition shadow-lg"
+                            className="flex items-center gap-2 px-4 py-2 bg-advanta-green text-white rounded-xl font-semibold hover:bg-red-700 transition shadow-lg"
                         >
                             <UserPlus size={20} />
                             <span className="hidden sm:inline">Crear Usuario</span>
@@ -127,7 +127,7 @@ const UserManagement = () => {
                     <button
                         onClick={() => setActiveTab('usuarios')}
                         className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition ${activeTab === 'usuarios'
-                            ? 'bg-brand-red text-white shadow-lg'
+                            ? 'bg-advanta-green text-white shadow-lg'
                             : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                             }`}
                     >
@@ -136,7 +136,7 @@ const UserManagement = () => {
                     <button
                         onClick={() => setActiveTab('equipos')}
                         className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition ${activeTab === 'equipos'
-                            ? 'bg-brand-red text-white shadow-lg'
+                            ? 'bg-advanta-green text-white shadow-lg'
                             : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                             }`}
                     >
@@ -154,7 +154,7 @@ const UserManagement = () => {
                                 placeholder="Buscar por nombre o email..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-red text-slate-800 dark:text-white"
+                                className="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-advanta-green text-slate-800 dark:text-white"
                             />
                         </div>
 
@@ -170,7 +170,7 @@ const UserManagement = () => {
                             </div>
                             <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
                                 <p className="text-xs text-slate-500 dark:text-slate-400">Admins</p>
-                                <p className="text-2xl font-bold text-brand-red">{users.filter(u => u.role === 'admin').length}</p>
+                                <p className="text-2xl font-bold text-advanta-green">{users.filter(u => u.role === 'admin').length}</p>
                             </div>
                         </div>
                     </>
