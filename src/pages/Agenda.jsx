@@ -418,7 +418,7 @@ const Agenda = () => {
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-[#87a330] to-green-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-advanta-green/20 hover:shadow-advanta-green/40 hover:from-[#6a8532] hover:to-green-700 transition-all"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white text-sm font-bold rounded-xl shadow-lg shadow-advanta-green/20 hover:shadow-advanta-green/40 hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all"
                     >
                         <Plus size={18} strokeWidth={3} />
                         <span className="inline">Nuevo</span>
