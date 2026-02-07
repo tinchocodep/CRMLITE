@@ -89,13 +89,13 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                         <NavLink
                             key={module.path}
                             to={module.path}
-                            className={({ isActive }) => `
-                                flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative
-                                ${isActive || module.isCRM
-                                    ? 'bg-gradient-to-r from-advanta-green to-advanta-green-dark text-white shadow-lg shadow-green-500/30'
-                                    : 'text-slate-700 hover:bg-green-50 hover:text-advanta-green'
+                            className={({ isActive }) => {
+                                const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
+                                if (isActive || module.isCRM) {
+                                    return `${baseClasses} bg-advanta-green text-white shadow-lg`;
                                 }
-                            `}
+                                return `${baseClasses} text-slate-800 hover:bg-green-50 hover:text-advanta-green-dark`;
+                            }}
                         >
                             <module.icon
                                 size={22}
@@ -117,7 +117,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-gradient-to-r from-advanta-green to-advanta-green-dark text-white hover:shadow-lg hover:shadow-green-500/30 transition-all duration-200 mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green text-white hover:shadow-lg transition-all duration-200 mb-2"
                 >
                     <Plus size={22} className="flex-shrink-0" />
                     <span
