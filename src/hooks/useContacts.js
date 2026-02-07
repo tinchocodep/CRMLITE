@@ -78,7 +78,7 @@ export const useContacts = () => {
                     lastName: contact.last_name,
                     email: contact.email,
                     phone: contact.phone,
-                    position: contact.position,
+                    notes: contact.notes,
                     companies: contactCompanies,
                     createdAt: contact.created_at,
                     updatedAt: contact.updated_at,
@@ -118,9 +118,10 @@ export const useContacts = () => {
                     last_name: contactData.lastName || contactData.last_name,
                     email: contactData.email,
                     phone: contactData.phone,
-                    position: contactData.position || null,
+                    notes: contactData.notes,
                     tenant_id: userData.tenant_id,
-                    comercial_id: userData.comercial_id
+                    comercial_id: userData.comercial_id,
+                    created_by: user?.id
                 }])
                 .select()
                 .single();
@@ -137,6 +138,7 @@ export const useContacts = () => {
                 const companyRelations = contactData.companies.map(company => ({
                     contact_id: newContact.id,
                     company_id: company.companyId,
+                    role: company.role,
                     is_primary: company.isPrimary,
                     tenant_id: userData.tenant_id
                 }));
@@ -179,7 +181,7 @@ export const useContacts = () => {
                     last_name: contactData.lastName,
                     email: contactData.email,
                     phone: contactData.phone,
-                    position: contactData.position || null,
+                    notes: contactData.notes,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
@@ -201,6 +203,7 @@ export const useContacts = () => {
                 const companyRelations = contactData.companies.map(company => ({
                     contact_id: id,
                     company_id: company.companyId,
+                    role: company.role,
                     is_primary: company.isPrimary,
                     tenant_id: userData.tenant_id
                 }));
@@ -243,7 +246,7 @@ export const useContacts = () => {
     };
 
     // Link contact to company
-    const linkToCompany = async (contactId, companyId, isPrimary = false) => {
+    const linkToCompany = async (contactId, companyId, role, isPrimary = false) => {
         try {
             setError(null);
 
@@ -269,6 +272,7 @@ export const useContacts = () => {
                 .insert([{
                     contact_id: contactId,
                     company_id: companyId,
+                    role,
                     is_primary: isPrimary,
                     tenant_id: userData.tenant_id
                 }]);
