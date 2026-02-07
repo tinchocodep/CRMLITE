@@ -89,6 +89,7 @@ export const useContacts = () => {
 
             setContacts(transformedData);
         } catch (err) {
+            console.error('Error fetching contacts:', err);
             setError(err.message);
         } finally {
             setLoading(false);
