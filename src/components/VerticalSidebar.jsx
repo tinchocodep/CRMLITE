@@ -37,11 +37,11 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
         <aside
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`fixed left-0 top-0 h-screen bg-white border-r border-slate-200 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
+            className={`fixed left-0 top-0 h-screen bg-transparent border-r border-white/20 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
                 }`}
         >
             {/* Logo Section */}
-            <div className="h-20 flex items-center justify-center border-b border-slate-200">
+            <div className="h-20 flex items-center justify-center border-b border-white/20">
                 <img
                     src="/logo-advanta.png"
                     alt="Advanta"
@@ -113,7 +113,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
             </nav>
 
             {/* Bottom Actions */}
-            <div className="border-t border-slate-200 p-2">
+            <div className="border-t border-white/20 p-2">
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
