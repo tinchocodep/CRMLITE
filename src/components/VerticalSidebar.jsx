@@ -37,7 +37,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
         <aside
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className={`fixed left-0 top-0 h-screen bg-black/20 backdrop-blur-sm border-r border-white/20 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
+            className={`fixed left-0 top-0 h-screen border-r border-white/20 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
                 }`}
         >
             {/* Logo Section */}
