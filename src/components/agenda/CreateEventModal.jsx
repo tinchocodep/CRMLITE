@@ -424,7 +424,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                className="px-8 py-2.5 rounded-xl bg-advanta-green text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:bg-red-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                                className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 Crear Actividad
                             </button>
