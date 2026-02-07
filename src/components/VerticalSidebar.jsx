@@ -97,7 +97,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                 }
                                 return `${baseClasses} hover:opacity-80`;
                             }}
-                            style={{ backgroundColor: '#6a8532' }}
+                            style={{ backgroundColor: '#a1c349' }}
                         >
                             <module.icon
                                 size={22}
@@ -119,7 +119,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    style={{ backgroundColor: '#6a8532' }}
+                    style={{ backgroundColor: '#a1c349' }}
                     className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:opacity-80 transition-all duration-200 mb-2"
                 >
                     <Plus size={22} className="flex-shrink-0" />
@@ -134,7 +134,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Settings Button */}
                 <NavLink
                     to="/configuracion"
-                    style={{ backgroundColor: '#6a8532' }}
+                    style={{ backgroundColor: '#a1c349' }}
                     className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:opacity-80 transition-all duration-200"
                 >
                     <Settings size={22} className="flex-shrink-0" />
