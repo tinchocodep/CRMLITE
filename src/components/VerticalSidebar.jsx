@@ -62,7 +62,8 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                     e.preventDefault();
                                     e.stopPropagation();
                                 }}
-                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-60 cursor-not-allowed bg-advanta-green-dark text-slate-800"
+                                style={{ backgroundColor: '#6a8532' }}
+                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-60 cursor-not-allowed text-slate-800"
                             >
                                 <module.icon
                                     size={22}
@@ -90,12 +91,13 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             key={module.path}
                             to={module.path}
                             className={({ isActive }) => {
-                                const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
+                                const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative text-slate-800';
                                 if (isActive || module.isCRM) {
-                                    return `${baseClasses} bg-advanta-green-dark text-slate-800 shadow-lg`;
+                                    return `${baseClasses} shadow-lg`;
                                 }
-                                return `${baseClasses} bg-advanta-green-dark text-slate-800 hover:opacity-80`;
+                                return `${baseClasses} hover:opacity-80`;
                             }}
+                            style={{ backgroundColor: '#6a8532' }}
                         >
                             <module.icon
                                 size={22}
@@ -117,7 +119,8 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green-dark text-slate-800 hover:opacity-80 transition-all duration-200 mb-2"
+                    style={{ backgroundColor: '#6a8532' }}
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:opacity-80 transition-all duration-200 mb-2"
                 >
                     <Plus size={22} className="flex-shrink-0" />
                     <span
@@ -131,7 +134,8 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Settings Button */}
                 <NavLink
                     to="/configuracion"
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-advanta-green-dark text-slate-800 hover:opacity-80 transition-all duration-200"
+                    style={{ backgroundColor: '#6a8532' }}
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:opacity-80 transition-all duration-200"
                 >
                     <Settings size={22} className="flex-shrink-0" />
                     <span
