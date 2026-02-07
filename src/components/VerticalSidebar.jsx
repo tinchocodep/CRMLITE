@@ -45,7 +45,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 <img
                     src="/logo-advanta.png"
                     alt="Advanta"
-                    className={`object-contain transition-all duration-300 ${isHovered ? 'w-16 h-16' : 'w-14 h-14'
+                    className={`object-contain transition-all duration-300 ${isHovered ? 'w-24 h-24' : 'w-20 h-20'
                         }`}
                 />
             </div>
