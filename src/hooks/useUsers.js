@@ -270,37 +270,29 @@ export const useUsers = () => {
                 });
             }
 
-            // Wait a bit for the trigger to create the user in public.users
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Verify the user was created with correct tenant_id
-            const { data: verifyData, error: verifyError } = await supabase
+            // Manually create user in public.users (trigger doesn't work reliably)
+            console.log('📝 Manually creating user in public.users...');
+            const { data: insertData, error: insertError } = await supabase
                 .from('users')
-                .select('id, email, full_name, role, tenant_id')
-                .eq('id', signUpData.user.id)
+                .insert([{
+                    id: signUpData.user.id,
+                    email: userData.email,
+                    full_name: userData.fullName,
+                    role: userData.role,
+                    tenant_id: tenantId,
+                    is_active: true
+                }])
+                .select()
                 .single();
 
-            if (verifyError) {
-                console.error('Verification error:', verifyError);
-                throw new Error('User created but verification failed');
+            if (insertError) {
+                console.error('❌ Error creating user in public.users:', insertError);
+                throw new Error(`Failed to create user record: ${insertError.message}`);
             }
 
-            // If tenant_id is still wrong, update it (fallback)
-            if (verifyData.tenant_id !== tenantId) {
-                console.warn('Tenant ID mismatch, updating...');
-                const { error: updateError } = await supabase
-                    .from('users')
-                    .update({
-                        role: userData.role,
-                        full_name: userData.fullName,
-                        tenant_id: tenantId
-                    })
-                    .eq('id', signUpData.user.id);
+            console.log('✅ User created in public.users:', insertData);
 
-                if (updateError) {
-                    console.error('Role update error:', updateError);
-                }
-            }
+
 
             // Auto-create comercial for ALL users (admin, supervisor, user)
             let comercialId = null;
