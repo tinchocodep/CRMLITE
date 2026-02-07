@@ -62,8 +62,8 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                     e.preventDefault();
                                     e.stopPropagation();
                                 }}
-                                style={{ backgroundColor: '#a1c349' }}
-                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-60 cursor-not-allowed text-slate-800"
+                                style={{ backgroundColor: '#f5f5f5' }}
+                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-50 cursor-not-allowed text-slate-400"
                             >
                                 <module.icon
                                     size={22}
@@ -95,9 +95,11 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                 if (isActive || module.isCRM) {
                                     return `${baseClasses} shadow-lg`;
                                 }
-                                return `${baseClasses} hover:opacity-80`;
+                                return `${baseClasses} hover:bg-slate-100`;
                             }}
-                            style={{ backgroundColor: '#a1c349' }}
+                            style={({ isActive }) => ({
+                                backgroundColor: (isActive || module.isCRM) ? '#a1c349' : 'transparent'
+                            })}
                         >
                             <module.icon
                                 size={22}
