@@ -237,37 +237,78 @@ export const useUsers = () => {
         }
 
         try {
-            console.log('🔵 Creating user via Edge Function...');
+            console.log('🔵 Creating user...');
 
-            // Call Edge Function to create user
-            const { data, error } = await supabase.functions.invoke('create-user', {
-                body: {
-                    email: userData.email,
-                    password: userData.password,
-                    fullName: userData.fullName,
-                    role: userData.role,
-                    tenantId: tenantId
+            // Use signUp to create user in auth.users
+            // The database trigger will automatically create the user in public.users
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                email: userData.email,
+                password: userData.password,
+                options: {
+                    data: {
+                        full_name: userData.fullName,
+                        role: userData.role,
+                        tenant_id: tenantId
+                    }
                 }
             });
 
-            if (error) {
-                console.error('❌ Edge Function error:', error);
-                throw error;
+            if (signUpError) {
+                console.error('❌ SignUp error:', signUpError);
+                throw new Error(signUpError.message);
             }
 
-            if (!data.success) {
-                console.error('❌ Edge Function returned error:', data.error);
-                throw new Error(data.error);
+            if (!signUpData.user) {
+                throw new Error('User creation failed');
             }
 
-            console.log('✅ User created successfully via Edge Function:', data.user);
+            console.log('✅ User created in auth.users:', signUpData.user.id);
+
+            // Wait for trigger to create user in public.users
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Create comercial
+            const { data: comercialData, error: comercialError } = await supabase
+                .from('comerciales')
+                .insert([{
+                    name: userData.fullName,
+                    email: userData.email,
+                    tenant_id: tenantId,
+                    is_active: true
+                }])
+                .select()
+                .single();
+
+            if (comercialError) {
+                console.error('❌ Error creating comercial:', comercialError);
+                throw new Error(`Failed to create comercial: ${comercialError.message}`);
+            }
+
+            console.log('✅ Comercial created:', comercialData.id);
+
+            // Link comercial to user
+            const { error: linkError } = await supabase
+                .from('users')
+                .update({ comercial_id: comercialData.id })
+                .eq('id', signUpData.user.id);
+
+            if (linkError) {
+                console.error('❌ Error linking comercial:', linkError);
+            }
+
+            console.log('✅ User creation complete');
 
             // Refresh user list
             await fetchUsers();
 
             return {
                 success: true,
-                user: data.user
+                user: {
+                    id: signUpData.user.id,
+                    email: signUpData.user.email,
+                    full_name: userData.fullName,
+                    role: userData.role
+                }
             };
         } catch (err) {
             console.error('❌ Error creating user:', err.message);
