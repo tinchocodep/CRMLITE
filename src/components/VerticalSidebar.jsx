@@ -92,8 +92,8 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             className={({ isActive }) => `
                                 flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative
                                 ${isActive || module.isCRM
-                                    ? 'bg-gradient-to-r from-advanta-bronze to-advanta-orange text-white shadow-lg shadow-advanta-orange/30'
-                                    : 'text-slate-600 hover:bg-orange-50 hover:text-advanta-bronze'
+                                    ? 'bg-gradient-to-r from-advanta-green to-advanta-green-dark text-white shadow-lg shadow-green-500/30'
+                                    : 'text-slate-700 hover:bg-green-50 hover:text-advanta-green'
                                 }
                             `}
                         >
@@ -117,7 +117,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-gradient-to-r from-advanta-bronze to-advanta-orange text-white hover:shadow-lg hover:shadow-advanta-orange/30 transition-all duration-200 mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-gradient-to-r from-advanta-green to-advanta-green-dark text-white hover:shadow-lg hover:shadow-green-500/30 transition-all duration-200 mb-2"
                 >
                     <Plus size={22} className="flex-shrink-0" />
                     <span
