@@ -55,6 +55,7 @@ export const useUsers = () => {
 
         try {
             setLoading(true);
+            console.log('🔄 Fetching users for tenant:', tenantId);
 
             // Get all users with their comercial info using JOIN
             const { data: usersData, error: usersError } = await supabase
@@ -81,10 +82,11 @@ export const useUsers = () => {
                 comercial_name: user.comercial?.name || null
             }));
 
+            console.log('✅ Fetched', usersWithComerciales.length, 'users:', usersWithComerciales.map(u => u.email));
             setUsers(usersWithComerciales);
             setError(null);
         } catch (err) {
-            console.error('Error fetching users:', err);
+            console.error('❌ Error fetching users:', err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -265,7 +267,32 @@ export const useUsers = () => {
             console.log('✅ User created in auth.users:', signUpData.user.id);
 
             // Wait for trigger to create user in public.users
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            console.log('⏳ Waiting for trigger to create user in public.users...');
+            let userExists = false;
+            let attempts = 0;
+            const maxAttempts = 5;
+
+            while (!userExists && attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                attempts++;
+
+                const { data: checkUser } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('id', signUpData.user.id)
+                    .single();
+
+                if (checkUser) {
+                    userExists = true;
+                    console.log(`✅ User found in public.users after ${attempts} attempt(s)`);
+                } else {
+                    console.log(`⏳ Attempt ${attempts}/${maxAttempts}: User not yet in public.users...`);
+                }
+            }
+
+            if (!userExists) {
+                throw new Error('Trigger failed to create user in public.users after 5 seconds');
+            }
 
             // Create comercial
             const { data: comercialData, error: comercialError } = await supabase
