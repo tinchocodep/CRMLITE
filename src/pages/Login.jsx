@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import sailoLogo from '../assets/sailo-logo.png';
+import sailoLogo from '/logo-advanta.png';
 import { ArrowRight, Lock, Mail, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -102,8 +102,8 @@ const Login = () => {
         <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center relative overflow-hidden">
 
             {/* Background Decor */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-red-50 via-transparent to-transparent dark:from-red-950/20 dark:via-transparent dark:to-transparent z-0" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-blue-50 via-transparent to-transparent dark:from-blue-950/20 dark:via-transparent dark:to-transparent z-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-orange-50 via-transparent to-transparent dark:from-orange-950/20 dark:via-transparent dark:to-transparent z-0" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-yellow-50 via-transparent to-transparent dark:from-yellow-950/20 dark:via-transparent dark:to-transparent z-0" />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -121,8 +121,8 @@ const Login = () => {
                 >
                     <img
                         src={sailoLogo}
-                        alt="SAILO CRM"
-                        className="w-full max-w-[300px] md:max-w-[400px] lg:max-w-[500px] h-auto object-contain drop-shadow-2xl"
+                        alt="Advanta CRM"
+                        className="w-full max-w-[400px] md:max-w-[500px] lg:max-w-[600px] h-auto object-contain drop-shadow-2xl"
                     />
                 </motion.div>
 
@@ -160,7 +160,7 @@ const Login = () => {
                                 </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Mail size={20} className={`transition-colors ${errors.email ? 'text-red-500' : 'text-slate-400 group-focus-within:text-brand-red dark:group-focus-within:text-red-400'}`} />
+                                        <Mail size={20} className={`transition-colors ${errors.email ? 'text-red-500' : 'text-slate-400 group-focus-within:text-advanta-bronze-dark dark:group-focus-within:text-advanta-orange'}`} />
                                     </div>
                                     <input
                                         type="email"
@@ -168,7 +168,7 @@ const Login = () => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         placeholder="usuario@empresa.com"
-                                        className={`w-full pl-12 pr-4 py-3.5 md:py-4 bg-slate-50 dark:bg-slate-800 border ${errors.email ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-slate-700'} rounded-xl focus:outline-none focus:ring-2 ${errors.email ? 'focus:ring-red-500/20' : 'focus:ring-brand-red/20 dark:focus:ring-red-400/20'} focus:border-brand-red dark:focus:border-red-400 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 touch-manipulation`}
+                                        className={`w-full pl-12 pr-4 py-3.5 md:py-4 bg-slate-50 dark:bg-slate-800 border ${errors.email ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-slate-700'} rounded-xl focus:outline-none focus:ring-2 ${errors.email ? 'focus:ring-red-500/20' : 'focus:ring-advanta-bronze-dark/20 dark:focus:ring-advanta-orange/20'} focus:border-advanta-bronze-dark dark:focus:border-advanta-orange transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 touch-manipulation`}
                                         disabled={isLoading}
                                     />
                                 </div>
@@ -191,7 +191,7 @@ const Login = () => {
                                 </label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <Lock size={20} className={`transition-colors ${errors.password ? 'text-red-500' : 'text-slate-400 group-focus-within:text-brand-red dark:group-focus-within:text-red-400'}`} />
+                                        <Lock size={20} className={`transition-colors ${errors.password ? 'text-red-500' : 'text-slate-400 group-focus-within:text-advanta-bronze-dark dark:group-focus-within:text-advanta-orange'}`} />
                                     </div>
                                     <input
                                         type={showPassword ? 'text' : 'password'}
@@ -199,7 +199,7 @@ const Login = () => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         placeholder="••••••••"
-                                        className={`w-full pl-12 pr-12 py-3.5 md:py-4 bg-slate-50 dark:bg-slate-800 border ${errors.password ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-slate-700'} rounded-xl focus:outline-none focus:ring-2 ${errors.password ? 'focus:ring-red-500/20' : 'focus:ring-brand-red/20 dark:focus:ring-red-400/20'} focus:border-brand-red dark:focus:border-red-400 transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 touch-manipulation`}
+                                        className={`w-full pl-12 pr-12 py-3.5 md:py-4 bg-slate-50 dark:bg-slate-800 border ${errors.password ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-slate-700'} rounded-xl focus:outline-none focus:ring-2 ${errors.password ? 'focus:ring-red-500/20' : 'focus:ring-advanta-bronze-dark/20 dark:focus:ring-advanta-orange/20'} focus:border-advanta-bronze-dark dark:focus:border-advanta-orange transition-all text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 touch-manipulation`}
                                         disabled={isLoading}
                                     />
                                     <button
@@ -231,7 +231,7 @@ const Login = () => {
                                         name="rememberMe"
                                         checked={formData.rememberMe}
                                         onChange={handleChange}
-                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-brand-red focus:ring-brand-red dark:focus:ring-red-400 bg-slate-50 dark:bg-slate-800 cursor-pointer touch-manipulation"
+                                        className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-advanta-bronze-dark focus:ring-advanta-bronze-dark dark:focus:ring-advanta-orange bg-slate-50 dark:bg-slate-800 cursor-pointer touch-manipulation"
                                         disabled={isLoading}
                                     />
                                     <span className="text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">
@@ -240,7 +240,7 @@ const Login = () => {
                                 </label>
                                 <a
                                     href="#"
-                                    className="text-brand-red dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-semibold transition-colors"
+                                    className="text-advanta-bronze-dark dark:text-advanta-orange hover:text-advanta-orange dark:hover:text-advanta-orange-light font-semibold transition-colors"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         alert('Función de recuperación de contraseña próximamente');
@@ -254,7 +254,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-brand-red to-red-600 dark:from-red-600 dark:to-red-700 hover:from-red-700 hover:to-red-800 dark:hover:from-red-700 dark:hover:to-red-800 text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg shadow-brand-red/30 dark:shadow-red-900/30 hover:shadow-brand-red/50 dark:hover:shadow-red-900/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
+                                className="w-full bg-gradient-to-r from-advanta-bronze-dark to-advanta-orange dark:from-advanta-orange dark:to-advanta-orange-light hover:from-advanta-orange hover:to-advanta-orange-light dark:hover:from-advanta-orange-light dark:hover:to-advanta-yellow text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg shadow-advanta-bronze-dark/30 dark:shadow-advanta-orange/30 hover:shadow-advanta-orange/50 dark:hover:shadow-advanta-orange/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
                             >
                                 {isLoading ? (
                                     <>
