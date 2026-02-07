@@ -39,7 +39,7 @@ const actions = [
     { label: 'Nuevo Cliente', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
     { label: 'Nuevo Contacto', icon: UserCheck, color: 'text-teal-600 bg-teal-50' },
     { label: 'Registrar Visita', icon: Map, color: 'text-amber-600 bg-amber-50' },
-    { label: 'Nueva Oportunidad', icon: Briefcase, color: 'text-brand-red bg-red-50' },
+    { label: 'Nueva Oportunidad', icon: Briefcase, color: 'text-advanta-bronze bg-orange-50' },
 ];
 
 const MainLayout = () => {
@@ -183,7 +183,7 @@ const MainLayout = () => {
                                 {/* Agenda Button */}
                                 <button
                                     onClick={() => navigate('/agenda')}
-                                    className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red transition-colors"
+                                    className="p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-bronze dark:hover:text-advanta-orange transition-colors"
                                 >
                                     <Calendar size={20} />
                                 </button>
@@ -191,19 +191,19 @@ const MainLayout = () => {
                                 {/* Notifications Button */}
                                 <button
                                     onClick={() => setNotificationsOpen(!notificationsOpen)}
-                                    className="relative p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red transition-colors"
+                                    className="relative p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-bronze dark:hover:text-advanta-orange transition-colors"
                                 >
                                     <Bell size={20} />
                                     {/* Dynamic Badge Count */}
                                     {unreadCount > 0 && (
-                                        <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-brand-red text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
+                                        <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-advanta-orange text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
                                             {unreadCount > 9 ? '9+' : unreadCount}
                                         </span>
                                     )}
                                 </button>
 
                                 {/* Logout Button */}
-                                <button onClick={handleLogout} className="p-2 text-slate-600 dark:text-slate-400 hover:text-brand-red dark:hover:text-brand-red transition-colors">
+                                <button onClick={handleLogout} className="p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-bronze dark:hover:text-advanta-orange transition-colors">
                                     <LogOut size={20} />
                                 </button>
                             </div>
@@ -284,7 +284,7 @@ const MainLayout = () => {
 
                             {/* Footer */}
                             <div className="p-3 border-t border-slate-200 bg-slate-50">
-                                <button className="w-full text-center text-sm font-semibold text-brand-red hover:text-red-700 transition-colors">
+                                <button className="w-full text-center text-sm font-semibold text-advanta-bronze hover:text-advanta-orange transition-colors">
                                     Ver todas las notificaciones
                                 </button>
                             </div>

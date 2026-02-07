@@ -366,7 +366,7 @@ const Dashboard = () => {
 
                         {/* Footer */}
                         <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                            <button className="w-full text-center text-sm font-semibold text-brand-red dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors">
+                            <button className="w-full text-center text-sm font-semibold text-advanta-bronze dark:text-advanta-orange-light hover:text-advanta-orange dark:hover:text-advanta-orange transition-colors">
                                 Ver todas las notificaciones
                             </button>
                         </div>
