@@ -238,7 +238,8 @@ export const useUsers = () => {
         }
 
         try {
-
+            // Save current admin session before creating new user
+            const { data: { session: adminSession } } = await supabase.auth.getSession();
 
             // Use signUp to create user in auth.users
             // Emails are disabled in Supabase dashboard, so no email will be sent
@@ -262,6 +263,14 @@ export const useUsers = () => {
 
             if (!signUpData.user) {
                 throw new Error('User creation failed');
+            }
+
+            // Restore admin session immediately (signUp auto-logs in the new user)
+            if (adminSession) {
+                await supabase.auth.setSession({
+                    access_token: adminSession.access_token,
+                    refresh_token: adminSession.refresh_token
+                });
             }
 
 
