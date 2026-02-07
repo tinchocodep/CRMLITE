@@ -98,7 +98,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                 return `${baseClasses} hover:bg-slate-100`;
                             }}
                             style={({ isActive }) => ({
-                                backgroundColor: (isActive || module.isCRM) ? '#a1c349' : 'transparent'
+                                background: (isActive || module.isCRM) ? 'linear-gradient(135deg, #44C12B 0%, #4BA323 100%)' : 'transparent'
                             })}
                         >
                             <module.icon
