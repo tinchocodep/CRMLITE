@@ -137,7 +137,6 @@ export const useContacts = () => {
                 const companyRelations = contactData.companies.map(company => ({
                     contact_id: newContact.id,
                     company_id: company.companyId,
-                    role: company.role,
                     is_primary: company.isPrimary,
                     tenant_id: userData.tenant_id
                 }));
@@ -202,7 +201,6 @@ export const useContacts = () => {
                 const companyRelations = contactData.companies.map(company => ({
                     contact_id: id,
                     company_id: company.companyId,
-                    role: company.role,
                     is_primary: company.isPrimary,
                     tenant_id: userData.tenant_id
                 }));
@@ -245,7 +243,7 @@ export const useContacts = () => {
     };
 
     // Link contact to company
-    const linkToCompany = async (contactId, companyId, role, isPrimary = false) => {
+    const linkToCompany = async (contactId, companyId, isPrimary = false) => {
         try {
             setError(null);
 
@@ -271,7 +269,6 @@ export const useContacts = () => {
                 .insert([{
                     contact_id: contactId,
                     company_id: companyId,
-                    role,
                     is_primary: isPrimary,
                     tenant_id: userData.tenant_id
                 }]);
