@@ -56,6 +56,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
         const result = await onCreateUser(formData);
 
         if (result.success) {
+            console.log('✅ User created successfully:', result.user);
             // Clear localStorage and reset form on success
             localStorage.removeItem(STORAGE_KEY);
             setFormData({
@@ -66,6 +67,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
             });
             onClose();
         } else {
+            console.error('❌ Error creating user:', result.error);
             setError(result.error || 'Error al crear usuario');
         }
 
