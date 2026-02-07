@@ -122,7 +122,7 @@ const Login = () => {
                     <img
                         src={sailoLogo}
                         alt="Advanta CRM"
-                        className="w-full max-w-[350px] md:max-w-[450px] lg:max-w-[550px] h-auto object-contain drop-shadow-2xl"
+                        className="w-full max-w-[320px] md:max-w-[420px] lg:max-w-[520px] h-auto object-contain drop-shadow-2xl"
                     />
                 </motion.div>
 
