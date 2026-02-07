@@ -533,7 +533,7 @@ END:VCARD`;
                                                                             handleLinkExistingContact();
                                                                         }}
                                                                         disabled={isLinking || !linkRole.trim()}
-                                                                        className="flex-1 px-3 py-2 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                                        className="flex-1 px-3 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                                     >
                                                                         {isLinking ? 'Vinculando...' : 'Vincular'}
                                                                     </button>
@@ -571,7 +571,7 @@ END:VCARD`;
                                             {/* Create new contact button */}
                                             <button
                                                 onClick={handleCreateContact}
-                                                className="w-full px-4 py-3 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                className="w-full px-4 py-3 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <UserPlus size={16} />
                                                 Crear Nuevo Contacto
@@ -621,7 +621,7 @@ END:VCARD`;
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#87a330] to-green-600 text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#6a8532] hover:to-green-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         <Save size={18} />
                         Confirmar

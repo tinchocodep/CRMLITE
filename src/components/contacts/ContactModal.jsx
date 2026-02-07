@@ -525,7 +525,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                             <button
                                                 type="button"
                                                 onClick={handleAddCompany}
-                                                className="w-full px-4 py-2 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                className="w-full px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <Plus size={16} />
                                                 Agregar Empresa
@@ -563,7 +563,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#87a330] to-green-600 hover:from-[#6a8532] hover:to-green-700 text-white rounded-xl font-bold transition-colors"
+                            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-bold transition-colors"
                         >
                             {contact ? 'Guardar' : 'Crear Contacto'}
                         </button>
