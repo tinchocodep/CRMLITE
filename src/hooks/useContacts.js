@@ -120,8 +120,7 @@ export const useContacts = () => {
                     phone: contactData.phone,
                     notes: contactData.notes,
                     tenant_id: userData.tenant_id,
-                    comercial_id: userData.comercial_id,
-                    created_by: user?.id
+                    comercial_id: userData.comercial_id
                 }])
                 .select()
                 .single();
