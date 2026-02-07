@@ -798,7 +798,7 @@ const MainLayout = () => {
                                             }}
                                             className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                         >
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-400 to-green-700 flex items-center justify-center mb-2 shadow-md">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#44C12B] to-[#4BA323] flex items-center justify-center mb-2 shadow-md">
                                                 <action.icon className="w-6 h-6 text-white" />
                                             </div>
                                             <span className="text-xs font-bold text-slate-800 text-center">{action.label}</span>
