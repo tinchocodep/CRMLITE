@@ -33,10 +33,9 @@ export const useContacts = () => {
             // Admins and supervisors see all contacts in their tenant
             // Regular comerciales see only their own contacts
             if (!isAdmin && !isSupervisor && comercialId) {
-                console.log('🔍 Filtering contacts by comercial_id:', comercialId);
                 query = query.eq('comercial_id', comercialId);
             } else {
-                console.log('🔍 Admin/Supervisor - showing all contacts in tenant:', tenantId);
+                // Admin/Supervisor - showing all contacts in tenant
             }
 
             const { data: contactsData, error: contactsError } = await query
@@ -44,7 +43,7 @@ export const useContacts = () => {
 
             if (contactsError) throw contactsError;
 
-            console.log('📋 Fetched contacts from Supabase:', contactsData?.length || 0, contactsData);
+
 
             // Fetch contact-company relationships with explicit tenant filter
             const { data: relationsData, error: relationsError } = await supabase
@@ -90,7 +89,6 @@ export const useContacts = () => {
 
             setContacts(transformedData);
         } catch (err) {
-            console.error('Error fetching contacts:', err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -110,12 +108,6 @@ export const useContacts = () => {
                 .single();
 
             if (userError) throw userError;
-
-            console.log('🔍 Contact Creation Debug:', {
-                userId: user?.id,
-                userData,
-                contactData
-            });
 
             // Insert contact
             const { data: newContact, error: contactError } = await supabase

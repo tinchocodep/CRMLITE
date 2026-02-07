@@ -55,7 +55,6 @@ export const useUsers = () => {
 
         try {
             setLoading(true);
-            console.log('🔄 Fetching users for tenant:', tenantId);
 
             // Get all users with their comercial info using JOIN
             const { data: usersData, error: usersError } = await supabase
@@ -82,7 +81,6 @@ export const useUsers = () => {
                 comercial_name: user.comercial?.name || null
             }));
 
-            console.log('✅ Fetched', usersWithComerciales.length, 'users:', usersWithComerciales.map(u => u.email));
             setUsers(usersWithComerciales);
             setError(null);
         } catch (err) {
@@ -239,7 +237,7 @@ export const useUsers = () => {
         }
 
         try {
-            console.log('🔵 Creating user...');
+
 
             // Use signUp to create user in auth.users
             // Emails are disabled in Supabase dashboard, so no email will be sent
@@ -265,10 +263,9 @@ export const useUsers = () => {
                 throw new Error('User creation failed');
             }
 
-            console.log('✅ User created in auth.users:', signUpData.user.id);
+
 
             // Wait for trigger to create user in public.users
-            console.log('⏳ Waiting for trigger to create user in public.users...');
             let userExists = false;
             let attempts = 0;
             const maxAttempts = 5;
@@ -285,9 +282,9 @@ export const useUsers = () => {
 
                 if (checkUser) {
                     userExists = true;
-                    console.log(`✅ User found in public.users after ${attempts} attempt(s)`);
+
                 } else {
-                    console.log(`⏳ Attempt ${attempts}/${maxAttempts}: User not yet in public.users...`);
+
                 }
             }
 
@@ -312,7 +309,7 @@ export const useUsers = () => {
                 throw new Error(`Failed to create comercial: ${comercialError.message}`);
             }
 
-            console.log('✅ Comercial created:', comercialData.id);
+
 
             // Link comercial to user
             const { error: linkError } = await supabase
@@ -324,7 +321,7 @@ export const useUsers = () => {
                 console.error('❌ Error linking comercial:', linkError);
             }
 
-            console.log('✅ User creation complete');
+
 
             // Refresh user list
             await fetchUsers();

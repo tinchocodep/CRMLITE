@@ -13,12 +13,10 @@ const Settings = () => {
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     const handleLogout = () => {
-        console.log('handleLogout called, setting showLogoutConfirm to true');
         setShowLogoutConfirm(true);
     };
 
     const confirmLogout = () => {
-        console.log('confirmLogout called');
         logout();
         navigate('/login', { replace: true });
     };
@@ -117,7 +115,6 @@ const Settings = () => {
                 <ConfirmDialog
                     isOpen={showLogoutConfirm}
                     onClose={() => {
-                        console.log('ConfirmDialog onClose called');
                         setShowLogoutConfirm(false);
                     }}
                     onConfirm={confirmLogout}
