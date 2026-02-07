@@ -62,7 +62,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                     e.preventDefault();
                                     e.stopPropagation();
                                 }}
-                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-50 cursor-not-allowed bg-slate-50 text-slate-400"
+                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-60 cursor-not-allowed bg-advanta-green-dark text-slate-800"
                             >
                                 <module.icon
                                     size={22}
