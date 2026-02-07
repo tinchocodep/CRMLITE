@@ -95,7 +95,8 @@ export const useUsers = () => {
         // Fetch users once we know the current user's role and tenant
         if (currentUserRole !== null && user && tenantId) {
             fetchUsers();
-        } else if (!tenantLoading && currentUserRole !== null) {
+        } else if (!tenantLoading) {
+            // If tenant loading is done but we don't have all required data, stop loading
             setLoading(false);
         }
     }, [currentUserRole, user, tenantId, tenantLoading]);
