@@ -1,14 +1,24 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X } from 'lucide-react';
+import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy } from 'lucide-react';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
+import { opportunities as mockOpportunities } from '../data/opportunities';
+import { quotations as mockQuotations } from '../data/quotations';
 
 const statusConfig = {
+    // Estados originales (CRM)
     iniciado: { label: 'Iniciado', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🚀' },
     presupuestado: { label: 'Presupuestado', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '📋' },
     negociado: { label: 'Negociado', color: 'bg-orange-100 text-orange-700 border-orange-200', icon: '🤝' },
     ganado: { label: 'Ganado', color: 'bg-green-100 text-green-700 border-green-200', icon: '✅' },
-    perdido: { label: 'Perdido', color: 'bg-red-100 text-red-700 border-red-200', icon: '❌' }
+    perdido: { label: 'Perdido', color: 'bg-red-100 text-red-700 border-red-200', icon: '❌' },
+    // Estados nuevos (Cotizador)
+    prospecting: { label: 'Prospección', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: '🔍' },
+    qualification: { label: 'Calificación', color: 'bg-cyan-100 text-cyan-700 border-cyan-200', icon: '📊' },
+    proposal: { label: 'Propuesta', color: 'bg-purple-100 text-purple-700 border-purple-200', icon: '📝' },
+    negotiation: { label: 'Negociación', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: '💼' },
+    won: { label: 'Ganado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '🏆' },
+    lost: { label: 'Perdido', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: '💔' }
 };
 
 const Opportunities = () => {
@@ -18,6 +28,11 @@ const Opportunities = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [opportunityToEdit, setOpportunityToEdit] = useState(null);
     const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
+
+    // Estado para usar datos mock
+    const [useMockData, setUseMockData] = useState(true);
+    const [localOpportunities, setLocalOpportunities] = useState(mockOpportunities);
+    const [localQuotations, setLocalQuotations] = useState(mockQuotations);
 
     useEffect(() => {
         console.log('🟢 Opportunities component MOUNTED');
@@ -46,20 +61,70 @@ const Opportunities = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [statusDropdownOpen]);
 
+    // Función para marcar como ganado y crear cotización
+    const handleMarkAsWon = (opportunity) => {
+        // Actualizar estado de oportunidad a "ganado"
+        setLocalOpportunities(prev =>
+            prev.map(opp =>
+                opp.id === opportunity.id
+                    ? { ...opp, status: 'won' }
+                    : opp
+            )
+        );
+
+        // Crear cotización automáticamente
+        const newQuotation = {
+            id: `quot-${Date.now()}`,
+            number: `COT-2026-${String(localQuotations.length + 1).padStart(3, '0')}`,
+            clientId: opportunity.clientId,
+            clientName: opportunity.clientName,
+            saleType: opportunity.saleType,
+            paymentCondition: '30d', // Default
+            deliveryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +30 días
+            originAddress: 'Depósito Central - Av. Libertador 1500, CABA',
+            destinationAddress: 'A definir',
+            status: 'draft',
+            lines: opportunity.products.map((prod, index) => ({
+                id: `line-${index + 1}`,
+                productSapCode: prod.sapCode,
+                productName: prod.productName,
+                quantity: prod.quantity,
+                volume: prod.quantity * 0.02,
+                unitPrice: prod.estimatedPrice,
+                subtotal: prod.quantity * prod.estimatedPrice,
+                taxRate: 21,
+                total: prod.quantity * prod.estimatedPrice * 1.21
+            })),
+            subtotal: opportunity.estimatedValue,
+            tax: opportunity.estimatedValue * 0.21,
+            total: opportunity.estimatedValue * 1.21,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        setLocalQuotations(prev => [...prev, newQuotation]);
+
+        // Mostrar notificación
+        alert(`✅ Oportunidad marcada como GANADA!\n\n📋 Se creó la cotización: ${newQuotation.number}\n💰 Total: $${newQuotation.total.toLocaleString('es-AR')}\n\nPuedes verla en el módulo "Cotizaciones"`);
+    };
+
+    // Usar datos mock o de la base de datos
+    const displayOpportunities = useMockData ? localOpportunities : opportunities;
+
     // Filter opportunities
     const filteredOpportunities = useMemo(() => {
-        return opportunities.filter(opp =>
-            (opp.opportunity_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+        return displayOpportunities.filter(opp =>
+            (opp.title || opp.opportunity_name || '').toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [opportunities, searchTerm]);
+    }, [displayOpportunities, searchTerm]);
 
     // Calculate stats
     const stats = useMemo(() => ({
-        total: opportunities.length,
-        totalAmount: opportunities.reduce((sum, opp) => sum + (opp.amount || 0), 0),
-        won: opportunities.filter(opp => opp.status === 'ganado').length,
-        inProgress: opportunities.filter(opp => ['iniciado', 'presupuestado', 'negociado'].includes(opp.status)).length,
-    }), [opportunities]);
+        total: displayOpportunities.length,
+        totalAmount: displayOpportunities.reduce((sum, opp) => sum + (opp.estimatedValue || opp.amount || 0), 0),
+        won: displayOpportunities.filter(opp => opp.status === 'won' || opp.status === 'ganado').length,
+        inProgress: displayOpportunities.filter(opp => ['prospecting', 'qualification', 'proposal', 'negotiation', 'iniciado', 'presupuestado', 'negociado'].includes(opp.status)).length,
+    }), [displayOpportunities]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('es-AR', {
@@ -294,8 +359,11 @@ const Opportunities = () => {
                             </thead>
                             <tbody>
                                 {filteredOpportunities.map((opp, index) => {
-                                    const status = statusConfig[opp.status] || statusConfig.iniciado;
-                                    const closeDate = opp.close_date ? new Date(opp.close_date) : null;
+                                    const status = statusConfig[opp.status] || statusConfig.prospecting;
+                                    const closeDate = opp.expectedCloseDate || opp.close_date;
+                                    const parsedDate = closeDate ? new Date(closeDate) : null;
+                                    const isWon = opp.status === 'won' || opp.status === 'ganado';
+                                    const canMarkAsWon = !isWon && ['negotiation', 'proposal', 'negociado'].includes(opp.status);
 
                                     return (
                                         <tr
@@ -331,22 +399,27 @@ const Opportunities = () => {
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="font-semibold text-sm text-slate-800 dark:text-slate-100">
-                                                    {opp.opportunity_name || 'Sin nombre'}
+                                                    {opp.title || opp.opportunity_name || 'Sin nombre'}
                                                 </p>
+                                                {opp.description && (
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">
+                                                        {opp.description}
+                                                    </p>
+                                                )}
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="text-sm text-slate-700 dark:text-slate-300">
-                                                    {opp.company?.trade_name || opp.company?.legal_name || 'N/A'}
+                                                    {opp.clientName || opp.company?.trade_name || opp.company?.legal_name || 'N/A'}
                                                 </p>
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                                                    {opp.product_type || 'N/A'}
+                                                    {opp.products ? `${opp.products.length} producto(s)` : (opp.product_type || 'N/A')}
                                                 </p>
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="font-semibold text-sm text-green-600 dark:text-green-400">
-                                                    {formatCurrency(opp.amount || 0)}
+                                                    {formatCurrency(opp.estimatedValue || opp.amount || 0)}
                                                 </p>
                                             </td>
                                             <td className="py-3 px-4">
@@ -364,25 +437,45 @@ const Opportunities = () => {
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                                                    {closeDate ? closeDate.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                                    {parsedDate ? parsedDate.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
                                                 </p>
                                             </td>
                                             <td className="py-3 px-4">
                                                 <div className="flex items-center justify-center gap-1">
-                                                    <button
-                                                        onClick={() => handleEdit(opp)}
-                                                        className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                                                        title="Editar"
-                                                    >
-                                                        <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => deleteOpportunity(opp.id)}
-                                                        className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                                                        title="Eliminar"
-                                                    >
-                                                        <Trash2 size={16} className="text-red-600 dark:text-red-400" />
-                                                    </button>
+                                                    {canMarkAsWon && (
+                                                        <button
+                                                            onClick={() => handleMarkAsWon(opp)}
+                                                            className="px-2 py-1 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm hover:shadow-md"
+                                                            title="Marcar como Ganado"
+                                                        >
+                                                            <Trophy size={14} />
+                                                            <span>GANADO</span>
+                                                        </button>
+                                                    )}
+                                                    {isWon && (
+                                                        <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-bold flex items-center gap-1">
+                                                            <Trophy size={14} />
+                                                            <span>GANADA</span>
+                                                        </span>
+                                                    )}
+                                                    {!isWon && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleEdit(opp)}
+                                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                                                title="Editar"
+                                                            >
+                                                                <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deleteOpportunity(opp.id)}
+                                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                                                title="Eliminar"
+                                                            >
+                                                                <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
