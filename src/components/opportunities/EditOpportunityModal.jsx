@@ -42,7 +42,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
         productType: '',
         amount: '',
         closeDate: '',
-        status: 'iniciado',
+        status: 'prospecting',
         probability: 20,
         nextAction: '',
         nextActionDate: '',
@@ -76,7 +76,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                 productType: opportunity.productType || '',
                 amount: opportunity.amount?.toString() || '',
                 closeDate: opportunity.closeDate || '',
-                status: opportunity.status || 'iniciado',
+                status: opportunity.status || 'prospecting',
                 probability: opportunity.probability || 20,
                 nextAction: opportunity.nextAction || '',
                 nextActionDate: opportunity.nextActionDate || '',
@@ -112,11 +112,12 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
     // Update probability based on status
     useEffect(() => {
         const probabilityDefaults = {
-            iniciado: 20,
-            presupuestado: 40,
-            negociado: 70,
-            ganado: 100,
-            perdido: 0
+            prospecting: 20,
+            qualification: 40,
+            proposal: 60,
+            negotiation: 80,
+            won: 100,
+            lost: 0
         };
         setFormData(prev => ({
             ...prev,
@@ -419,11 +420,12 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                                     className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
                                 >
-                                    <option value="iniciado">🚀 Iniciado</option>
-                                    <option value="presupuestado">📋 Presupuestado</option>
-                                    <option value="negociado">🤝 Negociado</option>
-                                    <option value="ganado">✅ Ganado</option>
-                                    <option value="perdido">❌ Perdido</option>
+                                    <option value="prospecting">🔍 Prospección</option>
+                                    <option value="qualification">📊 Calificación</option>
+                                    <option value="proposal">📝 Propuesta</option>
+                                    <option value="negotiation">💼 Negociación</option>
+                                    <option value="won">🏆 Ganado</option>
+                                    <option value="lost">❌ Perdido</option>
                                 </select>
                             </div>
                             <div>
