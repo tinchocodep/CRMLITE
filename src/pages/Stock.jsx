@@ -1,68 +1,24 @@
 import React, { useState } from 'react';
-import { Package, Search, Filter, Plus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers } from 'lucide-react';
+import { Package, Search, Filter, Plus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { stockBalances, stockMovementsIn, stockMovementsOut } from '../data/stock';
 
 const Stock = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('all');
-    const [stockFilter, setStockFilter] = useState('all'); // all, low, out, available
+    const [stockTypeFilter, setStockTypeFilter] = useState('all'); // all, own, consigned
+    const [warehouseFilter, setWarehouseFilter] = useState('all');
+    const [viewMode, setViewMode] = useState('balances'); // balances, movements
 
-    // Mock data - esto se conectará con Supabase
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            code: 'PROD-001',
-            name: 'Semilla Maíz Premium',
-            category: 'Semillas',
-            currentStock: 150,
-            minStock: 50,
-            maxStock: 500,
-            unit: 'bolsas',
-            price: 12500,
-            location: 'Depósito A - Estante 3'
-        },
-        {
-            id: 2,
-            code: 'PROD-002',
-            name: 'Fertilizante NPK',
-            category: 'Fertilizantes',
-            currentStock: 25,
-            minStock: 100,
-            maxStock: 300,
-            unit: 'kg',
-            price: 850,
-            location: 'Depósito B - Estante 1'
-        },
-        {
-            id: 3,
-            code: 'PROD-003',
-            name: 'Herbicida Glifosato',
-            category: 'Agroquímicos',
-            currentStock: 0,
-            minStock: 20,
-            maxStock: 100,
-            unit: 'litros',
-            price: 3200,
-            location: 'Depósito C - Estante 2'
-        },
-        {
-            id: 4,
-            code: 'PROD-004',
-            name: 'Semilla Soja RR',
-            category: 'Semillas',
-            currentStock: 320,
-            minStock: 100,
-            maxStock: 500,
-            unit: 'bolsas',
-            price: 15000,
-            location: 'Depósito A - Estante 1'
-        }
-    ]);
+    // Calcular estadísticas
+    const totalProducts = stockBalances.length;
+    const totalUnits = stockBalances.reduce((sum, p) => sum + p.balance, 0);
+    const ownStock = stockBalances.filter(p => p.stockType === 'own');
+    const consignedStock = stockBalances.filter(p => p.stockType === 'consigned');
 
-    const totalProducts = products.length;
-    const lowStockProducts = products.filter(p => p.currentStock > 0 && p.currentStock <= p.minStock);
-    const outOfStockProducts = products.filter(p => p.currentStock === 0);
-    const totalValue = products.reduce((sum, p) => sum + (p.currentStock * p.price), 0);
+    // Valor estimado (precio promedio $1,400/unidad)
+    const estimatedPrice = 1400;
+    const totalValue = stockBalances.reduce((sum, p) => sum + (p.balance * estimatedPrice), 0);
 
     const stats = [
         {
@@ -73,77 +29,101 @@ const Stock = () => {
             textColor: 'text-blue-600'
         },
         {
-            label: 'Stock Bajo',
-            value: lowStockProducts.length,
-            icon: AlertTriangle,
-            color: 'from-amber-500 to-amber-600',
-            textColor: 'text-amber-600'
+            label: 'Total Unidades',
+            value: totalUnits.toLocaleString(),
+            icon: Box,
+            color: 'from-indigo-500 to-indigo-600',
+            textColor: 'text-indigo-600'
         },
         {
-            label: 'Sin Stock',
-            value: outOfStockProducts.length,
-            icon: TrendingDown,
-            color: 'from-red-500 to-red-600',
-            textColor: 'text-red-600'
-        },
-        {
-            label: 'Valor Total',
-            value: `$${(totalValue / 1000).toFixed(0)}K`,
+            label: 'Stock Propio',
+            value: ownStock.reduce((sum, p) => sum + p.balance, 0).toLocaleString(),
             icon: TrendingUp,
             color: 'from-green-500 to-green-600',
             textColor: 'text-green-600'
+        },
+        {
+            label: 'Stock Consignado',
+            value: consignedStock.reduce((sum, p) => sum + p.balance, 0).toLocaleString(),
+            icon: Layers,
+            color: 'from-purple-500 to-purple-600',
+            textColor: 'text-purple-600'
         }
     ];
 
-    const getStockStatus = (product) => {
-        if (product.currentStock === 0) {
-            return { label: 'Sin Stock', color: 'bg-red-100 text-red-700 border-red-200', icon: TrendingDown };
-        }
-        if (product.currentStock <= product.minStock) {
-            return { label: 'Stock Bajo', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: AlertTriangle };
-        }
-        return { label: 'Disponible', color: 'bg-green-100 text-green-700 border-green-200', icon: TrendingUp };
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
     };
 
-    const getStockPercentage = (product) => {
-        return Math.min((product.currentStock / product.maxStock) * 100, 100);
-    };
+    // Obtener categorías únicas
+    const categories = ['all', ...new Set(stockBalances.map(p => p.cropDescription))];
+    const warehouses = ['all', ...new Set(stockBalances.map(p => p.warehouse))];
 
-    const categories = ['all', ...new Set(products.map(p => p.category))];
+    // Filtrar productos
+    const filteredBalances = stockBalances.filter(product => {
+        const matchesSearch = product.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.productSapCode?.toString().includes(searchTerm);
 
-    const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.code?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = categoryFilter === 'all' || product.cropDescription === categoryFilter;
+        const matchesStockType = stockTypeFilter === 'all' || product.stockType === stockTypeFilter;
+        const matchesWarehouse = warehouseFilter === 'all' || product.warehouse === warehouseFilter;
 
-        const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+        return matchesSearch && matchesCategory && matchesStockType && matchesWarehouse;
+    });
 
-        let matchesStock = true;
-        if (stockFilter === 'low') matchesStock = product.currentStock > 0 && product.currentStock <= product.minStock;
-        if (stockFilter === 'out') matchesStock = product.currentStock === 0;
-        if (stockFilter === 'available') matchesStock = product.currentStock > product.minStock;
+    // Combinar movimientos
+    const allMovements = [...stockMovementsIn, ...stockMovementsOut].sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
-        return matchesSearch && matchesCategory && matchesStock;
+    const filteredMovements = allMovements.filter(movement => {
+        const matchesSearch = movement.lines?.some(line =>
+            line.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            line.productSapCode?.toString().includes(searchTerm)
+        );
+        return matchesSearch;
     });
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
             {/* Header */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
                                 <Box className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Stock</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Control de inventario de productos</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">Control de inventario y movimientos</p>
                             </div>
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-advanta-green to-green-600 text-white rounded-lg hover:shadow-lg transition-all">
-                            <Plus className="w-5 h-5" />
-                            <span className="hidden sm:inline">Nuevo Producto</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setViewMode('balances')}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${viewMode === 'balances'
+                                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                    }`}
+                            >
+                                Balances
+                            </button>
+                            <button
+                                onClick={() => setViewMode('movements')}
+                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${viewMode === 'movements'
+                                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                    }`}
+                            >
+                                Movimientos
+                            </button>
+                        </div>
                     </div>
 
                     {/* Stats Cards */}
@@ -165,68 +145,89 @@ const Stock = () => {
                         ))}
                     </div>
 
+                    {/* Valor Total */}
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white mb-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm opacity-90 mb-1">Valor Total del Stock</p>
+                                <p className="text-4xl font-bold">{formatCurrency(totalValue)}</p>
+                                <p className="text-xs opacity-75 mt-1">Estimado a precio promedio de ${estimatedPrice}/unidad</p>
+                            </div>
+                            <TrendingUp className="w-16 h-16 opacity-20" />
+                        </div>
+                    </div>
+
                     {/* Search and Filters */}
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div className="flex-1 relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Buscar producto..."
+                                placeholder="Buscar por nombre o código SAP..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-advanta-green focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             />
                         </div>
-                        <select
-                            value={categoryFilter}
-                            onChange={(e) => setCategoryFilter(e.target.value)}
-                            className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-advanta-green focus:border-transparent"
-                        >
-                            <option value="all">Todas las categorías</option>
-                            {categories.filter(c => c !== 'all').map(category => (
-                                <option key={category} value={category}>{category}</option>
-                            ))}
-                        </select>
-                        <select
-                            value={stockFilter}
-                            onChange={(e) => setStockFilter(e.target.value)}
-                            className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-advanta-green focus:border-transparent"
-                        >
-                            <option value="all">Todos los estados</option>
-                            <option value="available">Disponible</option>
-                            <option value="low">Stock Bajo</option>
-                            <option value="out">Sin Stock</option>
-                        </select>
+                        {viewMode === 'balances' && (
+                            <>
+                                <select
+                                    value={categoryFilter}
+                                    onChange={(e) => setCategoryFilter(e.target.value)}
+                                    className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                >
+                                    <option value="all">Todos los cultivos</option>
+                                    {categories.filter(c => c !== 'all').map(category => (
+                                        <option key={category} value={category}>{category}</option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={stockTypeFilter}
+                                    onChange={(e) => setStockTypeFilter(e.target.value)}
+                                    className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                >
+                                    <option value="all">Todos los tipos</option>
+                                    <option value="own">Propio</option>
+                                    <option value="consigned">Consignado</option>
+                                </select>
+                                <select
+                                    value={warehouseFilter}
+                                    onChange={(e) => setWarehouseFilter(e.target.value)}
+                                    className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                >
+                                    <option value="all">Todos los depósitos</option>
+                                    {warehouses.filter(w => w !== 'all').map(warehouse => (
+                                        <option key={warehouse} value={warehouse}>{warehouse}</option>
+                                    ))}
+                                </select>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Products List */}
+            {/* Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                {filteredProducts.length === 0 ? (
-                    <div className="text-center py-16">
-                        <Box className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                            No hay productos
-                        </h3>
-                        <p className="text-slate-600 dark:text-slate-400">
-                            {searchTerm || categoryFilter !== 'all' || stockFilter !== 'all'
-                                ? 'No se encontraron productos con los filtros aplicados'
-                                : 'Agrega productos para comenzar a gestionar tu inventario'}
-                        </p>
-                    </div>
-                ) : (
-                    <div className="grid gap-4">
-                        {filteredProducts.map((product, index) => {
-                            const status = getStockStatus(product);
-                            const StatusIcon = status.icon;
-
-                            return (
+                {viewMode === 'balances' ? (
+                    // BALANCES VIEW
+                    filteredBalances.length === 0 ? (
+                        <div className="text-center py-16">
+                            <Box className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                                No hay productos
+                            </h3>
+                            <p className="text-slate-600 dark:text-slate-400">
+                                No se encontraron productos con los filtros aplicados
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {filteredBalances.map((product, index) => (
                                 <motion.div
-                                    key={product.id}
+                                    key={product.productSapCode}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
+                                    transition={{ delay: index * 0.02 }}
                                     className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden"
                                 >
                                     <div className="p-6">
@@ -234,87 +235,131 @@ const Stock = () => {
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                                                        {product.name}
+                                                        {product.productName}
                                                     </h3>
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${status.color} flex items-center gap-1`}>
-                                                        <StatusIcon className="w-3 h-3" />
-                                                        {status.label}
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${product.stockType === 'own'
+                                                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                                            : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                                        }`}>
+                                                        {product.stockType === 'own' ? '🏢 Propio' : '🤝 Consignado'}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-                                                    <span className="font-mono">{product.code}</span>
+                                                    <span className="font-mono">SAP: {product.productSapCode}</span>
                                                     <span>•</span>
-                                                    <span>{product.category}</span>
+                                                    <span>{product.cropDescription}</span>
                                                     <span>•</span>
                                                     <span className="flex items-center gap-1">
                                                         <Layers className="w-3 h-3" />
-                                                        {product.location}
+                                                        {product.warehouse}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2">
-                                                <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
-                                                    <Edit2 className="w-5 h-5" />
-                                                </button>
-                                            </div>
                                         </div>
 
-                                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                                             <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Stock Actual</p>
-                                                <p className="text-lg font-bold text-slate-900 dark:text-white">
-                                                    {product.currentStock} {product.unit}
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Ingresos</p>
+                                                <p className="text-lg font-bold text-green-600 dark:text-green-400 flex items-center gap-1">
+                                                    <ArrowUpCircle className="w-4 h-4" />
+                                                    {product.entries.toLocaleString()}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Stock Mínimo</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {product.minStock} {product.unit}
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Egresos</p>
+                                                <p className="text-lg font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                                                    <ArrowDownCircle className="w-4 h-4" />
+                                                    {product.exits.toLocaleString()}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Stock Máximo</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {product.maxStock} {product.unit}
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Balance Actual</p>
+                                                <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                                                    {product.balance.toLocaleString()}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Precio Unitario</p>
-                                                <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-                                                    ${product.price.toLocaleString()}
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Valor Estimado</p>
+                                                <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                                                    {formatCurrency(product.balance * estimatedPrice)}
                                                 </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Valor Total</p>
-                                                <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-                                                    ${(product.currentStock * product.price).toLocaleString()}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        {/* Stock Progress Bar */}
-                                        <div className="mt-4">
-                                            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1">
-                                                <span>Nivel de Stock</span>
-                                                <span>{getStockPercentage(product).toFixed(0)}%</span>
-                                            </div>
-                                            <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                                                <div
-                                                    className={`h-full transition-all ${product.currentStock === 0
-                                                        ? 'bg-red-500'
-                                                        : product.currentStock <= product.minStock
-                                                            ? 'bg-amber-500'
-                                                            : 'bg-green-500'
-                                                        }`}
-                                                    style={{ width: `${getStockPercentage(product)}%` }}
-                                                />
                                             </div>
                                         </div>
                                     </div>
                                 </motion.div>
-                            );
-                        })}
-                    </div>
+                            ))}
+                        </div>
+                    )
+                ) : (
+                    // MOVEMENTS VIEW
+                    filteredMovements.length === 0 ? (
+                        <div className="text-center py-16">
+                            <Package className="w-16 h-16 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                                No hay movimientos
+                            </h3>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {filteredMovements.map((movement, index) => (
+                                <motion.div
+                                    key={movement.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.02 }}
+                                    className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden"
+                                >
+                                    <div className="p-6">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${movement.type === 'in'
+                                                    ? 'bg-green-100 dark:bg-green-900/30'
+                                                    : 'bg-red-100 dark:bg-red-900/30'
+                                                }`}>
+                                                {movement.type === 'in' ? (
+                                                    <ArrowUpCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                                                ) : (
+                                                    <ArrowDownCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                                )}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                                    {movement.type === 'in' ? 'Ingreso de Stock' : 'Egreso de Stock'}
+                                                </h3>
+                                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                                    {movement.movementDate} • {movement.lines.length} producto(s)
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2 mb-4">
+                                            {movement.lines.map((line, idx) => (
+                                                <div key={line.id} className="flex items-center justify-between text-sm py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
+                                                    <div className="flex-1">
+                                                        <span className="font-medium text-slate-900 dark:text-white">{line.productName}</span>
+                                                        <span className="text-slate-500 dark:text-slate-400 ml-2">SAP: {line.productSapCode}</span>
+                                                    </div>
+                                                    <span className="font-bold text-slate-900 dark:text-white">
+                                                        {line.quantity.toLocaleString()} unidades
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700 text-sm">
+                                            <div>
+                                                <p className="text-slate-500 dark:text-slate-400">Origen</p>
+                                                <p className="font-semibold text-slate-900 dark:text-white">{movement.origin}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-slate-500 dark:text-slate-400">Destino</p>
+                                                <p className="font-semibold text-slate-900 dark:text-white">{movement.destination}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )
                 )}
             </div>
         </div>
