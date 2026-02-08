@@ -3,14 +3,54 @@ import { FileText, Search, Plus, Edit2, Eye, Send, CheckCircle, Clock, DollarSig
 import { motion, AnimatePresence } from 'framer-motion';
 import { quotations as mockQuotations } from '../data/quotations';
 import { orders as mockOrders } from '../data/orders';
+import { useToast } from '../contexts/ToastContext';
+import QuotationDetailsModal from '../components/QuotationDetailsModal';
 
 const Cotizaciones = () => {
+    const { showToast } = useToast();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [selectedQuotation, setSelectedQuotation] = useState(null);
+    const [detailsModalOpen, setDetailsModalOpen] = useState(false);
 
     // Estado para usar datos mock
     const [localQuotations, setLocalQuotations] = useState(mockQuotations);
     const [localOrders, setLocalOrders] = useState(mockOrders);
+
+    // Función para actualizar el estado de una cotización
+    const handleUpdateStatus = (quotation, newStatus) => {
+        setLocalQuotations(prev =>
+            prev.map(q =>
+                q.id === quotation.id
+                    ? { ...q, status: newStatus, updatedAt: new Date().toISOString() }
+                    : q
+            )
+        );
+
+        const statusLabels = {
+            draft: 'Borrador',
+            sent: 'Enviada',
+            approved: 'Aprobada',
+            rejected: 'Rechazada'
+        };
+
+        const statusIcons = {
+            draft: Edit2,
+            sent: Send,
+            approved: CheckCircle,
+            rejected: XCircle
+        };
+
+        showToast({
+            id: `status-${quotation.id}-${Date.now()}`,
+            title: `✅ Estado Actualizado`,
+            description: `Cotización ${quotation.number} marcada como ${statusLabels[newStatus]}`,
+            priority: 'high',
+            icon: statusIcons[newStatus],
+            timeAgo: 'Ahora'
+        });
+    };
+
 
     // Apply filters
     const filteredQuotations = localQuotations.filter(quot => {
@@ -308,6 +348,10 @@ const Cotizaciones = () => {
                                                     </span>
                                                 )}
                                                 <button
+                                                    onClick={() => {
+                                                        setSelectedQuotation(quotation);
+                                                        setDetailsModalOpen(true);
+                                                    }}
                                                     className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
                                                     title="Ver detalles"
                                                 >
@@ -322,6 +366,17 @@ const Cotizaciones = () => {
                     </div>
                 )}
             </div>
+
+            {/* Quotation Details Modal */}
+            <QuotationDetailsModal
+                isOpen={detailsModalOpen}
+                onClose={() => {
+                    setDetailsModalOpen(false);
+                    setSelectedQuotation(null);
+                }}
+                quotation={selectedQuotation}
+                onUpdateStatus={handleUpdateStatus}
+            />
         </div>
     );
 };
