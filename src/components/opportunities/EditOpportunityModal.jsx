@@ -51,6 +51,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
         products: [],
         saleType: 'own',
         paymentCondition: 'cash',
+        customPaymentDetail: '',
         deliveryDate: '',
         originAddress: '',
         destinationAddress: ''
@@ -84,6 +85,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                 products: opportunity.products || [],
                 saleType: opportunity.saleType || 'own',
                 paymentCondition: opportunity.paymentCondition || 'cash',
+                customPaymentDetail: opportunity.customPaymentDetail || '',
                 deliveryDate: opportunity.deliveryDate || '',
                 originAddress: opportunity.originAddress || '',
                 destinationAddress: opportunity.destinationAddress || ''
@@ -143,6 +145,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
             products: formData.products,
             sale_type: formData.saleType,
             payment_condition: formData.paymentCondition,
+            custom_payment_detail: formData.customPaymentDetail,
             delivery_date: formData.deliveryDate || null,
             origin_address: formData.originAddress,
             destination_address: formData.destinationAddress
@@ -310,6 +313,23 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                             </div>
                         </div>
 
+                        {/* Custom Payment Condition - Shows only when 'Personalizado' is selected */}
+                        {formData.paymentCondition === 'custom' && (
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <DollarSign size={14} className="inline mr-1.5" />
+                                    Detalle de Condición Personalizada *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.customPaymentDetail || ''}
+                                    onChange={(e) => setFormData({ ...formData, customPaymentDetail: e.target.value })}
+                                    placeholder="Ej: 50% anticipo, 50% a 45 días"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
+                                />
+                            </div>
+                        )}
                         {/* Delivery Date */}
                         <div>
                             <label className="block text-xs font-semibold text-slate-700 mb-1.5">
