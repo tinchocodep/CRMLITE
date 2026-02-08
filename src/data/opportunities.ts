@@ -14,7 +14,7 @@ export interface Opportunity {
     clientName: string;
     title: string;
     description: string;
-    saleType: 'own' | 'partner';
+    saleType: 'own' | 'advanta';
     products: OpportunityProduct[];
     estimatedValue: number;
     probability: number;
@@ -59,7 +59,7 @@ export const opportunities: Opportunity[] = [
         clientName: clients[2].razonSocial,
         title: 'Provisión de Sorgo Forrajero',
         description: 'Oportunidad para venta de sorgo forrajero. Cliente busca proveedor confiable para stock consignado.',
-        saleType: 'partner',
+        saleType: 'advanta',
         products: [
             {
                 sapCode: 162050086,
@@ -165,7 +165,7 @@ export const opportunities: Opportunity[] = [
         clientName: clients[12].razonSocial,
         title: 'Maíz VT3P para 500 Hectáreas',
         description: 'Gran oportunidad. Cliente con campo de 500 ha busca maíz VT3P. Posibilidad de venta recurrente.',
-        saleType: 'partner',
+        saleType: 'advanta',
         products: [
             {
                 sapCode: 189000001,
@@ -287,7 +287,7 @@ export const opportunities: Opportunity[] = [
         clientName: clients[9].razonSocial,
         title: 'Maíz VT Triple Pro - Campaña Completa',
         description: 'Gran oportunidad. Cliente planifica 800 hectáreas de maíz.',
-        saleType: 'partner',
+        saleType: 'advanta',
         products: [
             {
                 sapCode: 189000001,
@@ -381,7 +381,7 @@ export const opportunities: Opportunity[] = [
         clientName: clients[16].razonSocial,
         title: 'Paquete Tecnológico Completo',
         description: 'Oportunidad estratégica: semillas + químicos. Cliente VIP.',
-        saleType: 'partner',
+        saleType: 'advanta',
         products: [
             {
                 sapCode: 198000053,
@@ -453,7 +453,7 @@ export const opportunities: Opportunity[] = [
         clientName: clients[7].razonSocial,
         title: 'Girasol Alto Oleico - Contrato Industria',
         description: 'Contrato con industria aceitera. Volumen importante garantizado.',
-        saleType: 'partner',
+        saleType: 'advanta',
         products: [
             {
                 sapCode: 165030229,

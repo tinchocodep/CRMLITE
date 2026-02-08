@@ -124,7 +124,7 @@ export const orders: Order[] = [
         clientId: String(4771), // CAPITANICH AGROPECUARIA SA
         clientName: 'CAPITANICH AGROPECUARIA SA',
         clientCuit: '30716775395',
-        saleType: 'partner',
+        saleType: 'advanta',
         paymentCondition: 'cash',
         deliveryDate: '2026-03-08',
         originAddress: 'Depósito Norte - Ruta 11 Km 1200, Santa Fe',

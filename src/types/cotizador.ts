@@ -25,7 +25,7 @@ export interface Product {
 // COTIZACIONES
 // ============================================
 
-export type SaleType = 'own' | 'partner';
+export type SaleType = 'own' | 'advanta';
 export type PaymentCondition = 'cash' | '30d' | '60d' | '90d' | 'custom';
 export type QuotationStatus = 'draft' | 'sent' | 'approved' | 'rejected' | 'revision';
 
