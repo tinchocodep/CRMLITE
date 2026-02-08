@@ -13,7 +13,8 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
     // Invoice/Remito configuration
     const [config, setConfig] = useState({
-        letra: 'A'  // Only letra is needed, rest is returned by n8n/AFIP
+        letra: 'A',  // Only letra is needed, rest is returned by n8n/AFIP
+        fecha_pago: order?.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
     });
 
     if (!isOpen || !order) return null;
@@ -34,13 +35,15 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                 case 'FACTURA':
                     result = await processInvoice(order, {
                         tipo_cbte: 'FACTURA',
-                        letra: config.letra
+                        letra: config.letra,
+                        fecha_pago: config.fecha_pago
                     });
                     break;
 
                 case 'REMITO':
                     result = await processRemito(order, {
-                        letra: config.letra
+                        letra: config.letra,
+                        fecha_pago: config.fecha_pago
                     });
                     break;
 
@@ -190,6 +193,22 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 </select>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                                     El punto de venta, número de comprobante, CAE y QR serán generados automáticamente por AFIP
+                                </p>
+                            </div>
+
+                            {/* Payment Date */}
+                            <div>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                    Fecha de Pago *
+                                </label>
+                                <input
+                                    type="date"
+                                    value={config.fecha_pago}
+                                    onChange={(e) => setConfig({ ...config, fecha_pago: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                />
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                    Fecha estimada de pago del cliente (por defecto: fecha de entrega)
                                 </p>
                             </div>
                         </div>

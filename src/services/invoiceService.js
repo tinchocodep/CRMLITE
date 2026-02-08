@@ -67,10 +67,11 @@ const formatDate = (date) => {
  * @param {Object} options - Invoice options
  * @param {string} options.tipo_cbte - "FACTURA", "NC", or "REMITO"
  * @param {string} options.letra - Invoice letter (A, B, C)
+ * @param {string} options.fecha_pago - Payment date (optional, defaults to deliveryDate)
  * @returns {Object} Invoice data ready for webhook
  */
 export const createInvoiceFromOrder = (order, options) => {
-    const { tipo_cbte, letra } = options;
+    const { tipo_cbte, letra, fecha_pago } = options;
 
     console.log('🔍 Creating invoice from order:', {
         orderId: order.id,
@@ -79,7 +80,8 @@ export const createInvoiceFromOrder = (order, options) => {
         clientCuit: order.clientCuit,
         linesCount: (order.lines || order.products || []).length,
         tipo_cbte,
-        letra
+        letra,
+        fecha_pago
     });
 
     // Calculate due date (based on payment condition or default 10 days)
@@ -106,12 +108,21 @@ export const createInvoiceFromOrder = (order, options) => {
         return item;
     });
 
+    // Calculate totals
+    const subtotal = order.subtotal || (order.lines || order.products || []).reduce((sum, line) => {
+        return sum + ((line.quantity || 0) * (line.unitPrice || line.estimatedPrice || 0));
+    }, 0);
+
+    const iva = order.tax || (subtotal * 0.21);
+    const total = order.total || order.totalAmount || (subtotal + iva);
+
     const invoiceData = {
         tipo_cbte,
         letra,
         // NOTE: punto_venta and numero_cbte are assigned by n8n/AFIP
         fecha_emision: formatDate(emissionDate),
         fecha_vencimiento: formatDate(dueDate),
+        fecha_pago: fecha_pago || formatDate(order.deliveryDate || dueDate),
 
         cliente: {
             // Read CUIT from order.clientCuit (already in orders data)
@@ -122,6 +133,12 @@ export const createInvoiceFromOrder = (order, options) => {
         },
 
         items,
+
+        totales: {
+            subtotal: parseFloat(subtotal.toFixed(2)),
+            iva: parseFloat(iva.toFixed(2)),
+            total: parseFloat(total.toFixed(2))
+        },
 
         // Include order reference for tracking
         order_id: order.id,
