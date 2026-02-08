@@ -195,12 +195,14 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         </div>
                     )}
 
-                    {/* Order Summary */}
+                    {/* Order Summary with Product Details */}
                     <div className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
                         <h3 className="font-bold text-slate-800 dark:text-slate-100 mb-3">
-                            Resumen del Pedido
+                            Detalle del Pedido
                         </h3>
-                        <div className="space-y-2">
+
+                        {/* Client Info */}
+                        <div className="space-y-2 mb-4 pb-4 border-b border-slate-200 dark:border-slate-700">
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-600 dark:text-slate-400">Cliente:</span>
                                 <span className="font-medium text-slate-800 dark:text-slate-100">{order.clientName}</span>
@@ -209,16 +211,87 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 <span className="text-slate-600 dark:text-slate-400">CUIT:</span>
                                 <span className="font-medium text-slate-800 dark:text-slate-100">{order.clientCuit || 'N/A'}</span>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-slate-600 dark:text-slate-400">Productos:</span>
-                                <span className="font-medium text-slate-800 dark:text-slate-100">{(order.lines || order.products || []).length} items</span>
+                        </div>
+
+                        {/* Products Table */}
+                        <div className="mb-4">
+                            <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 uppercase">Productos</h4>
+                            <div className="space-y-2">
+                                {(order.lines || order.products || []).map((line, index) => {
+                                    const quantity = line.quantity || 0;
+                                    const unitPrice = line.unitPrice || line.estimatedPrice || 0;
+                                    const lineTotal = quantity * unitPrice;
+
+                                    return (
+                                        <div key={index} className="bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                                        {line.productName || line.name}
+                                                    </p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                                        Código: {line.productSapCode || line.sapCode || 'N/A'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-2 text-xs">
+                                                <div>
+                                                    <span className="text-slate-500 dark:text-slate-400">Cantidad:</span>
+                                                    <p className="font-bold text-slate-800 dark:text-slate-100">{quantity}</p>
+                                                </div>
+                                                <div>
+                                                    <span className="text-slate-500 dark:text-slate-400">Precio Unit.:</span>
+                                                    <p className="font-bold text-slate-800 dark:text-slate-100">
+                                                        ${unitPrice.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                    </p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <span className="text-slate-500 dark:text-slate-400">Subtotal:</span>
+                                                    <p className="font-bold text-advanta-green dark:text-red-400">
+                                                        ${lineTotal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-slate-600 dark:text-slate-400">Total:</span>
-                                <span className="font-bold text-lg text-advanta-green dark:text-red-400">
-                                    ${(order.total || order.totalAmount || 0).toLocaleString('es-AR')}
-                                </span>
-                            </div>
+                        </div>
+
+                        {/* Totals Breakdown */}
+                        <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+                            {(() => {
+                                // Calculate totals
+                                const subtotal = order.subtotal || (order.lines || order.products || []).reduce((sum, line) => {
+                                    return sum + ((line.quantity || 0) * (line.unitPrice || line.estimatedPrice || 0));
+                                }, 0);
+
+                                const iva = order.tax || (subtotal * 0.21);
+                                const total = order.total || order.totalAmount || (subtotal + iva);
+
+                                return (
+                                    <>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-slate-600 dark:text-slate-400">Subtotal:</span>
+                                            <span className="font-medium text-slate-800 dark:text-slate-100">
+                                                ${subtotal.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-slate-600 dark:text-slate-400">IVA (21%):</span>
+                                            <span className="font-medium text-slate-800 dark:text-slate-100">
+                                                ${iva.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between text-base pt-2 border-t border-slate-200 dark:border-slate-700">
+                                            <span className="font-bold text-slate-700 dark:text-slate-300">TOTAL:</span>
+                                            <span className="font-bold text-xl text-advanta-green dark:text-red-400">
+                                                ${total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
+                                            </span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
                         </div>
                     </div>
                 </div>
