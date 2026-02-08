@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy } from 'lucide-react';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
+import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
 import { opportunities as mockOpportunities } from '../data/opportunities';
 import { quotations as mockQuotations } from '../data/quotations';
 
@@ -129,7 +130,45 @@ const Opportunities = () => {
     };
 
     const handleEdit = (opportunity) => {
-        setOpportunityToEdit(opportunity);
+        console.log('🔍 Opportunities - Original opportunity:', opportunity);
+
+        // Transform opportunity data to match modal format
+        const transformedOpportunity = {
+            id: opportunity.id,
+            opportunityName: opportunity.title,
+            linkedEntity: {
+                id: opportunity.clientId,
+                type: 'client'
+            },
+            comercial: {
+                id: 1 // Default comercial for mock
+            },
+            contact: null,
+            productType: opportunity.products[0]?.productName || '',
+            amount: opportunity.estimatedValue,
+            closeDate: opportunity.expectedCloseDate,
+            status: opportunity.status,
+            probability: opportunity.probability,
+            nextAction: '',
+            nextActionDate: '',
+            notes: opportunity.description,
+            // NEW FIELDS for quotation
+            products: opportunity.products.map(p => ({
+                productSapCode: p.sapCode,
+                productName: p.productName,
+                quantity: p.quantity,
+                unitPrice: p.estimatedPrice
+            })),
+            saleType: opportunity.saleType,
+            paymentCondition: 'cash',
+            deliveryDate: '',
+            originAddress: '',
+            destinationAddress: ''
+        };
+
+        console.log('✅ Opportunities - Transformed opportunity:', transformedOpportunity);
+
+        setOpportunityToEdit(transformedOpportunity);
         setIsEditModalOpen(true);
     };
 
@@ -488,13 +527,24 @@ const Opportunities = () => {
                 onSave={handleSaveOpportunity}
             />
 
-            <SimpleOpportunityModal
+            <EditOpportunityModal
                 isOpen={isEditModalOpen}
                 onClose={() => {
                     setIsEditModalOpen(false);
                     setOpportunityToEdit(null);
                 }}
-                onSave={handleSaveOpportunity}
+                onSave={(opportunityId, updates) => {
+                    // Update local mock data
+                    setLocalOpportunities(prev =>
+                        prev.map(opp =>
+                            opp.id === opportunityId
+                                ? { ...opp, ...updates }
+                                : opp
+                        )
+                    );
+                    setIsEditModalOpen(false);
+                    setOpportunityToEdit(null);
+                }}
                 opportunity={opportunityToEdit}
             />
         </div>
