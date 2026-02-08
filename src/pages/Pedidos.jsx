@@ -4,11 +4,16 @@ import { motion } from 'framer-motion';
 import { orders as mockOrders } from '../data/orders';
 import { stockMovementsOut as mockStockMovements } from '../data/stock';
 import { invoices as mockInvoices } from '../data/invoices';
+import { useToast } from '../contexts/ToastContext';
+import PaymentModal from '../components/PaymentModal';
 
 
 const Pedidos = () => {
+    const { showToast } = useToast();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [selectedOrderForPayment, setSelectedOrderForPayment] = useState(null);
 
     // Estado para usar datos mock
     const [localOrders, setLocalOrders] = useState(mockOrders);
@@ -79,10 +84,24 @@ const Pedidos = () => {
             //     });
             // }
 
-            alert(`✅ Pedido REMITIDO!\n\n📦 Pedido: ${order.orderNumber}\n📊 ${newMovements.length} producto(s) egresados del stock\n📅 Fecha: ${formatDate(new Date())}\n\n✨ Los movimientos de stock se registraron correctamente.`);
+            showToast({
+                id: `remitir-${order.id}`,
+                title: '✅ Pedido Remitido',
+                description: `Pedido ${order.orderNumber} - ${newMovements.length} producto(s) egresados del stock`,
+                priority: 'high',
+                icon: Truck,
+                timeAgo: 'Ahora'
+            });
         } catch (error) {
             console.error('Error al remitir:', error);
-            alert('❌ Error al remitir el pedido');
+            showToast({
+                id: `error-remitir-${order.id}`,
+                title: '❌ Error al Remitir',
+                description: 'No se pudo remitir el pedido. Intente nuevamente.',
+                priority: 'critical',
+                icon: AlertCircle,
+                timeAgo: 'Ahora'
+            });
         }
     };
 
@@ -132,43 +151,88 @@ const Pedidos = () => {
             //     // Actualizar con datos reales de AFIP
             // }
 
-            alert(`✅ Pedido FACTURADO!\n\n📄 Factura: ${newInvoice.invoiceNumber}\n💰 Total: ${formatCurrency(newInvoice.total)}\n🔐 CAE: ${newInvoice.cae}\n📅 Vencimiento CAE: ${formatDate(newInvoice.caeExpiration)}\n\n✨ La factura se generó correctamente.`);
+            showToast({
+                id: `facturar-${order.id}`,
+                title: '✅ Factura Generada',
+                description: `Factura ${newInvoice.invoiceNumber} - CAE: ${newInvoice.cae}`,
+                priority: 'high',
+                icon: FileText,
+                timeAgo: 'Ahora'
+            });
         } catch (error) {
             console.error('Error al facturar:', error);
-            alert('❌ Error al generar la factura');
+            showToast({
+                id: `error-facturar-${order.id}`,
+                title: '❌ Error al Facturar',
+                description: 'No se pudo generar la factura. Intente nuevamente.',
+                priority: 'critical',
+                icon: AlertCircle,
+                timeAgo: 'Ahora'
+            });
         }
     };
 
     // Función para COBRAR (registrar pago)
-    const handleCobrar = async (order) => {
+    const handleCobrar = (order) => {
+        // Buscar la factura asociada
+        const invoice = localInvoices.find(inv => inv.orderId === order.id);
+
+        if (!invoice) {
+            showToast({
+                id: `no-invoice-${order.id}`,
+                title: '⚠️ Factura Requerida',
+                description: 'Primero debes facturar el pedido antes de cobrar',
+                priority: 'warning',
+                icon: AlertCircle,
+                timeAgo: 'Ahora'
+            });
+            return;
+        }
+
+        // Abrir modal de pago
+        setSelectedOrderForPayment(order);
+        setPaymentModalOpen(true);
+    };
+
+    // Confirmar pago desde el modal
+    const handleConfirmPayment = async (paymentData) => {
         try {
-            // Buscar la factura asociada
+            const order = selectedOrderForPayment;
             const invoice = localInvoices.find(inv => inv.orderId === order.id);
 
-            if (!invoice) {
-                alert('⚠️ Primero debes facturar el pedido');
-                return;
-            }
-
-            // Crear pago (por ahora simulamos pago completo en efectivo)
+            // Crear pago
             const newPayment = {
                 id: `pay-${Date.now()}`,
                 paymentNumber: `PAG-2026-${String(Math.floor(Math.random() * 1000)).padStart(4, '0')}`,
                 invoiceId: invoice.id,
                 clientId: order.clientId,
                 clientName: order.clientName,
-                amount: order.total,
-                method: 'cash', // cash, check, transfer
+                amount: paymentData.amount,
+                method: paymentData.method,
                 status: 'completed',
-                paymentDate: new Date().toISOString().split('T')[0],
+                paymentDate: paymentData.paymentDate,
+                reference: paymentData.reference,
+                notes: paymentData.notes,
                 createdAt: new Date().toISOString()
             };
+
+            // Calcular monto total pagado
+            const previousPaidAmount = order.paidAmount || 0;
+            const totalPaid = previousPaidAmount + paymentData.amount;
+            const isFullyPaid = totalPaid >= order.total;
 
             // Actualizar estado del pedido
             setLocalOrders(prev =>
                 prev.map(o =>
                     o.id === order.id
-                        ? { ...o, status: 'paid', paidAt: new Date().toISOString(), paymentId: newPayment.id }
+                        ? {
+                            ...o,
+                            status: isFullyPaid ? 'paid' : 'invoiced',
+                            paidAmount: totalPaid,
+                            paidAt: isFullyPaid ? new Date().toISOString() : o.paidAt,
+                            paymentId: newPayment.id,
+                            payments: [...(o.payments || []), newPayment]
+                        }
                         : o
                 )
             );
@@ -182,12 +246,37 @@ const Pedidos = () => {
             //     });
             // }
 
-            alert(`✅ Pedido COBRADO!\n\n💰 Pago: ${newPayment.paymentNumber}\n💵 Monto: ${formatCurrency(newPayment.amount)}\n📅 Fecha: ${formatDate(newPayment.paymentDate)}\n💳 Método: Efectivo\n\n✨ El pago se registró correctamente.`);
+            const methodLabels = {
+                cash: 'Efectivo',
+                transfer: 'Transferencia',
+                check: 'Cheque',
+                card: 'Tarjeta'
+            };
+
+            const remainingAmount = order.total - totalPaid;
+            const isPartial = !isFullyPaid;
+
+            showToast({
+                id: `cobrar-${order.id}-${Date.now()}`,
+                title: isFullyPaid ? '✅ Pedido Cobrado Totalmente' : '✅ Pago Parcial Registrado',
+                description: `${formatCurrency(paymentData.amount)} - ${methodLabels[paymentData.method]}${isPartial ? ` | Pendiente: ${formatCurrency(remainingAmount)}` : ''}`,
+                priority: 'high',
+                icon: DollarSign,
+                timeAgo: 'Ahora'
+            });
         } catch (error) {
             console.error('Error al cobrar:', error);
-            alert('❌ Error al registrar el pago');
+            showToast({
+                id: `error-cobrar-${selectedOrderForPayment.id}`,
+                title: '❌ Error al Registrar Pago',
+                description: 'No se pudo registrar el pago. Intente nuevamente.',
+                priority: 'critical',
+                icon: AlertCircle,
+                timeAgo: 'Ahora'
+            });
         }
     };
+
 
     // Apply filters
     const filteredOrders = localOrders.filter(order => {
@@ -474,7 +563,19 @@ const Pedidos = () => {
                     </div>
                 </div>
             )}
+
+            {/* Payment Modal */}
+            <PaymentModal
+                isOpen={paymentModalOpen}
+                onClose={() => {
+                    setPaymentModalOpen(false);
+                    setSelectedOrderForPayment(null);
+                }}
+                order={selectedOrderForPayment}
+                onConfirm={handleConfirmPayment}
+            />
         </div>
+
     );
 };
 
