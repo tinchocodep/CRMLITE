@@ -397,6 +397,110 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                             )}
                         </div>
 
+                        {/* OPPORTUNITY-SPECIFIC DETAILS */}
+                        {editedEvent.eventType === 'opportunity' && editedEvent.opportunityData && (
+                            <div className="space-y-3 p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-slate-800 dark:to-slate-700 rounded-xl border border-green-100 dark:border-slate-600">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Briefcase size={16} className="text-advanta-green dark:text-red-400" />
+                                    <span className="text-xs font-bold uppercase text-advanta-green dark:text-red-400 tracking-wider">Detalles de Oportunidad</span>
+                                </div>
+
+                                {/* Amount & Probability */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Monto Estimado</label>
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600">
+                                            <span className="text-lg font-bold text-advanta-green dark:text-red-400">
+                                                ${(editedEvent.opportunityData.estimatedValue || editedEvent.opportunityData.amount || 0).toLocaleString('es-AR')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Probabilidad</label>
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600">
+                                            <div className="flex-1 bg-slate-200 dark:bg-slate-600 rounded-full h-2 overflow-hidden">
+                                                <div
+                                                    className="h-full bg-gradient-to-r from-advanta-green to-green-600 dark:from-red-500 dark:to-red-600 transition-all duration-500"
+                                                    style={{ width: `${editedEvent.opportunityData.probability || 0}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{editedEvent.opportunityData.probability || 0}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Client */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Cliente</label>
+                                    <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600">
+                                        <User size={14} className="text-slate-400" />
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            {editedEvent.opportunityData.clientName || editedEvent.client || 'Sin cliente'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Products */}
+                                {editedEvent.opportunityData.products && editedEvent.opportunityData.products.length > 0 && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Productos ({editedEvent.opportunityData.products.length})</label>
+                                        <div className="space-y-1 max-h-32 overflow-y-auto">
+                                            {editedEvent.opportunityData.products.map((product, idx) => (
+                                                <div key={idx} className="flex items-center justify-between p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600 text-xs">
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="font-semibold text-slate-700 dark:text-slate-300 truncate">
+                                                            {product.productName || product.name}
+                                                        </p>
+                                                        <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                                                            Cant: {product.quantity} × ${(product.estimatedPrice || product.unitPrice || 0).toLocaleString('es-AR')}
+                                                        </p>
+                                                    </div>
+                                                    <span className="text-sm font-bold text-advanta-green dark:text-red-400 ml-2">
+                                                        ${((product.quantity || 0) * (product.estimatedPrice || product.unitPrice || 0)).toLocaleString('es-AR')}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Status & Comercial */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Estado</label>
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600">
+                                            <span className="text-sm">
+                                                {editedEvent.opportunityData.status === 'prospecting' && '🔍 Prospección'}
+                                                {editedEvent.opportunityData.status === 'qualification' && '📊 Calificación'}
+                                                {editedEvent.opportunityData.status === 'proposal' && '📝 Propuesta'}
+                                                {editedEvent.opportunityData.status === 'negotiation' && '💼 Negociación'}
+                                                {editedEvent.opportunityData.status === 'won' && '🏆 Ganado'}
+                                                {editedEvent.opportunityData.status === 'lost' && '❌ Perdido'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Comercial</label>
+                                        <div className="flex items-center gap-2 p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600">
+                                            <User size={14} className="text-slate-400" />
+                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
+                                                {editedEvent.comercial_name || 'Sin asignar'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Description/Notes */}
+                                {editedEvent.opportunityData.description && (
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-wider">Notas</label>
+                                        <div className="p-2 bg-white dark:bg-slate-700 rounded-lg border border-green-100 dark:border-slate-600 text-xs text-slate-600 dark:text-slate-300 max-h-20 overflow-y-auto">
+                                            {editedEvent.opportunityData.description}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* 4. Footer Info (Static Location) */}
                         <div className="flex items-center gap-4 pt-2 border-t border-slate-100 mt-4">

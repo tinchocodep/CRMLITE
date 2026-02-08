@@ -7,6 +7,7 @@ import { invoices as mockInvoices } from '../data/invoices';
 import { useToast } from '../contexts/ToastContext';
 import PaymentModal from '../components/PaymentModal';
 import PreInvoiceModal from '../components/PreInvoiceModal';
+import InvoiceActionModal from '../components/orders/InvoiceActionModal';
 
 
 const Pedidos = () => {
@@ -17,6 +18,8 @@ const Pedidos = () => {
     const [selectedOrderForPayment, setSelectedOrderForPayment] = useState(null);
     const [preInvoiceModalOpen, setPreInvoiceModalOpen] = useState(false);
     const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState(null);
+    const [invoiceActionModalOpen, setInvoiceActionModalOpen] = useState(false);
+    const [selectedOrderForAction, setSelectedOrderForAction] = useState(null);
 
     // Estado para usar datos mock
     const [localOrders, setLocalOrders] = useState(mockOrders);
@@ -512,6 +515,20 @@ const Pedidos = () => {
                                                 Creado: {formatDate(order.createdAt)}
                                             </div>
                                             <div className="flex items-center gap-2 flex-wrap justify-end">
+                                                {/* Unified PROCESAR button for pending orders */}
+                                                {order.status === 'pending' && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedOrderForAction(order);
+                                                            setInvoiceActionModalOpen(true);
+                                                        }}
+                                                        className="px-4 py-2 bg-gradient-to-r from-advanta-green to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
+                                                    >
+                                                        <PackageCheck size={16} />
+                                                        <span>PROCESAR</span>
+                                                    </button>
+                                                )}
+
                                                 {canRemitir && (
                                                     <button
                                                         onClick={() => handleRemitir(order)}
@@ -594,6 +611,42 @@ const Pedidos = () => {
                 }}
                 order={selectedOrderForInvoice}
                 onConfirm={confirmFacturar}
+            />
+
+            {/* Invoice Action Modal (New Unified Modal) */}
+            <InvoiceActionModal
+                isOpen={invoiceActionModalOpen}
+                order={selectedOrderForAction}
+                onClose={() => {
+                    setInvoiceActionModalOpen(false);
+                    setSelectedOrderForAction(null);
+                }}
+                onSuccess={(result) => {
+                    console.log('✅ Action completed:', result);
+
+                    // Update order status based on action
+                    if (result.invoiceData || result.remitoData) {
+                        const actionType = result.invoiceData ? 'FACTURA' : 'REMITO';
+                        const newStatus = actionType === 'FACTURA' ? 'invoiced' : 'shipped';
+
+                        setLocalOrders(prev =>
+                            prev.map(o =>
+                                o.id === selectedOrderForAction.id
+                                    ? { ...o, status: newStatus }
+                                    : o
+                            )
+                        );
+
+                        showToast({
+                            id: `action-success-${selectedOrderForAction.id}`,
+                            title: `✅ ${actionType === 'FACTURA' ? 'Facturado' : 'Remitido'} Exitosamente`,
+                            description: `Pedido ${selectedOrderForAction.orderNumber} procesado correctamente`,
+                            priority: 'high',
+                            icon: actionType === 'FACTURA' ? FileText : Truck,
+                            timeAgo: 'Ahora'
+                        });
+                    }
+                }}
             />
         </div>
 
