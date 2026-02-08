@@ -1,89 +1,45 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { useCurrentTenant } from './useCurrentTenant';
+import { useState, useEffect } from 'react';
+import { mockContacts } from '../data/mockContacts';
+import { mockClients } from '../data/mockClients';
 
 export const useContacts = () => {
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { user, comercialId, isAdmin, isSupervisor } = useAuth();
-    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Fetch all contacts with their companies
     const fetchContacts = async () => {
         try {
-            // Don't fetch if tenant_id is not available yet
-            if (!tenantId) {
-                setContacts([]);
-                setLoading(false);
-                return;
-            }
-
             setLoading(true);
             setError(null);
 
-            // Build query with tenant filter
-            let query = supabase
-                .from('contacts')
-                .select('*')
-                .eq('tenant_id', tenantId); // ← EXPLICIT TENANT FILTER
+            // Simulate async delay
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            // Filter by comercial_id for non-admin/non-supervisor users
-            // Admins and supervisors see all contacts in their tenant
-            // Regular comerciales see only their own contacts
-            if (!isAdmin && !isSupervisor && comercialId) {
-                query = query.eq('comercial_id', comercialId);
-            } else {
-                // Admin/Supervisor - showing all contacts in tenant
-            }
-
-            const { data: contactsData, error: contactsError } = await query
-                .order('created_at', { ascending: false });
-
-            if (contactsError) throw contactsError;
-
-
-
-            // Fetch contact-company relationships with explicit tenant filter
-            const { data: relationsData, error: relationsError } = await supabase
-                .from('contact_companies')
-                .select(`
-                    *,
-                    company:companies(id, trade_name, legal_name, company_type)
-                `)
-                .eq('tenant_id', tenantId); // ← EXPLICIT TENANT FILTER
-
-            if (relationsError) throw relationsError;
-
-
-            // Transform to match mock data structure
-            const transformedData = contactsData.map(contact => {
-                const contactCompanies = relationsData
-                    .filter(rel => rel.contact_id === contact.id)
-                    .map(rel => ({
-                        companyId: rel.company_id,
-                        companyName: rel.company?.trade_name || rel.company?.legal_name || 'Empresa Desconocida',
-                        companyType: rel.company?.company_type || 'unknown',
-                        companyStatus: 'active',
-                        isCompanyActive: true,
-                        role: rel.role,
-                        isPrimary: rel.is_primary,
-                        addedDate: rel.created_at
-                    }));
+            // Transform mock data to match expected structure
+            const transformedData = mockContacts.map(contact => {
+                const company = mockClients.find(c => c.id === contact.company_id);
 
                 return {
                     id: contact.id,
-                    firstName: contact.first_name,
-                    lastName: contact.last_name,
+                    firstName: contact.name.split(' ')[0],
+                    lastName: contact.name.split(' ').slice(1).join(' '),
                     email: contact.email,
                     phone: contact.phone,
-                    notes: contact.notes,
-                    companies: contactCompanies,
+                    position: contact.position,
+                    notes: '',
+                    companies: company ? [{
+                        companyId: company.id,
+                        companyName: company.business_name,
+                        companyType: company.company_type,
+                        companyStatus: company.status,
+                        isCompanyActive: true,
+                        role: contact.position,
+                        isPrimary: true,
+                        addedDate: contact.created_at
+                    }] : [],
                     createdAt: contact.created_at,
-                    updatedAt: contact.updated_at,
-                    // Keep original for updates
-                    _original: contact
+                    updatedAt: contact.updated_at
                 };
             });
 
@@ -101,56 +57,19 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            // Get current user's tenant_id and comercial_id
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('tenant_id, comercial_id, role')
-                .eq('id', user?.id)
-                .single();
+            const newContact = {
+                id: mockContacts.length + 1,
+                name: `${contactData.firstName} ${contactData.lastName}`,
+                email: contactData.email,
+                phone: contactData.phone,
+                position: contactData.companies?.[0]?.role || 'Contacto',
+                company_id: contactData.companies?.[0]?.companyId || null,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
 
-            if (userError) throw userError;
-
-            // Insert contact
-            const { data: newContact, error: contactError } = await supabase
-                .from('contacts')
-                .insert([{
-                    first_name: contactData.firstName || contactData.first_name,
-                    last_name: contactData.lastName || contactData.last_name,
-                    email: contactData.email,
-                    phone: contactData.phone,
-                    notes: contactData.notes,
-                    tenant_id: userData.tenant_id,
-                    comercial_id: userData.comercial_id,
-                    created_by: user?.id
-                }])
-                .select()
-                .single();
-
-            if (contactError) {
-                console.error('❌ Contact Insert Error:', contactError);
-                throw contactError;
-            }
-
-            console.log('✅ Contact Created Successfully:', newContact);
-
-            // Insert company relationships
-            if (contactData.companies && contactData.companies.length > 0) {
-                const companyRelations = contactData.companies.map(company => ({
-                    contact_id: newContact.id,
-                    company_id: company.companyId,
-                    role: company.role,
-                    is_primary: company.isPrimary,
-                    tenant_id: userData.tenant_id
-                }));
-
-                const { error: relationsError } = await supabase
-                    .from('contact_companies')
-                    .insert(companyRelations);
-
-                if (relationsError) throw relationsError;
-            }
-
-            await fetchContacts(); // Refresh list
+            mockContacts.push(newContact);
+            await fetchContacts();
             return { success: true, data: newContact };
         } catch (err) {
             console.error('Error creating contact:', err);
@@ -164,59 +83,21 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            // Get current user's tenant_id
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('tenant_id')
-                .eq('id', user?.id)
-                .single();
-
-            if (userError) throw userError;
-
-            // Update contact
-            const { data: updatedContact, error: contactError } = await supabase
-                .from('contacts')
-                .update({
-                    first_name: contactData.firstName,
-                    last_name: contactData.lastName,
+            const index = mockContacts.findIndex(c => c.id === id);
+            if (index !== -1) {
+                mockContacts[index] = {
+                    ...mockContacts[index],
+                    name: `${contactData.firstName} ${contactData.lastName}`,
                     email: contactData.email,
                     phone: contactData.phone,
-                    notes: contactData.notes,
+                    position: contactData.companies?.[0]?.role || mockContacts[index].position,
+                    company_id: contactData.companies?.[0]?.companyId || mockContacts[index].company_id,
                     updated_at: new Date().toISOString()
-                })
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (contactError) throw contactError;
-
-            // Delete existing company relationships
-            const { error: deleteError } = await supabase
-                .from('contact_companies')
-                .delete()
-                .eq('contact_id', id);
-
-            if (deleteError) throw deleteError;
-
-            // Insert new company relationships
-            if (contactData.companies && contactData.companies.length > 0) {
-                const companyRelations = contactData.companies.map(company => ({
-                    contact_id: id,
-                    company_id: company.companyId,
-                    role: company.role,
-                    is_primary: company.isPrimary,
-                    tenant_id: userData.tenant_id
-                }));
-
-                const { error: relationsError } = await supabase
-                    .from('contact_companies')
-                    .insert(companyRelations);
-
-                if (relationsError) throw relationsError;
+                };
             }
 
-            await fetchContacts(); // Refresh list
-            return { success: true, data: updatedContact };
+            await fetchContacts();
+            return { success: true, data: mockContacts[index] };
         } catch (err) {
             console.error('Error updating contact:', err);
             setError(err.message);
@@ -224,19 +105,17 @@ export const useContacts = () => {
         }
     };
 
-    // Delete contact (cascade will delete relationships)
+    // Delete contact
     const deleteContact = async (id) => {
         try {
             setError(null);
 
-            const { error: deleteError } = await supabase
-                .from('contacts')
-                .delete()
-                .eq('id', id);
+            const index = mockContacts.findIndex(c => c.id === id);
+            if (index !== -1) {
+                mockContacts.splice(index, 1);
+            }
 
-            if (deleteError) throw deleteError;
-
-            await fetchContacts(); // Refresh list
+            await fetchContacts();
             return { success: true };
         } catch (err) {
             console.error('Error deleting contact:', err);
@@ -250,36 +129,13 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            // Get current user's tenant_id
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('tenant_id')
-                .eq('id', user?.id)
-                .single();
-
-            if (userError) throw userError;
-
-            // If setting as primary, unset other primaries for this contact
-            if (isPrimary) {
-                await supabase
-                    .from('contact_companies')
-                    .update({ is_primary: false })
-                    .eq('contact_id', contactId);
+            const index = mockContacts.findIndex(c => c.id === contactId);
+            if (index !== -1) {
+                mockContacts[index].company_id = companyId;
+                mockContacts[index].position = role;
             }
 
-            const { error: insertError } = await supabase
-                .from('contact_companies')
-                .insert([{
-                    contact_id: contactId,
-                    company_id: companyId,
-                    role,
-                    is_primary: isPrimary,
-                    tenant_id: userData.tenant_id
-                }]);
-
-            if (insertError) throw insertError;
-
-            await fetchContacts(); // Refresh list
+            await fetchContacts();
         } catch (err) {
             console.error('Error linking to company:', err);
             setError(err.message);
@@ -292,15 +148,12 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            const { error: deleteError } = await supabase
-                .from('contact_companies')
-                .delete()
-                .eq('contact_id', contactId)
-                .eq('company_id', companyId);
+            const index = mockContacts.findIndex(c => c.id === contactId);
+            if (index !== -1 && mockContacts[index].company_id === companyId) {
+                mockContacts[index].company_id = null;
+            }
 
-            if (deleteError) throw deleteError;
-
-            await fetchContacts(); // Refresh list
+            await fetchContacts();
         } catch (err) {
             console.error('Error unlinking from company:', err);
             setError(err.message);
@@ -310,13 +163,8 @@ export const useContacts = () => {
 
     // Load contacts on mount
     useEffect(() => {
-        if (tenantId) {
-            fetchContacts();
-        } else if (!tenantLoading) {
-            setLoading(false);
-        }
-    }, [tenantId, tenantLoading]);
-
+        fetchContacts();
+    }, []);
 
     return {
         contacts,

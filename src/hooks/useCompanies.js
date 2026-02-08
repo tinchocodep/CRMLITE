@@ -1,14 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { useCurrentTenant } from './useCurrentTenant';
+import { mockClients } from '../data/mockClients';
 
 export const useCompanies = (type = null) => {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { comercialId, isAdmin, isSupervisor } = useAuth();
-    const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Helper: Map qualification score to status (memoized)
     const mapQualificationToStatus = useCallback((score) => {
@@ -30,44 +26,18 @@ export const useCompanies = (type = null) => {
 
     const fetchCompanies = async () => {
         try {
-            // Don't fetch if tenant_id is not available yet
-            if (!tenantId) {
-                setCompanies([]);
-                setLoading(false);
-                return;
-            }
-
             setLoading(true);
-            let query = supabase
-                .from('companies_full')
-                .select('*')
-                .eq('is_active', true)
-                .eq('tenant_id', tenantId); // ← EXPLICIT TENANT FILTER
+
+            // Simulate async delay
+            await new Promise(resolve => setTimeout(resolve, 300));
 
             // Filter by type if specified
+            let filteredCompanies = [...mockClients];
             if (type) {
-                query = query.eq('company_type', type);
+                filteredCompanies = filteredCompanies.filter(c => c.company_type === type);
             }
 
-            // Filter by comercial_id if user is NOT admin or supervisor
-            // Admins and supervisors can see all companies in their tenant
-            if (!isAdmin && !isSupervisor && comercialId) {
-                query = query.eq('comercial_id', comercialId);
-            }
-
-            // Apply RLS - Supabase will handle this automatically
-            const { data, error: fetchError } = await query.order('created_at', { ascending: false });
-
-
-            if (fetchError) throw fetchError;
-
-            // Transform data to include status field from qualification_score
-            const transformedData = (data || []).map(company => ({
-                ...company,
-                status: mapQualificationToStatus(company.qualification_score)
-            }));
-
-            setCompanies(transformedData);
+            setCompanies(filteredCompanies);
             setError(null);
         } catch (err) {
             console.error('Error fetching companies:', err);
@@ -78,49 +48,22 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
-        if (tenantId && (comercialId || isAdmin || isSupervisor)) {
-            fetchCompanies();
-        } else if (!tenantLoading) {
-            // If we have Auth but no permissions yet, or simply not logged in, we shouldn't hang
-            const timer = setTimeout(() => setLoading(false), 2000); // Fail-safe
-            return () => clearTimeout(timer);
-        }
-    }, [comercialId, type, isAdmin, isSupervisor, tenantId, tenantLoading]);
+        fetchCompanies();
+    }, [type]);
 
 
     const createCompany = async (companyData) => {
         try {
-            // Get current user's tenant_id and comercial_id
-            const { data: { user } } = await supabase.auth.getUser();
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('tenant_id, comercial_id')
-                .eq('id', user.id)
-                .single();
+            const newCompany = {
+                id: mockClients.length + 1,
+                ...companyData,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
 
-            if (userError) throw userError;
-
-            // Map status to qualification_score if status is provided
-            const dataToInsert = { ...companyData };
-            if (dataToInsert.status) {
-                dataToInsert.qualification_score = mapStatusToQualification(dataToInsert.status);
-                delete dataToInsert.status; // Remove status as it's not a DB field
-            }
-
-            const { data, error: createError } = await supabase
-                .from('companies')
-                .insert([{
-                    ...dataToInsert,
-                    tenant_id: userData.tenant_id,
-                    comercial_id: companyData.comercial_id || userData.comercial_id,
-                    created_by: user.id
-                }])
-                .select()
-                .single();
-
-            if (createError) throw createError;
-            await fetchCompanies(); // Refresh list
-            return { success: true, data };
+            mockClients.push(newCompany);
+            await fetchCompanies();
+            return { success: true, data: newCompany };
         } catch (err) {
             console.error('Error creating company:', err);
             return { success: false, error: err.message };
@@ -129,23 +72,16 @@ export const useCompanies = (type = null) => {
 
     const updateCompany = async (id, updates) => {
         try {
-            // Map status to qualification_score if status is provided
-            const dataToUpdate = { ...updates };
-            if (dataToUpdate.status) {
-                dataToUpdate.qualification_score = mapStatusToQualification(dataToUpdate.status);
-                delete dataToUpdate.status; // Remove status as it's not a DB field
+            const index = mockClients.findIndex(c => c.id === id);
+            if (index !== -1) {
+                mockClients[index] = {
+                    ...mockClients[index],
+                    ...updates,
+                    updated_at: new Date().toISOString()
+                };
             }
-
-            const { data, error: updateError } = await supabase
-                .from('companies')
-                .update(dataToUpdate)
-                .eq('id', id)
-                .select()
-                .single();
-
-            if (updateError) throw updateError;
-            await fetchCompanies(); // Refresh list
-            return { success: true, data };
+            await fetchCompanies();
+            return { success: true, data: mockClients[index] };
         } catch (err) {
             console.error('Error updating company:', err);
             return { success: false, error: err.message };
@@ -154,13 +90,11 @@ export const useCompanies = (type = null) => {
 
     const deleteCompany = async (id) => {
         try {
-            const { error: deleteError } = await supabase
-                .from('companies')
-                .update({ is_active: false })
-                .eq('id', id);
-
-            if (deleteError) throw deleteError;
-            await fetchCompanies(); // Refresh list
+            const index = mockClients.findIndex(c => c.id === id);
+            if (index !== -1) {
+                mockClients[index].status = 'inactive';
+            }
+            await fetchCompanies();
             return { success: true };
         } catch (err) {
             console.error('Error deleting company:', err);
@@ -170,17 +104,17 @@ export const useCompanies = (type = null) => {
 
     const convertToClient = async (companyId, clientData) => {
         try {
-            const { data, error: convertError } = await supabase
-                .rpc('convert_prospect_to_client', {
-                    p_company_id: companyId,
-                    p_client_since: clientData.client_since || new Date().toISOString().split('T')[0],
-                    p_payment_terms: clientData.payment_terms,
-                    p_credit_limit: clientData.credit_limit
-                });
-
-            if (convertError) throw convertError;
-            await fetchCompanies(); // Refresh list
-            return { success: true, data };
+            const index = mockClients.findIndex(c => c.id === companyId);
+            if (index !== -1) {
+                mockClients[index] = {
+                    ...mockClients[index],
+                    company_type: 'client',
+                    ...clientData,
+                    updated_at: new Date().toISOString()
+                };
+            }
+            await fetchCompanies();
+            return { success: true, data: mockClients[index] };
         } catch (err) {
             console.error('Error converting to client:', err);
             return { success: false, error: err.message };
