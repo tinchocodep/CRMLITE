@@ -15,6 +15,11 @@ import Opportunities from './pages/Opportunities';
 import Settings from './pages/Settings';
 import UserManagement from './pages/UserManagement';
 import TeamManagement from './pages/TeamManagement';
+import Cotizaciones from './pages/Cotizaciones';
+import Pedidos from './pages/Pedidos';
+import Comprobantes from './pages/Comprobantes';
+import CuentaCorriente from './pages/CuentaCorriente';
+import Stock from './pages/Stock';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/shared/ToastContainer';
 
@@ -88,6 +93,11 @@ function AppRoutes() {
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />
           <Route path="equipos" element={<TeamManagement />} />
+          <Route path="cotizaciones" element={<Cotizaciones />} />
+          <Route path="pedidos" element={<Pedidos />} />
+          <Route path="comprobantes" element={<Comprobantes />} />
+          <Route path="cuenta-corriente" element={<CuentaCorriente />} />
+          <Route path="stock" element={<Stock />} />
           {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
             <Route
               key={name}

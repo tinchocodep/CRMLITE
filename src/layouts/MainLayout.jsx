@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, Calendar, FileText, Map, Target, AlertCircle, Briefcase, UserCheck, Search, Plus, X, UserPlus, User, LogOut, Bell, Home, Menu, Settings, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, FileText, Map, Target, AlertCircle, Briefcase, UserCheck, Search, Plus, X, UserPlus, User, LogOut, Bell, Home, Menu, Settings, ShieldCheck, Receipt, Package, CreditCard, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
 import CreateEventModal from '../components/agenda/CreateEventModal';
@@ -749,6 +749,91 @@ const MainLayout = () => {
                                         <Settings className="w-6 h-6 mb-2 text-slate-600" />
                                         <span className="text-xs font-bold text-center text-slate-800">Config</span>
                                     </button>
+
+                                    {/* 12. Cotizaciones */}
+                                    <NavLink
+                                        to="/cotizaciones"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Cotizaciones</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 13. Pedidos */}
+                                    <NavLink
+                                        to="/pedidos"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <Package className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Pedidos</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 14. Comprobantes */}
+                                    <NavLink
+                                        to="/comprobantes"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <Receipt className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Comprobantes</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 15. Cuenta Corriente */}
+                                    <NavLink
+                                        to="/cuenta-corriente"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <CreditCard className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Cta. Cte.</span>
+                                            </>
+                                        )}
+                                    </NavLink>
+
+                                    {/* 16. Stock */}
+                                    <NavLink
+                                        to="/stock"
+                                        onClick={() => setMobileNavMenuOpen(false)}
+                                        className={({ isActive }) => `
+                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
+                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
+                                        `}
+                                    >
+                                        {({ isActive }) => (
+                                            <>
+                                                <Box className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
+                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Stock</span>
+                                            </>
+                                        )}
+                                    </NavLink>
                                 </div>
                             </motion.div>
                         </>
