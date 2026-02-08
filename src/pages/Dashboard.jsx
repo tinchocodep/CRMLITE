@@ -374,84 +374,60 @@ const Dashboard = () => {
                 )}
             </AnimatePresence>
 
-            {/* Stats Grid */}
+            {/* Stats Grid - Compact Design */}
             <motion.div
                 className="px-4 -mt-4 relative z-10"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
             >
-                <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="grid grid-cols-4 gap-2 mb-4">
                     {/* Prospectos */}
                     <motion.div
                         variants={itemVariants}
-                        className="bg-[#17A2B8]/10 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900 border border-[#17A2B8]/30 dark:border-purple-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-[#17A2B8]/10 dark:from-purple-900 dark:via-purple-800 dark:to-purple-900 border border-[#17A2B8]/30 dark:border-purple-700 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="w-10 h-10 bg-[#17A2B8]/20 dark:bg-purple-600/40 rounded-xl flex items-center justify-center">
-                                <UserCheck className="w-5 h-5 text-[#17A2B8] dark:text-purple-200" />
-                            </div>
-                            <div className="flex items-center gap-1 bg-[#28A745]/20 dark:bg-purple-600/40 px-2 py-1 rounded-full">
-                                <TrendingUp className="w-3 h-3 text-[#28A745] dark:text-purple-200" />
-                                <span className="text-[10px] font-bold text-[#28A745] dark:text-purple-200">+12%</span>
-                            </div>
+                        <div className="w-8 h-8 bg-[#17A2B8]/20 dark:bg-purple-600/40 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                            <UserCheck className="w-4 h-4 text-[#17A2B8] dark:text-purple-200" />
                         </div>
-                        <div className="text-3xl font-black text-[#333333] dark:text-purple-100 mb-1">{stats.prospects}</div>
-                        <div className="text-xs font-semibold text-[#666666] dark:text-purple-300">Prospectos</div>
+                        <div className="text-2xl font-black text-[#333333] dark:text-purple-100 text-center">{stats.prospects}</div>
+                        <div className="text-[10px] font-semibold text-[#666666] dark:text-purple-300 text-center mt-1">Prospectos</div>
                     </motion.div>
 
                     {/* Contactos */}
                     <motion.div
                         variants={itemVariants}
-                        className="bg-[#87a330]/10 dark:from-teal-900 dark:via-teal-800 dark:to-teal-900 border border-[#87a330]/30 dark:border-teal-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-[#87a330]/10 dark:from-teal-900 dark:via-teal-800 dark:to-teal-900 border border-[#87a330]/30 dark:border-teal-700 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="w-10 h-10 bg-[#87a330]/20 dark:bg-teal-600/40 rounded-xl flex items-center justify-center">
-                                <Users className="w-5 h-5 text-[#87a330] dark:text-teal-200" />
-                            </div>
-                            <div className="flex items-center gap-1 bg-[#28A745]/20 dark:bg-teal-600/40 px-2 py-1 rounded-full">
-                                <TrendingUp className="w-3 h-3 text-[#28A745] dark:text-teal-200" />
-                                <span className="text-[10px] font-bold text-[#28A745] dark:text-teal-200">+8%</span>
-                            </div>
+                        <div className="w-8 h-8 bg-[#87a330]/20 dark:bg-teal-600/40 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                            <Users className="w-4 h-4 text-[#87a330] dark:text-teal-200" />
                         </div>
-                        <div className="text-3xl font-black text-[#333333] dark:text-teal-100 mb-1">{stats.contacts}</div>
-                        <div className="text-xs font-semibold text-[#666666] dark:text-teal-300">Contactos</div>
+                        <div className="text-2xl font-black text-[#333333] dark:text-teal-100 text-center">{stats.contacts}</div>
+                        <div className="text-[10px] font-semibold text-[#666666] dark:text-teal-300 text-center mt-1">Contactos</div>
                     </motion.div>
 
                     {/* Oportunidades */}
                     <motion.div
                         variants={itemVariants}
-                        className="bg-[#FFC107]/10 dark:from-rose-900 dark:via-rose-800 dark:to-rose-900 border border-[#FFC107]/30 dark:border-rose-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-[#FFC107]/10 dark:from-rose-900 dark:via-rose-800 dark:to-rose-900 border border-[#FFC107]/30 dark:border-rose-700 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="w-10 h-10 bg-[#FFC107]/20 dark:bg-rose-600/40 rounded-xl flex items-center justify-center">
-                                <Briefcase className="w-5 h-5 text-[#FFC107] dark:text-rose-200" />
-                            </div>
-                            <div className="flex items-center gap-1 bg-[#28A745]/20 dark:bg-rose-600/40 px-2 py-1 rounded-full">
-                                <TrendingUp className="w-3 h-3 text-[#28A745] dark:text-rose-200" />
-                                <span className="text-[10px] font-bold text-[#28A745] dark:text-rose-200">+5%</span>
-                            </div>
+                        <div className="w-8 h-8 bg-[#FFC107]/20 dark:bg-rose-600/40 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                            <Briefcase className="w-4 h-4 text-[#FFC107] dark:text-rose-200" />
                         </div>
-                        <div className="text-3xl font-black text-[#333333] dark:text-rose-100 mb-1">{stats.opportunities}</div>
-                        <div className="text-xs font-semibold text-[#666666] dark:text-rose-300">En Cierre</div>
+                        <div className="text-2xl font-black text-[#333333] dark:text-rose-100 text-center">{stats.opportunities}</div>
+                        <div className="text-[10px] font-semibold text-[#666666] dark:text-rose-300 text-center mt-1">En Cierre</div>
                     </motion.div>
 
                     {/* Clientes */}
                     <motion.div
                         variants={itemVariants}
-                        className="bg-[#28A745]/10 dark:from-emerald-900 dark:via-emerald-800 dark:to-emerald-900 border border-[#28A745]/30 dark:border-emerald-700 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-[#28A745]/10 dark:from-emerald-900 dark:via-emerald-800 dark:to-emerald-900 border border-[#28A745]/30 dark:border-emerald-700 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                        <div className="flex items-start justify-between mb-3">
-                            <div className="w-10 h-10 bg-[#28A745]/20 dark:bg-emerald-600/40 rounded-xl flex items-center justify-center">
-                                <Users className="w-5 h-5 text-[#28A745] dark:text-emerald-200" />
-                            </div>
-                            <div className="flex items-center gap-1 bg-[#28A745]/20 dark:bg-emerald-600/40 px-2 py-1 rounded-full">
-                                <TrendingUp className="w-3 h-3 text-[#28A745] dark:text-emerald-200" />
-                                <span className="text-[10px] font-bold text-[#28A745] dark:text-emerald-200">+15%</span>
-                            </div>
+                        <div className="w-8 h-8 bg-[#28A745]/20 dark:bg-emerald-600/40 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                            <Users className="w-4 h-4 text-[#28A745] dark:text-emerald-200" />
                         </div>
-                        <div className="text-3xl font-black text-[#333333] dark:text-emerald-100 mb-1">{stats.clients}</div>
-                        <div className="text-xs font-semibold text-[#666666] dark:text-emerald-300">Clientes</div>
+                        <div className="text-2xl font-black text-[#333333] dark:text-emerald-100 text-center">{stats.clients}</div>
+                        <div className="text-[10px] font-semibold text-[#666666] dark:text-emerald-300 text-center mt-1">Clientes</div>
                     </motion.div>
                 </div>
 
