@@ -140,24 +140,60 @@ Fecha Entrega: 2026-03-10 (+30 días)
 
 ---
 
-## 🚀 Próximos Pasos
+## 🚀 Fases Completadas
 
-### **FASE 2: Cotizaciones** (Próxima)
-- [ ] Rediseñar página `Cotizaciones.jsx`
-- [ ] Mostrar lista de cotizaciones (mock + creadas desde oportunidades)
-- [ ] Agregar botón "Confirmar Cotización"
-- [ ] Implementar creación de pedido desde cotización
+### ✅ **FASE 1: Oportunidades** (Completada)
+- [x] Rediseñar página `Opportunities.jsx`
+- [x] Agregar botón "Marcar como Ganado"
+- [x] Implementar creación automática de cotización
+- [x] 20 oportunidades de prueba
 
-### **FASE 3: Pedidos**
-- [ ] Rediseñar página `Pedidos.jsx`
-- [ ] Botones: Remitir, Facturar, Cobrar
-- [ ] Integración con N8N para facturas reales
+### ✅ **FASE 2: Cotizaciones** (Completada)
+- [x] Rediseñar página `Cotizaciones.jsx`
+- [x] Mostrar lista de cotizaciones (mock + creadas desde oportunidades)
+- [x] Agregar botón "Confirmar Cotización"
+- [x] Implementar creación de pedido desde cotización
 
-### **FASE 4-7: Resto de Módulos**
-- [ ] Stock (Ingresos/Egresos/Balance)
-- [ ] Comprobantes (Preview + PDF)
-- [ ] Pagos (Registro por método)
-- [ ] Cuenta Corriente (Movimientos + Saldos)
+### ✅ **FASE 3: Pedidos** (Completada)
+- [x] Rediseñar página `Pedidos.jsx`
+- [x] Botón **REMITIR**: Crea egresos de stock
+- [x] Botón **FACTURAR**: Genera factura AFIP con CAE
+- [x] Botón **COBRAR**: Registra pago
+- [x] Preparar integración con N8N (webhooks listos)
+
+---
+
+## 🔄 Próximos Pasos
+
+### **FASE 4: Stock** (Próxima)
+- [ ] Rediseñar página de Stock
+- [ ] Vista de movimientos (Ingresos/Egresos)
+- [ ] Vista de balances por producto
+- [ ] Filtros por fecha y tipo de movimiento
+
+### **FASE 5: Comprobantes**
+- [ ] Página de visualización de facturas
+- [ ] Preview de PDFs
+- [ ] Descarga de comprobantes
+- [ ] Filtros por tipo (AFIP/Proforma)
+
+### **FASE 6: Pagos**
+- [ ] Página de gestión de pagos
+- [ ] Registro manual de pagos
+- [ ] Métodos: Efectivo, Cheque, Transferencia
+- [ ] Asignación a facturas
+
+### **FASE 7: Cuenta Corriente**
+- [ ] Vista consolidada por cliente
+- [ ] Movimientos (débitos/créditos)
+- [ ] Saldo actual
+- [ ] Exportar a Excel
+
+### **FASE 8: Integración N8N**
+- [ ] Configurar webhooks en N8N
+- [ ] Conectar con AFIP para facturas reales
+- [ ] Generar PDFs de remitos y facturas
+- [ ] Envío automático de emails
 
 ---
 
