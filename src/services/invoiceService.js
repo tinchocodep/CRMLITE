@@ -72,6 +72,16 @@ const formatDate = (date) => {
 export const createInvoiceFromOrder = (order, options) => {
     const { tipo_cbte, letra } = options;
 
+    console.log('🔍 Creating invoice from order:', {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        clientName: order.clientName,
+        clientCuit: order.clientCuit,
+        linesCount: (order.lines || order.products || []).length,
+        tipo_cbte,
+        letra
+    });
+
     // Calculate due date (based on payment condition or default 10 days)
     const emissionDate = new Date();
     const dueDate = new Date(emissionDate);
@@ -82,14 +92,19 @@ export const createInvoiceFromOrder = (order, options) => {
 
     // Map order lines to invoice items
     // Order.lines structure: { productSapCode, productName, quantity, unitPrice, ... }
-    const items = (order.lines || order.products || []).map(line => ({
-        codigo: line.productSapCode || line.sapCode || 'N/A',
-        descripcion: line.productName || line.name || 'Producto',
-        cantidad: line.quantity || 0,
-        unidad_medida: line.unit || 'Unid.',
-        // For REMITO, price is 0. For FACTURA, use unitPrice (already includes IVA)
-        precio_unitario: tipo_cbte === 'REMITO' ? 0 : (line.unitPrice || line.estimatedPrice || 0)
-    }));
+    const items = (order.lines || order.products || []).map(line => {
+        const item = {
+            codigo: line.productSapCode || line.sapCode || 'N/A',
+            descripcion: line.productName || line.name || 'Producto',
+            cantidad: line.quantity || 0,
+            unidad_medida: line.unit || 'Unid.',
+            // For REMITO, price is 0. For FACTURA, use unitPrice (already includes IVA)
+            precio_unitario: tipo_cbte === 'REMITO' ? 0 : (line.unitPrice || line.estimatedPrice || 0)
+        };
+
+        console.log('📦 Product mapped:', item);
+        return item;
+    });
 
     const invoiceData = {
         tipo_cbte,
@@ -112,6 +127,8 @@ export const createInvoiceFromOrder = (order, options) => {
         order_id: order.id,
         order_number: order.orderNumber
     };
+
+    console.log('📄 Invoice data created:', JSON.stringify(invoiceData, null, 2));
 
     // NOTE: fiscal data (CAE, vto_cae, qr_url) is returned by n8n after AFIP processing
     // We don't send it, we receive it in the response
