@@ -21,6 +21,7 @@ import Pedidos from './pages/Pedidos';
 import Comprobantes from './pages/Comprobantes';
 import CuentaCorriente from './pages/CuentaCorriente';
 import Stock from './pages/Stock';
+import CotizadorIndex from './pages/CotizadorIndex';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/shared/ToastContainer';
 
@@ -94,6 +95,7 @@ function AppRoutes() {
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />
           <Route path="equipos" element={<TeamManagement />} />
+          <Route path="cotizador" element={<CotizadorIndex />} />
           <Route path="cotizaciones" element={<Cotizaciones />} />
           <Route path="pedidos" element={<Pedidos />} />
           <Route path="comprobantes" element={<Comprobantes />} />
