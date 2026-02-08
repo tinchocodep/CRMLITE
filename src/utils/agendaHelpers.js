@@ -1,10 +1,13 @@
 // Helper function to convert opportunities to calendar events
 export const convertOpportunityToEvent = (opportunity) => {
-    if (!opportunity.close_date) return null;
+    // Support both Supabase (close_date) and mock data (expectedCloseDate)
+    const closeDate = opportunity.close_date || opportunity.expectedCloseDate;
+
+    if (!closeDate) return null;
 
     try {
         // Parse close_date (format: "YYYY-MM-DD")
-        const [year, month, day] = opportunity.close_date.split('-').map(Number);
+        const [year, month, day] = closeDate.split('-').map(Number);
         if (!year || !month || !day) {
             console.warn('Invalid close_date format for opportunity:', opportunity.id);
             return null;
@@ -14,14 +17,22 @@ export const convertOpportunityToEvent = (opportunity) => {
         const start = new Date(year, month - 1, day, 12, 0, 0, 0);
         const end = new Date(start.getTime() + 60 * 60000); // 1 hour duration
 
-        // Get company name
+        // Get company name - support both Supabase and mock data
         const companyName = opportunity.company?.trade_name ||
             opportunity.company?.legal_name ||
+            opportunity.clientName ||
             opportunity.business_unit ||
             'Sin empresa';
 
-        // Map status to icon
+        // Map status to icon - UPDATED to match new status values
         const statusIcons = {
+            'prospecting': '🔍',
+            'qualification': '📊',
+            'proposal': '📝',
+            'negotiation': '💼',
+            'won': '🏆',
+            'lost': '❌',
+            // Legacy support for old status values
             'iniciado': '🚀',
             'presupuestado': '📋',
             'negociado': '🤝',
@@ -31,10 +42,13 @@ export const convertOpportunityToEvent = (opportunity) => {
 
         const statusIcon = statusIcons[opportunity.status] || '💼';
 
+        // Support both opportunity_name (Supabase) and title (mock)
+        const opportunityName = opportunity.opportunity_name || opportunity.title || 'Oportunidad sin nombre';
+
         return {
             id: `opp-${opportunity.id}`,
-            title: `${statusIcon} ${opportunity.opportunity_name || 'Oportunidad sin nombre'}`,
-            description: `${companyName} - ${opportunity.product_type || 'Sin producto'}`,
+            title: `${statusIcon} ${opportunityName}`,
+            description: `${companyName} - ${opportunity.product_type || opportunity.products?.[0]?.productName || 'Sin producto'}`,
             start,
             end,
             priority: opportunity.probability >= 70 ? 'high' :
@@ -42,7 +56,7 @@ export const convertOpportunityToEvent = (opportunity) => {
             status: opportunity.status,
             activity_type: 'Oportunidad',
             client: companyName,
-            comercial_id: opportunity.comercial_id,
+            comercial_id: opportunity.comercial_id || opportunity.comercial?.id,
             comercial_name: opportunity.comercial?.name || 'Sin asignar',
             eventType: 'opportunity',
             opportunityData: opportunity // Keep original opportunity data
