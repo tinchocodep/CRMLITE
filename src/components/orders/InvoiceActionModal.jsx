@@ -13,13 +13,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
     // Invoice/Remito configuration
     const [config, setConfig] = useState({
-        letra: 'A',
-        punto_venta: 5,
-        numero_cbte: '',
-        // Fiscal data (only for invoices)
-        cae: '',
-        vto_cae: '',
-        qr_url: ''
+        letra: 'A'  // Only letra is needed, rest is returned by n8n/AFIP
     });
 
     if (!isOpen || !order) return null;
@@ -30,37 +24,23 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
         try {
             // Validate required fields
-            if (!config.numero_cbte) {
-                throw new Error('Debe ingresar el número de comprobante');
+            if (!config.letra) {
+                throw new Error('Debe seleccionar el tipo de letra (A, B, C)');
             }
 
             let result;
 
             switch (selectedAction) {
                 case 'FACTURA':
-                    // Validate fiscal data for invoices
-                    if (!config.cae || !config.vto_cae) {
-                        throw new Error('Debe ingresar CAE y Vencimiento CAE para facturas');
-                    }
-
                     result = await processInvoice(order, {
                         tipo_cbte: 'FACTURA',
-                        letra: config.letra,
-                        punto_venta: parseInt(config.punto_venta),
-                        numero_cbte: parseInt(config.numero_cbte),
-                        fiscal: {
-                            cae: config.cae,
-                            vto_cae: config.vto_cae,
-                            qr_url: config.qr_url || ''
-                        }
+                        letra: config.letra
                     });
                     break;
 
                 case 'REMITO':
                     result = await processRemito(order, {
-                        letra: config.letra,
-                        punto_venta: parseInt(config.punto_venta),
-                        numero_cbte: parseInt(config.numero_cbte)
+                        letra: config.letra
                     });
                     break;
 
@@ -194,93 +174,24 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 Configuración del Comprobante
                             </h3>
 
-                            {/* Basic Config */}
-                            <div className="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                        Letra
-                                    </label>
-                                    <select
-                                        value={config.letra}
-                                        onChange={(e) => setConfig({ ...config, letra: e.target.value })}
-                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
-                                    >
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                        Punto de Venta
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={config.punto_venta}
-                                        onChange={(e) => setConfig({ ...config, punto_venta: e.target.value })}
-                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                        Número *
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={config.numero_cbte}
-                                        onChange={(e) => setConfig({ ...config, numero_cbte: e.target.value })}
-                                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
-                                        placeholder="1234"
-                                    />
-                                </div>
+                            {/* Letra Selection */}
+                            <div>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                    Tipo de Comprobante *
+                                </label>
+                                <select
+                                    value={config.letra}
+                                    onChange={(e) => setConfig({ ...config, letra: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                >
+                                    <option value="A">Letra A - Responsable Inscripto</option>
+                                    <option value="B">Letra B - Consumidor Final</option>
+                                    <option value="C">Letra C - Monotributista</option>
+                                </select>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                    El punto de venta, número de comprobante, CAE y QR serán generados automáticamente por AFIP
+                                </p>
                             </div>
-
-                            {/* Fiscal Data (only for FACTURA) */}
-                            {selectedAction === 'FACTURA' && (
-                                <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                        Datos Fiscales (AFIP)
-                                    </h4>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                CAE *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={config.cae}
-                                                onChange={(e) => setConfig({ ...config, cae: e.target.value })}
-                                                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
-                                                placeholder="74050000000000"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                                Vto. CAE *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={config.vto_cae}
-                                                onChange={(e) => setConfig({ ...config, vto_cae: e.target.value })}
-                                                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
-                                                placeholder="20/02/2026"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                                            URL QR (opcional)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={config.qr_url}
-                                            onChange={(e) => setConfig({ ...config, qr_url: e.target.value })}
-                                            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none"
-                                            placeholder="https://www.afip.gob.ar/..."
-                                        />
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     )}
 

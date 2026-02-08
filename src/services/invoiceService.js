@@ -66,25 +66,19 @@ const formatDate = (date) => {
  * @param {Object} order - Order object
  * @param {Object} options - Invoice options
  * @param {string} options.tipo_cbte - "FACTURA", "NC", or "REMITO"
- * @param {string} options.letra - Invoice letter
- * @param {number} options.punto_venta - Point of sale
- * @param {number} options.numero_cbte - Invoice number
- * @param {Object} options.fiscal - Fiscal data (CAE, etc.) - optional for REMITO
+ * @param {string} options.letra - Invoice letter (A, B, C)
  * @returns {Object} Invoice data ready for webhook
  */
 export const createInvoiceFromOrder = (order, options) => {
-    const {
-        tipo_cbte,
-        letra,
-        punto_venta,
-        numero_cbte,
-        fiscal
-    } = options;
+    const { tipo_cbte, letra } = options;
 
-    // Calculate due date (10 days from emission for example)
+    // Calculate due date (based on payment condition or default 10 days)
     const emissionDate = new Date();
     const dueDate = new Date(emissionDate);
-    dueDate.setDate(dueDate.getDate() + 10);
+
+    // Parse payment condition (e.g., "30d" = 30 days)
+    const paymentDays = order.paymentCondition ? parseInt(order.paymentCondition) : 10;
+    dueDate.setDate(dueDate.getDate() + paymentDays);
 
     // Map order lines to invoice items
     // Order.lines structure: { productSapCode, productName, quantity, unitPrice, ... }
@@ -100,8 +94,7 @@ export const createInvoiceFromOrder = (order, options) => {
     const invoiceData = {
         tipo_cbte,
         letra,
-        punto_venta,
-        numero_cbte,
+        // NOTE: punto_venta and numero_cbte are assigned by n8n/AFIP
         fecha_emision: formatDate(emissionDate),
         fecha_vencimiento: formatDate(dueDate),
 
@@ -113,13 +106,15 @@ export const createInvoiceFromOrder = (order, options) => {
             domicilio: order.destinationAddress || order.client?.address || 'N/A'
         },
 
-        items
+        items,
+
+        // Include order reference for tracking
+        order_id: order.id,
+        order_number: order.orderNumber
     };
 
-    // Add fiscal data only if provided (not required for REMITO)
-    if (fiscal) {
-        invoiceData.fiscal = fiscal;
-    }
+    // NOTE: fiscal data (CAE, vto_cae, qr_url) is returned by n8n after AFIP processing
+    // We don't send it, we receive it in the response
 
     return invoiceData;
 };
