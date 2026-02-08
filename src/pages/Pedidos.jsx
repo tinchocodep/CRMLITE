@@ -6,6 +6,7 @@ import { stockMovementsOut as mockStockMovements } from '../data/stock';
 import { invoices as mockInvoices } from '../data/invoices';
 import { useToast } from '../contexts/ToastContext';
 import PaymentModal from '../components/PaymentModal';
+import PreInvoiceModal from '../components/PreInvoiceModal';
 
 
 const Pedidos = () => {
@@ -14,6 +15,8 @@ const Pedidos = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [selectedOrderForPayment, setSelectedOrderForPayment] = useState(null);
+    const [preInvoiceModalOpen, setPreInvoiceModalOpen] = useState(false);
+    const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState(null);
 
     // Estado para usar datos mock
     const [localOrders, setLocalOrders] = useState(mockOrders);
@@ -105,8 +108,14 @@ const Pedidos = () => {
         }
     };
 
-    // Función para FACTURAR (generar factura AFIP)
-    const handleFacturar = async (order) => {
+    // Función para abrir el modal de pre-factura
+    const handleFacturar = (order) => {
+        setSelectedOrderForInvoice(order);
+        setPreInvoiceModalOpen(true);
+    };
+
+    // Función para CONFIRMAR FACTURACIÓN (después de revisar en el modal)
+    const confirmFacturar = async (order) => {
         try {
             // Crear factura
             const newInvoice = {
@@ -117,6 +126,7 @@ const Pedidos = () => {
                 orderNumber: order.orderNumber,
                 clientId: order.clientId,
                 clientName: order.clientName,
+                clientCuit: order.clientCuit,
                 lines: order.lines,
                 subtotal: order.subtotal,
                 tax: order.tax,
@@ -573,6 +583,17 @@ const Pedidos = () => {
                 }}
                 order={selectedOrderForPayment}
                 onConfirm={handleConfirmPayment}
+            />
+
+            {/* Pre-Invoice Modal */}
+            <PreInvoiceModal
+                isOpen={preInvoiceModalOpen}
+                onClose={() => {
+                    setPreInvoiceModalOpen(false);
+                    setSelectedOrderForInvoice(null);
+                }}
+                order={selectedOrderForInvoice}
+                onConfirm={confirmFacturar}
             />
         </div>
 

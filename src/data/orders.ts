@@ -10,6 +10,7 @@ export const orders: Order[] = [
         quotationId: quotations[0].id,
         clientId: quotations[0].clientId,
         clientName: quotations[0].clientName,
+        clientCuit: '30716831325', // AGRO BC S.R.L.
         saleType: quotations[0].saleType,
         paymentCondition: quotations[0].paymentCondition,
         deliveryDate: quotations[0].deliveryDate,
@@ -33,6 +34,7 @@ export const orders: Order[] = [
         quotationId: quotations[3].id,
         clientId: quotations[3].clientId,
         clientName: quotations[3].clientName,
+        clientCuit: '30718867173', // AGRO GANADERA GUAPAS S.R.L.
         saleType: quotations[3].saleType,
         paymentCondition: quotations[3].paymentCondition,
         deliveryDate: quotations[3].deliveryDate,
@@ -55,6 +57,7 @@ export const orders: Order[] = [
         quotationId: quotations[6].id,
         clientId: quotations[6].clientId,
         clientName: quotations[6].clientName,
+        clientCuit: '30716370948', // AGRO-MAN S.A.S.
         saleType: quotations[6].saleType,
         paymentCondition: quotations[6].paymentCondition,
         deliveryDate: quotations[6].deliveryDate,
@@ -76,6 +79,7 @@ export const orders: Order[] = [
         quotationId: 'quot-009', // Nueva cotización no listada
         clientId: String(4770), // BIO ZELEN SA
         clientName: 'BIO ZELEN SA',
+        clientCuit: '33716799099',
         saleType: 'own',
         paymentCondition: '60d',
         deliveryDate: '2026-03-28',
@@ -119,6 +123,7 @@ export const orders: Order[] = [
         quotationId: 'quot-010',
         clientId: String(4771), // CAPITANICH AGROPECUARIA SA
         clientName: 'CAPITANICH AGROPECUARIA SA',
+        clientCuit: '30716775395',
         saleType: 'partner',
         paymentCondition: 'cash',
         deliveryDate: '2026-03-08',

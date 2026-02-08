@@ -72,6 +72,7 @@ export interface Order {
     quotationId: string;
     clientId: string;
     clientName: string;
+    clientCuit?: string;
     saleType: SaleType;
     paymentCondition: PaymentCondition;
     deliveryDate: string;
