@@ -11,6 +11,7 @@ import ContactModal from '../components/contacts/ContactModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
+import { HorizontalCotizadorNav } from '../components/cotizador/HorizontalCotizadorNav';
 import { RightSidebarAgenda } from '../components/RightSidebarAgenda';
 import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
@@ -58,6 +59,10 @@ const MainLayout = () => {
     // Check if we're in CRM module (any CRM submodule)
     const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/territorios', '/reclamos', '/ficha-360'];
     const isCRMActive = crmPaths.includes(location.pathname) || location.pathname === '/';
+
+    // Check if we're in Cotizador module (any Cotizador submodule)
+    const cotizadorPaths = ['/cotizador', '/cotizaciones', '/pedidos', '/comprobantes', '/cuenta-corriente', '/stock'];
+    const isCotizadorActive = cotizadorPaths.includes(location.pathname);
 
     // ========== MOBILE STATE (Separate) ==========
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -897,6 +902,9 @@ const MainLayout = () => {
 
                 {/* CRM Horizontal Navigation - Above Content */}
                 {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={mainSidebarExpanded} />}
+
+                {/* Cotizador Horizontal Navigation - Above Content */}
+                {isCotizadorActive && <HorizontalCotizadorNav isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Right Sidebar Agenda */}
                 <RightSidebarAgenda isMainSidebarExpanded={mainSidebarExpanded} />

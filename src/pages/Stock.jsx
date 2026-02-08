@@ -128,7 +128,7 @@ const Stock = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8">
             {/* Header */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 xl:top-14 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-3">
@@ -301,10 +301,10 @@ const Stock = () => {
                                             <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                                 <div
                                                     className={`h-full transition-all ${product.currentStock === 0
-                                                            ? 'bg-red-500'
-                                                            : product.currentStock <= product.minStock
-                                                                ? 'bg-amber-500'
-                                                                : 'bg-green-500'
+                                                        ? 'bg-red-500'
+                                                        : product.currentStock <= product.minStock
+                                                            ? 'bg-amber-500'
+                                                            : 'bg-green-500'
                                                         }`}
                                                     style={{ width: `${getStockPercentage(product)}%` }}
                                                 />
