@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { orders as mockOrders } from '../data/orders';
-import { stockMovements as mockStockMovements } from '../data/stock';
+import { stockMovementsOut as mockStockMovements } from '../data/stock';
 import { invoices as mockInvoices } from '../data/invoices';
+
 
 const Pedidos = () => {
     const [searchTerm, setSearchTerm] = useState('');
