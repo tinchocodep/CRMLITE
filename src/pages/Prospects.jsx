@@ -9,6 +9,7 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
+import { supabase } from '../lib/supabase';
 
 const Prospects = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -147,9 +148,12 @@ const Prospects = () => {
 
     const handleConfirmConversion = async (clientData) => {
         try {
+            // Extract contactIds before preparing data (same pattern as Clients.jsx)
+            const { contactIds, ...restClientData } = clientData;
+
             // Prepare the data for updating the prospect to client
             const dataToUpdate = {
-                ...clientData,
+                ...restClientData,
                 company_type: 'client',
                 // Keep the same ID
                 id: selectedProspect.id
@@ -161,6 +165,34 @@ const Prospects = () => {
             const result = await updateCompany(selectedProspect.id, dataToUpdate);
 
             if (result.success) {
+                // Handle contact-company relationships if contactIds provided
+                if (contactIds && contactIds.length > 0) {
+                    console.log('💾 [Prospects] Creating contact-company relationships:', {
+                        clientId: selectedProspect.id,
+                        selectedContactIds: contactIds
+                    });
+
+                    // Add contacts to the newly converted client
+                    for (const contactId of contactIds) {
+                        try {
+                            const { error: relationError } = await supabase
+                                .from('contact_companies')
+                                .insert([{
+                                    contact_id: contactId,
+                                    company_id: selectedProspect.id,
+                                    is_primary: false,
+                                    tenant_id: selectedProspect.tenant_id
+                                }]);
+
+                            if (relationError) {
+                                console.error('Error adding contact relationship:', relationError);
+                            }
+                        } catch (err) {
+                            console.error('Error in contact relationship loop:', err);
+                        }
+                    }
+                }
+
                 showSuccess(`¡Felicitaciones! ${clientData.trade_name || clientData.legal_name} ha sido convertido a Cliente.`);
                 setIsConvertModalOpen(false);
             } else {
