@@ -1,130 +1,243 @@
 import React, { useState } from 'react';
-import { Package, Search, Filter, Plus, Edit2, Eye, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText } from 'lucide-react';
+import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { orders as mockOrders } from '../data/orders';
+import { stockMovements as mockStockMovements } from '../data/stock';
+import { invoices as mockInvoices } from '../data/invoices';
 
 const Pedidos = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all'); // all, pending, in_progress, ready, delivered
+    const [statusFilter, setStatusFilter] = useState('all');
 
-    // Mock data - esto se conectará con Supabase
-    const [orders, setOrders] = useState([
-        {
-            id: 1,
-            orderNumber: 'PED-001',
-            quotationNumber: 'COT-001',
-            company: 'Agro San Juan S.A.',
-            status: 'ready',
-            totalAmount: 125000,
-            createdDate: '2026-02-05',
-            deliveryDate: '2026-02-15',
-            items: 5,
-            invoiced: false
-        },
-        {
-            id: 2,
-            orderNumber: 'PED-002',
-            quotationNumber: 'COT-002',
-            company: 'Estancia La Pampa',
-            status: 'in_progress',
-            totalAmount: 89500,
-            createdDate: '2026-02-06',
-            deliveryDate: '2026-02-20',
-            items: 3,
-            invoiced: false
-        },
-        {
-            id: 3,
-            orderNumber: 'PED-003',
-            quotationNumber: 'COT-005',
-            company: 'Campo Verde S.R.L.',
-            status: 'delivered',
-            totalAmount: 215000,
-            createdDate: '2026-01-28',
-            deliveryDate: '2026-02-08',
-            items: 8,
-            invoiced: true
-        },
-        {
-            id: 4,
-            orderNumber: 'PED-004',
-            quotationNumber: 'COT-007',
-            company: 'Agroindustrias del Sur',
-            status: 'pending',
-            totalAmount: 67800,
-            createdDate: '2026-02-07',
-            deliveryDate: '2026-02-18',
-            items: 4,
-            invoiced: false
-        },
-        {
-            id: 5,
-            orderNumber: 'PED-005',
-            quotationNumber: 'COT-009',
-            company: 'Semillas del Norte',
-            status: 'ready',
-            totalAmount: 178500,
-            createdDate: '2026-02-04',
-            deliveryDate: '2026-02-14',
-            items: 6,
-            invoiced: false
+    // Estado para usar datos mock
+    const [localOrders, setLocalOrders] = useState(mockOrders);
+    const [localStockMovements, setLocalStockMovements] = useState(mockStockMovements);
+    const [localInvoices, setLocalInvoices] = useState(mockInvoices);
+
+    // URLs de webhooks N8N (se configurarán más adelante)
+    const WEBHOOK_URLS = {
+        remitir: '', // URL para generar remito
+        facturar: '', // URL para generar factura AFIP
+        cobrar: '' // URL para registrar pago
+    };
+
+    const statusConfig = {
+        pending: { label: 'Pendiente', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: '⏳' },
+        shipped: { label: 'Remitido', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '📦' },
+        invoiced: { label: 'Facturado', color: 'bg-purple-100 text-purple-700 border-purple-200', icon: '📄' },
+        paid: { label: 'Cobrado', color: 'bg-green-100 text-green-700 border-green-200', icon: '💰' },
+        completed: { label: 'Completado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '✅' }
+    };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 0
+        }).format(amount);
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
+
+    // Función para REMITIR (crear egreso de stock)
+    const handleRemitir = async (order) => {
+        try {
+            // Crear movimientos de stock (egresos)
+            const newMovements = order.lines.map((line, index) => ({
+                id: `mov-out-${Date.now()}-${index}`,
+                type: 'out',
+                productSapCode: line.productSapCode,
+                productName: line.productName,
+                quantity: line.quantity,
+                orderId: order.id,
+                orderNumber: order.orderNumber,
+                date: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            }));
+
+            setLocalStockMovements(prev => [...prev, ...newMovements]);
+
+            // Actualizar estado del pedido
+            setLocalOrders(prev =>
+                prev.map(o =>
+                    o.id === order.id
+                        ? { ...o, status: 'shipped', shippedAt: new Date().toISOString() }
+                        : o
+                )
+            );
+
+            // TODO: Cuando tengas el webhook, descomentar esto:
+            // if (WEBHOOK_URLS.remitir) {
+            //     await fetch(WEBHOOK_URLS.remitir, {
+            //         method: 'POST',
+            //         headers: { 'Content-Type': 'application/json' },
+            //         body: JSON.stringify({ order, movements: newMovements })
+            //     });
+            // }
+
+            alert(`✅ Pedido REMITIDO!\n\n📦 Pedido: ${order.orderNumber}\n📊 ${newMovements.length} producto(s) egresados del stock\n📅 Fecha: ${formatDate(new Date())}\n\n✨ Los movimientos de stock se registraron correctamente.`);
+        } catch (error) {
+            console.error('Error al remitir:', error);
+            alert('❌ Error al remitir el pedido');
         }
-    ]);
+    };
+
+    // Función para FACTURAR (generar factura AFIP)
+    const handleFacturar = async (order) => {
+        try {
+            // Crear factura
+            const newInvoice = {
+                id: `inv-${Date.now()}`,
+                invoiceNumber: `FC-A-0001-${String(localInvoices.length + 1).padStart(8, '0')}`,
+                type: 'AFIP',
+                orderId: order.id,
+                orderNumber: order.orderNumber,
+                clientId: order.clientId,
+                clientName: order.clientName,
+                lines: order.lines,
+                subtotal: order.subtotal,
+                tax: order.tax,
+                total: order.total,
+                status: 'issued',
+                issueDate: new Date().toISOString().split('T')[0],
+                dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                cae: `${Math.floor(Math.random() * 90000000000000) + 10000000000000}`, // Mock CAE
+                caeExpiration: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            };
+
+            setLocalInvoices(prev => [...prev, newInvoice]);
+
+            // Actualizar estado del pedido
+            setLocalOrders(prev =>
+                prev.map(o =>
+                    o.id === order.id
+                        ? { ...o, status: 'invoiced', invoicedAt: new Date().toISOString(), invoiceId: newInvoice.id }
+                        : o
+                )
+            );
+
+            // TODO: Cuando tengas el webhook, descomentar esto:
+            // if (WEBHOOK_URLS.facturar) {
+            //     const response = await fetch(WEBHOOK_URLS.facturar, {
+            //         method: 'POST',
+            //         headers: { 'Content-Type': 'application/json' },
+            //         body: JSON.stringify({ order, invoice: newInvoice })
+            //     });
+            //     const result = await response.json();
+            //     // Actualizar con datos reales de AFIP
+            // }
+
+            alert(`✅ Pedido FACTURADO!\n\n📄 Factura: ${newInvoice.invoiceNumber}\n💰 Total: ${formatCurrency(newInvoice.total)}\n🔐 CAE: ${newInvoice.cae}\n📅 Vencimiento CAE: ${formatDate(newInvoice.caeExpiration)}\n\n✨ La factura se generó correctamente.`);
+        } catch (error) {
+            console.error('Error al facturar:', error);
+            alert('❌ Error al generar la factura');
+        }
+    };
+
+    // Función para COBRAR (registrar pago)
+    const handleCobrar = async (order) => {
+        try {
+            // Buscar la factura asociada
+            const invoice = localInvoices.find(inv => inv.orderId === order.id);
+
+            if (!invoice) {
+                alert('⚠️ Primero debes facturar el pedido');
+                return;
+            }
+
+            // Crear pago (por ahora simulamos pago completo en efectivo)
+            const newPayment = {
+                id: `pay-${Date.now()}`,
+                paymentNumber: `PAG-2026-${String(Math.floor(Math.random() * 1000)).padStart(4, '0')}`,
+                invoiceId: invoice.id,
+                clientId: order.clientId,
+                clientName: order.clientName,
+                amount: order.total,
+                method: 'cash', // cash, check, transfer
+                status: 'completed',
+                paymentDate: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            };
+
+            // Actualizar estado del pedido
+            setLocalOrders(prev =>
+                prev.map(o =>
+                    o.id === order.id
+                        ? { ...o, status: 'paid', paidAt: new Date().toISOString(), paymentId: newPayment.id }
+                        : o
+                )
+            );
+
+            // TODO: Cuando tengas el webhook, descomentar esto:
+            // if (WEBHOOK_URLS.cobrar) {
+            //     await fetch(WEBHOOK_URLS.cobrar, {
+            //         method: 'POST',
+            //         headers: { 'Content-Type': 'application/json' },
+            //         body: JSON.stringify({ order, invoice, payment: newPayment })
+            //     });
+            // }
+
+            alert(`✅ Pedido COBRADO!\n\n💰 Pago: ${newPayment.paymentNumber}\n💵 Monto: ${formatCurrency(newPayment.amount)}\n📅 Fecha: ${formatDate(newPayment.paymentDate)}\n💳 Método: Efectivo\n\n✨ El pago se registró correctamente.`);
+        } catch (error) {
+            console.error('Error al cobrar:', error);
+            alert('❌ Error al registrar el pago');
+        }
+    };
+
+    // Apply filters
+    const filteredOrders = localOrders.filter(order => {
+        const matchesSearch = order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.clientName?.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+
+        return matchesSearch && matchesStatus;
+    });
 
     const stats = [
         {
             label: 'Total Pedidos',
-            value: orders.length,
+            value: localOrders.length,
             icon: Package,
             color: 'from-indigo-500 to-indigo-600',
             textColor: 'text-indigo-600'
         },
         {
             label: 'Pendientes',
-            value: orders.filter(o => o.status === 'pending').length,
+            value: localOrders.filter(o => o.status === 'pending').length,
             icon: Clock,
             color: 'from-amber-500 to-amber-600',
             textColor: 'text-amber-600'
         },
         {
-            label: 'Listos',
-            value: orders.filter(o => o.status === 'ready').length,
-            icon: CheckCircle,
-            color: 'from-green-500 to-green-600',
-            textColor: 'text-green-600'
-        },
-        {
-            label: 'Entregados',
-            value: orders.filter(o => o.status === 'delivered').length,
+            label: 'Remitidos',
+            value: localOrders.filter(o => o.status === 'shipped').length,
             icon: Truck,
             color: 'from-blue-500 to-blue-600',
             textColor: 'text-blue-600'
+        },
+        {
+            label: 'Completados',
+            value: localOrders.filter(o => o.status === 'completed' || o.status === 'paid').length,
+            icon: CheckCircle,
+            color: 'from-green-500 to-green-600',
+            textColor: 'text-green-600'
         }
     ];
 
     const getStatusBadge = (status) => {
-        const statusConfig = {
-            pending: { label: 'Pendiente', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-            in_progress: { label: 'En Proceso', color: 'bg-blue-100 text-blue-700 border-blue-200' },
-            ready: { label: 'Listo', color: 'bg-green-100 text-green-700 border-green-200' },
-            delivered: { label: 'Entregado', color: 'bg-slate-100 text-slate-700 border-slate-200' }
-        };
-
         const config = statusConfig[status] || statusConfig.pending;
         return (
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${config.color}`}>
-                {config.label}
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${config.color} flex items-center gap-1 w-fit`}>
+                <span>{config.icon}</span>
+                <span>{config.label}</span>
             </span>
         );
     };
-
-    const filteredOrders = orders.filter(order => {
-        const matchesSearch = order.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase());
-
-        const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-
-        return matchesSearch && matchesStatus;
-    });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
@@ -138,13 +251,9 @@ const Pedidos = () => {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Pedidos</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Cotizaciones cerradas listas para facturar y remitir</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">Gestión de pedidos: Remitir, Facturar y Cobrar</p>
                             </div>
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-advanta-green to-green-600 text-white rounded-lg hover:shadow-lg transition-all">
-                            <Plus className="w-5 h-5" />
-                            <span className="hidden sm:inline">Nuevo Pedido</span>
-                        </button>
                     </div>
 
                     {/* Stats Cards */}
@@ -185,9 +294,10 @@ const Pedidos = () => {
                         >
                             <option value="all">Todos los estados</option>
                             <option value="pending">Pendientes</option>
-                            <option value="in_progress">En Proceso</option>
-                            <option value="ready">Listos</option>
-                            <option value="delivered">Entregados</option>
+                            <option value="shipped">Remitidos</option>
+                            <option value="invoiced">Facturados</option>
+                            <option value="paid">Cobrados</option>
+                            <option value="completed">Completados</option>
                         </select>
                     </div>
                 </div>
@@ -202,106 +312,167 @@ const Pedidos = () => {
                             No hay pedidos
                         </h3>
                         <p className="text-slate-600 dark:text-slate-400">
-                            {searchTerm || statusFilter !== 'all'
-                                ? 'No se encontraron pedidos con los filtros aplicados'
-                                : 'Crea tu primer pedido desde una cotización aprobada'}
+                            Los pedidos se crean automáticamente cuando confirmas una cotización.
                         </p>
                     </div>
                 ) : (
                     <div className="grid gap-4">
-                        {filteredOrders.map((order, index) => (
-                            <motion.div
-                                key={order.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden"
-                            >
-                                <div className="p-6">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                                                    {order.orderNumber}
-                                                </h3>
-                                                {getStatusBadge(order.status)}
-                                                {!order.invoiced && (
-                                                    <span className="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
-                                                        Sin Facturar
+                        {filteredOrders.map((order, index) => {
+                            const canRemitir = order.status === 'pending';
+                            const canFacturar = order.status === 'shipped';
+                            const canCobrar = order.status === 'invoiced';
+                            const isCompleted = order.status === 'paid' || order.status === 'completed';
+
+                            return (
+                                <motion.div
+                                    key={order.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow"
+                                >
+                                    <div className="p-6">
+                                        {/* Header Row */}
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                                        {order.orderNumber}
+                                                    </h3>
+                                                    {getStatusBadge(order.status)}
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                                    <Building2 size={16} />
+                                                    <span className="font-medium">{order.clientName}</span>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                                    {formatCurrency(order.total)}
+                                                </div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">
+                                                    + IVA {formatCurrency(order.tax)}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Details Grid */}
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 pb-4 border-b border-slate-200 dark:border-slate-700">
+                                            <div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Tipo de Venta</div>
+                                                <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                    {order.saleType === 'own' ? '🏢 Propia' : '🤝 Partner'}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Pago</div>
+                                                <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                    {order.paymentCondition === 'cash' ? '💵 Contado' :
+                                                        order.paymentCondition === '30d' ? '📅 30 días' :
+                                                            order.paymentCondition === '60d' ? '📅 60 días' : '📅 90 días'}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Entrega</div>
+                                                <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                    {formatDate(order.deliveryDate)}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Productos</div>
+                                                <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                    {order.lines.length} ítem(s)
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Products List */}
+                                        <div className="space-y-2 mb-4">
+                                            {order.lines.slice(0, 2).map((line, idx) => (
+                                                <div key={idx} className="flex items-center justify-between text-sm">
+                                                    <div className="flex-1">
+                                                        <span className="text-slate-700 dark:text-slate-300">{line.productName}</span>
+                                                        <span className="text-slate-500 dark:text-slate-400 ml-2">× {line.quantity}</span>
+                                                    </div>
+                                                    <div className="font-semibold text-slate-900 dark:text-white">
+                                                        {formatCurrency(line.total)}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {order.lines.length > 2 && (
+                                                <div className="text-xs text-slate-500 dark:text-slate-400 italic">
+                                                    + {order.lines.length - 2} producto(s) más
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                                            <div className="text-xs text-slate-500 dark:text-slate-400">
+                                                Creado: {formatDate(order.createdAt)}
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-wrap justify-end">
+                                                {canRemitir && (
+                                                    <button
+                                                        onClick={() => handleRemitir(order)}
+                                                        className="px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
+                                                    >
+                                                        <Truck size={14} />
+                                                        <span>REMITIR</span>
+                                                    </button>
+                                                )}
+                                                {canFacturar && (
+                                                    <button
+                                                        onClick={() => handleFacturar(order)}
+                                                        className="px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
+                                                    >
+                                                        <FileText size={14} />
+                                                        <span>FACTURAR</span>
+                                                    </button>
+                                                )}
+                                                {canCobrar && (
+                                                    <button
+                                                        onClick={() => handleCobrar(order)}
+                                                        className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
+                                                    >
+                                                        <Banknote size={14} />
+                                                        <span>COBRAR</span>
+                                                    </button>
+                                                )}
+                                                {isCompleted && (
+                                                    <span className="px-3 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-bold flex items-center gap-2">
+                                                        <CheckCircle size={14} />
+                                                        <span>COMPLETADO</span>
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                                <Building2 className="w-4 h-4" />
-                                                <span>{order.company}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500 mt-1">
-                                                <FileText className="w-3 h-3" />
-                                                <span>Cotización: {order.quotationNumber}</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
-                                                <Eye className="w-5 h-5" />
-                                            </button>
-                                            <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
-                                                <Edit2 className="w-5 h-5" />
-                                            </button>
-                                            <button className="px-3 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-semibold hover:shadow-lg transition-all">
-                                                Facturar
-                                            </button>
                                         </div>
                                     </div>
-
-                                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                                        <div className="flex items-center gap-2">
-                                            <DollarSign className="w-4 h-4 text-green-600" />
-                                            <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400">Total</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    ${order.totalAmount.toLocaleString()}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Package className="w-4 h-4 text-indigo-600" />
-                                            <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400">Items</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {order.items}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="w-4 h-4 text-blue-600" />
-                                            <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400">Creado</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {new Date(order.createdDate).toLocaleDateString('es-AR')}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Truck className="w-4 h-4 text-amber-600" />
-                                            <div>
-                                                <p className="text-xs text-slate-500 dark:text-slate-400">Entrega</p>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {new Date(order.deliveryDate).toLocaleDateString('es-AR')}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button className="px-4 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors">
-                                                Remito
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
+
+            {/* Webhook Configuration Notice */}
+            {(!WEBHOOK_URLS.remitir || !WEBHOOK_URLS.facturar || !WEBHOOK_URLS.cobrar) && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                                <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                                    Webhooks N8N no configurados
+                                </h4>
+                                <p className="text-xs text-amber-700 dark:text-amber-300">
+                                    Las acciones funcionan con datos mock. Para conectar con N8N, configura las URLs de webhook en el código (constante WEBHOOK_URLS).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
