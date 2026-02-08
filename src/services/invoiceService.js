@@ -86,14 +86,15 @@ export const createInvoiceFromOrder = (order, options) => {
     const dueDate = new Date(emissionDate);
     dueDate.setDate(dueDate.getDate() + 10);
 
-    // Map order items to invoice items
-    const items = order.products.map(product => ({
-        codigo: product.sapCode || product.productSapCode || 'N/A',
-        descripcion: product.productName || product.name,
-        cantidad: product.quantity,
-        unidad_medida: product.unit || 'Unid.',
-        // For REMITO, price can be 0
-        precio_unitario: tipo_cbte === 'REMITO' ? 0 : (product.unitPrice || product.estimatedPrice || 0)
+    // Map order lines to invoice items
+    // Order.lines structure: { productSapCode, productName, quantity, unitPrice, ... }
+    const items = (order.lines || order.products || []).map(line => ({
+        codigo: line.productSapCode || line.sapCode || 'N/A',
+        descripcion: line.productName || line.name || 'Producto',
+        cantidad: line.quantity || 0,
+        unidad_medida: line.unit || 'Unid.',
+        // For REMITO, price is 0. For FACTURA, use unitPrice (already includes IVA)
+        precio_unitario: tipo_cbte === 'REMITO' ? 0 : (line.unitPrice || line.estimatedPrice || 0)
     }));
 
     const invoiceData = {
@@ -105,10 +106,11 @@ export const createInvoiceFromOrder = (order, options) => {
         fecha_vencimiento: formatDate(dueDate),
 
         cliente: {
-            cuit: order.client?.cuit || order.clientCuit || 'N/A',
-            razon_social: order.client?.legalName || order.clientName || 'N/A',
+            // Read CUIT from order.clientCuit (already in orders data)
+            cuit: order.clientCuit || order.client?.cuit || 'N/A',
+            razon_social: order.clientName || order.client?.legalName || 'N/A',
             condicion_iva: order.client?.ivaCondition || 'Responsable Inscripto',
-            domicilio: order.client?.address || order.deliveryAddress || 'N/A'
+            domicilio: order.destinationAddress || order.client?.address || 'N/A'
         },
 
         items

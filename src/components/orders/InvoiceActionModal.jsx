@@ -295,13 +295,17 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 <span className="font-medium text-slate-800 dark:text-slate-100">{order.clientName}</span>
                             </div>
                             <div className="flex justify-between text-sm">
+                                <span className="text-slate-600 dark:text-slate-400">CUIT:</span>
+                                <span className="font-medium text-slate-800 dark:text-slate-100">{order.clientCuit || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
                                 <span className="text-slate-600 dark:text-slate-400">Productos:</span>
-                                <span className="font-medium text-slate-800 dark:text-slate-100">{order.products?.length || 0} items</span>
+                                <span className="font-medium text-slate-800 dark:text-slate-100">{(order.lines || order.products || []).length} items</span>
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-600 dark:text-slate-400">Total:</span>
                                 <span className="font-bold text-lg text-advanta-green dark:text-red-400">
-                                    ${(order.totalAmount || 0).toLocaleString('es-AR')}
+                                    ${(order.total || order.totalAmount || 0).toLocaleString('es-AR')}
                                 </span>
                             </div>
                         </div>
