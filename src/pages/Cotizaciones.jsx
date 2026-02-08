@@ -5,6 +5,7 @@ import { quotations as mockQuotations } from '../data/quotations';
 import { orders as mockOrders } from '../data/orders';
 import { useToast } from '../contexts/ToastContext';
 import QuotationDetailsModal from '../components/QuotationDetailsModal';
+import EditQuotationModal from '../components/EditQuotationModal';
 
 const Cotizaciones = () => {
     const { showToast } = useToast();
@@ -12,6 +13,8 @@ const Cotizaciones = () => {
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedQuotation, setSelectedQuotation] = useState(null);
     const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [quotationToEdit, setQuotationToEdit] = useState(null);
 
     // Estado para usar datos mock
     const [localQuotations, setLocalQuotations] = useState(mockQuotations);
@@ -47,6 +50,32 @@ const Cotizaciones = () => {
             description: `Cotización ${quotation.number} marcada como ${statusLabels[newStatus]}`,
             priority: 'high',
             icon: statusIcons[newStatus],
+            timeAgo: 'Ahora'
+        });
+    };
+
+    // Función para editar cotización
+    const handleEditQuotation = (quotation) => {
+        setQuotationToEdit(quotation);
+        setEditModalOpen(true);
+    };
+
+    // Guardar cambios de cotización
+    const handleSaveQuotation = (updatedData) => {
+        setLocalQuotations(prev =>
+            prev.map(q =>
+                q.id === quotationToEdit.id
+                    ? { ...q, ...updatedData }
+                    : q
+            )
+        );
+
+        showToast({
+            id: `edit-${quotationToEdit.id}-${Date.now()}`,
+            title: '✅ Cotización Actualizada',
+            description: `Los cambios en ${quotationToEdit.number} se guardaron correctamente`,
+            priority: 'high',
+            icon: CheckCircle,
             timeAgo: 'Ahora'
         });
     };
@@ -348,6 +377,13 @@ const Cotizaciones = () => {
                                                     </span>
                                                 )}
                                                 <button
+                                                    onClick={() => handleEditQuotation(quotation)}
+                                                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                                    title="Editar"
+                                                >
+                                                    <Edit2 size={18} className="text-blue-600 dark:text-blue-400" />
+                                                </button>
+                                                <button
                                                     onClick={() => {
                                                         setSelectedQuotation(quotation);
                                                         setDetailsModalOpen(true);
@@ -377,7 +413,19 @@ const Cotizaciones = () => {
                 quotation={selectedQuotation}
                 onUpdateStatus={handleUpdateStatus}
             />
+
+            {/* Edit Quotation Modal */}
+            <EditQuotationModal
+                isOpen={editModalOpen}
+                onClose={() => {
+                    setEditModalOpen(false);
+                    setQuotationToEdit(null);
+                }}
+                quotation={quotationToEdit}
+                onSave={handleSaveQuotation}
+            />
         </div>
+
     );
 };
 

@@ -5,20 +5,14 @@ import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpport
 import { opportunities as mockOpportunities } from '../data/opportunities';
 import { quotations as mockQuotations } from '../data/quotations';
 
-const statusConfig = {
-    // Estados originales (CRM)
-    iniciado: { label: 'Iniciado', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🚀' },
-    presupuestado: { label: 'Presupuestado', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '📋' },
-    negociado: { label: 'Negociado', color: 'bg-orange-100 text-orange-700 border-orange-200', icon: '🤝' },
-    ganado: { label: 'Ganado', color: 'bg-green-100 text-green-700 border-green-200', icon: '✅' },
-    perdido: { label: 'Perdido', color: 'bg-red-100 text-red-700 border-red-200', icon: '❌' },
-    // Estados nuevos (Cotizador)
+const stageConfig = {
+    // Estados del Cotizador
     prospecting: { label: 'Prospección', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: '🔍' },
     qualification: { label: 'Calificación', color: 'bg-cyan-100 text-cyan-700 border-cyan-200', icon: '📊' },
     proposal: { label: 'Propuesta', color: 'bg-purple-100 text-purple-700 border-purple-200', icon: '📝' },
     negotiation: { label: 'Negociación', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: '💼' },
     won: { label: 'Ganado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '🏆' },
-    lost: { label: 'Perdido', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: '💔' }
+    lost: { label: 'Perdido', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: '❌' }
 };
 
 const Opportunities = () => {
@@ -247,7 +241,7 @@ const Opportunities = () => {
                     </div>
                 ) : (
                     filteredOpportunities.map(opportunity => {
-                        const status = statusConfig[opportunity.status] || statusConfig.iniciado;
+                        const status = stageConfig[opportunity.status] || stageConfig.iniciado;
                         return (
                             <div
                                 key={opportunity.id}
@@ -268,7 +262,7 @@ const Opportunities = () => {
                                         </button>
                                         {statusDropdownOpen === opportunity.id && (
                                             <div className="absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
-                                                {Object.entries(statusConfig).map(([key, config]) => (
+                                                {Object.entries(stageConfig).map(([key, config]) => (
                                                     <button
                                                         key={key}
                                                         onClick={() => handleStatusChange(opportunity.id, key)}
@@ -359,7 +353,7 @@ const Opportunities = () => {
                             </thead>
                             <tbody>
                                 {filteredOpportunities.map((opp, index) => {
-                                    const status = statusConfig[opp.status] || statusConfig.prospecting;
+                                    const status = stageConfig[opp.status] || stageConfig.prospecting;
                                     const closeDate = opp.expectedCloseDate || opp.close_date;
                                     const parsedDate = closeDate ? new Date(closeDate) : null;
                                     const isWon = opp.status === 'won' || opp.status === 'ganado';
@@ -383,7 +377,7 @@ const Opportunities = () => {
                                                     </button>
                                                     {statusDropdownOpen === opp.id && (
                                                         <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
-                                                            {Object.entries(statusConfig).map(([key, config]) => (
+                                                            {Object.entries(stageConfig).map(([key, config]) => (
                                                                 <button
                                                                     key={key}
                                                                     onClick={() => handleStatusChange(opp.id, key)}
