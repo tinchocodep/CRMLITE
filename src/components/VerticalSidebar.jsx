@@ -92,13 +92,13 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             to={module.path}
                             className={({ isActive }) => {
                                 const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative text-slate-800';
-                                if (isActive || module.isCRM) {
+                                if (isActive) {
                                     return `${baseClasses} shadow-lg`;
                                 }
                                 return `${baseClasses} hover:bg-slate-100`;
                             }}
                             style={({ isActive }) => ({
-                                backgroundColor: (isActive || module.isCRM) ? '#a1c349' : 'transparent'
+                                backgroundColor: isActive ? '#a1c349' : 'transparent'
                             })}
                         >
                             <module.icon
@@ -121,8 +121,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    style={{ backgroundColor: '#a1c349' }}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:opacity-80 transition-all duration-200 mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:bg-[#a1c349] transition-all duration-200 mb-2 bg-slate-100"
                 >
                     <Plus size={22} className="flex-shrink-0" />
                     <span
