@@ -107,17 +107,18 @@ export const getClientMovements = (clientName) => {
                 return dateA - dateB;
             });
 
-        // Calculate running balance
+        // Calculate running balance (remaining debt)
         let runningBalance = 0;
         const movements = clientComprobantes.map(comp => {
             const amount = comp.total || 0;
 
-            if (comp.tipo === 'FACTURA' && comp.status !== 'paid') {
-                runningBalance += amount;
+            // Update running balance based on movement type
+            if (comp.tipo === 'FACTURA') {
+                runningBalance += amount; // Factura increases debt
             } else if (comp.tipo === 'NC') {
-                runningBalance -= amount;
+                runningBalance -= amount; // Credit note decreases debt
             } else if (comp.tipo === 'COBRO') {
-                runningBalance -= amount;
+                runningBalance -= amount; // Payment decreases debt
             }
 
             return {
@@ -127,7 +128,7 @@ export const getClientMovements = (clientName) => {
                 number: `${comp.tipo}-${comp.letra || ''}-${String(comp.punto_venta || 0).padStart(4, '0')}-${String(comp.numero_cbte || 0).padStart(8, '0')}`,
                 amount: amount,
                 status: comp.status,
-                balance: runningBalance,
+                balance: runningBalance, // This is the REMAINING BALANCE (pending debt) after this movement
                 cae: comp.cae,
                 // Always provide a pdf_url - use existing or generate a placeholder
                 pdf_url: comp.pdf_url || `/api/comprobantes/${comp.id}/pdf`
