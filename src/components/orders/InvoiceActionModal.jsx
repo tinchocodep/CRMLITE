@@ -102,24 +102,27 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         fecha_pago: config.fecha_pago
                     });
 
-                    // Save comprobante if successful
+                    // Save comprobante with whatever data comes from webhook
                     if (result.success && result.data) {
+                        console.log('📄 Datos recibidos del webhook:', result.data);
+
                         const comprobante = saveComprobante({
                             tipo: 'FACTURA',
                             orderId: order.id,
                             orderNumber: order.orderNumber,
-                            punto_venta: result.data.punto_venta,
-                            numero_cbte: result.data.numero_cbte,
+                            punto_venta: result.data.punto_venta || result.data.punto_de_venta || 0,
+                            numero_cbte: result.data.numero_cbte || 0,
                             letra: config.letra,
-                            cae: result.data.cae,
-                            vto_cae: result.data.vto_cae,
-                            qr_url: result.data.qr_url,
-                            pdf_url: result.data.pdf_url,
-                            total: order.total || order.totalAmount,
+                            cae: result.data.cae || 'Pendiente',
+                            vto_cae: result.data.vto_cae || '',
+                            qr_url: result.data.qr_url || '',
+                            pdf_url: result.data.pdf_url || '',
+                            total: order.total || order.totalAmount || 0,
                             clientName: order.clientName,
                             fecha_emision: new Date().toISOString().split('T')[0]
                         });
 
+                        console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
                     }
                     break;
@@ -130,24 +133,27 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         fecha_pago: config.fecha_pago
                     });
 
-                    // Save comprobante if successful
+                    // Save comprobante with whatever data comes from webhook
                     if (result.success && result.data) {
+                        console.log('📄 Datos recibidos del webhook:', result.data);
+
                         const comprobante = saveComprobante({
                             tipo: 'REMITO',
                             orderId: order.id,
                             orderNumber: order.orderNumber,
-                            punto_venta: result.data.punto_venta,
-                            numero_cbte: result.data.numero_cbte,
+                            punto_venta: result.data.punto_venta || result.data.punto_de_venta || 0,
+                            numero_cbte: result.data.numero_cbte || 0,
                             letra: config.letra,
-                            cae: result.data.cae,
-                            vto_cae: result.data.vto_cae,
-                            qr_url: result.data.qr_url,
-                            pdf_url: result.data.pdf_url,
+                            cae: result.data.cae || 'Pendiente',
+                            vto_cae: result.data.vto_cae || '',
+                            qr_url: result.data.qr_url || '',
+                            pdf_url: result.data.pdf_url || '',
                             total: 0, // Remitos don't have amounts
                             clientName: order.clientName,
                             fecha_emision: new Date().toISOString().split('T')[0]
                         });
 
+                        console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
                     }
                     break;
