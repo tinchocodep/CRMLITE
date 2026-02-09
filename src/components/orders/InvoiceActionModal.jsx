@@ -102,6 +102,20 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
         const saldoPendiente = orderTotal - totalCobrado;
         const isFullyPaid = saldoPendiente <= 0.01; // Small threshold for floating point
 
+        // Check if all products are fully shipped
+        const shippedQuantities = getShippedQuantities(order.id);
+        const allProductsShipped = order?.lines?.every(line => {
+            const shipped = shippedQuantities[line.id] || 0;
+            return shipped >= line.quantity;
+        }) ?? false;
+
+        // Calculate total pending quantity
+        const totalPendingQty = order?.lines?.reduce((sum, line) => {
+            const shipped = shippedQuantities[line.id] || 0;
+            const pending = line.quantity - shipped;
+            return sum + (pending > 0 ? pending : 0);
+        }, 0) || 0;
+
         const allActions = [
             {
                 id: 'FACTURA',
@@ -117,9 +131,9 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                 label: 'Remitir',
                 icon: Truck,
                 color: 'bg-green-500 hover:bg-green-600',
-                description: 'Generar remito y descontar stock',
-                disabled: hasR,
-                completedText: '✓ Ya remitido'
+                description: allProductsShipped ? 'Todos los productos ya fueron remitidos' : (hasR ? `Remitir productos pendientes (${totalPendingQty} unid.)` : 'Generar remito y descontar stock'),
+                disabled: allProductsShipped,
+                completedText: allProductsShipped ? '✓ Totalmente remitido' : `Remitido parcialmente`
             },
             {
                 id: 'COBRAR',
