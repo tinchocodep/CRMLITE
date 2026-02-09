@@ -231,10 +231,37 @@ const Comprobantes = () => {
                                             )}
                                         </div>
                                         <div className="flex gap-2">
-                                            <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                            <button
+                                                onClick={() => {
+                                                    if (voucher.pdf_url) {
+                                                        window.open(voucher.pdf_url, '_blank');
+                                                    } else {
+                                                        alert('PDF no disponible para este comprobante');
+                                                    }
+                                                }}
+                                                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"
+                                                title="Ver PDF"
+                                            >
                                                 <Eye className="w-5 h-5" />
                                             </button>
-                                            <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                            <button
+                                                onClick={() => {
+                                                    if (voucher.pdf_url) {
+                                                        // Create a temporary link to download
+                                                        const link = document.createElement('a');
+                                                        link.href = voucher.pdf_url;
+                                                        link.download = `${voucher.voucherNumber}.pdf`;
+                                                        link.target = '_blank';
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                        document.body.removeChild(link);
+                                                    } else {
+                                                        alert('PDF no disponible para este comprobante');
+                                                    }
+                                                }}
+                                                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"
+                                                title="Descargar PDF"
+                                            >
                                                 <Download className="w-5 h-5" />
                                             </button>
                                         </div>
