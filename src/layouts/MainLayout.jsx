@@ -10,7 +10,6 @@ import ProspectPickerModal from '../components/prospects/ProspectPickerModal';
 import ContactModal from '../components/contacts/ContactModal';
 import MobileMenuModal from '../components/MobileMenuModal';
 import MobileBottomNav from '../components/MobileBottomNav';
-import { FloatingActionButton } from '../components/FloatingActionButton';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
@@ -309,7 +308,22 @@ const MainLayout = () => {
                 </main>
 
                 {/* Mobile Bottom Navigation */}
-                <MobileBottomNav />
+                <MobileBottomNav
+                    currentContext={currentContext}
+                    onQuickAction={(action) => {
+                        if (action === 'menu') {
+                            setMobileNavMenuOpen(true);
+                        } else if (action === 'opportunity') {
+                            handleGlobalCreateOpportunity();
+                        } else if (action === 'prospect') {
+                            handleGlobalCreateProspect();
+                        } else if (action === 'client') {
+                            handleGlobalCreateClient();
+                        } else if (action === 'event') {
+                            setIsCreateModalOpen(true);
+                        }
+                    }}
+                />
 
                 {/* Navigation Menu - Context Aware */}
                 <MobileMenuModal
@@ -477,15 +491,6 @@ const MainLayout = () => {
                     setIsContactModalOpen(false);
                 }}
                 contact={null}
-            />
-
-            {/* Floating Action Button - Context Aware */}
-            <FloatingActionButton
-                onCreateEvent={() => setIsCreateModalOpen(true)}
-                onCreateProspect={handleGlobalCreateProspect}
-                onConvertProspect={handleGlobalPromoteProspect}
-                onCreateClient={handleGlobalCreateClient}
-                currentContext={currentContext}
             />
         </div>
     );
