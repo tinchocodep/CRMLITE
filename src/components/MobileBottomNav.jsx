@@ -27,12 +27,10 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
         { label: 'Oportunidad', action: 'opportunity', Icon: Briefcase, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' }
     ];
 
-    // Cotizador Quick Actions
+    // Cotizador Quick Actions - Only implemented features
     const cotizadorActions = [
-        { label: 'Nueva Cotización', path: '/cotizaciones', Icon: FileText, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
-        { label: 'Nuevo Pedido', path: '/pedidos', Icon: Package, bgColor: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400', borderColor: 'border-amber-200 dark:border-amber-800' },
-        { label: 'Nuevo Comprobante', path: '/comprobantes', Icon: Receipt, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' },
-        { label: 'Sumar Stock', path: '/stock', Icon: TrendingUp, bgColor: 'bg-purple-50 dark:bg-purple-900/20', iconColor: 'text-purple-600 dark:text-purple-400', borderColor: 'border-purple-200 dark:border-purple-800' }
+        { label: 'Generar Factura', action: 'generate-invoice', Icon: Receipt, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+        { label: 'Agregar Stock', action: 'add-stock', Icon: TrendingUp, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' }
     ];
 
     const actions = currentContext === 'cotizador' ? cotizadorActions : crmActions;

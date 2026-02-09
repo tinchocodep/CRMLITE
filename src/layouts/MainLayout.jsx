@@ -330,6 +330,12 @@ const MainLayout = () => {
                         } else if (action === 'visit') {
                             // TODO: Implement create visit action
                             console.log('Create visit action');
+                        } else if (action === 'generate-invoice') {
+                            // Navigate to Cotizaciones to select a won quote
+                            navigate('/cotizaciones?filter=won');
+                        } else if (action === 'add-stock') {
+                            // Navigate to Stock page
+                            navigate('/stock');
                         }
                     }}
                 />
