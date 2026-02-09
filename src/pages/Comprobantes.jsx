@@ -50,35 +50,39 @@ const Comprobantes = () => {
         },
         {
             label: 'Facturas',
-            value: vouchers.filter(v => v.type === 'invoice').length,
+            value: vouchers.filter(v => v.type === 'FACTURA' || v.type === 'invoice').length,
             icon: FileText,
             color: 'from-blue-500 to-blue-600',
             textColor: 'text-blue-600'
         },
         {
-            label: 'Pagados',
-            value: vouchers.filter(v => v.status === 'paid').length,
+            label: 'Remitos',
+            value: vouchers.filter(v => v.type === 'REMITO').length,
+            icon: FileText,
+            color: 'from-indigo-500 to-indigo-600',
+            textColor: 'text-indigo-600'
+        },
+        {
+            label: 'Notas de Crédito',
+            value: vouchers.filter(v => v.type === 'NOTA_CREDITO' || v.type === 'credit_note').length,
             icon: CheckCircle,
             color: 'from-green-500 to-green-600',
             textColor: 'text-green-600'
-        },
-        {
-            label: 'Pendientes',
-            value: vouchers.filter(v => v.status === 'pending').length,
-            icon: XCircle,
-            color: 'from-amber-500 to-amber-600',
-            textColor: 'text-amber-600'
         }
     ];
 
     const getTypeBadge = (type) => {
         const typeConfig = {
+            FACTURA: { label: 'Factura', color: 'bg-blue-100 text-blue-700 border-blue-200' },
             invoice: { label: 'Factura', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+            REMITO: { label: 'Remito', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+            NOTA_CREDITO: { label: 'Nota Crédito', color: 'bg-green-100 text-green-700 border-green-200' },
             credit_note: { label: 'Nota Crédito', color: 'bg-green-100 text-green-700 border-green-200' },
+            NOTA_DEBITO: { label: 'Nota Débito', color: 'bg-red-100 text-red-700 border-red-200' },
             debit_note: { label: 'Nota Débito', color: 'bg-red-100 text-red-700 border-red-200' }
         };
 
-        const config = typeConfig[type] || typeConfig.invoice;
+        const config = typeConfig[type] || typeConfig.FACTURA;
         return (
             <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${config.color}`}>
                 {config.label}
@@ -123,7 +127,7 @@ const Comprobantes = () => {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Comprobantes</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Facturas, notas de crédito y débito</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">Facturas, remitos, notas de crédito y débito</p>
                             </div>
                         </div>
                         <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-advanta-green to-green-600 text-white rounded-lg hover:shadow-lg transition-all">
@@ -169,9 +173,10 @@ const Comprobantes = () => {
                             className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-advanta-green focus:border-transparent"
                         >
                             <option value="all">Todos los tipos</option>
-                            <option value="invoice">Facturas</option>
-                            <option value="credit_note">Notas de Crédito</option>
-                            <option value="debit_note">Notas de Débito</option>
+                            <option value="FACTURA">Facturas</option>
+                            <option value="REMITO">Remitos</option>
+                            <option value="NOTA_CREDITO">Notas de Crédito</option>
+                            <option value="NOTA_DEBITO">Notas de Débito</option>
                         </select>
                         <select
                             value={statusFilter}
