@@ -106,12 +106,23 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     if (result.success && result.data) {
                         console.log('📄 Datos recibidos del webhook:', result.data);
 
+                        // Parse punto_venta (handle "punto de venta" with space and string format)
+                        const puntoVenta = parseInt(
+                            result.data.punto_venta ||
+                            result.data.punto_de_venta ||
+                            result.data['punto de venta'] ||
+                            '0'
+                        ) || 0;
+
+                        // Parse numero_cbte (handle string format with leading zeros)
+                        const numeroCbte = parseInt(result.data.numero_cbte || '0') || 0;
+
                         const comprobante = saveComprobante({
                             tipo: 'FACTURA',
                             orderId: order.id,
                             orderNumber: order.orderNumber,
-                            punto_venta: result.data.punto_venta || result.data.punto_de_venta || 0,
-                            numero_cbte: result.data.numero_cbte || 0,
+                            punto_venta: puntoVenta,
+                            numero_cbte: numeroCbte,
                             letra: config.letra,
                             cae: result.data.cae || 'Pendiente',
                             vto_cae: result.data.vto_cae || '',
@@ -137,12 +148,23 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     if (result.success && result.data) {
                         console.log('📄 Datos recibidos del webhook:', result.data);
 
+                        // Parse punto_venta (handle "punto de venta" with space and string format)
+                        const puntoVenta = parseInt(
+                            result.data.punto_venta ||
+                            result.data.punto_de_venta ||
+                            result.data['punto de venta'] ||
+                            '0'
+                        ) || 0;
+
+                        // Parse numero_cbte (handle string format with leading zeros)
+                        const numeroCbte = parseInt(result.data.numero_cbte || '0') || 0;
+
                         const comprobante = saveComprobante({
                             tipo: 'REMITO',
                             orderId: order.id,
                             orderNumber: order.orderNumber,
-                            punto_venta: result.data.punto_venta || result.data.punto_de_venta || 0,
-                            numero_cbte: result.data.numero_cbte || 0,
+                            punto_venta: puntoVenta,
+                            numero_cbte: numeroCbte,
                             letra: config.letra,
                             cae: result.data.cae || 'Pendiente',
                             vto_cae: result.data.vto_cae || '',
