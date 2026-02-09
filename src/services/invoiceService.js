@@ -68,9 +68,10 @@ const formatDate = (date) => {
  * @param {string} options.tipo_cbte - "FACTURA", "NC", or "REMITO"
  * @param {string} options.letra - Invoice letter (A, B, C)
  * @param {string} options.fecha_pago - Payment date (optional, defaults to deliveryDate)
+ * @param {Object} selectedQuantities - Optional map of productId -> quantity (for partial remitos)
  * @returns {Object} Invoice data ready for webhook
  */
-export const createInvoiceFromOrder = (order, options) => {
+export const createInvoiceFromOrder = (order, options, selectedQuantities = null) => {
     const { tipo_cbte, letra, fecha_pago } = options;
 
     console.log('🔍 Creating invoice from order:', {
@@ -81,7 +82,8 @@ export const createInvoiceFromOrder = (order, options) => {
         linesCount: (order.lines || order.products || []).length,
         tipo_cbte,
         letra,
-        fecha_pago
+        fecha_pago,
+        selectedQuantities
     });
 
     // Calculate due date (based on payment condition or default 10 days)
@@ -94,11 +96,22 @@ export const createInvoiceFromOrder = (order, options) => {
 
     // Map order lines to invoice items
     // Order.lines structure: { productSapCode, productName, quantity, unitPrice, ... }
-    const items = (order.lines || order.products || []).map(line => {
+    // If selectedQuantities is provided (for partial remitos), use those quantities instead
+    let orderLines = order.lines || order.products || [];
+
+    // Filter out products with 0 quantity if using selectedQuantities
+    if (selectedQuantities) {
+        orderLines = orderLines.filter(line => (selectedQuantities[line.id] || 0) > 0);
+    }
+
+    const items = orderLines.map(line => {
+        // Use selected quantity if provided, otherwise use line quantity
+        const quantity = selectedQuantities ? (selectedQuantities[line.id] || 0) : (line.quantity || 0);
+
         const item = {
             codigo: line.productSapCode || line.sapCode || 'N/A',
             descripcion: line.productName || line.name || 'Producto',
-            cantidad: line.quantity || 0,
+            cantidad: quantity,
             unidad_medida: line.unit || 'Unid.',
             // For REMITO, price is 0. For FACTURA, use unitPrice (already includes IVA)
             precio_unitario: tipo_cbte === 'REMITO' ? 0 : (line.unitPrice || line.estimatedPrice || 0)
@@ -108,13 +121,25 @@ export const createInvoiceFromOrder = (order, options) => {
         return item;
     });
 
-    // Calculate totals
-    const subtotal = order.subtotal || (order.lines || order.products || []).reduce((sum, line) => {
-        return sum + ((line.quantity || 0) * (line.unitPrice || line.estimatedPrice || 0));
-    }, 0);
+    // Calculate totals based on selected quantities if provided
+    let subtotal, iva, total;
 
-    const iva = order.tax || (subtotal * 0.21);
-    const total = order.total || order.totalAmount || (subtotal + iva);
+    if (selectedQuantities) {
+        // Calculate based on selected quantities
+        subtotal = orderLines.reduce((sum, line) => {
+            const qty = selectedQuantities[line.id] || 0;
+            return sum + (qty * (line.unitPrice || line.estimatedPrice || 0));
+        }, 0);
+        iva = subtotal * 0.21;
+        total = subtotal + iva;
+    } else {
+        // Use order totals
+        subtotal = order.subtotal || (order.lines || order.products || []).reduce((sum, line) => {
+            return sum + ((line.quantity || 0) * (line.unitPrice || line.estimatedPrice || 0));
+        }, 0);
+        iva = order.tax || (subtotal * 0.21);
+        total = order.total || order.totalAmount || (subtotal + iva);
+    }
 
     const invoiceData = {
         tipo_cbte,
@@ -186,15 +211,16 @@ export const processInvoice = async (order, invoiceOptions) => {
  * Process remito for an order
  * @param {Object} order - Order object
  * @param {Object} remitoOptions - Remito configuration
+ * @param {Object} selectedQuantities - Optional map of productId -> quantity to ship (for partial remitos)
  * @returns {Promise<Object>} Result of remito processing
  */
-export const processRemito = async (order, remitoOptions) => {
+export const processRemito = async (order, remitoOptions, selectedQuantities = null) => {
     try {
         // Create remito data (tipo_cbte = "REMITO", no fiscal data needed)
         const remitoData = createInvoiceFromOrder(order, {
             ...remitoOptions,
             tipo_cbte: 'REMITO'
-        });
+        }, selectedQuantities);
 
         // Send to webhook
         const result = await sendInvoiceToWebhook(remitoData);

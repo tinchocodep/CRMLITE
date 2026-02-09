@@ -203,10 +203,11 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         throw new Error('Debe seleccionar al menos una cantidad para remitir');
                     }
 
+                    // Pass selected quantities to processRemito
                     result = await processRemito(order, {
                         letra: config.letra,
                         fecha_pago: config.fecha_pago
-                    });
+                    }, remitoQuantities);
 
                     // Save comprobante with whatever data comes from webhook
                     if (result.success) {
