@@ -9,6 +9,7 @@ import ConvertToClientModal from '../components/clients/ConvertToClientModal';
 import ProspectPickerModal from '../components/prospects/ProspectPickerModal';
 import ContactModal from '../components/contacts/ContactModal';
 import MobileMenuModal from '../components/MobileMenuModal';
+import MobileBottomNav from '../components/MobileBottomNav';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
@@ -19,7 +20,6 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
 import { supabase } from '../lib/supabase';
-
 
 
 // ========== SHARED CONSTANTS ==========
@@ -72,7 +72,6 @@ const MainLayout = () => {
     const currentContext = isCotizadorActive ? 'cotizador' : 'crm';
 
     // ========== MOBILE STATE (Separate) ==========
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileNavMenuOpen, setMobileNavMenuOpen] = useState(false);
 
     // ========== DESKTOP STATE (Separate) ==========
@@ -305,239 +304,12 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* Mobile Main Content */}
-                <main className="flex-1 w-full overflow-y-auto">
+                <main className="flex-1 w-full overflow-y-auto pb-16">
                     <Outlet />
                 </main>
 
-                {/* Bottom Navigation Bar */}
-                <nav className="fixed bottom-0 left-0 right-0 z-[20000] pointer-events-auto bg-gradient-to-r from-white via-white to-green-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 border-t border-slate-200 dark:border-slate-700 shadow-2xl xl:hidden">
-                    <div className="relative flex items-center justify-between h-16 px-4">
-                        {/* Left Side - 2 buttons */}
-                        <div className="flex items-center gap-2 flex-1 justify-start relative z-10">
-                            {/* Prospectos Button */}
-                            <NavLink
-                                to="/prospectos"
-                                end
-                                className={({ isActive }) => `
-                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-advanta-green' : 'text-slate-600 dark:text-slate-400'}
-                                `}
-                            >
-                                {({ isActive }) => (
-                                    <>
-                                        <Users size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
-                                        <span className="text-[9px] font-semibold mt-0.5">Prospectos</span>
-                                    </>
-                                )}
-                            </NavLink>
-
-                            {/* Clientes Button */}
-                            <NavLink
-                                to="/clientes"
-                                end
-                                className={({ isActive }) => `
-                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-advanta-green' : 'text-slate-600'}
-                                `}
-                            >
-                                {({ isActive }) => (
-                                    <>
-                                        <UserCheck size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
-                                        <span className="text-[9px] font-semibold mt-0.5">Clientes</span>
-                                    </>
-                                )}
-                            </NavLink>
-                        </div>
-
-                        {/* Center - Quick Actions Button (Elevated) */}
-                        <div className="absolute left-1/2 -translate-x-1/2 -top-6 z-20">
-                            <button
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                                className="relative w-16 h-16 rounded-full bg-gradient-to-br from-advanta-green to-green-700 shadow-2xl shadow-green-500/50 dark:shadow-green-900/50 flex items-center justify-center hover:scale-110 transition-all duration-300 border-4 border-white dark:border-slate-800"
-                            >
-                                <AnimatePresence mode="wait">
-                                    {mobileMenuOpen ? (
-                                        <motion.div
-                                            key="close"
-                                            initial={{ rotate: -90, opacity: 0 }}
-                                            animate={{ rotate: 0, opacity: 1 }}
-                                            exit={{ rotate: 90, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <X size={28} className="text-white" strokeWidth={3} />
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div
-                                            key="plus"
-                                            initial={{ rotate: -90, opacity: 0 }}
-                                            animate={{ rotate: 0, opacity: 1 }}
-                                            exit={{ rotate: 90, opacity: 0 }}
-                                            transition={{ duration: 0.2 }}
-                                        >
-                                            <Plus size={28} className="text-white" strokeWidth={3} />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </button>
-                        </div>
-
-                        {/* Right Side - 2 buttons */}
-                        <div className="flex items-center gap-2 flex-1 justify-end relative z-10">
-                            {/* Oportunidades Button */}
-                            <NavLink
-                                to="/oportunidades"
-                                end
-                                className={({ isActive }) => `
-                                    flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200
-                                    ${isActive ? 'text-advanta-green' : 'text-slate-600'}
-                                `}
-                            >
-                                {({ isActive }) => (
-                                    <>
-                                        <Briefcase size={22} strokeWidth={isActive ? 2.5 : 2} className={`transition-all duration-200 ${isActive ? 'scale-110' : 'scale-100'}`} />
-                                        <span className="text-[9px] font-semibold mt-0.5">Oportun.</span>
-                                    </>
-                                )}
-                            </NavLink>
-
-                            {/* Menu Button */}
-                            <button
-                                onClick={() => setMobileNavMenuOpen(!mobileNavMenuOpen)}
-                                className={`flex flex-col items-center justify-center w-16 h-12 rounded-xl transition-all duration-200 ${mobileNavMenuOpen ? 'text-advanta-green' : 'text-slate-600'
-                                    }`}
-                            >
-                                <Menu size={22} strokeWidth={mobileNavMenuOpen ? 2.5 : 2} className={`transition-all duration-200 ${mobileNavMenuOpen ? 'scale-110' : 'scale-100'}`} />
-                                <span className="text-[9px] font-semibold mt-0.5">Menú</span>
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-
-                {/* Quick Actions Bottom Sheet */}
-                <AnimatePresence>
-                    {mobileMenuOpen && (
-                        <>
-                            {/* Backdrop */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm xl:hidden"
-                            />
-
-                            {/* Bottom Sheet */}
-                            <motion.div
-                                initial={{ y: '100%' }}
-                                animate={{ y: 0 }}
-                                exit={{ y: '100%' }}
-                                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                                className="fixed bottom-0 left-0 right-0 z-[70] bg-white rounded-t-3xl shadow-2xl xl:hidden pb-20 max-h-[85vh] overflow-y-auto"
-                            >
-                                {/* Handle Bar */}
-                                <div className="flex justify-center pt-3 pb-2">
-                                    <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
-                                </div>
-
-                                {/* Header */}
-                                <div className="px-6 pb-4">
-                                    <h3 className="text-lg font-bold text-slate-800">Nuevo:</h3>
-                                </div>
-
-                                {/* Actions Grid */}
-                                <div className="px-4 pb-6 grid grid-cols-2 gap-3">
-                                    {/* PERSONAS - Azul */}
-
-                                    {/* Prospecto */}
-                                    <button
-                                        onClick={() => {
-                                            handleGlobalCreateProspect();
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <Users className="w-8 h-8 text-blue-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Prospecto</span>
-                                    </button>
-
-                                    {/* Convertir Prospecto */}
-                                    <button
-                                        onClick={() => {
-                                            handleGlobalPromoteProspect();
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <UserPlus className="w-8 h-8 text-blue-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Convertir Prospecto</span>
-                                    </button>
-
-                                    {/* Cliente */}
-                                    <button
-                                        onClick={() => {
-                                            handleGlobalCreateClient();
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <UserCheck className="w-8 h-8 text-blue-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Cliente</span>
-                                    </button>
-
-                                    {/* Contacto */}
-                                    <button
-                                        onClick={() => {
-                                            handleGlobalCreateContact();
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-blue-50 border border-blue-200 hover:bg-blue-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <User className="w-8 h-8 text-blue-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Contacto</span>
-                                    </button>
-
-                                    {/* PROCESOS - Verde */}
-
-                                    {/* Actividad */}
-                                    <button
-                                        onClick={() => {
-                                            setIsCreateModalOpen(true);
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <Calendar className="w-8 h-8 text-green-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Actividad</span>
-                                    </button>
-
-                                    {/* Visita */}
-                                    <button
-                                        onClick={() => {
-                                            navigate('/visitas');
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <Map className="w-8 h-8 text-green-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Visita</span>
-                                    </button>
-
-                                    {/* Oportunidad */}
-                                    <button
-                                        onClick={() => {
-                                            handleGlobalCreateOpportunity();
-                                            setMobileMenuOpen(false);
-                                        }}
-                                        className="flex flex-col items-center justify-center p-3 rounded-2xl bg-green-50 border border-green-200 hover:bg-green-100 transition-all active:scale-95 gap-2"
-                                    >
-                                        <Briefcase className="w-8 h-8 text-green-600" strokeWidth={2} />
-                                        <span className="text-xs font-bold text-slate-800">Oportunidad</span>
-                                    </button>
-                                </div>
-                            </motion.div>
-                        </>
-                    )}
-                </AnimatePresence>
+                {/* Mobile Bottom Navigation */}
+                <MobileBottomNav />
 
                 {/* Navigation Menu - Context Aware */}
                 <MobileMenuModal
