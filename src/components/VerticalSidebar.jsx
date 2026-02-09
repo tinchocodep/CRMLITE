@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package, TrendingUp,
     Megaphone, Truck, Leaf, DollarSign, Building2,
@@ -22,6 +22,11 @@ const sidebarModules = [
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const [isHovered, setIsHovered] = useState(false);
+    const location = useLocation();
+
+    // Define CRM routes
+    const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos'];
+    const isInCRM = crmRoutes.some(route => location.pathname.startsWith(route));
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -92,14 +97,20 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             to={module.path}
                             className={({ isActive }) => {
                                 const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative text-slate-800';
-                                if (isActive) {
+                                // For CRM module, check if we're in any CRM route
+                                const shouldHighlight = module.isCRM ? isInCRM : isActive;
+                                if (shouldHighlight) {
                                     return `${baseClasses} shadow-lg`;
                                 }
                                 return `${baseClasses} hover:bg-slate-100`;
                             }}
-                            style={({ isActive }) => ({
-                                backgroundColor: isActive ? '#a1c349' : 'transparent'
-                            })}
+                            style={({ isActive }) => {
+                                // For CRM module, check if we're in any CRM route
+                                const shouldHighlight = module.isCRM ? isInCRM : isActive;
+                                return {
+                                    backgroundColor: shouldHighlight ? '#a1c349' : 'transparent'
+                                };
+                            }}
                         >
                             <module.icon
                                 size={22}

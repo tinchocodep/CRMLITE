@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FileText, Package, Receipt, CreditCard, Box } from 'lucide-react';
+import { Home, FileText, Package, Receipt, CreditCard, Box } from 'lucide-react';
 
 const cotizadorTabs = [
+    { name: 'Home', path: '/cotizador', icon: Home },
     { name: 'Cotizaciones', path: '/cotizaciones', icon: FileText },
     { name: 'Pedidos', path: '/pedidos', icon: Package },
     { name: 'Comprobantes', path: '/comprobantes', icon: Receipt },
