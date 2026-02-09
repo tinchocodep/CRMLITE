@@ -35,9 +35,16 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
             const comprobantes = getComprobantesByOrder(order.id);
             setExistingComprobantes(comprobantes);
 
-            // Reset payment config with order total
+            // Calculate remaining balance for payment suggestion
+            const totalCobrado = comprobantes
+                .filter(c => c.tipo === 'COBRO')
+                .reduce((sum, c) => sum + (c.total || 0), 0);
+            const orderTotal = order?.total || order?.totalAmount || 0;
+            const saldoPendiente = orderTotal - totalCobrado;
+
+            // Reset payment config with remaining balance
             setPaymentConfig({
-                amount: order?.total || order?.totalAmount || 0,
+                amount: saldoPendiente > 0 ? saldoPendiente : 0,
                 paymentMethod: 'efectivo',
                 otherPaymentMethod: '',
                 paymentDate: new Date().toISOString().split('T')[0],
@@ -65,7 +72,15 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
     const getAvailableActions = (comprobantes = existingComprobantes) => {
         const hasF = comprobantes.some(c => c.tipo === 'FACTURA');
         const hasR = comprobantes.some(c => c.tipo === 'REMITO');
-        const hasC = comprobantes.some(c => c.tipo === 'COBRO');
+
+        // Calculate total paid from all COBRO comprobantes
+        const totalCobrado = comprobantes
+            .filter(c => c.tipo === 'COBRO')
+            .reduce((sum, c) => sum + (c.total || 0), 0);
+
+        const orderTotal = order?.total || order?.totalAmount || 0;
+        const saldoPendiente = orderTotal - totalCobrado;
+        const isFullyPaid = saldoPendiente <= 0.01; // Small threshold for floating point
 
         const allActions = [
             {
@@ -91,9 +106,9 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                 label: 'Cobrar',
                 icon: DollarSign,
                 color: 'bg-purple-500 hover:bg-purple-600',
-                description: 'Registrar cobro del pedido',
-                disabled: hasC,
-                completedText: '✓ Ya cobrado'
+                description: isFullyPaid ? 'Pedido totalmente cobrado' : `Registrar cobro (Pendiente: $${saldoPendiente.toFixed(2)})`,
+                disabled: isFullyPaid,
+                completedText: isFullyPaid ? '✓ Totalmente cobrado' : `Cobrado: $${totalCobrado.toFixed(2)}`
             }
         ];
 
@@ -210,13 +225,20 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
 
                 case 'COBRAR':
-                    // Validate payment amount
+                    // Calculate total already paid
+                    const totalCobrado = existingComprobantes
+                        .filter(c => c.tipo === 'COBRO')
+                        .reduce((sum, c) => sum + (c.total || 0), 0);
+
                     const orderTotal = order?.total || order?.totalAmount || 0;
+                    const saldoPendienteActual = orderTotal - totalCobrado;
+
+                    // Validate payment amount
                     if (!paymentConfig.amount || paymentConfig.amount <= 0) {
                         throw new Error('El monto a cobrar debe ser mayor a 0');
                     }
-                    if (paymentConfig.amount > orderTotal) {
-                        throw new Error('El monto a cobrar no puede ser mayor al total del pedido');
+                    if (paymentConfig.amount > saldoPendienteActual) {
+                        throw new Error(`El monto a cobrar no puede ser mayor al saldo pendiente ($${saldoPendienteActual.toFixed(2)})`);
                     }
 
                     // Validate other payment method if selected
@@ -224,10 +246,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         throw new Error('Debe especificar el método de pago');
                     }
 
-                    // Calculate remaining balance
+                    // Calculate remaining balance after this payment
                     const amountPaid = parseFloat(paymentConfig.amount);
-                    const remainingBalance = orderTotal - amountPaid;
-                    const isPartialPayment = remainingBalance > 0;
+                    const remainingBalance = saldoPendienteActual - amountPaid;
+                    const isPartialPayment = remainingBalance > 0.01;
 
                     // Determine final payment method (use custom if 'otro')
                     const finalPaymentMethod = paymentConfig.paymentMethod === 'otro'
@@ -441,12 +463,35 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                     className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
                                 />
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                                    Total del pedido: ${(order?.total || order?.totalAmount || 0).toFixed(2)}
-                                    {paymentConfig.amount && paymentConfig.amount < (order?.total || order?.totalAmount || 0) && (
-                                        <span className="text-amber-600 dark:text-amber-400 font-bold ml-2">
-                                            • Cobro parcial - Adeuda: ${((order?.total || order?.totalAmount || 0) - paymentConfig.amount).toFixed(2)}
-                                        </span>
-                                    )}
+                                    {(() => {
+                                        const orderTotal = order?.total || order?.totalAmount || 0;
+                                        const totalCobrado = existingComprobantes
+                                            .filter(c => c.tipo === 'COBRO')
+                                            .reduce((sum, c) => sum + (c.total || 0), 0);
+                                        const saldoPendiente = orderTotal - totalCobrado;
+                                        const nuevoSaldo = saldoPendiente - (paymentConfig.amount || 0);
+
+                                        return (
+                                            <>
+                                                Total del pedido: ${orderTotal.toFixed(2)}
+                                                {totalCobrado > 0 && (
+                                                    <span className="text-green-600 dark:text-green-400 font-bold ml-2">
+                                                        • Ya cobrado: ${totalCobrado.toFixed(2)}
+                                                    </span>
+                                                )}
+                                                {saldoPendiente > 0 && (
+                                                    <span className="text-amber-600 dark:text-amber-400 font-bold ml-2">
+                                                        • Saldo pendiente: ${saldoPendiente.toFixed(2)}
+                                                    </span>
+                                                )}
+                                                {paymentConfig.amount && nuevoSaldo > 0.01 && (
+                                                    <span className="text-red-600 dark:text-red-400 font-bold ml-2">
+                                                        → Quedará: ${nuevoSaldo.toFixed(2)}
+                                                    </span>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
                                 </p>
                             </div>
 
