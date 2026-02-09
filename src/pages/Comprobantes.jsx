@@ -120,20 +120,14 @@ const Comprobantes = () => {
             {/* Header */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
-                                <Receipt className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Comprobantes</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Facturas, remitos, notas de crédito y débito</p>
-                            </div>
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
+                            <Receipt className="w-6 h-6 text-white" />
                         </div>
-                        <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-advanta-green to-green-600 text-white rounded-lg hover:shadow-lg transition-all">
-                            <Plus className="w-5 h-5" />
-                            <span className="hidden sm:inline">Nuevo Comprobante</span>
-                        </button>
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Comprobantes</h1>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">Facturas, remitos, notas de crédito y débito</p>
+                        </div>
                     </div>
 
                     {/* Stats Cards */}
