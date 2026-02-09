@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { orders as mockOrders } from '../data/orders';
 import { stockMovementsOut as mockStockMovements } from '../data/stock';
@@ -8,6 +8,8 @@ import { useToast } from '../contexts/ToastContext';
 import PaymentModal from '../components/PaymentModal';
 import PreInvoiceModal from '../components/PreInvoiceModal';
 import InvoiceActionModal from '../components/orders/InvoiceActionModal';
+import ComprobantesList, { PDFPreviewModal } from '../components/orders/ComprobantesList';
+import { getComprobantesByOrder } from '../services/comprobantesService';
 
 
 const Pedidos = () => {
@@ -21,10 +23,51 @@ const Pedidos = () => {
     const [invoiceActionModalOpen, setInvoiceActionModalOpen] = useState(false);
     const [selectedOrderForAction, setSelectedOrderForAction] = useState(null);
 
+    // Comprobantes state
+    const [expandedOrders, setExpandedOrders] = useState(new Set());
+    const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
+    const [selectedComprobante, setSelectedComprobante] = useState(null);
+    const [comprobantesMap, setComprobantesMap] = useState({});
+
     // Estado para usar datos mock
     const [localOrders, setLocalOrders] = useState(mockOrders);
     const [localStockMovements, setLocalStockMovements] = useState(mockStockMovements);
     const [localInvoices, setLocalInvoices] = useState(mockInvoices);
+
+    // Load comprobantes for all orders
+    useEffect(() => {
+        const loadComprobantes = () => {
+            const map = {};
+            localOrders.forEach(order => {
+                map[order.id] = getComprobantesByOrder(order.id);
+            });
+            setComprobantesMap(map);
+        };
+
+        loadComprobantes();
+
+        // Reload when modal closes (in case new comprobante was added)
+        if (!invoiceActionModalOpen) {
+            loadComprobantes();
+        }
+    }, [localOrders, invoiceActionModalOpen]);
+
+    // Toggle order expansion
+    const toggleOrderExpansion = (orderId) => {
+        const newExpanded = new Set(expandedOrders);
+        if (newExpanded.has(orderId)) {
+            newExpanded.delete(orderId);
+        } else {
+            newExpanded.add(orderId);
+        }
+        setExpandedOrders(newExpanded);
+    };
+
+    // Handle PDF preview
+    const handlePreviewPDF = (comprobante) => {
+        setSelectedComprobante(comprobante);
+        setPdfPreviewOpen(true);
+    };
 
     // URLs de webhooks N8N (se configurarán más adelante)
     const WEBHOOK_URLS = {
@@ -564,6 +607,43 @@ const Pedidos = () => {
                                                 )}
                                             </div>
                                         </div>
+
+                                        {/* Comprobantes Section */}
+                                        {comprobantesMap[order.id] && comprobantesMap[order.id].length > 0 && (
+                                            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                                <button
+                                                    onClick={() => toggleOrderExpansion(order.id)}
+                                                    className="w-full flex items-center justify-between text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-advanta-green dark:hover:text-red-400 transition-colors"
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <FileText className="w-4 h-4" />
+                                                        <span>
+                                                            Comprobantes ({comprobantesMap[order.id].length})
+                                                        </span>
+                                                    </div>
+                                                    {expandedOrders.has(order.id) ? (
+                                                        <ChevronUp className="w-4 h-4" />
+                                                    ) : (
+                                                        <ChevronDown className="w-4 h-4" />
+                                                    )}
+                                                </button>
+
+                                                {/* Expanded Comprobantes List */}
+                                                {expandedOrders.has(order.id) && (
+                                                    <motion.div
+                                                        initial={{ opacity: 0, height: 0 }}
+                                                        animate={{ opacity: 1, height: 'auto' }}
+                                                        exit={{ opacity: 0, height: 0 }}
+                                                        className="mt-3"
+                                                    >
+                                                        <ComprobantesList
+                                                            comprobantes={comprobantesMap[order.id]}
+                                                            onPreview={handlePreviewPDF}
+                                                        />
+                                                    </motion.div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             );
@@ -646,6 +726,16 @@ const Pedidos = () => {
                             timeAgo: 'Ahora'
                         });
                     }
+                }}
+            />
+
+            {/* PDF Preview Modal */}
+            <PDFPreviewModal
+                isOpen={pdfPreviewOpen}
+                comprobante={selectedComprobante}
+                onClose={() => {
+                    setPdfPreviewOpen(false);
+                    setSelectedComprobante(null);
                 }}
             />
         </div>
