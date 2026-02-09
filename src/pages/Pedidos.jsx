@@ -558,53 +558,36 @@ const Pedidos = () => {
                                                 Creado: {formatDate(order.createdAt)}
                                             </div>
                                             <div className="flex items-center gap-2 flex-wrap justify-end">
-                                                {/* Unified PROCESAR button for pending orders */}
-                                                {order.status === 'pending' && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedOrderForAction(order);
-                                                            setInvoiceActionModalOpen(true);
-                                                        }}
-                                                        className="px-4 py-2 bg-gradient-to-r from-advanta-green to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
-                                                    >
-                                                        <PackageCheck size={16} />
-                                                        <span>PROCESAR</span>
-                                                    </button>
-                                                )}
+                                                {/* Check if order is fully completed */}
+                                                {(() => {
+                                                    const orderComprobantes = comprobantesMap[order.id] || [];
+                                                    const hasFactura = orderComprobantes.some(c => c.tipo === 'FACTURA');
+                                                    const hasRemito = orderComprobantes.some(c => c.tipo === 'REMITO');
+                                                    const hasCobro = orderComprobantes.some(c => c.tipo === 'COBRO');
+                                                    const isFullyCompleted = hasFactura && hasRemito && hasCobro;
 
-                                                {canRemitir && (
-                                                    <button
-                                                        onClick={() => handleRemitir(order)}
-                                                        className="px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
-                                                    >
-                                                        <Truck size={14} />
-                                                        <span>REMITIR</span>
-                                                    </button>
-                                                )}
-                                                {canFacturar && (
-                                                    <button
-                                                        onClick={() => handleFacturar(order)}
-                                                        className="px-3 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
-                                                    >
-                                                        <FileText size={14} />
-                                                        <span>FACTURAR</span>
-                                                    </button>
-                                                )}
-                                                {canCobrar && (
-                                                    <button
-                                                        onClick={() => handleCobrar(order)}
-                                                        className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-sm hover:shadow-md"
-                                                    >
-                                                        <Banknote size={14} />
-                                                        <span>COBRAR</span>
-                                                    </button>
-                                                )}
-                                                {isCompleted && (
-                                                    <span className="px-3 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-bold flex items-center gap-2">
-                                                        <CheckCircle size={14} />
-                                                        <span>COMPLETADO</span>
-                                                    </span>
-                                                )}
+                                                    if (isFullyCompleted) {
+                                                        return (
+                                                            <span className="px-3 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-xs font-bold flex items-center gap-2">
+                                                                <CheckCircle size={14} />
+                                                                <span>COMPLETADO</span>
+                                                            </span>
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedOrderForAction(order);
+                                                                setInvoiceActionModalOpen(true);
+                                                            }}
+                                                            className="px-4 py-2 bg-gradient-to-r from-advanta-green to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
+                                                        >
+                                                            <PackageCheck size={16} />
+                                                            <span>PROCESAR</span>
+                                                        </button>
+                                                    );
+                                                })()}
                                             </div>
                                         </div>
 

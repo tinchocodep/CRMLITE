@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, FileText, Truck, DollarSign, AlertCircle } from 'lucide-react';
 import { processInvoice, processRemito } from '../../services/invoiceService';
-import { saveComprobante } from '../../services/comprobantesService';
+import { saveComprobante, getComprobantesByOrder } from '../../services/comprobantesService';
 
 /**
  * Invoice/Remito Action Modal
  * Allows user to choose between Invoice, Remito, or Payment for an order
+ * Intelligently shows only available actions based on existing comprobantes
  */
 export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }) {
     const [selectedAction, setSelectedAction] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [existingComprobantes, setExistingComprobantes] = useState([]);
 
     // Invoice/Remito configuration
     const [config, setConfig] = useState({
@@ -18,7 +20,67 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
         fecha_pago: order?.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
     });
 
+    // Load existing comprobantes when modal opens
+    useEffect(() => {
+        if (isOpen && order) {
+            const comprobantes = getComprobantesByOrder(order.id);
+            setExistingComprobantes(comprobantes);
+
+            // Auto-select the next action if only one is available
+            const available = getAvailableActions(comprobantes);
+            if (available.filter(a => !a.disabled).length === 1) {
+                setSelectedAction(available.find(a => !a.disabled).id);
+            } else {
+                setSelectedAction(null);
+            }
+        }
+    }, [isOpen, order]);
+
     if (!isOpen || !order) return null;
+
+    // Determine which actions are already completed
+    const hasFactura = existingComprobantes.some(c => c.tipo === 'FACTURA');
+    const hasRemito = existingComprobantes.some(c => c.tipo === 'REMITO');
+    const hasCobro = existingComprobantes.some(c => c.tipo === 'COBRO');
+
+    // Get available actions based on what's already done
+    const getAvailableActions = (comprobantes = existingComprobantes) => {
+        const hasF = comprobantes.some(c => c.tipo === 'FACTURA');
+        const hasR = comprobantes.some(c => c.tipo === 'REMITO');
+        const hasC = comprobantes.some(c => c.tipo === 'COBRO');
+
+        const allActions = [
+            {
+                id: 'FACTURA',
+                label: 'Facturar',
+                icon: FileText,
+                color: 'bg-blue-500 hover:bg-blue-600',
+                description: 'Generar factura y enviar a AFIP',
+                disabled: hasF,
+                completedText: '✓ Ya facturado'
+            },
+            {
+                id: 'REMITO',
+                label: 'Remitir',
+                icon: Truck,
+                color: 'bg-green-500 hover:bg-green-600',
+                description: 'Generar remito y descontar stock',
+                disabled: hasR,
+                completedText: '✓ Ya remitido'
+            },
+            {
+                id: 'COBRAR',
+                label: 'Cobrar',
+                icon: DollarSign,
+                color: 'bg-purple-500 hover:bg-purple-600',
+                description: 'Registrar cobro del pedido',
+                disabled: hasC,
+                completedText: '✓ Ya cobrado'
+            }
+        ];
+
+        return allActions;
+    };
 
     const handleProcess = async () => {
         setError(null);
@@ -117,29 +179,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
         }
     };
 
-    const actions = [
-        {
-            id: 'FACTURA',
-            label: 'Facturar',
-            icon: FileText,
-            color: 'bg-blue-500 hover:bg-blue-600',
-            description: 'Generar factura y enviar a AFIP'
-        },
-        {
-            id: 'REMITO',
-            label: 'Remitir',
-            icon: Truck,
-            color: 'bg-green-500 hover:bg-green-600',
-            description: 'Generar remito y descontar stock'
-        },
-        {
-            id: 'COBRAR',
-            label: 'Cobrar',
-            icon: DollarSign,
-            color: 'bg-purple-500 hover:bg-purple-600',
-            description: 'Registrar cobro del pedido'
-        }
-    ];
+    const actions = getAvailableActions();
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -184,28 +224,37 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             {actions.map((action) => {
                                 const Icon = action.icon;
                                 const isSelected = selectedAction === action.id;
+                                const isDisabled = action.disabled;
 
                                 return (
                                     <button
                                         key={action.id}
-                                        onClick={() => setSelectedAction(action.id)}
+                                        onClick={() => !isDisabled && setSelectedAction(action.id)}
+                                        disabled={isDisabled}
                                         className={`
-                                            p-4 rounded-xl border-2 transition-all
-                                            ${isSelected
-                                                ? 'border-advanta-green dark:border-red-500 bg-green-50 dark:bg-red-900/20'
-                                                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                                            p-4 rounded-xl border-2 transition-all relative
+                                            ${isDisabled
+                                                ? 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 opacity-60 cursor-not-allowed'
+                                                : isSelected
+                                                    ? 'border-advanta-green dark:border-red-500 bg-green-50 dark:bg-red-900/20'
+                                                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                                             }
                                         `}
                                     >
+                                        {isDisabled && (
+                                            <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                                                ✓
+                                            </div>
+                                        )}
                                         <Icon
-                                            size={32}
-                                            className={`mx-auto mb-2 ${isSelected ? 'text-advanta-green dark:text-red-400' : 'text-slate-400'}`}
+                                            className={`mx-auto mb-2 ${isDisabled ? 'text-slate-400' : isSelected ? 'text-advanta-green dark:text-red-500' : 'text-slate-600 dark:text-slate-400'}`}
+                                            size={24}
                                         />
-                                        <p className={`font-bold text-sm ${isSelected ? 'text-advanta-green dark:text-red-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                                        <p className={`text-sm font-bold ${isDisabled ? 'text-slate-500' : isSelected ? 'text-advanta-green dark:text-red-500' : 'text-slate-700 dark:text-slate-300'}`}>
                                             {action.label}
                                         </p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                            {action.description}
+                                            {isDisabled ? action.completedText : action.description}
                                         </p>
                                     </button>
                                 );
