@@ -635,25 +635,6 @@ const Pedidos = () => {
                 )}
             </div>
 
-            {/* Webhook Configuration Notice */}
-            {(!WEBHOOK_URLS.remitir || !WEBHOOK_URLS.facturar || !WEBHOOK_URLS.cobrar) && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-6">
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                        <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                                <h4 className="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                                    Webhooks N8N no configurados
-                                </h4>
-                                <p className="text-xs text-amber-700 dark:text-amber-300">
-                                    Las acciones funcionan con datos mock. Para conectar con N8N, configura las URLs de webhook en el código (constante WEBHOOK_URLS).
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Payment Modal */}
             <PaymentModal
                 isOpen={paymentModalOpen}
