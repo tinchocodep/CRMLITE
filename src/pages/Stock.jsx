@@ -16,6 +16,7 @@ const Stock = () => {
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
+            console.log('📊 STOCK SCROLL - Y:', currentScrollY, 'Last:', lastScrollY, 'Visible:', headerVisible);
 
             // Show header when scrolling up or at top
             if (currentScrollY < lastScrollY || currentScrollY < 10) {
