@@ -33,6 +33,8 @@ export const useOpportunities = (refreshKey = 'default') => {
 
             if (fetchError) throw fetchError;
 
+            console.log('📊 Raw opportunities data from DB:', data);
+
             // Transform data to match OpportunityCard expectations
             const transformedData = (data || []).map(opp => ({
                 ...opp,
@@ -59,6 +61,8 @@ export const useOpportunities = (refreshKey = 'default') => {
                     phone: opp.contact.phone
                 } : null
             }));
+
+            console.log('✨ Transformed opportunities data:', transformedData);
 
             setOpportunities(transformedData);
             setError(null);
