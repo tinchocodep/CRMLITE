@@ -34,6 +34,8 @@ const Opportunities = () => {
         opportunity_name: opp.title,
         productType: opp.products[0]?.productName || 'N/A',
         product_type: opp.products[0]?.productName || 'N/A',
+        product: opp.products[0]?.productName || 'N/A', // For card display
+        business_unit: opp.clientName, // For card display
         amount: opp.estimatedValue,
         closeDate: opp.expectedCloseDate,
         close_date: opp.expectedCloseDate,
