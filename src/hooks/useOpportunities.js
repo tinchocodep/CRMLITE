@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
+import { saveQuotation, getQuotationsByOpportunity } from '../services/quotationsService';
 
 export const useOpportunities = (refreshKey = 'default') => {
     const [opportunities, setOpportunities] = useState([]);
@@ -204,6 +205,13 @@ export const useOpportunities = (refreshKey = 'default') => {
                 throw new Error(`Invalid opportunity ID: ${id}`);
             }
 
+            // Get current opportunity data to check previous probability
+            const { data: currentOpp } = await supabase
+                .from('opportunities')
+                .select('*, company:companies!company_id(id, trade_name, legal_name, cuit)')
+                .eq('id', numericId)
+                .single();
+
             const { data, error: updateError } = await supabase
                 .from('opportunities')
                 .update(updates)
@@ -212,6 +220,56 @@ export const useOpportunities = (refreshKey = 'default') => {
                 .single();
 
             if (updateError) throw updateError;
+
+            // Check if probability reached 60% or more
+            const previousProbability = currentOpp?.probability || 0;
+            const newProbability = updates.probability !== undefined ? updates.probability : previousProbability;
+
+            // Auto-create quotation if probability reaches 60% and no quotation exists yet
+            if (newProbability >= 60 && previousProbability < 60) {
+                const existingQuotations = getQuotationsByOpportunity(numericId);
+
+                if (existingQuotations.length === 0) {
+                    console.log('🎯 Probability reached 60%! Auto-creating quotation...');
+
+                    // Create quotation from opportunity data
+                    const newQuotation = saveQuotation({
+                        opportunityId: numericId,
+                        clientId: currentOpp.company_id,
+                        clientName: currentOpp.company?.trade_name || currentOpp.company?.legal_name || 'Cliente',
+                        saleType: 'Venta Directa',
+                        paymentCondition: 'A definir',
+                        deliveryDate: currentOpp.close_date || new Date().toISOString().split('T')[0],
+                        originAddress: '',
+                        destinationAddress: '',
+                        status: 'draft',
+                        lines: [{
+                            id: 1,
+                            productName: currentOpp.product_type || 'Producto',
+                            quantity: 1,
+                            unitPrice: currentOpp.amount || 0,
+                            total: currentOpp.amount || 0
+                        }],
+                        subtotal: currentOpp.amount || 0,
+                        tax: (currentOpp.amount || 0) * 0.21,
+                        total: (currentOpp.amount || 0) * 1.21,
+                        notes: `Cotización generada automáticamente desde oportunidad: ${currentOpp.opportunity_name}`
+                    });
+
+                    console.log('✅ Auto-created quotation:', newQuotation);
+
+                    // Show notification (will be handled by the component)
+                    if (window.showToast) {
+                        window.showToast({
+                            id: `auto-quotation-${numericId}`,
+                            title: '🎉 Cotización Creada Automáticamente',
+                            description: `Se creó la cotización ${newQuotation.quotationNumber} porque la oportunidad alcanzó 60% de probabilidad`,
+                            priority: 'high',
+                            timeAgo: 'Ahora'
+                        });
+                    }
+                }
+            }
 
             // Delete old auto-generated activities for this opportunity
             await supabase

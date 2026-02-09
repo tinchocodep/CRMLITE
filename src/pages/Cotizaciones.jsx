@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { quotations as mockQuotations } from '../data/quotations';
 import { orders as mockOrders } from '../data/orders';
 import { saveOrder } from '../services/ordersService';
+import { getAllQuotations } from '../services/quotationsService';
 import { useToast } from '../contexts/ToastContext';
 import QuotationDetailsModal from '../components/QuotationDetailsModal';
 import EditQuotationModal from '../components/EditQuotationModal';
@@ -17,8 +18,14 @@ const Cotizaciones = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [quotationToEdit, setQuotationToEdit] = useState(null);
 
-    // Estado para usar datos mock
-    const [localQuotations, setLocalQuotations] = useState(mockQuotations);
+    // Estado para usar datos mock + datos del servicio
+    const [localQuotations, setLocalQuotations] = useState(() => {
+        // Merge mock quotations with quotations from service
+        const serviceQuotations = getAllQuotations();
+        const mockQuotationIds = new Set(mockQuotations.map(q => q.id));
+        const uniqueServiceQuotations = serviceQuotations.filter(q => !mockQuotationIds.has(q.id));
+        return [...mockQuotations, ...uniqueServiceQuotations];
+    });
     const [localOrders, setLocalOrders] = useState(mockOrders);
 
     // Función para actualizar el estado de una cotización
