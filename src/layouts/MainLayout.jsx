@@ -321,6 +321,15 @@ const MainLayout = () => {
                             handleGlobalCreateClient();
                         } else if (action === 'event') {
                             setIsCreateModalOpen(true);
+                        } else if (action === 'convert') {
+                            // TODO: Implement convert prospect action
+                            console.log('Convert prospect action');
+                        } else if (action === 'contact') {
+                            // TODO: Implement create contact action
+                            console.log('Create contact action');
+                        } else if (action === 'visit') {
+                            // TODO: Implement create visit action
+                            console.log('Create visit action');
                         }
                     }}
                 />

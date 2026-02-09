@@ -18,18 +18,21 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
 
     // CRM Quick Actions
     const crmActions = [
-        { label: 'Nueva Oportunidad', action: 'opportunity', icon: '💼', color: 'from-blue-500 to-blue-600' },
-        { label: 'Nuevo Prospecto', action: 'prospect', icon: '👥', color: 'from-purple-500 to-purple-600' },
-        { label: 'Nueva Empresa', action: 'client', icon: '🏢', color: 'from-green-500 to-green-600' },
-        { label: 'Crear Actividad', action: 'event', icon: '📅', color: 'from-pink-500 to-pink-600' }
+        { label: 'Prospecto', action: 'prospect', Icon: Users, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+        { label: 'Convertir Prospecto', action: 'convert', Icon: UserPlus, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+        { label: 'Cliente', action: 'client', Icon: UserCheck, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+        { label: 'Contacto', action: 'contact', Icon: User, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+        { label: 'Actividad', action: 'event', Icon: Calendar, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' },
+        { label: 'Visita', action: 'visit', Icon: MapPin, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' },
+        { label: 'Oportunidad', action: 'opportunity', Icon: Briefcase, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' }
     ];
 
     // Cotizador Quick Actions
     const cotizadorActions = [
-        { label: 'Nueva Cotización', path: '/cotizaciones', icon: '📄', color: 'from-blue-500 to-blue-600' },
-        { label: 'Nuevo Pedido', path: '/pedidos', icon: '📦', color: 'from-amber-500 to-amber-600' },
-        { label: 'Nuevo Comprobante', path: '/comprobantes', icon: '🧾', color: 'from-green-500 to-green-600' },
-        { label: 'Sumar Stock', path: '/stock', icon: '📈', color: 'from-purple-500 to-purple-600' }
+        { label: 'Nueva Cotización', path: '/cotizaciones', Icon: FileText, bgColor: 'bg-blue-50 dark:bg-blue-900/20', iconColor: 'text-blue-600 dark:text-blue-400', borderColor: 'border-blue-200 dark:border-blue-800' },
+        { label: 'Nuevo Pedido', path: '/pedidos', Icon: Package, bgColor: 'bg-amber-50 dark:bg-amber-900/20', iconColor: 'text-amber-600 dark:text-amber-400', borderColor: 'border-amber-200 dark:border-amber-800' },
+        { label: 'Nuevo Comprobante', path: '/comprobantes', Icon: Receipt, bgColor: 'bg-green-50 dark:bg-green-900/20', iconColor: 'text-green-600 dark:text-green-400', borderColor: 'border-green-200 dark:border-green-800' },
+        { label: 'Sumar Stock', path: '/stock', Icon: TrendingUp, bgColor: 'bg-purple-50 dark:bg-purple-900/20', iconColor: 'text-purple-600 dark:text-purple-400', borderColor: 'border-purple-200 dark:border-purple-800' }
     ];
 
     const actions = currentContext === 'cotizador' ? cotizadorActions : crmActions;
@@ -150,28 +153,24 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
 
                         {/* Actions Grid */}
                         <div className="px-4 pb-6 grid grid-cols-2 gap-3">
-                            {actions.map((action, index) => (
-                                <motion.button
-                                    key={action.label}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    onClick={() => handleActionClick(action)}
-                                    className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br ${action.color} bg-opacity-10 border-2 border-opacity-20 hover:border-opacity-40 transition-all active:scale-95 gap-2`}
-                                    style={{
-                                        borderColor: action.color.includes('blue') ? '#3b82f6' :
-                                            action.color.includes('purple') ? '#a855f7' :
-                                                action.color.includes('green') ? '#10b981' :
-                                                    action.color.includes('pink') ? '#ec4899' :
-                                                        action.color.includes('amber') ? '#f59e0b' : '#3b82f6'
-                                    }}
-                                >
-                                    <span className="text-3xl">{action.icon}</span>
-                                    <span className="text-xs font-bold text-slate-800 dark:text-white text-center">
-                                        {action.label}
-                                    </span>
-                                </motion.button>
-                            ))}
+                            {actions.map((action, index) => {
+                                const IconComponent = action.Icon;
+                                return (
+                                    <motion.button
+                                        key={action.label}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        onClick={() => handleActionClick(action)}
+                                        className={`flex flex-col items-center justify-center p-6 rounded-2xl ${action.bgColor} border-2 ${action.borderColor} transition-all active:scale-95 gap-3`}
+                                    >
+                                        <IconComponent className={`w-12 h-12 ${action.iconColor}`} strokeWidth={1.5} />
+                                        <span className="text-sm font-bold text-slate-800 dark:text-white text-center">
+                                            {action.label}
+                                        </span>
+                                    </motion.button>
+                                );
+                            })}
                         </div>
                     </motion.div>
                 )}
