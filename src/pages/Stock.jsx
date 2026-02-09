@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Package, Search, Filter, Plus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { stockBalances, stockMovementsIn, stockMovementsOut } from '../data/stock';
@@ -9,6 +9,29 @@ const Stock = () => {
     const [stockTypeFilter, setStockTypeFilter] = useState('all'); // all, own, consigned
     const [warehouseFilter, setWarehouseFilter] = useState('all');
     const [viewMode, setViewMode] = useState('balances'); // balances, movements
+    const [headerVisible, setHeaderVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    // Handle scroll to hide/show header on mobile
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            // Show header when scrolling up or at top
+            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+                setHeaderVisible(true);
+            }
+            // Hide header when scrolling down and past threshold
+            else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                setHeaderVisible(false);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     // Calcular estadísticas
     const totalProducts = stockBalances.length;
@@ -91,8 +114,13 @@ const Stock = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
-            {/* Header - Mobile Optimized */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static">
+            {/* Header - Mobile Optimized with Auto-Hide */}
+            <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: headerVisible ? 0 : -400 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static xl:transform-none"
+            >
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
                     {/* Title */}
                     <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -205,7 +233,7 @@ const Stock = () => {
                         )}
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -363,7 +391,7 @@ const Stock = () => {
                     )
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 
