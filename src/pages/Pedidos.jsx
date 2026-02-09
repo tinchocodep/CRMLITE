@@ -668,11 +668,21 @@ const Pedidos = () => {
                 onSuccess={(result) => {
                     console.log('✅ Action completed:', result);
 
-                    // Update order status based on action
-                    if (result.invoiceData || result.remitoData) {
-                        const actionType = result.invoiceData ? 'FACTURA' : 'REMITO';
-                        const newStatus = actionType === 'FACTURA' ? 'invoiced' : 'shipped';
+                    // Update order status based on comprobante type
+                    if (result.comprobante) {
+                        const actionType = result.comprobante.tipo; // 'FACTURA', 'REMITO', or 'COBRO'
 
+                        // Determine new status
+                        let newStatus = selectedOrderForAction.status;
+                        if (actionType === 'FACTURA') {
+                            newStatus = 'invoiced';
+                        } else if (actionType === 'REMITO') {
+                            newStatus = 'shipped';
+                        } else if (actionType === 'COBRO') {
+                            newStatus = 'paid';
+                        }
+
+                        // Update local orders
                         setLocalOrders(prev =>
                             prev.map(o =>
                                 o.id === selectedOrderForAction.id
@@ -681,12 +691,19 @@ const Pedidos = () => {
                             )
                         );
 
+                        // Show success toast
+                        const actionLabels = {
+                            'FACTURA': 'Facturado',
+                            'REMITO': 'Remitido',
+                            'COBRO': 'Cobrado'
+                        };
+
                         showToast({
                             id: `action-success-${selectedOrderForAction.id}`,
-                            title: `✅ ${actionType === 'FACTURA' ? 'Facturado' : 'Remitido'} Exitosamente`,
+                            title: `✅ ${actionLabels[actionType]} Exitosamente`,
                             description: `Pedido ${selectedOrderForAction.orderNumber} procesado correctamente`,
                             priority: 'high',
-                            icon: actionType === 'FACTURA' ? FileText : Truck,
+                            icon: actionType === 'FACTURA' ? FileText : actionType === 'REMITO' ? Truck : DollarSign,
                             timeAgo: 'Ahora'
                         });
                     }
