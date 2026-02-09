@@ -84,6 +84,39 @@ export default function ComprobantesList({ comprobantes, onPreview }) {
                                             <span className="font-medium">Total:</span> ${comp.total.toLocaleString('es-AR')}
                                         </div>
                                     )}
+
+                                    {/* Payment-specific fields */}
+                                    {comp.tipo === 'COBRO' && (
+                                        <>
+                                            {comp.paymentMethod && (
+                                                <div className="col-span-2">
+                                                    <span className="font-medium">Método de Pago:</span>{' '}
+                                                    <span className="capitalize">
+                                                        {comp.paymentMethod.replace(/_/g, ' ')}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {comp.isPartialPayment && (
+                                                <div className="col-span-2">
+                                                    <span className="font-bold text-amber-600 dark:text-amber-400">
+                                                        ⚠️ Cobro Parcial - Adeuda: ${comp.remainingBalance?.toLocaleString('es-AR') || '0'}
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {!comp.isPartialPayment && (
+                                                <div className="col-span-2">
+                                                    <span className="font-bold text-green-600 dark:text-green-400">
+                                                        ✅ Cobro Total
+                                                    </span>
+                                                </div>
+                                            )}
+                                            {comp.notes && (
+                                                <div className="col-span-2">
+                                                    <span className="font-medium">Notas:</span> {comp.notes}
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>

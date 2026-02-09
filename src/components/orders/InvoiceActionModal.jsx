@@ -20,11 +20,27 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
         fecha_pago: order?.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
     });
 
+    // Payment configuration
+    const [paymentConfig, setPaymentConfig] = useState({
+        amount: order?.total || order?.totalAmount || 0,
+        paymentMethod: 'efectivo',
+        paymentDate: new Date().toISOString().split('T')[0],
+        notes: ''
+    });
+
     // Load existing comprobantes when modal opens
     useEffect(() => {
         if (isOpen && order) {
             const comprobantes = getComprobantesByOrder(order.id);
             setExistingComprobantes(comprobantes);
+
+            // Reset payment config with order total
+            setPaymentConfig({
+                amount: order?.total || order?.totalAmount || 0,
+                paymentMethod: 'efectivo',
+                paymentDate: new Date().toISOString().split('T')[0],
+                notes: ''
+            });
 
             // Auto-select the next action if only one is available
             const available = getAvailableActions(comprobantes);
@@ -191,12 +207,54 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     break;
 
                 case 'COBRAR':
-                    // TODO: Implement payment logic
-                    console.log('💰 Processing payment for order:', order.id);
+                    // Validate payment amount
+                    const orderTotal = order?.total || order?.totalAmount || 0;
+                    if (!paymentConfig.amount || paymentConfig.amount <= 0) {
+                        throw new Error('El monto a cobrar debe ser mayor a 0');
+                    }
+                    if (paymentConfig.amount > orderTotal) {
+                        throw new Error('El monto a cobrar no puede ser mayor al total del pedido');
+                    }
+
+                    // Calculate remaining balance
+                    const amountPaid = parseFloat(paymentConfig.amount);
+                    const remainingBalance = orderTotal - amountPaid;
+                    const isPartialPayment = remainingBalance > 0;
+
+                    // Save payment comprobante
+                    const paymentComprobante = saveComprobante({
+                        tipo: 'COBRO',
+                        orderId: order.id,
+                        orderNumber: order.orderNumber,
+                        punto_venta: 0,
+                        numero_cbte: 0,
+                        letra: '',
+                        cae: 'N/A',
+                        vto_cae: '',
+                        qr_url: '',
+                        pdf_url: '',
+                        total: amountPaid,
+                        clientName: order.clientName,
+                        fecha_emision: paymentConfig.paymentDate,
+                        // Payment-specific fields
+                        paymentMethod: paymentConfig.paymentMethod,
+                        isPartialPayment: isPartialPayment,
+                        remainingBalance: remainingBalance,
+                        notes: paymentConfig.notes || ''
+                    });
+
+                    console.log('✅ Payment comprobante saved:', paymentComprobante);
+
                     result = {
                         success: true,
-                        message: 'Funcionalidad de cobro pendiente de implementación'
+                        message: isPartialPayment
+                            ? `Cobro parcial registrado. Adeuda: $${remainingBalance.toFixed(2)}`
+                            : 'Cobro total registrado',
+                        comprobante: paymentComprobante
                     };
+
+                    // Update existingComprobantes to refresh available actions
+                    setExistingComprobantes(prev => [...prev, paymentComprobante]);
                     break;
 
                 default:
@@ -344,6 +402,86 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                                     Fecha estimada de pago del cliente (por defecto: fecha de entrega)
                                 </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Payment Configuration Form (only for COBRAR) */}
+                    {selectedAction === 'COBRAR' && (
+                        <div className="space-y-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <h3 className="font-bold text-slate-800 dark:text-slate-100">
+                                Configuración del Cobro
+                            </h3>
+
+                            {/* Payment Amount */}
+                            <div>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                    Monto a Cobrar *
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    max={order?.total || order?.totalAmount || 0}
+                                    value={paymentConfig.amount}
+                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, amount: parseFloat(e.target.value) || 0 })}
+                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                />
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                    Total del pedido: ${(order?.total || order?.totalAmount || 0).toFixed(2)}
+                                    {paymentConfig.amount < (order?.total || order?.totalAmount || 0) && (
+                                        <span className="text-amber-600 dark:text-amber-400 font-bold ml-2">
+                                            • Cobro parcial - Adeuda: ${((order?.total || order?.totalAmount || 0) - paymentConfig.amount).toFixed(2)}
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+
+                            {/* Payment Method */}
+                            <div>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                    Método de Pago *
+                                </label>
+                                <select
+                                    value={paymentConfig.paymentMethod}
+                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paymentMethod: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                >
+                                    <option value="efectivo">💵 Efectivo</option>
+                                    <option value="transferencia">🏦 Transferencia Bancaria</option>
+                                    <option value="cheque">📝 Cheque</option>
+                                    <option value="tarjeta_debito">💳 Tarjeta de Débito</option>
+                                    <option value="tarjeta_credito">💳 Tarjeta de Crédito</option>
+                                    <option value="mercadopago">🔵 MercadoPago</option>
+                                    <option value="otro">📋 Otro</option>
+                                </select>
+                            </div>
+
+                            {/* Payment Date */}
+                            <div>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                    Fecha de Cobro *
+                                </label>
+                                <input
+                                    type="date"
+                                    value={paymentConfig.paymentDate}
+                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paymentDate: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                />
+                            </div>
+
+                            {/* Notes */}
+                            <div>
+                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                    Notas (opcional)
+                                </label>
+                                <textarea
+                                    value={paymentConfig.notes}
+                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, notes: e.target.value })}
+                                    placeholder="Ej: Cheque #12345, Transferencia CBU..."
+                                    rows={3}
+                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium resize-none"
+                                />
                             </div>
                         </div>
                     )}
