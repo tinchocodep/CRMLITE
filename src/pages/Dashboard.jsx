@@ -212,7 +212,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40 px-4 md:px-8 pt-8">
+        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40 px-4 md:px-8 pt-8 relative">
 
             {/* Dashboard Header */}
             <motion.div
