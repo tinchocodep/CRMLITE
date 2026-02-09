@@ -25,8 +25,26 @@ const Opportunities = () => {
     const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
 
     // Estado para usar datos mock
-    const [useMockData, setUseMockData] = useState(false); // Changed to false to use real data
-    const [localOpportunities, setLocalOpportunities] = useState(mockOpportunities);
+    const [useMockData, setUseMockData] = useState(true);
+
+    // Transform mock opportunities to match expected format
+    const transformedMockOpportunities = mockOpportunities.map(opp => ({
+        ...opp,
+        opportunityName: opp.title,
+        opportunity_name: opp.title,
+        productType: opp.products[0]?.productName || 'N/A',
+        product_type: opp.products[0]?.productName || 'N/A',
+        amount: opp.estimatedValue,
+        closeDate: opp.expectedCloseDate,
+        close_date: opp.expectedCloseDate,
+        linkedEntity: {
+            id: opp.clientId,
+            type: 'client',
+            name: opp.clientName
+        }
+    }));
+
+    const [localOpportunities, setLocalOpportunities] = useState(transformedMockOpportunities);
     const [localQuotations, setLocalQuotations] = useState(mockQuotations);
 
     useEffect(() => {
