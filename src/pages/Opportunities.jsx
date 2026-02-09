@@ -25,7 +25,7 @@ const Opportunities = () => {
     const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
 
     // Estado para usar datos mock
-    const [useMockData, setUseMockData] = useState(true);
+    const [useMockData, setUseMockData] = useState(false); // Changed to false to use real data
     const [localOpportunities, setLocalOpportunities] = useState(mockOpportunities);
     const [localQuotations, setLocalQuotations] = useState(mockQuotations);
 
