@@ -121,39 +121,62 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setQuickActionsOpen(false)}
-                        className="fixed inset-0 bg-black/50 z-40 xl:hidden"
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] xl:hidden"
                     />
                 )}
             </AnimatePresence>
 
-            {/* Quick Actions Menu */}
+            {/* Quick Actions Bottom Sheet */}
             <AnimatePresence>
                 {quickActionsOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 xl:hidden"
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                        className="fixed bottom-0 left-0 right-0 z-[70] bg-white dark:bg-slate-900 rounded-t-3xl shadow-2xl xl:hidden pb-20 max-h-[85vh] overflow-y-auto"
                     >
-                        <div className="flex flex-col gap-3">
+                        {/* Handle Bar */}
+                        <div className="flex justify-center pt-3 pb-2">
+                            <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full"></div>
+                        </div>
+
+                        {/* Header */}
+                        <div className="px-6 pb-4">
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+                                {currentContext === 'cotizador' ? 'Nuevo:' : 'Crear:'}
+                            </h3>
+                        </div>
+
+                        {/* Actions Grid */}
+                        <div className="px-4 pb-6 grid grid-cols-2 gap-3">
                             {actions.map((action, index) => (
                                 <motion.button
                                     key={action.label}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 20 }}
                                     transition={{ delay: index * 0.05 }}
                                     onClick={() => handleActionClick(action)}
-                                    className={`flex items-center gap-3 px-4 py-3 bg-gradient-to-r ${action.color} text-white rounded-full shadow-lg hover:shadow-xl transition-all min-w-[200px]`}
+                                    className={`flex flex-col items-center justify-center p-4 rounded-2xl bg-gradient-to-br ${action.color} bg-opacity-10 border-2 border-opacity-20 hover:border-opacity-40 transition-all active:scale-95 gap-2`}
+                                    style={{
+                                        borderColor: action.color.includes('blue') ? '#3b82f6' :
+                                            action.color.includes('purple') ? '#a855f7' :
+                                                action.color.includes('green') ? '#10b981' :
+                                                    action.color.includes('pink') ? '#ec4899' :
+                                                        action.color.includes('amber') ? '#f59e0b' : '#3b82f6'
+                                    }}
                                 >
-                                    <span className="text-2xl">{action.icon}</span>
-                                    <span className="font-semibold text-sm">{action.label}</span>
+                                    <span className="text-3xl">{action.icon}</span>
+                                    <span className="text-xs font-bold text-slate-800 dark:text-white text-center">
+                                        {action.label}
+                                    </span>
                                 </motion.button>
                             ))}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
 
             {/* Bottom Navigation Bar */}
             <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-50 xl:hidden">
