@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { FileText, Truck, DollarSign, Download, Eye, X } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Configure PDF.js worker with https protocol
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 /**
  * Comprobantes List Component
@@ -239,10 +239,21 @@ export function PDFPreviewModal({ isOpen, comprobante, onClose }) {
                     {!error && (
                         <div className="py-4">
                             <Document
-                                file={comprobante.pdf_url}
+                                file={{
+                                    url: comprobante.pdf_url,
+                                    httpHeaders: {
+                                        'Accept': 'application/pdf'
+                                    },
+                                    withCredentials: false
+                                }}
                                 onLoadSuccess={onDocumentLoadSuccess}
                                 onLoadError={onDocumentLoadError}
                                 loading=""
+                                options={{
+                                    cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
+                                    cMapPacked: true,
+                                    standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/'
+                                }}
                             >
                                 <Page
                                     pageNumber={pageNumber}
