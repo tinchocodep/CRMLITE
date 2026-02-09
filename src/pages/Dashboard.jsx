@@ -214,8 +214,23 @@ const Dashboard = () => {
     return (
         <div className="bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40 px-4 md:px-8 pt-8">
 
-
-
+            {/* Dashboard Header */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-8"
+            >
+                <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 mb-2">
+                    Dashboard
+                </h1>
+                <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                    {safeFormat(currentTime, "EEEE, d 'de' MMMM", { locale: es })}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {safeFormat(currentTime, "HH:mm")}
+                </p>
+            </motion.div>
 
             {/* Notifications Dropdown */}
             <AnimatePresence>
