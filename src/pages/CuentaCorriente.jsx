@@ -1,41 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getAllClientBalances } from '../services/cuentaCorrienteService';
 
 const CuentaCorriente = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // all, positive, negative, zero
+    const [accounts, setAccounts] = useState([]);
 
-    // Mock data - esto se conectará con Supabase
-    const [accounts, setAccounts] = useState([
-        {
-            id: 1,
-            company: 'Agro San Juan S.A.',
-            balance: 45000,
-            lastMovement: '2026-02-10',
-            pendingInvoices: 2,
-            overdueInvoices: 0,
-            creditLimit: 200000
-        },
-        {
-            id: 2,
-            company: 'Estancia La Pampa',
-            balance: -15000,
-            lastMovement: '2026-02-08',
-            pendingInvoices: 1,
-            overdueInvoices: 1,
-            creditLimit: 150000
-        },
-        {
-            id: 3,
-            company: 'Campo Verde S.R.L.',
-            balance: 0,
-            lastMovement: '2026-02-05',
-            pendingInvoices: 0,
-            overdueInvoices: 0,
-            creditLimit: 100000
-        }
-    ]);
+    // Load real client balances from comprobantes
+    useEffect(() => {
+        const loadBalances = () => {
+            const balances = getAllClientBalances();
+            setAccounts(balances);
+        };
+
+        loadBalances();
+        // Reload every 5 seconds to catch new comprobantes
+        const interval = setInterval(loadBalances, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
     const positiveAccounts = accounts.filter(acc => acc.balance > 0);
