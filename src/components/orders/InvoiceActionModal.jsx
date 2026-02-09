@@ -103,19 +103,21 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     });
 
                     // Save comprobante with whatever data comes from webhook
-                    if (result.success && result.data) {
-                        console.log('📄 Datos recibidos del webhook:', result.data);
+                    if (result.success) {
+                        // Get data from webhook response (may contain template variables)
+                        const webhookData = result.data || result.webhookResponse?.data || {};
+                        console.log('📄 Datos recibidos del webhook:', webhookData);
 
                         // Parse punto_venta (handle "punto de venta" with space and string format)
                         const puntoVenta = parseInt(
-                            result.data.punto_venta ||
-                            result.data.punto_de_venta ||
-                            result.data['punto de venta'] ||
+                            webhookData.punto_venta ||
+                            webhookData.punto_de_venta ||
+                            webhookData['punto de venta'] ||
                             '0'
                         ) || 0;
 
                         // Parse numero_cbte (handle string format with leading zeros)
-                        const numeroCbte = parseInt(result.data.numero_cbte || '0') || 0;
+                        const numeroCbte = parseInt(webhookData.numero_cbte || '0') || 0;
 
                         const comprobante = saveComprobante({
                             tipo: 'FACTURA',
@@ -124,10 +126,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             punto_venta: puntoVenta,
                             numero_cbte: numeroCbte,
                             letra: config.letra,
-                            cae: result.data.cae || 'Pendiente',
-                            vto_cae: result.data.vto_cae || '',
-                            qr_url: result.data.qr_url || '',
-                            pdf_url: result.data.pdf_url || '',
+                            cae: webhookData.cae || 'Pendiente',
+                            vto_cae: webhookData.vto_cae || '',
+                            qr_url: webhookData.qr_url || '',
+                            pdf_url: webhookData.pdf_url || '',
                             total: order.total || order.totalAmount || 0,
                             clientName: order.clientName,
                             fecha_emision: new Date().toISOString().split('T')[0]
@@ -145,19 +147,21 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     });
 
                     // Save comprobante with whatever data comes from webhook
-                    if (result.success && result.data) {
-                        console.log('📄 Datos recibidos del webhook:', result.data);
+                    if (result.success) {
+                        // Get data from webhook response (may contain template variables)
+                        const webhookData = result.data || result.webhookResponse?.data || {};
+                        console.log('📄 Datos recibidos del webhook:', webhookData);
 
                         // Parse punto_venta (handle "punto de venta" with space and string format)
                         const puntoVenta = parseInt(
-                            result.data.punto_venta ||
-                            result.data.punto_de_venta ||
-                            result.data['punto de venta'] ||
+                            webhookData.punto_venta ||
+                            webhookData.punto_de_venta ||
+                            webhookData['punto de venta'] ||
                             '0'
                         ) || 0;
 
                         // Parse numero_cbte (handle string format with leading zeros)
-                        const numeroCbte = parseInt(result.data.numero_cbte || '0') || 0;
+                        const numeroCbte = parseInt(webhookData.numero_cbte || '0') || 0;
 
                         const comprobante = saveComprobante({
                             tipo: 'REMITO',
@@ -166,10 +170,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             punto_venta: puntoVenta,
                             numero_cbte: numeroCbte,
                             letra: config.letra,
-                            cae: result.data.cae || 'Pendiente',
-                            vto_cae: result.data.vto_cae || '',
-                            qr_url: result.data.qr_url || '',
-                            pdf_url: result.data.pdf_url || '',
+                            cae: webhookData.cae || 'Pendiente',
+                            vto_cae: webhookData.vto_cae || '',
+                            qr_url: webhookData.qr_url || '',
+                            pdf_url: webhookData.pdf_url || '',
                             total: 0, // Remitos don't have amounts
                             clientName: order.clientName,
                             fecha_emision: new Date().toISOString().split('T')[0]

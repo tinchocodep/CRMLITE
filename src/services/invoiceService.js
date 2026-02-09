@@ -169,7 +169,8 @@ export const processInvoice = async (order, invoiceOptions) => {
 
         return {
             success: true,
-            invoiceData,
+            data: result.data,  // Return webhook response data (with CAE, numero_cbte, etc.)
+            invoiceData,        // Keep for reference
             webhookResponse: result
         };
     } catch (error) {
@@ -204,7 +205,8 @@ export const processRemito = async (order, remitoOptions) => {
 
         return {
             success: true,
-            remitoData,
+            data: result.data,  // Return webhook response data (with CAE, numero_cbte, etc.)
+            remitoData,         // Keep for reference
             webhookResponse: result,
             stockDiscounted: false // Will be true when stock logic is implemented
         };
