@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, FileText, Truck, DollarSign, AlertCircle } from 'lucide-react';
 import { processInvoice, processRemito } from '../../services/invoiceService';
-import { saveComprobante, getComprobantesByOrder } from '../../services/comprobantesService';
+import { saveComprobante, getComprobantesByOrder, getShippedQuantities } from '../../services/comprobantesService';
 
 /**
  * Invoice/Remito Action Modal
@@ -28,6 +28,9 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
         paymentDate: new Date().toISOString().split('T')[0],
         notes: ''
     });
+
+    // Remito quantities configuration (for partial remitos)
+    const [remitoQuantities, setRemitoQuantities] = useState({});
 
     // Load existing comprobantes when modal opens
     useEffect(() => {
@@ -60,6 +63,23 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
             }
         }
     }, [isOpen, order]);
+
+    // Initialize remito quantities when REMITO is selected
+    useEffect(() => {
+        if (selectedAction === 'REMITO' && order?.lines) {
+            const shippedQuantities = getShippedQuantities(order.id);
+            const initialQuantities = {};
+
+            order.lines.forEach(line => {
+                const alreadyShipped = shippedQuantities[line.id] || 0;
+                const pending = line.quantity - alreadyShipped;
+                // Initialize with pending quantity (user can modify)
+                initialQuantities[line.id] = pending > 0 ? pending : 0;
+            });
+
+            setRemitoQuantities(initialQuantities);
+        }
+    }, [selectedAction, order]);
 
     if (!isOpen || !order) return null;
 
@@ -177,6 +197,12 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     break;
 
                 case 'REMITO':
+                    // Validate that at least one product has quantity > 0
+                    const hasQuantities = Object.values(remitoQuantities).some(qty => qty > 0);
+                    if (!hasQuantities) {
+                        throw new Error('Debe seleccionar al menos una cantidad para remitir');
+                    }
+
                     result = await processRemito(order, {
                         letra: config.letra,
                         fecha_pago: config.fecha_pago
@@ -199,6 +225,41 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         // Parse numero_cbte (handle string format with leading zeros)
                         const numeroCbte = parseInt(webhookData.numero_cbte || '0') || 0;
 
+                        // Build products array with quantities
+                        const shippedQuantities = getShippedQuantities(order.id);
+                        const products = order.lines
+                            .filter(line => (remitoQuantities[line.id] || 0) > 0)
+                            .map(line => {
+                                const quantityShipped = remitoQuantities[line.id] || 0;
+                                const alreadyShipped = shippedQuantities[line.id] || 0;
+                                const pending = line.quantity - alreadyShipped - quantityShipped;
+
+                                return {
+                                    productId: line.id,
+                                    productSapCode: line.productSapCode,
+                                    productName: line.productName,
+                                    quantityOrdered: line.quantity,
+                                    quantityShipped: quantityShipped,
+                                    quantityPending: pending,
+                                    unitPrice: line.unitPrice,
+                                    subtotal: quantityShipped * line.unitPrice,
+                                    taxRate: line.taxRate,
+                                    total: quantityShipped * line.unitPrice * (1 + line.taxRate / 100)
+                                };
+                            });
+
+                        // Calculate if it's a partial remito
+                        const allProductsFullyShipped = order.lines.every(line => {
+                            const totalShipped = (shippedQuantities[line.id] || 0) + (remitoQuantities[line.id] || 0);
+                            return totalShipped >= line.quantity;
+                        });
+                        const isPartialRemito = !allProductsFullyShipped;
+
+                        // Calculate totals for this remito
+                        const remitoSubtotal = products.reduce((sum, p) => sum + p.subtotal, 0);
+                        const remitoTax = products.reduce((sum, p) => sum + (p.total - p.subtotal), 0);
+                        const remitoTotal = products.reduce((sum, p) => sum + p.total, 0);
+
                         const comprobante = saveComprobante({
                             tipo: 'REMITO',
                             orderId: order.id,
@@ -210,13 +271,21 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             vto_cae: webhookData.vto_cae || '',
                             qr_url: webhookData.qr_url || '',
                             pdf_url: webhookData.pdf_url || '',
-                            total: 0, // Remitos don't have amounts
+                            subtotal: remitoSubtotal,
+                            tax: remitoTax,
+                            total: remitoTotal,
                             clientName: order.clientName,
-                            fecha_emision: new Date().toISOString().split('T')[0]
+                            fecha_emision: new Date().toISOString().split('T')[0],
+                            // Product quantities
+                            products: products,
+                            isPartialRemito: isPartialRemito
                         });
 
                         console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
+                        result.message = isPartialRemito
+                            ? `Remito parcial creado. ${products.length} producto(s) remitido(s).`
+                            : 'Remito completo creado.';
 
                         // Update existingComprobantes to refresh available actions
                         setExistingComprobantes(prev => [...prev, comprobante]);
@@ -422,6 +491,67 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                     </select>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                                         El punto de venta, número de comprobante, CAE y QR serán generados automáticamente por AFIP
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Product Quantity Selection - ONLY FOR REMITO */}
+                            {selectedAction === 'REMITO' && order?.lines && (
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-3">
+                                        Seleccionar Cantidades a Remitir *
+                                    </label>
+                                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                                        {order.lines.map((line) => {
+                                            const shippedQuantities = getShippedQuantities(order.id);
+                                            const alreadyShipped = shippedQuantities[line.id] || 0;
+                                            const pending = line.quantity - alreadyShipped;
+                                            const selectedQty = remitoQuantities[line.id] || 0;
+
+                                            return (
+                                                <div key={line.id} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                                                    <div className="flex items-start justify-between gap-3">
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-medium text-slate-800 dark:text-slate-100 text-sm truncate">
+                                                                {line.productName}
+                                                            </p>
+                                                            <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                                                <span>Total: <strong>{line.quantity}</strong></span>
+                                                                {alreadyShipped > 0 && (
+                                                                    <span className="text-green-600 dark:text-green-400">
+                                                                        Remitido: <strong>{alreadyShipped}</strong>
+                                                                    </span>
+                                                                )}
+                                                                <span className="text-amber-600 dark:text-amber-400">
+                                                                    Pendiente: <strong>{pending}</strong>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex-shrink-0 w-24">
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                max={pending}
+                                                                value={selectedQty}
+                                                                onChange={(e) => {
+                                                                    const value = parseInt(e.target.value) || 0;
+                                                                    const clamped = Math.min(Math.max(0, value), pending);
+                                                                    setRemitoQuantities(prev => ({
+                                                                        ...prev,
+                                                                        [line.id]: clamped
+                                                                    }));
+                                                                }}
+                                                                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium text-center"
+                                                                disabled={pending <= 0}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
+                                        Podés hacer remitos parciales. Solo se remitirán las cantidades que especifiques.
                                     </p>
                                 </div>
                             )}

@@ -95,3 +95,28 @@ export const deleteComprobante = (id) => {
         return false;
     }
 };
+
+/**
+ * Get shipped quantities for each product in an order
+ * Calculates total quantities shipped across all remitos
+ * @param {string} orderId - Order ID
+ * @returns {Object} Map of productId -> total quantity shipped
+ */
+export const getShippedQuantities = (orderId) => {
+    const remitos = getComprobantesByOrder(orderId)
+        .filter(c => c.tipo === 'REMITO');
+
+    const shippedByProduct = {};
+
+    remitos.forEach(remito => {
+        // Support both old format (no products array) and new format (with products array)
+        if (remito.products && Array.isArray(remito.products)) {
+            remito.products.forEach(p => {
+                shippedByProduct[p.productId] =
+                    (shippedByProduct[p.productId] || 0) + (p.quantityShipped || 0);
+            });
+        }
+    });
+
+    return shippedByProduct;
+};

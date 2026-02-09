@@ -9,7 +9,7 @@ import PaymentModal from '../components/PaymentModal';
 import PreInvoiceModal from '../components/PreInvoiceModal';
 import InvoiceActionModal from '../components/orders/InvoiceActionModal';
 import ComprobantesList, { PDFPreviewModal } from '../components/orders/ComprobantesList';
-import { getComprobantesByOrder } from '../services/comprobantesService';
+import { getComprobantesByOrder, getShippedQuantities } from '../services/comprobantesService';
 import { getAllOrders } from '../services/ordersService';
 
 
@@ -585,8 +585,15 @@ const Pedidos = () => {
                                                     const orderTotal = order?.total || order?.totalAmount || 0;
                                                     const saldoPendiente = orderTotal - totalCobrado;
 
-                                                    // Only mark as completed if has FACTURA, REMITO, and balance is zero
-                                                    const isFullyCompleted = hasFactura && hasRemito && saldoPendiente <= 0.01;
+                                                    // Check if all products are fully shipped
+                                                    const shippedQuantities = getShippedQuantities(order.id);
+                                                    const allProductsShipped = order.lines?.every(line => {
+                                                        const shipped = shippedQuantities[line.id] || 0;
+                                                        return shipped >= line.quantity;
+                                                    }) ?? false;
+
+                                                    // Only mark as completed if has FACTURA, all products shipped, and balance is zero
+                                                    const isFullyCompleted = hasFactura && allProductsShipped && saldoPendiente <= 0.01;
 
                                                     if (isFullyCompleted) {
                                                         return (
