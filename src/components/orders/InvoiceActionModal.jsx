@@ -195,7 +195,11 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
             if (result.success) {
                 onSuccess(result);
-                onClose();
+
+                // Small delay to ensure comprobante is saved and parent can reload
+                setTimeout(() => {
+                    onClose();
+                }, 100);
             } else {
                 setError(result.error || 'Error al procesar la acción');
             }

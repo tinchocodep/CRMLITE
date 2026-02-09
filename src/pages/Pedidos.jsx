@@ -37,17 +37,24 @@ const Pedidos = () => {
     // Load comprobantes for all orders
     useEffect(() => {
         const loadComprobantes = () => {
+            console.log('🔄 Loading comprobantes for all orders...');
             const map = {};
             localOrders.forEach(order => {
-                map[order.id] = getComprobantesByOrder(order.id);
+                const orderComprobantes = getComprobantesByOrder(order.id);
+                map[order.id] = orderComprobantes;
+                if (orderComprobantes.length > 0) {
+                    console.log(`📄 Order ${order.id} has ${orderComprobantes.length} comprobantes:`, orderComprobantes);
+                }
             });
             setComprobantesMap(map);
+            console.log('✅ Comprobantes map updated:', map);
         };
 
         loadComprobantes();
 
         // Reload when modal closes (in case new comprobante was added)
         if (!invoiceActionModalOpen) {
+            console.log('🔄 Modal closed, reloading comprobantes...');
             loadComprobantes();
         }
     }, [localOrders, invoiceActionModalOpen]);
