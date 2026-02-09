@@ -123,7 +123,8 @@ export const getClientMovements = (clientName) => {
                 status: comp.status,
                 balance: runningBalance,
                 cae: comp.cae,
-                pdf_url: comp.pdf_url
+                // Always provide a pdf_url - use existing or generate a placeholder
+                pdf_url: comp.pdf_url || `/api/comprobantes/${comp.id}/pdf`
             };
         });
 
