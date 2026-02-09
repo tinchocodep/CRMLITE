@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, FileText, Truck, DollarSign, AlertCircle } from 'lucide-react';
 import { processInvoice, processRemito } from '../../services/invoiceService';
+import { saveComprobante } from '../../services/comprobantesService';
 
 /**
  * Invoice/Remito Action Modal
@@ -38,6 +39,27 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         letra: config.letra,
                         fecha_pago: config.fecha_pago
                     });
+
+                    // Save comprobante if successful
+                    if (result.success && result.data) {
+                        const comprobante = saveComprobante({
+                            tipo: 'FACTURA',
+                            orderId: order.id,
+                            orderNumber: order.orderNumber,
+                            punto_venta: result.data.punto_venta,
+                            numero_cbte: result.data.numero_cbte,
+                            letra: config.letra,
+                            cae: result.data.cae,
+                            vto_cae: result.data.vto_cae,
+                            qr_url: result.data.qr_url,
+                            pdf_url: result.data.pdf_url,
+                            total: order.total || order.totalAmount,
+                            clientName: order.clientName,
+                            fecha_emision: new Date().toISOString().split('T')[0]
+                        });
+
+                        result.comprobante = comprobante;
+                    }
                     break;
 
                 case 'REMITO':
@@ -45,6 +67,27 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         letra: config.letra,
                         fecha_pago: config.fecha_pago
                     });
+
+                    // Save comprobante if successful
+                    if (result.success && result.data) {
+                        const comprobante = saveComprobante({
+                            tipo: 'REMITO',
+                            orderId: order.id,
+                            orderNumber: order.orderNumber,
+                            punto_venta: result.data.punto_venta,
+                            numero_cbte: result.data.numero_cbte,
+                            letra: config.letra,
+                            cae: result.data.cae,
+                            vto_cae: result.data.vto_cae,
+                            qr_url: result.data.qr_url,
+                            pdf_url: result.data.pdf_url,
+                            total: 0, // Remitos don't have amounts
+                            clientName: order.clientName,
+                            fecha_emision: new Date().toISOString().split('T')[0]
+                        });
+
+                        result.comprobante = comprobante;
+                    }
                     break;
 
                 case 'COBRAR':
