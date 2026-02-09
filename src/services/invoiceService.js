@@ -3,7 +3,7 @@
  * Handles sending invoice and remito data to n8n webhook for AFIP processing
  */
 
-const WEBHOOK_URL = 'https://n8n.neuracall.net/webhook-test/FACTURASAILO';
+const WEBHOOK_URL = 'https://n8n.neuracall.net/webhook/FACTURASAILO';
 
 /**
  * Send invoice or remito data to n8n webhook
