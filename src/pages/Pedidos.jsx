@@ -692,7 +692,12 @@ const Pedidos = () => {
                         } else if (actionType === 'REMITO') {
                             newStatus = 'shipped';
                         } else if (actionType === 'COBRO') {
-                            newStatus = 'paid';
+                            // Only mark as 'paid' if it's NOT a partial payment
+                            const isPartialPayment = result.comprobante.isPartialPayment;
+                            if (!isPartialPayment) {
+                                newStatus = 'paid';
+                            }
+                            // If partial payment, keep current status (invoiced or shipped)
                         }
 
                         // Update local orders
@@ -708,13 +713,13 @@ const Pedidos = () => {
                         const actionLabels = {
                             'FACTURA': 'Facturado',
                             'REMITO': 'Remitido',
-                            'COBRO': 'Cobrado'
+                            'COBRO': result.comprobante.isPartialPayment ? 'Cobro Parcial Registrado' : 'Cobrado Totalmente'
                         };
 
                         showToast({
                             id: `action-success-${selectedOrderForAction.id}`,
-                            title: `✅ ${actionLabels[actionType]} Exitosamente`,
-                            description: `Pedido ${selectedOrderForAction.orderNumber} procesado correctamente`,
+                            title: `✅ ${actionLabels[actionType]}`,
+                            description: result.message || `Pedido ${selectedOrderForAction.orderNumber} procesado correctamente`,
                             priority: 'high',
                             icon: actionType === 'FACTURA' ? FileText : actionType === 'REMITO' ? Truck : DollarSign,
                             timeAgo: 'Ahora'
