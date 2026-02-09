@@ -193,10 +193,17 @@ export const useOpportunities = (refreshKey = 'default') => {
 
     const updateOpportunity = async (id, updates) => {
         try {
+            // Ensure ID is a number (convert from string if needed)
+            const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+
+            if (isNaN(numericId)) {
+                throw new Error(`Invalid opportunity ID: ${id}`);
+            }
+
             const { data, error: updateError } = await supabase
                 .from('opportunities')
                 .update(updates)
-                .eq('id', id)
+                .eq('id', numericId)
                 .select()
                 .single();
 
@@ -206,11 +213,11 @@ export const useOpportunities = (refreshKey = 'default') => {
             await supabase
                 .from('activities')
                 .delete()
-                .eq('opportunity_id', id)
+                .eq('opportunity_id', numericId)
                 .eq('auto_generated', true);
 
             // Create new activities from updated dates
-            await createActivitiesFromOpportunity(updates, id);
+            await createActivitiesFromOpportunity(updates, numericId);
 
             await fetchOpportunities();
             return { success: true, data };
