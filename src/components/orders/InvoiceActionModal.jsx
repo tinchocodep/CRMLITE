@@ -404,24 +404,27 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 Configuración del Comprobante
                             </h3>
 
-                            {/* Letra Selection */}
-                            <div>
-                                <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
-                                    Tipo de Comprobante *
-                                </label>
-                                <select
-                                    value={config.letra}
-                                    onChange={(e) => setConfig({ ...config, letra: e.target.value })}
-                                    className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
-                                >
-                                    <option value="A">Letra A - Responsable Inscripto</option>
-                                    <option value="B">Letra B - Consumidor Final</option>
-                                    <option value="C">Letra C - Monotributista</option>
-                                </select>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                                    El punto de venta, número de comprobante, CAE y QR serán generados automáticamente por AFIP
-                                </p>
-                            </div>
+
+                            {/* Letra Selection - ONLY FOR FACTURA */}
+                            {selectedAction === 'FACTURA' && (
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                        Tipo de Comprobante *
+                                    </label>
+                                    <select
+                                        value={config.letra}
+                                        onChange={(e) => setConfig({ ...config, letra: e.target.value })}
+                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                    >
+                                        <option value="A">Letra A - Responsable Inscripto</option>
+                                        <option value="B">Letra B - Consumidor Final</option>
+                                        <option value="C">Letra C - Monotributista</option>
+                                    </select>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                                        El punto de venta, número de comprobante, CAE y QR serán generados automáticamente por AFIP
+                                    </p>
+                                </div>
+                            )}
 
                             {/* Payment Date */}
                             <div>
