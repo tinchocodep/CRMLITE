@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, Package, Box, Menu, Plus, X, Users, UserCheck } from 'lucide-react';
+import { Home, Briefcase, Package, Box, Menu, Plus, X, Users, UserCheck, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
@@ -43,7 +43,8 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
         setQuickActionsOpen(false);
     };
 
-    const leftNavItems = [
+    // CRM Navigation Items
+    const crmLeftNavItems = [
         {
             name: 'Prospectos',
             path: '/prospectos',
@@ -58,7 +59,7 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
         }
     ];
 
-    const rightNavItems = [
+    const crmRightNavItems = [
         {
             name: 'Oportun.',
             path: '/oportunidades',
@@ -73,6 +74,42 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
             isButton: true
         }
     ];
+
+    // Cotizador Navigation Items
+    const cotizadorLeftNavItems = [
+        {
+            name: 'Cotizaciones',
+            path: '/cotizaciones',
+            icon: FileText,
+            isActive: location.pathname.startsWith('/cotizaciones')
+        },
+        {
+            name: 'Pedidos',
+            path: '/pedidos',
+            icon: Package,
+            isActive: location.pathname.startsWith('/pedidos')
+        }
+    ];
+
+    const cotizadorRightNavItems = [
+        {
+            name: 'Stock',
+            path: '/stock',
+            icon: Box,
+            isActive: location.pathname.startsWith('/stock')
+        },
+        {
+            name: 'Menú',
+            path: '/menu',
+            icon: Menu,
+            isActive: false,
+            isButton: true
+        }
+    ];
+
+    // Select nav items based on context
+    const leftNavItems = currentContext === 'cotizador' ? cotizadorLeftNavItems : crmLeftNavItems;
+    const rightNavItems = currentContext === 'cotizador' ? cotizadorRightNavItems : crmRightNavItems;
 
     return (
         <>
