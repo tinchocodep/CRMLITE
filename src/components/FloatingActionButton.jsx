@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { Plus, X, Calendar, UserCheck, Users, Briefcase, Package, Building2 } from 'lucide-react';
+import { Plus, X, Calendar, UserCheck, Users, Briefcase, Package, Building2, FileText, Receipt, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConvertProspect, onCreateClient }) {
+export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConvertProspect, onCreateClient, currentContext = 'crm' }) {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
 
-    const actions = [
+    // CRM Actions
+    const crmActions = [
         {
             icon: Briefcase,
             label: 'Nueva Oportunidad',
@@ -36,15 +37,6 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
             color: 'from-green-500 to-green-600'
         },
         {
-            icon: Package,
-            label: 'Nuevo Pedido',
-            onClick: () => {
-                navigate('/pedidos');
-                setIsOpen(false);
-            },
-            color: 'from-amber-500 to-amber-600'
-        },
-        {
             icon: Calendar,
             label: 'Crear Actividad',
             onClick: () => {
@@ -54,6 +46,49 @@ export function FloatingActionButton({ onCreateEvent, onCreateProspect, onConver
             color: 'from-pink-500 to-pink-600'
         }
     ];
+
+    // Cotizador Actions
+    const cotizadorActions = [
+        {
+            icon: FileText,
+            label: 'Nueva Cotización',
+            onClick: () => {
+                navigate('/cotizaciones');
+                setIsOpen(false);
+            },
+            color: 'from-blue-500 to-blue-600'
+        },
+        {
+            icon: Package,
+            label: 'Nuevo Pedido',
+            onClick: () => {
+                navigate('/pedidos');
+                setIsOpen(false);
+            },
+            color: 'from-amber-500 to-amber-600'
+        },
+        {
+            icon: Receipt,
+            label: 'Nuevo Comprobante',
+            onClick: () => {
+                navigate('/comprobantes');
+                setIsOpen(false);
+            },
+            color: 'from-green-500 to-green-600'
+        },
+        {
+            icon: TrendingUp,
+            label: 'Sumar Stock',
+            onClick: () => {
+                navigate('/stock');
+                setIsOpen(false);
+            },
+            color: 'from-purple-500 to-purple-600'
+        }
+    ];
+
+    // Select actions based on context
+    const actions = currentContext === 'cotizador' ? cotizadorActions : crmActions;
 
     return (
         <>
