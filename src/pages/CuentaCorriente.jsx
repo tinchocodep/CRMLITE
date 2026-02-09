@@ -114,8 +114,8 @@ const CuentaCorriente = () => {
 
         console.log('Opening PDF for movement:', movement);
 
-        // Find the full comprobante data
-        const comprobantes = JSON.parse(localStorage.getItem('comprobantes') || '[]');
+        // Find the full comprobante data - use correct storage key
+        const comprobantes = JSON.parse(localStorage.getItem('crm_comprobantes') || '[]');
         console.log('Available comprobantes:', comprobantes.length);
 
         const comprobante = comprobantes.find(c => c.id === movement.id);
