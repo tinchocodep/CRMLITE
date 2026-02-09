@@ -137,6 +137,9 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
                         console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
+
+                        // Update existingComprobantes to refresh available actions
+                        setExistingComprobantes(prev => [...prev, comprobante]);
                     }
                     break;
 
@@ -181,6 +184,9 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
                         console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
+
+                        // Update existingComprobantes to refresh available actions
+                        setExistingComprobantes(prev => [...prev, comprobante]);
                     }
                     break;
 
