@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, Package, Box, Menu, Plus, X, Users, UserCheck, FileText } from 'lucide-react';
+import { Home, Briefcase, Package, Box, Menu, Plus, X, Users, UserCheck, FileText, User, UserPlus, Calendar, MapPin, Receipt, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
