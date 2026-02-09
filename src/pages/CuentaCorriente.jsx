@@ -106,12 +106,25 @@ const CuentaCorriente = () => {
         setShowDetailModal(true);
     };
 
-    const handleOpenPDF = (movement) => {
+    const handleOpenPDF = (movement, event) => {
+        // Prevent row click event
+        if (event) {
+            event.stopPropagation();
+        }
+
+        console.log('Opening PDF for movement:', movement);
+
         // Find the full comprobante data
         const comprobantes = JSON.parse(localStorage.getItem('comprobantes') || '[]');
+        console.log('Available comprobantes:', comprobantes.length);
+
         const comprobante = comprobantes.find(c => c.id === movement.id);
+        console.log('Found comprobante:', comprobante);
+
         if (comprobante) {
             setPdfPreview({ isOpen: true, comprobante });
+        } else {
+            console.error('Comprobante not found for movement:', movement);
         }
     };
 
@@ -422,7 +435,7 @@ const CuentaCorriente = () => {
                                                             <td className="py-3 px-4 text-center">
                                                                 {movement.pdf_url && (
                                                                     <button
-                                                                        onClick={() => handleOpenPDF(movement)}
+                                                                        onClick={(e) => handleOpenPDF(movement, e)}
                                                                         className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors inline-flex items-center justify-center"
                                                                         title="Ver PDF"
                                                                     >
