@@ -2,11 +2,10 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
     UserCheck, Users, User, Calendar,
-    Briefcase, Map, Target, AlertCircle, ShieldCheck, Search, LayoutDashboard
+    Briefcase, Map, Target, AlertCircle, ShieldCheck, Search
 } from 'lucide-react';
 
 const crmModules = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Ficha 360°', path: '/ficha-360', icon: Search },
     { name: 'Prospectos', path: '/prospectos', icon: UserCheck },
     { name: 'Clientes', path: '/clientes', icon: Users },
