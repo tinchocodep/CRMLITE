@@ -454,7 +454,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     <button
                         onClick={handleProcess}
                         disabled={!selectedAction || loading}
-                        className="flex-1 px-6 py-3 bg-advanta-green dark:bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 dark:hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 dark:from-emerald-600 dark:to-green-600 dark:hover:from-emerald-700 dark:hover:to-green-700 text-white rounded-xl font-bold transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                     >
                         {loading ? 'Procesando...' : 'Confirmar'}
                     </button>
