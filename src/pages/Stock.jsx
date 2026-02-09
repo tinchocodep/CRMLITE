@@ -91,62 +91,57 @@ const Stock = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
-            {/* Header */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
-                                <Box className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Stock</h1>
-                                <p className="text-sm text-slate-600 dark:text-slate-400">Control de inventario y movimientos</p>
-                            </div>
+            {/* Header - Mobile Optimized */}
+            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+                    {/* Title */}
+                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg">
+                            <Box className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
-                        <div className="flex items-center gap-2">
-                            <button
-                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-advanta-green to-green-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold"
-                            >
-                                <Plus className="w-5 h-5" />
-                                <span className="hidden sm:inline">Sumar Stock</span>
-                            </button>
-                            <button
-                                onClick={() => setViewMode('balances')}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${viewMode === 'balances'
-                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                                    }`}
-                            >
-                                Balances
-                            </button>
-                            <button
-                                onClick={() => setViewMode('movements')}
-                                className={`px-4 py-2 rounded-lg font-semibold transition-all ${viewMode === 'movements'
-                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                                    }`}
-                            >
-                                Movimientos
-                            </button>
+                        <div className="flex-1">
+                            <h1 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">Stock</h1>
+                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 hidden sm:block">Control de inventario y movimientos</p>
                         </div>
                     </div>
 
-                    {/* Stats Cards */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    {/* View Mode Tabs - Mobile Optimized */}
+                    <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                        <button
+                            onClick={() => setViewMode('balances')}
+                            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${viewMode === 'balances'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                }`}
+                        >
+                            📦 Balances
+                        </button>
+                        <button
+                            onClick={() => setViewMode('movements')}
+                            className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${viewMode === 'movements'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                }`}
+                        >
+                            📊 Movimientos
+                        </button>
+                    </div>
+
+                    {/* Stats Cards - Mobile Optimized */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-3 sm:mb-6">
                         {stats.map((stat, index) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+                                className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 rounded-lg sm:rounded-xl p-2 sm:p-4 border border-slate-200 dark:border-slate-700 shadow-sm"
                             >
-                                <div className="flex items-center justify-between mb-2">
-                                    <stat.icon className={`w-5 h-5 ${stat.textColor}`} />
-                                    <span className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</span>
+                                <div className="flex flex-col items-center gap-1 sm:gap-2">
+                                    <stat.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stat.textColor}`} />
+                                    <span className={`text-lg sm:text-2xl font-bold ${stat.textColor}`}>{stat.value}</span>
+                                    <p className="text-[9px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium text-center leading-tight">{stat.label}</p>
                                 </div>
-                                <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">{stat.label}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -163,16 +158,16 @@ const Stock = () => {
                         </div>
                     </div>
 
-                    {/* Search and Filters */}
-                    <div className="flex flex-col sm:flex-row gap-3">
+                    {/* Search - Mobile Optimized */}
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Buscar por nombre o código SAP..."
+                                placeholder="Buscar..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             />
                         </div>
                         {viewMode === 'balances' && (
