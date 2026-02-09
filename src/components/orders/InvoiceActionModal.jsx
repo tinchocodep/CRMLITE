@@ -63,10 +63,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
     if (!isOpen || !order) return null;
 
+
     // Determine which actions are already completed
     const hasFactura = existingComprobantes.some(c => c.tipo === 'FACTURA');
     const hasRemito = existingComprobantes.some(c => c.tipo === 'REMITO');
-    const hasCobro = existingComprobantes.some(c => c.tipo === 'COBRO');
 
     // Get available actions based on what's already done
     const getAvailableActions = (comprobantes = existingComprobantes) => {
