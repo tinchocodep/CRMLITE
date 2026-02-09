@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Receipt, Search, Filter, Plus, Eye, Download, DollarSign, Calendar, Building2, FileText, CheckCircle, XCircle } from 'lucide-react';
+import { Receipt, Search, Filter, Plus, Eye, Download, DollarSign, Calendar, Building2, FileText, CheckCircle, XCircle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getComprobantes } from '../services/comprobantesService';
+import PDFPreviewModal from '../components/PDFPreviewModal';
 
 const Comprobantes = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('all'); // all, FACTURA, REMITO, NOTA_CREDITO
     const [statusFilter, setStatusFilter] = useState('all'); // all, paid, pending, cancelled
     const [vouchers, setVouchers] = useState([]);
+    const [previewModal, setPreviewModal] = useState({ isOpen: false, comprobante: null });
 
     // Load real comprobantes from localStorage
     useEffect(() => {
@@ -234,7 +236,19 @@ const Comprobantes = () => {
                                             <button
                                                 onClick={() => {
                                                     if (voucher.pdf_url) {
-                                                        window.open(voucher.pdf_url, '_blank');
+                                                        setPreviewModal({
+                                                            isOpen: true,
+                                                            comprobante: {
+                                                                tipo: voucher.type === 'invoice' ? 'FACTURA' : voucher.type === 'credit_note' ? 'NC' : 'ND',
+                                                                letra: voucher.voucherNumber.split('-')[1] || '',
+                                                                punto_venta: voucher.voucherNumber.split('-')[2] || '0000',
+                                                                numero_cbte: voucher.voucherNumber.split('-')[3] || '00000000',
+                                                                clientName: voucher.company,
+                                                                pdf_url: voucher.pdf_url,
+                                                                cae: voucher.cae,
+                                                                vto_cae: voucher.dueDate
+                                                            }
+                                                        });
                                                     } else {
                                                         alert('PDF no disponible para este comprobante');
                                                     }
@@ -315,6 +329,13 @@ const Comprobantes = () => {
                     </div>
                 )}
             </div>
+
+            {/* PDF Preview Modal */}
+            <PDFPreviewModal
+                isOpen={previewModal.isOpen}
+                comprobante={previewModal.comprobante}
+                onClose={() => setPreviewModal({ isOpen: false, comprobante: null })}
+            />
         </div>
     );
 };
