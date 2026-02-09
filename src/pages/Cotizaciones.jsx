@@ -3,6 +3,7 @@ import { FileText, Search, Plus, Edit2, Eye, Send, CheckCircle, Clock, DollarSig
 import { motion, AnimatePresence } from 'framer-motion';
 import { quotations as mockQuotations } from '../data/quotations';
 import { orders as mockOrders } from '../data/orders';
+import { saveOrder } from '../services/ordersService';
 import { useToast } from '../contexts/ToastContext';
 import QuotationDetailsModal from '../components/QuotationDetailsModal';
 import EditQuotationModal from '../components/EditQuotationModal';
@@ -154,10 +155,8 @@ const Cotizaciones = () => {
             )
         );
 
-        // Crear pedido automáticamente
-        const newOrder = {
-            id: `ord-${Date.now()}`,
-            orderNumber: `PED-2026-${String(localOrders.length + 1).padStart(3, '0')}`,
+        // Crear pedido usando el servicio (se guarda en localStorage)
+        const newOrder = saveOrder({
             quotationId: quotation.id,
             clientId: quotation.clientId,
             clientName: quotation.clientName,
@@ -170,14 +169,21 @@ const Cotizaciones = () => {
             lines: quotation.lines,
             subtotal: quotation.subtotal,
             tax: quotation.tax,
-            total: quotation.total,
-            createdAt: new Date().toISOString()
-        };
+            total: quotation.total
+        });
 
+        // Actualizar estado local también (para mantener sincronización)
         setLocalOrders(prev => [...prev, newOrder]);
 
         // Mostrar notificación
-        alert(`✅ Cotización CONFIRMADA!\n\n📦 Se creó el pedido: ${newOrder.orderNumber}\n💰 Total: ${formatCurrency(newOrder.total)}\n📅 Entrega: ${quotation.deliveryDate}\n\nPuedes verlo en el módulo "Pedidos"`);
+        showToast({
+            id: `quotation-confirmed-${quotation.id}`,
+            title: '✅ Cotización Confirmada',
+            description: `Se creó el pedido ${newOrder.orderNumber} por ${formatCurrency(newOrder.total)}`,
+            priority: 'high',
+            icon: CheckCircle,
+            timeAgo: 'Ahora'
+        });
     };
 
     const getStatusBadge = (status) => {

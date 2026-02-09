@@ -10,6 +10,7 @@ import PreInvoiceModal from '../components/PreInvoiceModal';
 import InvoiceActionModal from '../components/orders/InvoiceActionModal';
 import ComprobantesList, { PDFPreviewModal } from '../components/orders/ComprobantesList';
 import { getComprobantesByOrder } from '../services/comprobantesService';
+import { getAllOrders } from '../services/ordersService';
 
 
 const Pedidos = () => {
@@ -29,8 +30,14 @@ const Pedidos = () => {
     const [selectedComprobante, setSelectedComprobante] = useState(null);
     const [comprobantesMap, setComprobantesMap] = useState({});
 
-    // Estado para usar datos mock
-    const [localOrders, setLocalOrders] = useState(mockOrders);
+    // Estado para usar datos mock + datos del servicio
+    const [localOrders, setLocalOrders] = useState(() => {
+        // Merge mock orders with orders from service
+        const serviceOrders = getAllOrders();
+        const mockOrderIds = new Set(mockOrders.map(o => o.id));
+        const uniqueServiceOrders = serviceOrders.filter(o => !mockOrderIds.has(o.id));
+        return [...mockOrders, ...uniqueServiceOrders];
+    });
     const [localStockMovements, setLocalStockMovements] = useState(mockStockMovements);
     const [localInvoices, setLocalInvoices] = useState(mockInvoices);
 
