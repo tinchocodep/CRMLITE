@@ -433,7 +433,7 @@ const CuentaCorriente = () => {
                                                                 ${Math.abs(movement.balance).toLocaleString()}
                                                             </td>
                                                             <td className="py-3 px-4 text-center">
-                                                                {movement.pdf_url && (
+                                                                {movement.pdf_url && movement.type !== 'COBRO' && (
                                                                     <button
                                                                         onClick={(e) => handleOpenPDF(movement, e)}
                                                                         className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors inline-flex items-center justify-center"
