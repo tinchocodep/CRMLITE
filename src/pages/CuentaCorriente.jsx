@@ -4,11 +4,14 @@ import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calen
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAllClientBalances, getClientMovements } from '../services/cuentaCorrienteService';
 import PDFPreviewModal from '../components/PDFPreviewModal';
-import LogoutModal from '../components/LogoutModal';
+import { ConfirmModal } from '../components/ConfirmModal';
+import { useAuth } from '../contexts/AuthContext';
+
 
 
 const CuentaCorriente = () => {
     const navigate = useNavigate();
+    const { logout } = useAuth();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // all, positive, negative, zero
     const [accounts, setAccounts] = useState([]);
@@ -18,6 +21,11 @@ const CuentaCorriente = () => {
     const [pdfPreview, setPdfPreview] = useState({ isOpen: false, comprobante: null });
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     // Load real client balances from comprobantes
     useEffect(() => {
@@ -488,10 +496,16 @@ const CuentaCorriente = () => {
                 )}
             </AnimatePresence>
 
-            {/* Logout Modal */}
-            <LogoutModal
+            {/* Logout Confirmation Modal */}
+            <ConfirmModal
                 isOpen={logoutModalOpen}
                 onClose={() => setLogoutModalOpen(false)}
+                onConfirm={handleLogout}
+                title="Cerrar Sesión"
+                message="¿Estás seguro que deseas cerrar sesión? Tendrás que volver a iniciar sesión para acceder."
+                confirmText="Cerrar Sesión"
+                cancelText="Cancelar"
+                type="danger"
             />
         </div>
     );
