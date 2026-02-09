@@ -97,6 +97,7 @@ export const getClientMovements = (clientName) => {
         // Filter comprobantes for this client
         const clientComprobantes = comprobantes
             .filter(comp => comp.clientName === clientName)
+            .filter(comp => comp.tipo !== 'REMITO') // Only show FACTURA, NC, NOTA_DEBITO
             .sort((a, b) => {
                 const dateA = new Date(a.fecha_emision || a.createdAt);
                 const dateB = new Date(b.fecha_emision || b.createdAt);
