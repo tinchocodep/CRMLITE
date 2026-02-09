@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { getAllClientBalances } from '../services/cuentaCorrienteService';
+import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle, X, Eye, Download, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { getAllClientBalances, getClientMovements } from '../services/cuentaCorrienteService';
+import PDFPreviewModal from '../components/PDFPreviewModal';
 
 const CuentaCorriente = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // all, positive, negative, zero
     const [accounts, setAccounts] = useState([]);
+    const [selectedClient, setSelectedClient] = useState(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [clientMovements, setClientMovements] = useState([]);
+    const [pdfPreview, setPdfPreview] = useState({ isOpen: false, comprobante: null });
 
     // Load real client balances from comprobantes
     useEffect(() => {
@@ -79,6 +84,22 @@ const CuentaCorriente = () => {
 
         return matchesSearch && matchesStatus;
     });
+
+    const handleOpenDetail = (account) => {
+        setSelectedClient(account);
+        const movements = getClientMovements(account.company);
+        setClientMovements(movements);
+        setShowDetailModal(true);
+    };
+
+    const handleOpenPDF = (movement) => {
+        // Find the full comprobante data
+        const comprobantes = JSON.parse(localStorage.getItem('comprobantes') || '[]');
+        const comprobante = comprobantes.find(c => c.id === movement.id);
+        if (comprobante) {
+            setPdfPreview({ isOpen: true, comprobante });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
@@ -233,7 +254,10 @@ const CuentaCorriente = () => {
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-end">
-                                            <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-advanta-green to-green-600 text-white text-sm font-semibold hover:shadow-lg transition-all">
+                                            <button
+                                                onClick={() => handleOpenDetail(account)}
+                                                className="px-4 py-2 rounded-lg bg-gradient-to-r from-advanta-green to-green-600 text-white text-sm font-semibold hover:shadow-lg transition-all"
+                                            >
                                                 Ver Detalle
                                             </button>
                                         </div>
@@ -244,6 +268,146 @@ const CuentaCorriente = () => {
                     </div>
                 )}
             </div>
+
+            {/* Detail Modal */}
+            <AnimatePresence>
+                {showDetailModal && selectedClient && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => setShowDetailModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col"
+                        >
+                            {/* Modal Header */}
+                            <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+                                <div className="flex items-start justify-between">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                                            {selectedClient.company}
+                                        </h2>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm text-slate-600 dark:text-slate-400">Saldo:</span>
+                                                <span className={`text-lg font-bold ${getBalanceColor(selectedClient.balance)}`}>
+                                                    ${Math.abs(selectedClient.balance).toLocaleString()}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm text-slate-600 dark:text-slate-400">Facturas Pendientes:</span>
+                                                <span className="text-lg font-bold text-slate-900 dark:text-white">
+                                                    {selectedClient.pendingInvoices}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowDetailModal(false)}
+                                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                    >
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Movements Table */}
+                            <div className="flex-1 overflow-auto p-6">
+                                {clientMovements.length === 0 ? (
+                                    <div className="text-center py-12">
+                                        <FileText className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                                        <p className="text-slate-600 dark:text-slate-400">No hay movimientos registrados</p>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full">
+                                            <thead>
+                                                <tr className="border-b border-slate-200 dark:border-slate-700">
+                                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Fecha</th>
+                                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Tipo</th>
+                                                    <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Número</th>
+                                                    <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Monto</th>
+                                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Estado</th>
+                                                    <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Saldo</th>
+                                                    <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">PDF</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {clientMovements.map((movement) => {
+                                                    const isOverdue = movement.status !== 'paid' &&
+                                                        ((Date.now() - new Date(movement.date).getTime()) / (1000 * 60 * 60 * 24)) > 30;
+
+                                                    return (
+                                                        <tr
+                                                            key={movement.id}
+                                                            className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                                                        >
+                                                            <td className="py-3 px-4 text-sm text-slate-900 dark:text-white">
+                                                                {new Date(movement.date).toLocaleDateString('es-AR')}
+                                                            </td>
+                                                            <td className="py-3 px-4">
+                                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${movement.type === 'FACTURA'
+                                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                                                        : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                                                    }`}>
+                                                                    {movement.type}
+                                                                </span>
+                                                            </td>
+                                                            <td className="py-3 px-4 text-sm font-mono text-slate-900 dark:text-white">
+                                                                {movement.number}
+                                                            </td>
+                                                            <td className="py-3 px-4 text-sm font-semibold text-right text-slate-900 dark:text-white">
+                                                                ${movement.amount.toLocaleString()}
+                                                            </td>
+                                                            <td className="py-3 px-4 text-center">
+                                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${movement.status === 'paid'
+                                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                                        : isOverdue
+                                                                            ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                                            : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                                                    }`}>
+                                                                    {movement.status === 'paid' ? 'Pagado' : isOverdue ? 'Vencido' : 'Pendiente'}
+                                                                </span>
+                                                            </td>
+                                                            <td className={`py-3 px-4 text-sm font-bold text-right ${getBalanceColor(movement.balance)}`}>
+                                                                ${Math.abs(movement.balance).toLocaleString()}
+                                                            </td>
+                                                            <td className="py-3 px-4 text-center">
+                                                                {movement.pdf_url && (
+                                                                    <button
+                                                                        onClick={() => handleOpenPDF(movement)}
+                                                                        className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors inline-flex items-center justify-center"
+                                                                        title="Ver PDF"
+                                                                    >
+                                                                        <Eye className="w-4 h-4 text-advanta-green" />
+                                                                    </button>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* PDF Preview Modal */}
+            <PDFPreviewModal
+                isOpen={pdfPreview.isOpen}
+                comprobante={pdfPreview.comprobante}
+                onClose={() => setPdfPreview({ isOpen: false, comprobante: null })}
+            />
         </div>
     );
 };
