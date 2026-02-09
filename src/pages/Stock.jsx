@@ -114,12 +114,12 @@ const Stock = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
-            {/* Header - Mobile Optimized with Auto-Hide */}
+            {/* Header - Auto-Hide on Scroll (All Screen Sizes) */}
             <motion.div
                 initial={{ y: 0 }}
                 animate={{ y: headerVisible ? 0 : -800 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static xl:transform-none"
+                className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10"
             >
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
                     {/* Title */}
