@@ -20,6 +20,8 @@ const Dashboard = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+    const [headerVisible, setHeaderVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
     const notificationsRef = useRef(null);
 
     // Fetch real data from Supabase
@@ -48,6 +50,27 @@ const Dashboard = () => {
         logout();
         navigate('/login', { replace: true });
     };
+
+    // Handle scroll to hide/show header
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            // Show header when scrolling up or at top
+            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+                setHeaderVisible(true);
+            }
+            // Hide header when scrolling down and past threshold
+            else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                setHeaderVisible(false);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -191,22 +214,27 @@ const Dashboard = () => {
     return (
         <div className="bg-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40">
             {/* Custom Curved Header - Only for Dashboard */}
-            <div className="relative bg-[#F7F7F7] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-100 px-4 pt-4 pb-16 overflow-hidden">
+            <motion.div
+                initial={{ y: 0 }}
+                animate={{ y: headerVisible ? 0 : -200 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                className="fixed top-0 left-0 right-0 z-40 bg-[#F7F7F7] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-100 px-4 pt-3 pb-12 md:pb-16 overflow-hidden shadow-md"
+            >
 
                 {/* Floating Logo - Left */}
                 <motion.div
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', duration: 0.8 }}
-                    className="absolute left-4 top-4 z-10"
+                    className="absolute left-4 top-3 z-10"
                 >
-                    <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform border border-[#DEE2E6] dark:border-slate-700">
-                        <img src="/logo-advanta.png" alt="Advanta" className="w-9 h-9 object-contain" />
+                    <div className="w-10 h-10 md:w-14 md:h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-lg flex items-center justify-center transform hover:scale-110 transition-transform border border-[#DEE2E6] dark:border-slate-700">
+                        <img src="/logo-advanta.png" alt="Advanta" className="w-7 h-7 md:w-9 md:h-9 object-contain" />
                     </div>
                 </motion.div>
 
                 {/* Action Buttons - Right */}
-                <div className="absolute right-4 top-4 z-20 flex items-center gap-2">
+                <div className="absolute right-4 top-3 z-20 flex items-center gap-1.5 md:gap-2">
                     <button
                         onClick={(e) => {
                             e.preventDefault();
@@ -216,12 +244,12 @@ const Dashboard = () => {
                         onTouchStart={(e) => {
                             e.stopPropagation();
                         }}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#F7F7F7] dark:hover:bg-slate-700 transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
+                        className="w-9 h-9 md:w-10 md:h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#F7F7F7] dark:hover:bg-slate-700 transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
                         title="Ir a Agenda"
                         type="button"
                         aria-label="Ir a Agenda"
                     >
-                        <Calendar className="w-5 h-5 text-slate-700 dark:text-slate-200 pointer-events-none" />
+                        <Calendar className="w-4 h-4 md:w-5 md:h-5 text-slate-700 dark:text-slate-200 pointer-events-none" />
                     </button>
                     <button
                         onClick={(e) => {
@@ -232,12 +260,12 @@ const Dashboard = () => {
                         onTouchStart={(e) => {
                             e.stopPropagation();
                         }}
-                        className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#F7F7F7] dark:hover:bg-slate-700 transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
+                        className="relative w-9 h-9 md:w-10 md:h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#F7F7F7] dark:hover:bg-slate-700 transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
                         title="Notificaciones"
                         type="button"
                         aria-label="Notificaciones"
                     >
-                        <Bell className="w-5 h-5 text-slate-700 dark:text-slate-200 pointer-events-none" />
+                        <Bell className="w-4 h-4 md:w-5 md:h-5 text-slate-700 dark:text-slate-200 pointer-events-none" />
                         <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse pointer-events-none"></span>
                     </button>
                     <button
@@ -249,12 +277,12 @@ const Dashboard = () => {
                         onTouchStart={(e) => {
                             e.stopPropagation();
                         }}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#87a330] dark:hover:bg-[#6a8532] hover:text-white transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 group cursor-pointer touch-manipulation"
+                        className="w-9 h-9 md:w-10 md:h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-[#87a330] dark:hover:bg-[#6a8532] hover:text-white transition-all shadow-md border border-[#DEE2E6] dark:border-slate-600 hover:scale-105 active:scale-95 group cursor-pointer touch-manipulation"
                         title="Cerrar Sesión"
                         type="button"
                         aria-label="Cerrar Sesión"
                     >
-                        <LogOut className="w-5 h-5 text-slate-700 dark:text-slate-200 group-hover:text-white pointer-events-none" />
+                        <LogOut className="w-4 h-4 md:w-5 md:h-5 text-slate-700 dark:text-slate-200 group-hover:text-white pointer-events-none" />
                     </button>
                 </div>
 
@@ -263,17 +291,17 @@ const Dashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
-                    className="relative z-10 text-center pt-12"
+                    className="relative z-10 text-center pt-8 md:pt-12"
                 >
                     {/* Dashboard Title */}
-                    <div className="mb-3">
-                        <h2 className="text-3xl font-black text-[#333333] dark:from-slate-100 dark:via-white dark:to-slate-100">
+                    <div className="mb-2 md:mb-3">
+                        <h2 className="text-2xl md:text-3xl font-black text-[#333333] dark:from-slate-100 dark:via-white dark:to-slate-100">
                             Dashboard
                         </h2>
                     </div>
 
                     {/* Date & Time */}
-                    <p className="text-xs text-[#666666] dark:text-slate-300 font-medium">
+                    <p className="text-xs md:text-xs text-[#666666] dark:text-slate-300 font-medium">
                         {safeFormat(currentTime, "EEEE, d 'de' MMMM", { locale: es })}
                     </p>
                     <p className="text-[10px] text-[#666666] dark:text-slate-400 mt-0.5">
@@ -287,7 +315,10 @@ const Dashboard = () => {
                         <path d="M0 0C240 60 480 80 720 80C960 80 1200 60 1440 0V80H0V0Z" fill="rgb(248, 250, 252)" className="dark:fill-slate-900" />
                     </svg>
                 </div>
-            </div>
+            </motion.div>
+
+            {/* Spacer for fixed header */}
+            <div className="h-32 md:h-40"></div>
 
             {/* Notifications Dropdown */}
             <AnimatePresence>
