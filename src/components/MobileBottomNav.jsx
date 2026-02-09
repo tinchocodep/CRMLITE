@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Briefcase, Package, Box, Menu, Plus, X } from 'lucide-react';
+import { Home, Briefcase, Package, Box, Menu, Plus, X, Users, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
@@ -45,25 +45,25 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
 
     const leftNavItems = [
         {
-            name: 'Home',
-            path: '/dashboard',
-            icon: Home,
-            isActive: location.pathname === '/dashboard' && !isInCRM && !isInCotizador
+            name: 'Prospectos',
+            path: '/prospectos',
+            icon: Users,
+            isActive: location.pathname.startsWith('/prospectos')
         },
         {
-            name: 'CRM',
-            path: '/prospectos',
-            icon: Briefcase,
-            isActive: isInCRM
+            name: 'Clientes',
+            path: '/clientes',
+            icon: UserCheck,
+            isActive: location.pathname.startsWith('/clientes')
         }
     ];
 
     const rightNavItems = [
         {
-            name: 'Cotizador',
-            path: '/cotizador',
-            icon: Package,
-            isActive: isInCotizador
+            name: 'Oportun.',
+            path: '/oportunidades',
+            icon: Briefcase,
+            isActive: location.pathname.startsWith('/oportunidades')
         },
         {
             name: 'Menú',
