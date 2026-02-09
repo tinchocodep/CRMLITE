@@ -225,16 +225,53 @@ export const processRemito = async (order, remitoOptions, selectedQuantities = n
         // Send to webhook
         const result = await sendInvoiceToWebhook(remitoData);
 
-        // TODO: Implement stock discount logic here
-        // This should be called after successful webhook response
-        // await discountStockForOrder(order);
+        // Discount stock after successful webhook response
+        let stockDiscounted = false;
+        const stockResults = [];
+
+        if (result.success) {
+            try {
+                // Import stockService dynamically to avoid circular dependencies
+                const { updateStockBalance } = await import('./stockService');
+
+                // Discount stock for each product in the remito
+                for (const item of remitoData.items) {
+                    try {
+                        // Use negative quantity to subtract from stock
+                        const updatedProduct = updateStockBalance(item.codigo, -item.cantidad);
+                        stockResults.push({
+                            sapCode: item.codigo,
+                            productName: item.descripcion,
+                            quantityDiscounted: item.cantidad,
+                            newBalance: updatedProduct.balance,
+                            success: true
+                        });
+                        console.log(`✅ Stock discounted: ${item.descripcion} (-${item.cantidad}), New balance: ${updatedProduct.balance}`);
+                    } catch (stockError) {
+                        console.warn(`⚠️ Could not discount stock for ${item.descripcion}:`, stockError.message);
+                        stockResults.push({
+                            sapCode: item.codigo,
+                            productName: item.descripcion,
+                            quantityDiscounted: item.cantidad,
+                            error: stockError.message,
+                            success: false
+                        });
+                    }
+                }
+
+                stockDiscounted = stockResults.some(r => r.success);
+            } catch (error) {
+                console.error('❌ Error discounting stock:', error);
+            }
+        }
 
         return {
             success: true,
             data: result.data,  // Return webhook response data (with CAE, numero_cbte, etc.)
             remitoData,         // Keep for reference
             webhookResponse: result,
-            stockDiscounted: false // Will be true when stock logic is implemented
+            stockDiscounted,    // True if at least one product was discounted
+            stockResults        // Detailed results for each product
         };
     } catch (error) {
         console.error('Error processing remito:', error);
@@ -251,20 +288,13 @@ export const processRemito = async (order, remitoOptions, selectedQuantities = n
  * @returns {Promise<Object>} Result of stock discount
  */
 export const discountStockForOrder = async (order) => {
-    // TODO: Implement stock discount logic
-    // This should update the stock in Supabase or local state
+    // This function is now integrated into processRemito
+    // Kept for backwards compatibility
     console.log('📦 Discounting stock for order:', order.id);
     console.log('Products to discount:', order.products);
 
-    // For now, just return success
-    // In production, this should:
-    // 1. Get current stock for each product
-    // 2. Subtract order quantity
-    // 3. Update stock in database
-    // 4. Log the stock movement
-
     return {
         success: true,
-        message: 'Stock discount not yet implemented'
+        message: 'Stock discount is now handled automatically in processRemito'
     };
 };
