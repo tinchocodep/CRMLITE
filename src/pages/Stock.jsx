@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Package, Search, Filter, Plus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { stockBalances, stockMovementsIn, stockMovementsOut } from '../data/stock';
@@ -10,29 +10,29 @@ const Stock = () => {
     const [warehouseFilter, setWarehouseFilter] = useState('all');
     const [viewMode, setViewMode] = useState('balances'); // balances, movements
     const [headerVisible, setHeaderVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
+    const lastScrollY = useRef(0);
 
     // Handle scroll to hide/show header on mobile
     useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            console.log('📊 STOCK SCROLL - Y:', currentScrollY, 'Last:', lastScrollY, 'Visible:', headerVisible);
+            console.log('📊 STOCK SCROLL - Y:', currentScrollY, 'Last:', lastScrollY.current, 'Visible:', headerVisible);
 
             // Show header when scrolling up or at top
-            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+            if (currentScrollY < lastScrollY.current || currentScrollY < 10) {
                 setHeaderVisible(true);
             }
             // Hide header when scrolling down and past threshold
-            else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
                 setHeaderVisible(false);
             }
 
-            setLastScrollY(currentScrollY);
+            lastScrollY.current = currentScrollY;
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    }, []);
 
     // Calcular estadísticas
     const totalProducts = stockBalances.length;
