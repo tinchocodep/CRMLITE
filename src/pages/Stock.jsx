@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Search, Filter, Plus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { stockBalances, stockMovementsIn, stockMovementsOut } from '../data/stock';
+import { stockMovementsIn, stockMovementsOut } from '../data/stock';
+import { getStockBalances, initializeStockData } from '../services/stockService';
+import AddStockModal from '../components/stock/AddStockModal';
 
 const Stock = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -9,6 +11,19 @@ const Stock = () => {
     const [stockTypeFilter, setStockTypeFilter] = useState('all'); // all, own, consigned
     const [warehouseFilter, setWarehouseFilter] = useState('all');
     const [viewMode, setViewMode] = useState('balances'); // balances, movements
+    const [stockBalances, setStockBalances] = useState([]);
+    const [showAddModal, setShowAddModal] = useState(false);
+
+    // Load stock data from localStorage
+    useEffect(() => {
+        initializeStockData();
+        loadStockData();
+    }, []);
+
+    const loadStockData = () => {
+        const balances = getStockBalances();
+        setStockBalances(balances);
+    };
 
     // Calcular estadísticas
     const totalProducts = stockBalances.length;
@@ -122,6 +137,14 @@ const Stock = () => {
                                     }`}
                             >
                                 📊 Movimientos
+                            </button>
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg flex items-center gap-1"
+                            >
+                                <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">Agregar Stock</span>
+                                <span className="sm:hidden">➕</span>
                             </button>
                         </div>
                     </div>
@@ -365,6 +388,13 @@ const Stock = () => {
                     )
                 )}
             </div>
+
+            {/* Add Stock Modal */}
+            <AddStockModal
+                isOpen={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                onSuccess={loadStockData}
+            />
         </div >
     );
 };
