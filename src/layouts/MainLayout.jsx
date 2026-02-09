@@ -8,6 +8,7 @@ import EditProspectModal from '../components/prospects/EditProspectModal';
 import ConvertToClientModal from '../components/clients/ConvertToClientModal';
 import ProspectPickerModal from '../components/prospects/ProspectPickerModal';
 import ContactModal from '../components/contacts/ContactModal';
+import MobileMenuModal from '../components/MobileMenuModal';
 import { VerticalSidebar } from '../components/VerticalSidebar';
 import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
@@ -17,6 +18,7 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
 import { supabase } from '../lib/supabase';
+
 
 // ========== SHARED CONSTANTS ==========
 const modules = [
@@ -63,6 +65,9 @@ const MainLayout = () => {
     // Check if we're in Cotizador module (any Cotizador submodule)
     const cotizadorPaths = ['/cotizador', '/cotizaciones', '/pedidos', '/comprobantes', '/cuenta-corriente', '/stock'];
     const isCotizadorActive = cotizadorPaths.includes(location.pathname);
+
+    // Determine current context for mobile menu
+    const currentContext = isCotizadorActive ? 'cotizador' : 'crm';
 
     // ========== MOBILE STATE (Separate) ==========
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -532,318 +537,12 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
-                {/* Navigation Menu Bottom Sheet */}
-                <AnimatePresence>
-                    {mobileNavMenuOpen && (
-                        <>
-                            {/* Backdrop */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setMobileNavMenuOpen(false)}
-                                className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm xl:hidden"
-                            />
-
-                            {/* Bottom Sheet */}
-                            <motion.div
-                                initial={{ y: '100%' }}
-                                animate={{ y: 0 }}
-                                exit={{ y: '100%' }}
-                                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                                className="fixed bottom-0 left-0 right-0 z-[70] bg-white rounded-t-3xl shadow-2xl xl:hidden pb-20"
-                            >
-                                {/* Handle Bar */}
-                                <div className="flex justify-center pt-3 pb-2">
-                                    <div className="w-12 h-1.5 bg-slate-300 rounded-full"></div>
-                                </div>
-
-                                {/* Header */}
-                                <div className="px-6 pb-4 flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-lg font-bold text-slate-800">Menú</h3>
-                                    </div>
-                                    <button
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
-                                    >
-                                        <X className="w-4 h-4 text-slate-600" />
-                                    </button>
-                                </div>
-
-                                {/* Navigation Grid */}
-                                <div className="px-4 pb-6 grid grid-cols-3 gap-3">
-                                    {/* 1. Dashboard */}
-                                    <NavLink
-                                        to="/dashboard"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <LayoutDashboard className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Dashboard</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 2. Agenda */}
-                                    <NavLink
-                                        to="/agenda"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Calendar className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Agenda</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 3. Visitas */}
-                                    <NavLink
-                                        to="/visitas"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Visitas</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 4. Ficha 360 */}
-                                    <NavLink
-                                        to="/ficha-360"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Search className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Ficha 360</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 5. Contactos */}
-                                    <NavLink
-                                        to="/contactos"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <UserCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Contactos</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 6. Legajo */}
-                                    <NavLink
-                                        to="/legajo"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Legajo</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 7. Territorio (singular) */}
-                                    <NavLink
-                                        to="/territorios"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Map className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Territorio</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 8. Objetivos */}
-                                    <NavLink
-                                        to="/objetivos"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Target className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Objetivos</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 9. Reclamos */}
-                                    <NavLink
-                                        to="/reclamos"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <AlertCircle className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Reclamos</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 10. Usuarios */}
-                                    <NavLink
-                                        to="/usuarios"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <ShieldCheck className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Usuarios</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 11. Configuración */}
-                                    <button
-                                        onClick={() => {
-                                            setMobileNavMenuOpen(false);
-                                            navigate('/configuracion');
-                                        }}
-                                        className="flex flex-col items-center justify-center p-4 rounded-2xl border-2 bg-slate-50 border-slate-200 hover:shadow-md transition-all active:scale-95"
-                                    >
-                                        <Settings className="w-6 h-6 mb-2 text-slate-600" />
-                                        <span className="text-xs font-bold text-center text-slate-800">Config</span>
-                                    </button>
-
-                                    {/* 12. Cotizaciones */}
-                                    <NavLink
-                                        to="/cotizaciones"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <FileText className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Cotizaciones</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 13. Pedidos */}
-                                    <NavLink
-                                        to="/pedidos"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Package className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Pedidos</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 14. Comprobantes */}
-                                    <NavLink
-                                        to="/comprobantes"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Receipt className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Comprobantes</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 15. Cuenta Corriente */}
-                                    <NavLink
-                                        to="/cuenta-corriente"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <CreditCard className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Cta. Cte.</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-
-                                    {/* 16. Stock */}
-                                    <NavLink
-                                        to="/stock"
-                                        onClick={() => setMobileNavMenuOpen(false)}
-                                        className={({ isActive }) => `
-                                            flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all active:scale-95
-                                            ${isActive ? 'bg-gradient-to-br from-green-50 to-green-100 border-advanta-green shadow-lg' : 'bg-slate-50 border-slate-200 hover:shadow-md'}
-                                        `}
-                                    >
-                                        {({ isActive }) => (
-                                            <>
-                                                <Box className={`w-6 h-6 mb-2 ${isActive ? 'text-advanta-green' : 'text-slate-600'}`} />
-                                                <span className={`text-xs font-bold text-center ${isActive ? 'text-advanta-green' : 'text-slate-800'}`}>Stock</span>
-                                            </>
-                                        )}
-                                    </NavLink>
-                                </div>
-                            </motion.div>
-                        </>
-                    )}
-                </AnimatePresence>
+                {/* Navigation Menu - Context Aware */}
+                <MobileMenuModal
+                    isOpen={mobileNavMenuOpen}
+                    onClose={() => setMobileNavMenuOpen(false)}
+                    currentContext={currentContext}
+                />
             </div >
 
             {/* ========== DESKTOP VERSION ========== */}
