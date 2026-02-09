@@ -53,6 +53,9 @@ export const getAllClientBalances = () => {
             } else if (comp.tipo === 'NC') {
                 // Credit notes reduce debt (negative balance = we owe client)
                 client.balance -= amount;
+            } else if (comp.tipo === 'COBRO') {
+                // Payments reduce debt (client paid us)
+                client.balance -= amount;
             }
 
             // Track last movement
@@ -97,7 +100,7 @@ export const getClientMovements = (clientName) => {
         // Filter comprobantes for this client
         const clientComprobantes = comprobantes
             .filter(comp => comp.clientName === clientName)
-            .filter(comp => comp.tipo !== 'REMITO') // Only show FACTURA, NC, NOTA_DEBITO
+            .filter(comp => comp.tipo !== 'REMITO') // Only show FACTURA, NC, NOTA_DEBITO, COBRO
             .sort((a, b) => {
                 const dateA = new Date(a.fecha_emision || a.createdAt);
                 const dateB = new Date(b.fecha_emision || b.createdAt);
@@ -112,6 +115,8 @@ export const getClientMovements = (clientName) => {
             if (comp.tipo === 'FACTURA' && comp.status !== 'paid') {
                 runningBalance += amount;
             } else if (comp.tipo === 'NC') {
+                runningBalance -= amount;
+            } else if (comp.tipo === 'COBRO') {
                 runningBalance -= amount;
             }
 
