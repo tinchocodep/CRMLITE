@@ -218,7 +218,7 @@ const Dashboard = () => {
                 initial={{ y: 0 }}
                 animate={{ y: headerVisible ? 0 : -200 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                className="fixed top-0 left-0 right-0 z-40 bg-[#F7F7F7] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-100 px-4 pt-3 pb-12 md:pb-16 overflow-hidden shadow-md"
+                className="fixed top-0 left-0 right-0 z-40 bg-[#F7F7F7] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-slate-800 dark:text-slate-100 px-4 pt-3 pb-12 md:pb-16 shadow-md"
             >
 
                 {/* Floating Logo - Left */}
