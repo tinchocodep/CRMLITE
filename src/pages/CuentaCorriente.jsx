@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle, X, Eye, Download, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle, X, Eye, Download, ExternalLink, Bell, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAllClientBalances, getClientMovements } from '../services/cuentaCorrienteService';
 import PDFPreviewModal from '../components/PDFPreviewModal';
+import LogoutModal from '../components/LogoutModal';
+
 
 const CuentaCorriente = () => {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // all, positive, negative, zero
     const [accounts, setAccounts] = useState([]);
@@ -12,6 +16,8 @@ const CuentaCorriente = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [clientMovements, setClientMovements] = useState([]);
     const [pdfPreview, setPdfPreview] = useState({ isOpen: false, comprobante: null });
+    const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
     // Load real client balances from comprobantes
     useEffect(() => {
@@ -103,6 +109,33 @@ const CuentaCorriente = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
+
+            {/* Floating Action Buttons - Top Right */}
+            <div className="fixed top-20 right-4 z-50 flex items-center gap-2 xl:top-20 xl:right-4">
+                <button
+                    onClick={() => navigate('/agenda')}
+                    className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
+                    title="Ir a Agenda"
+                >
+                    <Calendar className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                </button>
+                <button
+                    onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
+                    title="Notificaciones"
+                >
+                    <Bell className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+                </button>
+                <button
+                    onClick={() => setLogoutModalOpen(true)}
+                    className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105 group"
+                    title="Cerrar Sesión"
+                >
+                    <LogOut className="w-5 h-5 text-slate-700 dark:text-slate-200 group-hover:text-white" />
+                </button>
+            </div>
+
             {/* Header */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -353,8 +386,8 @@ const CuentaCorriente = () => {
                                                             </td>
                                                             <td className="py-3 px-4">
                                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${movement.type === 'FACTURA'
-                                                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                                                                        : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                                                    ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                                                    : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
                                                                     }`}>
                                                                     {movement.type}
                                                                 </span>
@@ -367,10 +400,10 @@ const CuentaCorriente = () => {
                                                             </td>
                                                             <td className="py-3 px-4 text-center">
                                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${movement.status === 'paid'
-                                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                                                        : isOverdue
-                                                                            ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                                            : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
+                                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                                                    : isOverdue
+                                                                        ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                                                                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
                                                                     }`}>
                                                                     {movement.status === 'paid' ? 'Pagado' : isOverdue ? 'Vencido' : 'Pendiente'}
                                                                 </span>
@@ -407,6 +440,58 @@ const CuentaCorriente = () => {
                 isOpen={pdfPreview.isOpen}
                 comprobante={pdfPreview.comprobante}
                 onClose={() => setPdfPreview({ isOpen: false, comprobante: null })}
+            />
+
+            {/* Notifications Dropdown */}
+            <AnimatePresence>
+                {notificationsOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="fixed top-32 right-4 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden z-[100]"
+                    >
+                        {/* Header */}
+                        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex items-center justify-between">
+                            <div>
+                                <h3 className="font-bold text-slate-800 dark:text-slate-100">Notificaciones</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Mantente al día con tu CRM</p>
+                            </div>
+                            <button
+                                onClick={() => setNotificationsOpen(false)}
+                                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                            >
+                                <X className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                            </button>
+                        </div>
+
+                        {/* Notifications List */}
+                        <div className="max-h-96 overflow-y-auto">
+                            <div className="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
+                                <div className="flex gap-3">
+                                    <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
+                                        <CreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Cuenta Corriente actualizada</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Los saldos se actualizaron correctamente</p>
+                                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1 inline-block">Hace 2 min</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                                No hay más notificaciones
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Logout Modal */}
+            <LogoutModal
+                isOpen={logoutModalOpen}
+                onClose={() => setLogoutModalOpen(false)}
             />
         </div>
     );
