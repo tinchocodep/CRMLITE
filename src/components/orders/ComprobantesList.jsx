@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
 import { FileText, Truck, DollarSign, Download, Eye, X } from 'lucide-react';
-import { Document, Page, pdfjs } from 'react-pdf';
-
-// Configure PDF.js worker with https protocol
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 /**
  * Comprobantes List Component
@@ -172,24 +168,12 @@ export default function ComprobantesList({ comprobantes, onPreview }) {
  * PDF Preview Modal
  */
 export function PDFPreviewModal({ isOpen, comprobante, onClose }) {
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     if (!isOpen || !comprobante) return null;
 
-    function onDocumentLoadSuccess({ numPages }) {
-        setNumPages(numPages);
-        setLoading(false);
-        setError(null);
-    }
-
-    function onDocumentLoadError(error) {
-        console.error('Error loading PDF:', error);
-        setError('Error al cargar el PDF. Intenta descargarlo directamente.');
-        setLoading(false);
-    }
+    // Use Google Docs Viewer to bypass CORS
+    const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(comprobante.pdf_url)}&embedded=true`;
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -213,80 +197,22 @@ export function PDFPreviewModal({ isOpen, comprobante, onClose }) {
                 </div>
 
                 {/* PDF Viewer */}
-                <div className="flex-1 overflow-auto bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                <div className="flex-1 overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center relative">
                     {loading && (
-                        <div className="text-center py-12">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-advanta-green dark:border-red-500 mx-auto mb-4"></div>
-                            <p className="text-slate-600 dark:text-slate-400">Cargando PDF...</p>
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-900 z-10">
+                            <div className="text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-advanta-green dark:border-red-500 mx-auto mb-4"></div>
+                                <p className="text-slate-600 dark:text-slate-400">Cargando PDF...</p>
+                            </div>
                         </div>
                     )}
 
-                    {error && (
-                        <div className="text-center py-12 px-4">
-                            <FileText className="w-16 h-16 mx-auto mb-4 text-red-500" />
-                            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-                            <a
-                                href={comprobante.pdf_url}
-                                download={`${comprobante.tipo}_${comprobante.numero_cbte}.pdf`}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-advanta-green dark:bg-red-600 text-white rounded-lg hover:bg-advanta-green/90 dark:hover:bg-red-700 transition-colors"
-                            >
-                                <Download className="w-4 h-4" />
-                                Descargar PDF
-                            </a>
-                        </div>
-                    )}
-
-                    {!error && (
-                        <div className="py-4">
-                            <Document
-                                file={{
-                                    url: comprobante.pdf_url,
-                                    httpHeaders: {
-                                        'Accept': 'application/pdf'
-                                    },
-                                    withCredentials: false
-                                }}
-                                onLoadSuccess={onDocumentLoadSuccess}
-                                onLoadError={onDocumentLoadError}
-                                loading=""
-                                options={{
-                                    cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
-                                    cMapPacked: true,
-                                    standardFontDataUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/'
-                                }}
-                            >
-                                <Page
-                                    pageNumber={pageNumber}
-                                    renderTextLayer={true}
-                                    renderAnnotationLayer={true}
-                                    className="shadow-lg"
-                                />
-                            </Document>
-
-                            {/* Page Navigation */}
-                            {numPages && numPages > 1 && (
-                                <div className="flex items-center justify-center gap-4 mt-4">
-                                    <button
-                                        onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
-                                        disabled={pageNumber <= 1}
-                                        className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-                                    >
-                                        Anterior
-                                    </button>
-                                    <span className="text-sm text-slate-600 dark:text-slate-400">
-                                        Página {pageNumber} de {numPages}
-                                    </span>
-                                    <button
-                                        onClick={() => setPageNumber(Math.min(numPages, pageNumber + 1))}
-                                        disabled={pageNumber >= numPages}
-                                        className="px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-                                    >
-                                        Siguiente
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                    <iframe
+                        src={googleViewerUrl}
+                        className="w-full h-full"
+                        title={`${comprobante.tipo} ${comprobante.numero_cbte}`}
+                        onLoad={() => setLoading(false)}
+                    />
                 </div>
 
                 {/* Footer */}
@@ -299,7 +225,7 @@ export function PDFPreviewModal({ isOpen, comprobante, onClose }) {
                     <a
                         href={comprobante.pdf_url}
                         download={`${comprobante.tipo}_${comprobante.numero_cbte}.pdf`}
-                        className="px-4 py-2 bg-advanta-green dark:bg-red-600 text-white rounded-lg hover:bg-advanta-green/90 dark:hover:bg-red-700 transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-advanta-green text-white rounded-lg hover:bg-advanta-green/90 transition-colors flex items-center gap-2 font-medium"
                     >
                         <Download className="w-4 h-4" />
                         Descargar PDF
