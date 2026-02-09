@@ -212,7 +212,7 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="bg-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40 pt-20">
+        <div className="bg-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-40 pt-16">
             {/* Custom Curved Header - Only for Dashboard */}
             <motion.div
                 initial={{ y: 0 }}
@@ -407,7 +407,7 @@ const Dashboard = () => {
 
             {/* Stats Grid - Compact Design */}
             <motion.div
-                className="px-4 mt-8 relative z-10"
+                className="px-4 mt-2 relative z-10"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
