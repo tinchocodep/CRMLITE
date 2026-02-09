@@ -108,10 +108,10 @@ const CuentaCorriente = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14 relative">
 
             {/* Floating Action Buttons - Top Right */}
-            <div className="fixed top-20 right-4 z-50 flex items-center gap-2 xl:top-20 xl:right-4">
+            <div className="absolute top-4 right-4 z-50 flex items-center gap-2 md:right-8 xl:top-20">
                 <button
                     onClick={() => navigate('/agenda')}
                     className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
