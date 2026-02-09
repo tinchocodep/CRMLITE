@@ -106,10 +106,16 @@ const Stock = () => {
                         </div>
                         <div className="flex items-center gap-2">
                             <button
+                                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-advanta-green to-green-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold"
+                            >
+                                <Plus className="w-5 h-5" />
+                                <span className="hidden sm:inline">Sumar Stock</span>
+                            </button>
+                            <button
                                 onClick={() => setViewMode('balances')}
                                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${viewMode === 'balances'
-                                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                                     }`}
                             >
                                 Balances
@@ -117,8 +123,8 @@ const Stock = () => {
                             <button
                                 onClick={() => setViewMode('movements')}
                                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${viewMode === 'movements'
-                                        ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
-                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                                     }`}
                             >
                                 Movimientos
@@ -238,8 +244,8 @@ const Stock = () => {
                                                         {product.productName}
                                                     </h3>
                                                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${product.stockType === 'own'
-                                                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                                            : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                                        : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
                                                         }`}>
                                                         {product.stockType === 'own' ? '🏢 Propio' : '🤝 Consignado'}
                                                     </span>
@@ -312,8 +318,8 @@ const Stock = () => {
                                     <div className="p-6">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${movement.type === 'in'
-                                                    ? 'bg-green-100 dark:bg-green-900/30'
-                                                    : 'bg-red-100 dark:bg-red-900/30'
+                                                ? 'bg-green-100 dark:bg-green-900/30'
+                                                : 'bg-red-100 dark:bg-red-900/30'
                                                 }`}>
                                                 {movement.type === 'in' ? (
                                                     <ArrowUpCircle className="w-6 h-6 text-green-600 dark:text-green-400" />

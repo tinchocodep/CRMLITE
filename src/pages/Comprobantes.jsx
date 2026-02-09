@@ -1,87 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Receipt, Search, Filter, Plus, Eye, Download, DollarSign, Calendar, Building2, FileText, CheckCircle, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getComprobantes } from '../services/comprobantesService';
 
 const Comprobantes = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [typeFilter, setTypeFilter] = useState('all'); // all, invoice, credit_note, debit_note
+    const [typeFilter, setTypeFilter] = useState('all'); // all, FACTURA, REMITO, NOTA_CREDITO
     const [statusFilter, setStatusFilter] = useState('all'); // all, paid, pending, cancelled
+    const [vouchers, setVouchers] = useState([]);
 
-    // Mock data - esto se conectará con Supabase
-    const [vouchers, setVouchers] = useState([
-        {
-            id: 1,
-            voucherNumber: 'FC-A-0001-00000123',
-            type: 'invoice',
-            company: 'Agro San Juan S.A.',
-            status: 'paid',
-            amount: 125000,
-            issueDate: '2026-02-01',
-            dueDate: '2026-02-15',
-            paymentDate: '2026-02-10',
-            orderNumber: 'PED-001'
-        },
-        {
-            id: 2,
-            voucherNumber: 'FC-A-0001-00000124',
-            type: 'invoice',
-            company: 'Estancia La Pampa',
-            status: 'pending',
-            amount: 89500,
-            issueDate: '2026-02-05',
-            dueDate: '2026-02-20',
-            paymentDate: null,
-            orderNumber: 'PED-002'
-        },
-        {
-            id: 3,
-            voucherNumber: 'NC-A-0001-00000001',
-            type: 'credit_note',
-            company: 'Campo Verde S.R.L.',
-            status: 'paid',
-            amount: -15000,
-            issueDate: '2026-02-03',
-            dueDate: null,
-            paymentDate: '2026-02-03',
-            orderNumber: null
-        },
-        {
-            id: 4,
-            voucherNumber: 'FC-A-0001-00000125',
-            type: 'invoice',
-            company: 'Agroindustrias del Sur',
-            status: 'pending',
-            amount: 67800,
-            issueDate: '2026-02-07',
-            dueDate: '2026-02-22',
-            paymentDate: null,
-            orderNumber: 'PED-004'
-        },
-        {
-            id: 5,
-            voucherNumber: 'FC-A-0001-00000126',
-            type: 'invoice',
-            company: 'Semillas del Norte',
-            status: 'paid',
-            amount: 178500,
-            issueDate: '2026-02-04',
-            dueDate: '2026-02-19',
-            paymentDate: '2026-02-12',
-            orderNumber: 'PED-005'
-        },
-        {
-            id: 6,
-            voucherNumber: 'ND-A-0001-00000001',
-            type: 'debit_note',
-            company: 'Agro San Juan S.A.',
-            status: 'pending',
-            amount: 5000,
-            issueDate: '2026-02-06',
-            dueDate: '2026-02-21',
-            paymentDate: null,
-            orderNumber: null
-        }
-    ]);
+    // Load real comprobantes from localStorage
+    useEffect(() => {
+        const loadComprobantes = () => {
+            const comprobantes = getComprobantes();
+            // Transform to match the expected format
+            const transformed = comprobantes.map(comp => ({
+                id: comp.id,
+                voucherNumber: `${comp.tipo}-${comp.letra || ''}-${String(comp.punto_venta || 0).padStart(4, '0')}-${String(comp.numero_cbte || 0).padStart(8, '0')}`,
+                type: comp.tipo, // FACTURA, REMITO, NOTA_CREDITO
+                company: comp.clientName || 'Cliente',
+                status: comp.status || 'pending', // pending, paid, cancelled
+                amount: comp.total || 0,
+                issueDate: comp.fecha_emision || new Date().toISOString().split('T')[0],
+                dueDate: comp.fecha_vencimiento || null,
+                paymentDate: comp.fecha_pago || null,
+                orderNumber: comp.orderNumber || null,
+                cae: comp.cae,
+                qr_url: comp.qr_url,
+                pdf_url: comp.pdf_url
+            }));
+            setVouchers(transformed);
+        };
+
+        loadComprobantes();
+        // Reload every 5 seconds to catch new comprobantes
+        const interval = setInterval(loadComprobantes, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     const stats = [
         {
