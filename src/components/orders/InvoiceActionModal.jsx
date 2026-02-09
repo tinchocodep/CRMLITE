@@ -24,6 +24,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
     const [paymentConfig, setPaymentConfig] = useState({
         amount: order?.total || order?.totalAmount || 0,
         paymentMethod: 'efectivo',
+        otherPaymentMethod: '',
         paymentDate: new Date().toISOString().split('T')[0],
         notes: ''
     });
@@ -38,6 +39,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
             setPaymentConfig({
                 amount: order?.total || order?.totalAmount || 0,
                 paymentMethod: 'efectivo',
+                otherPaymentMethod: '',
                 paymentDate: new Date().toISOString().split('T')[0],
                 notes: ''
             });
@@ -206,6 +208,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     }
                     break;
 
+
                 case 'COBRAR':
                     // Validate payment amount
                     const orderTotal = order?.total || order?.totalAmount || 0;
@@ -216,10 +219,20 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         throw new Error('El monto a cobrar no puede ser mayor al total del pedido');
                     }
 
+                    // Validate other payment method if selected
+                    if (paymentConfig.paymentMethod === 'otro' && !paymentConfig.otherPaymentMethod.trim()) {
+                        throw new Error('Debe especificar el método de pago');
+                    }
+
                     // Calculate remaining balance
                     const amountPaid = parseFloat(paymentConfig.amount);
                     const remainingBalance = orderTotal - amountPaid;
                     const isPartialPayment = remainingBalance > 0;
+
+                    // Determine final payment method (use custom if 'otro')
+                    const finalPaymentMethod = paymentConfig.paymentMethod === 'otro'
+                        ? paymentConfig.otherPaymentMethod
+                        : paymentConfig.paymentMethod;
 
                     // Save payment comprobante
                     const paymentComprobante = saveComprobante({
@@ -237,7 +250,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         clientName: order.clientName,
                         fecha_emision: paymentConfig.paymentDate,
                         // Payment-specific fields
-                        paymentMethod: paymentConfig.paymentMethod,
+                        paymentMethod: finalPaymentMethod,
                         isPartialPayment: isPartialPayment,
                         remainingBalance: remainingBalance,
                         notes: paymentConfig.notes || ''
@@ -423,13 +436,13 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                     step="0.01"
                                     min="0"
                                     max={order?.total || order?.totalAmount || 0}
-                                    value={paymentConfig.amount}
-                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, amount: parseFloat(e.target.value) || 0 })}
+                                    value={paymentConfig.amount || ''}
+                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, amount: e.target.value === '' ? '' : parseFloat(e.target.value) })}
                                     className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
                                 />
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                                     Total del pedido: ${(order?.total || order?.totalAmount || 0).toFixed(2)}
-                                    {paymentConfig.amount < (order?.total || order?.totalAmount || 0) && (
+                                    {paymentConfig.amount && paymentConfig.amount < (order?.total || order?.totalAmount || 0) && (
                                         <span className="text-amber-600 dark:text-amber-400 font-bold ml-2">
                                             • Cobro parcial - Adeuda: ${((order?.total || order?.totalAmount || 0) - paymentConfig.amount).toFixed(2)}
                                         </span>
@@ -444,7 +457,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                 </label>
                                 <select
                                     value={paymentConfig.paymentMethod}
-                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paymentMethod: e.target.value })}
+                                    onChange={(e) => setPaymentConfig({ ...paymentConfig, paymentMethod: e.target.value, otherPaymentMethod: '' })}
                                     className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
                                 >
                                     <option value="efectivo">💵 Efectivo</option>
@@ -456,6 +469,22 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                     <option value="otro">📋 Otro</option>
                                 </select>
                             </div>
+
+                            {/* Other Payment Method (conditional) */}
+                            {paymentConfig.paymentMethod === 'otro' && (
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-600 dark:text-slate-400 mb-2">
+                                        Especificar Método de Pago *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={paymentConfig.otherPaymentMethod}
+                                        onChange={(e) => setPaymentConfig({ ...paymentConfig, otherPaymentMethod: e.target.value })}
+                                        placeholder="Ej: Criptomonedas, Permuta, etc."
+                                        className="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-advanta-green dark:focus:ring-red-500 outline-none font-medium"
+                                    />
+                                </div>
+                            )}
 
                             {/* Payment Date */}
                             <div>
