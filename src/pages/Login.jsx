@@ -252,7 +252,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-advanta-bronze-dark to-advanta-orange dark:from-advanta-orange dark:to-advanta-orange-light hover:from-advanta-orange hover:to-advanta-orange-light dark:hover:from-advanta-orange-light dark:hover:to-advanta-yellow text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg shadow-advanta-bronze-dark/30 dark:shadow-advanta-orange/30 hover:shadow-advanta-orange/50 dark:hover:shadow-advanta-orange/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
+                                className="w-full bg-gradient-to-r from-advanta-green to-green-600 dark:from-advanta-green dark:to-green-500 hover:from-green-600 hover:to-green-700 dark:hover:from-green-500 dark:hover:to-green-600 text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg shadow-advanta-green/30 dark:shadow-advanta-green/30 hover:shadow-advanta-green/50 dark:hover:shadow-advanta-green/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
                                 style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}
                             >
                                 {isLoading ? (
