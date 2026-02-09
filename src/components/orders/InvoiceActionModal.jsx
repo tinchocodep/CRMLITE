@@ -528,6 +528,9 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                                             </div>
                                                         </div>
                                                         <div className="flex-shrink-0 w-24">
+                                                            <label className="block text-xs text-slate-500 dark:text-slate-400 mb-1 text-center">
+                                                                A Remitir
+                                                            </label>
                                                             <input
                                                                 type="number"
                                                                 min="0"
@@ -546,10 +549,56 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                                             />
                                                         </div>
                                                     </div>
+
+                                                    {/* Calculations Section */}
+                                                    {selectedQty > 0 && (
+                                                        <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                                                            <div className="grid grid-cols-3 gap-2 text-xs">
+                                                                <div>
+                                                                    <p className="text-slate-500 dark:text-slate-400">Precio Unit.</p>
+                                                                    <p className="font-bold text-slate-700 dark:text-slate-300">
+                                                                        ${line.unitPrice?.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                    </p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-slate-500 dark:text-slate-400">Subtotal</p>
+                                                                    <p className="font-bold text-slate-700 dark:text-slate-300">
+                                                                        ${(selectedQty * line.unitPrice)?.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                                    </p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-slate-500 dark:text-slate-400">Quedarán</p>
+                                                                    <p className="font-bold text-amber-600 dark:text-amber-400">
+                                                                        {pending - selectedQty} unid.
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
                                         })}
                                     </div>
+
+                                    {/* Totals Summary */}
+                                    {Object.values(remitoQuantities).some(qty => qty > 0) && (
+                                        <div className="mt-4 p-3 bg-advanta-green/10 dark:bg-green-900/20 rounded-lg border border-advanta-green/30 dark:border-green-700">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                                    Total de este Remito:
+                                                </span>
+                                                <span className="text-lg font-bold text-advanta-green dark:text-green-400">
+                                                    ${order.lines
+                                                        .reduce((sum, line) => {
+                                                            const qty = remitoQuantities[line.id] || 0;
+                                                            return sum + (qty * line.unitPrice);
+                                                        }, 0)
+                                                        .toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
                                         Podés hacer remitos parciales. Solo se remitirán las cantidades que especifiques.
                                     </p>
