@@ -312,7 +312,7 @@ const Dashboard = () => {
                 {/* Bottom Curve */}
                 <div className="absolute bottom-0 left-0 right-0 z-0">
                     <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-                        <path d="M0 0C240 60 480 80 720 80C960 80 1200 60 1440 0V80H0V0Z" fill="rgb(248, 250, 252)" className="dark:fill-slate-900" />
+                        <path d="M0 0C240 60 480 80 720 80C960 80 1200 60 1440 0V80H0V0Z" fill="rgb(249, 250, 251)" className="dark:fill-slate-950" />
                     </svg>
                 </div>
             </motion.div>
