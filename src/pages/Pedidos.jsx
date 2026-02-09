@@ -576,8 +576,17 @@ const Pedidos = () => {
                                                     const orderComprobantes = comprobantesMap[order.id] || [];
                                                     const hasFactura = orderComprobantes.some(c => c.tipo === 'FACTURA');
                                                     const hasRemito = orderComprobantes.some(c => c.tipo === 'REMITO');
-                                                    const hasCobro = orderComprobantes.some(c => c.tipo === 'COBRO');
-                                                    const isFullyCompleted = hasFactura && hasRemito && hasCobro;
+
+                                                    // Calculate total paid amount
+                                                    const totalCobrado = orderComprobantes
+                                                        .filter(c => c.tipo === 'COBRO')
+                                                        .reduce((sum, c) => sum + (c.total || 0), 0);
+
+                                                    const orderTotal = order?.total || order?.totalAmount || 0;
+                                                    const saldoPendiente = orderTotal - totalCobrado;
+
+                                                    // Only mark as completed if has FACTURA, REMITO, and balance is zero
+                                                    const isFullyCompleted = hasFactura && hasRemito && saldoPendiente <= 0.01;
 
                                                     if (isFullyCompleted) {
                                                         return (
