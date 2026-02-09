@@ -117,7 +117,7 @@ const Stock = () => {
             {/* Header - Mobile Optimized with Auto-Hide */}
             <motion.div
                 initial={{ y: 0 }}
-                animate={{ y: headerVisible ? 0 : -400 }}
+                animate={{ y: headerVisible ? 0 : -800 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static xl:transform-none"
             >
