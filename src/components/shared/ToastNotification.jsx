@@ -118,7 +118,7 @@ const ToastNotification = ({ notification, onDismiss }) => {
                         e.stopPropagation();
                         handleDismiss();
                     }}
-                    className={`${colors.iconColor} hover:opacity-100 opacity-60 transition-opacity flex-shrink-0 p-1 hover:bg-white/50 rounded`}
+                    className={`${colors.iconColor} hover:opacity-100 opacity-80 transition-all flex-shrink-0 p-1.5 hover:bg-white/70 rounded-md hover:scale-110 relative z-10`}
                     aria-label="Cerrar notificación"
                 >
                     <X size={16} strokeWidth={2.5} />
