@@ -316,7 +316,7 @@ const MainLayout = () => {
                                                         e.stopPropagation();
                                                         dismissNotification(notification.id);
                                                     }}
-                                                    className="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-500 flex items-center justify-center text-slate-600 hover:text-white transition-all font-bold text-lg flex-shrink-0"
+                                                    className="w-12 h-12 rounded-lg bg-red-600 hover:bg-red-700 flex items-center justify-center text-white transition-all font-bold text-2xl flex-shrink-0 shadow-lg border-4 border-yellow-400"
                                                     title="Descartar"
                                                 >
                                                     ×
