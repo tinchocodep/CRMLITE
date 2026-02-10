@@ -51,7 +51,7 @@ const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { companies, createCompany } = useCompanies();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const { notifications } = useNotifications();
 
     // Local state for dismissed notifications (session only)
