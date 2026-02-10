@@ -182,7 +182,7 @@ const CotizadorIndex = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-                            Dashboard Cotizador
+                            Dashboard Administración
                         </h1>
                         <p className="text-lg text-slate-600 dark:text-slate-400">
                             Visión estratégica del negocio
@@ -356,7 +356,7 @@ const CotizadorIndex = () => {
             {/* Módulos */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
-                    Módulos del Cotizador
+                    Módulos de Administración
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {modules.map((module, index) => (

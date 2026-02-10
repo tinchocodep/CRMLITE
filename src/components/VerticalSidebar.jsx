@@ -11,7 +11,7 @@ const sidebarModules = [
     { name: 'Portal Clientes', path: '/portal-clientes', icon: Users, locked: true },
     { name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true, locked: false },
     { name: 'Usuarios', path: '/usuarios', icon: Users },
-    { name: 'Cotizador', path: '/cotizador', icon: Package, isCotizador: true, locked: false },
+    { name: 'Administración', path: '/cotizador', icon: Package, isCotizador: true, locked: false },
     { name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp, locked: true },
     { name: 'Marketing', path: '/marketing', icon: Megaphone, locked: true },
     { name: 'Logística (TMS)', path: '/logistica', icon: Truck, locked: true },

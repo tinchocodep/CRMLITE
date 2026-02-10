@@ -33,7 +33,7 @@ const MobileMenuModal = ({ isOpen, onClose, currentContext }) => {
             ]
         },
         cotizador: {
-            name: 'Cotizador',
+            name: 'Administración',
             icon: Package,
             color: 'from-green-500 to-green-600',
             modules: [
@@ -97,8 +97,8 @@ const MobileMenuModal = ({ isOpen, onClose, currentContext }) => {
                                     <button
                                         onClick={() => handleContextSwitch('crm')}
                                         className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${currentContext === 'crm'
-                                                ? 'bg-gradient-to-r from-blue-50 to-blue-100 border-blue-500'
-                                                : 'bg-slate-50 border-slate-200 hover:border-blue-300'
+                                            ? 'bg-gradient-to-r from-blue-50 to-blue-100 border-blue-500'
+                                            : 'bg-slate-50 border-slate-200 hover:border-blue-300'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -119,8 +119,8 @@ const MobileMenuModal = ({ isOpen, onClose, currentContext }) => {
                                     <button
                                         onClick={() => handleContextSwitch('cotizador')}
                                         className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${currentContext === 'cotizador'
-                                                ? 'bg-gradient-to-r from-green-50 to-green-100 border-green-500'
-                                                : 'bg-slate-50 border-slate-200 hover:border-green-300'
+                                            ? 'bg-gradient-to-r from-green-50 to-green-100 border-green-500'
+                                            : 'bg-slate-50 border-slate-200 hover:border-green-300'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
@@ -128,7 +128,7 @@ const MobileMenuModal = ({ isOpen, onClose, currentContext }) => {
                                                 <Package className="w-6 h-6 text-white" />
                                             </div>
                                             <div className="text-left">
-                                                <p className="font-bold text-slate-900">Cotizador</p>
+                                                <p className="font-bold text-slate-900">Administración</p>
                                                 <p className="text-xs text-slate-600">Ventas y facturación</p>
                                             </div>
                                         </div>
