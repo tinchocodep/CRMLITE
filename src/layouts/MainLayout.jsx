@@ -65,6 +65,24 @@ const MainLayout = () => {
         setDismissedIds(prev => [...prev, id]);
     };
 
+    // TEMPORARY: Add hardcoded test notification
+    const testNotification = {
+        id: 'test-hardcoded-1',
+        type: 'test',
+        priority: 'high',
+        title: 'Notificación de Prueba',
+        description: 'Si ves el botón X a la derecha, el sistema funciona correctamente',
+        timestamp: new Date(),
+        timeAgo: 'Ahora',
+        icon: Bell,
+        color: 'bg-blue-100 text-blue-600',
+        action: '/dashboard',
+        relatedId: 'test-1'
+    };
+
+    // Combine test notification with real ones
+    const allNotifications = [testNotification, ...visibleNotifications];
+
     // Filter only prospects
     const prospects = companies.filter(c => c.company_type === 'prospect');
 
@@ -256,14 +274,14 @@ const MainLayout = () => {
 
                             {/* Notifications List - Dynamic */}
                             <div className="max-h-96 overflow-y-auto">
-                                {visibleNotifications.length === 0 ? (
+                                {allNotifications.length === 0 ? (
                                     <div className="p-8 text-center">
                                         <Bell className="w-12 h-12 text-slate-300 mx-auto mb-2" />
                                         <p className="text-sm text-slate-500">No hay notificaciones</p>
                                         <p className="text-xs text-slate-400 mt-1">Estás al día con todo</p>
                                     </div>
                                 ) : (
-                                    visibleNotifications.map(notification => {
+                                    allNotifications.map(notification => {
                                         const IconComponent = notification.icon;
                                         return (
                                             <div
