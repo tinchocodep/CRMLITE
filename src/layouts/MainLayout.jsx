@@ -233,19 +233,19 @@ const MainLayout = () => {
                                     <Calendar size={20} />
                                 </button>
 
-                                {/* Notifications Button */}
-                                <button
+                                {/* Notifications Button - DISABLED */}
+                                {/* <button
                                     onClick={() => setNotificationsOpen(!notificationsOpen)}
                                     className="relative p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-bronze dark:hover:text-advanta-orange transition-colors"
                                 >
                                     <Bell size={20} />
-                                    {/* Dynamic Badge Count */}
                                     {unreadCount > 0 && (
                                         <span className="absolute top-0 right-0 min-w-[18px] h-[18px] bg-advanta-orange text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
                                             {unreadCount > 9 ? '9+' : unreadCount}
                                         </span>
                                     )}
-                                </button>
+                                </button> */}
+
 
                                 {/* Logout Button */}
                                 <button onClick={handleLogout} className="p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-bronze dark:hover:text-advanta-orange transition-colors">
