@@ -339,6 +339,33 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
+                {/* Floating Action Buttons - Top Right (Desktop Only) */}
+                <div className="hidden md:flex absolute top-20 right-4 z-50 items-center gap-2">
+                    <button
+                        onClick={() => navigate('/agenda')}
+                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
+                        title="Ir a Agenda"
+                    >
+                        <Calendar size={20} />
+                    </button>
+                    <button
+                        onClick={() => setNotificationsOpen(!notificationsOpen)}
+                        className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
+                        title="Notificaciones"
+                    >
+                        <Bell size={20} />
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setLogoutModalOpen(true)}
+                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105 group"
+                        title="Cerrar Sesión"
+                    >
+                        <LogOut size={20} className="text-slate-700 dark:text-slate-200 group-hover:text-white" />
+                    </button>
+                </div>
 
                 {/* Mobile Main Content */}
                 <main className="flex-1 w-full overflow-y-auto pb-16">
@@ -387,35 +414,7 @@ const MainLayout = () => {
             </div >
 
             {/* ========== DESKTOP VERSION ========== */}
-            <div className="hidden xl:block relative">
-                {/* Floating Action Buttons - Top Right (Desktop Only) */}
-                <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
-                    <button
-                        onClick={() => navigate('/agenda')}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
-                        title="Ir a Agenda"
-                    >
-                        <Calendar size={20} />
-                    </button>
-                    <button
-                        onClick={() => setNotificationsOpen(!notificationsOpen)}
-                        className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
-                        title="Notificaciones"
-                    >
-                        <Bell size={20} />
-                        {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
-                        )}
-                    </button>
-                    <button
-                        onClick={() => setLogoutModalOpen(true)}
-                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105 group"
-                        title="Cerrar Sesión"
-                    >
-                        <LogOut size={20} className="text-slate-700 dark:text-slate-200 group-hover:text-white" />
-                    </button>
-                </div>
-
+            <div className="hidden xl:block">
                 {/* Vertical Sidebar */}
                 <VerticalSidebar
                     onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)}
