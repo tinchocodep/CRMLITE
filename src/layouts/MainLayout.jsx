@@ -233,8 +233,8 @@ const MainLayout = () => {
                                     <Calendar size={20} />
                                 </button>
 
-                                {/* Notifications Button - DISABLED */}
-                                {/* <button
+                                {/* Notifications Button */}
+                                <button
                                     onClick={() => setNotificationsOpen(!notificationsOpen)}
                                     className="relative p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-bronze dark:hover:text-advanta-orange transition-colors"
                                 >
@@ -244,7 +244,7 @@ const MainLayout = () => {
                                             {unreadCount > 9 ? '9+' : unreadCount}
                                         </span>
                                     )}
-                                </button> */}
+                                </button>
 
 
                                 {/* Logout Button */}

@@ -223,15 +223,14 @@ const Dashboard = () => {
                 >
                     <Calendar className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                 </button>
-                {/* Notifications Button - DISABLED */}
-                {/* <button
+                <button
                     onClick={() => setNotificationsOpen(!notificationsOpen)}
                     className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
                     title="Notificaciones"
                 >
                     <Bell className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
-                </button> */}
+                </button>
                 <button
                     onClick={() => setLogoutModalOpen(true)}
                     className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105 group"
