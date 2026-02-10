@@ -273,6 +273,87 @@ const Dashboard = () => {
                 </p>
             </motion.div>
 
+            {/* Notifications Dropdown */}
+            <AnimatePresence>
+                {notificationsOpen && (
+                    <motion.div
+                        ref={notificationsRef}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="fixed top-16 right-4 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden z-[100]"
+                    >
+                        {/* Header */}
+                        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                            <h3 className="font-bold text-slate-800 dark:text-slate-100">Notificaciones</h3>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Mantente al día con tu CRM</p>
+                        </div>
+
+                        {/* Notifications List */}
+                        <div className="max-h-96 overflow-y-auto">
+                            {visibleNotifications.length === 0 ? (
+                                <div className="p-8 text-center">
+                                    <Bell className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">No hay notificaciones</p>
+                                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Estás al día con todo</p>
+                                </div>
+                            ) : (
+                                visibleNotifications.map(notification => {
+                                    const IconComponent = notification.icon;
+                                    return (
+                                        <div
+                                            key={notification.id}
+                                            className="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors flex gap-3 items-start"
+                                        >
+                                            <div
+                                                onClick={() => {
+                                                    navigate(notification.action);
+                                                    setNotificationsOpen(false);
+                                                }}
+                                                className="flex gap-3 cursor-pointer items-start flex-1"
+                                            >
+                                                <div className={`w-10 h-10 rounded-lg ${notification.color} flex items-center justify-center flex-shrink-0`}>
+                                                    <IconComponent className="w-5 h-5" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{notification.title}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{notification.description}</p>
+                                                    <span className={`text-xs font-medium mt-1 inline-block ${notification.priority === 'critical' ? 'text-red-600' :
+                                                        notification.priority === 'high' ? 'text-orange-600' :
+                                                            notification.priority === 'medium' ? 'text-amber-600' :
+                                                                'text-blue-600'
+                                                        }`}>
+                                                        {notification.timeAgo}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {/* Dismiss Button - Clean and Visible */}
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    dismissNotification(notification.id);
+                                                }}
+                                                className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-all flex-shrink-0 group"
+                                                title="Descartar"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                            <button className="w-full text-center text-sm font-semibold text-advanta-bronze dark:text-advanta-orange-light hover:text-advanta-orange dark:hover:text-advanta-orange transition-colors">
+                                Ver todas las notificaciones
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
 
 
             {/* Stats Grid - Compact Design */}
