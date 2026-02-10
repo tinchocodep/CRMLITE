@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Users, UserCheck, Briefcase, Calendar, TrendingUp, Clock, MapPin, Phone, Mail, ChevronRight, Sparkles, Bell, LogOut, Map } from 'lucide-react';
+import { Users, UserCheck, Briefcase, Calendar, TrendingUp, Clock, MapPin, Phone, Mail, ChevronRight, Sparkles, Bell, LogOut, Map, X } from 'lucide-react';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EventCard from '../components/agenda/EventCard';
