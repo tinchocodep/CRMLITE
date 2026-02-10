@@ -286,19 +286,19 @@ const MainLayout = () => {
                                         return (
                                             <div
                                                 key={notification.id}
-                                                className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors relative group"
+                                                className="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors flex gap-3 items-start"
                                             >
                                                 <div
                                                     onClick={() => {
                                                         navigate(notification.action);
                                                         setNotificationsOpen(false);
                                                     }}
-                                                    className="flex gap-3 cursor-pointer items-start"
+                                                    className="flex gap-3 cursor-pointer items-start flex-1"
                                                 >
                                                     <div className={`w-10 h-10 rounded-lg ${notification.color} flex items-center justify-center flex-shrink-0`}>
                                                         <IconComponent className="w-5 h-5" />
                                                     </div>
-                                                    <div className="flex-1 pr-2">
+                                                    <div className="flex-1">
                                                         <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
                                                         <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
                                                         <span className={`text-xs font-medium mt-1 inline-block ${notification.priority === 'critical' ? 'text-red-600' :
@@ -309,18 +309,18 @@ const MainLayout = () => {
                                                             {notification.timeAgo}
                                                         </span>
                                                     </div>
-                                                    {/* Dismiss Button */}
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            dismissNotification(notification.id);
-                                                        }}
-                                                        className="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-500 flex items-center justify-center text-slate-600 hover:text-white transition-all font-bold text-lg flex-shrink-0"
-                                                        title="Descartar"
-                                                    >
-                                                        ×
-                                                    </button>
                                                 </div>
+                                                {/* Dismiss Button - OUTSIDE clickable div */}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        dismissNotification(notification.id);
+                                                    }}
+                                                    className="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-500 flex items-center justify-center text-slate-600 hover:text-white transition-all font-bold text-lg flex-shrink-0"
+                                                    title="Descartar"
+                                                >
+                                                    ×
+                                                </button>
                                             </div>
                                         );
                                     })
