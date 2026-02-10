@@ -107,6 +107,11 @@ const MainLayout = () => {
         };
     }, []);
 
+    // TEMPORARY: Clear dismissed notifications for testing
+    useEffect(() => {
+        localStorage.removeItem('dismissedNotifications');
+    }, []);
+
     // Outlet will automatically re-render when location changes via React Router
 
     // ========== SHARED HANDLERS ==========
