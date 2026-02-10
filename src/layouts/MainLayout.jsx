@@ -16,6 +16,7 @@ import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
 import { HorizontalCotizadorNav } from '../components/cotizador/HorizontalCotizadorNav';
 import { RightSidebarAgenda } from '../components/RightSidebarAgenda';
 import { useCompanies } from '../hooks/useCompanies';
+import { ConfirmModal } from '../components/ConfirmModal';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
 import { supabase } from '../lib/supabase';
@@ -110,6 +111,7 @@ const MainLayout = () => {
 
     // ========== NOTIFICATIONS STATE ==========
     const [notificationsOpen, setNotificationsOpen] = useState(false);
+    const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const notificationsRef = useRef(null);
 
     // ========== SHARED STATE (Global Modals) ==========
@@ -337,6 +339,34 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
+                {/* Floating Action Buttons - Top Right (Desktop Only) */}
+                <div className="hidden xl:flex absolute top-20 right-4 z-50 items-center gap-2">
+                    <button
+                        onClick={() => navigate('/agenda')}
+                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
+                        title="Ir a Agenda"
+                    >
+                        <Calendar size={20} />
+                    </button>
+                    <button
+                        onClick={() => setNotificationsOpen(!notificationsOpen)}
+                        className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
+                        title="Notificaciones"
+                    >
+                        <Bell size={20} />
+                        {unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => setLogoutModalOpen(true)}
+                        className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105 group"
+                        title="Cerrar Sesión"
+                    >
+                        <LogOut size={20} className="text-slate-700 dark:text-slate-200 group-hover:text-white" />
+                    </button>
+                </div>
+
                 {/* Mobile Main Content */}
                 <main className="flex-1 w-full overflow-y-auto pb-16">
                     <Outlet />
@@ -541,6 +571,20 @@ const MainLayout = () => {
                     setIsContactModalOpen(false);
                 }}
                 contact={null}
+            />
+
+            {/* Logout Confirmation Modal */}
+            <ConfirmModal
+                isOpen={logoutModalOpen}
+                onClose={() => setLogoutModalOpen(false)}
+                onConfirm={() => {
+                    logout();
+                    navigate('/login');
+                }}
+                title="Cerrar Sesión"
+                message="¿Estás seguro que desés cerrar sesión?"
+                confirmText="Cerrar Sesión"
+                cancelText="Cancelar"
             />
         </div>
     );
