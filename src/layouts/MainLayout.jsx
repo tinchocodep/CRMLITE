@@ -318,10 +318,10 @@ const MainLayout = () => {
                                                         e.stopPropagation();
                                                         dismissNotification(notification.id);
                                                     }}
-                                                    className="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-100 flex items-center justify-center text-slate-600 hover:text-red-600 transition-all flex-shrink-0 group"
+                                                    className="w-7 h-7 rounded-full bg-slate-200 hover:bg-red-100 flex items-center justify-center text-slate-600 hover:text-red-600 transition-all flex-shrink-0 group"
                                                     title="Descartar"
                                                 >
-                                                    <X className="w-4 h-4" />
+                                                    <X className="w-3 h-3" />
                                                 </button>
                                             </div>
                                         );

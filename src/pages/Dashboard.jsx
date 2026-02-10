@@ -327,16 +327,15 @@ const Dashboard = () => {
                                                     </span>
                                                 </div>
                                             </div>
-                                            {/* Dismiss Button - Clean and Visible */}
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     dismissNotification(notification.id);
                                                 }}
-                                                className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-all flex-shrink-0 group"
+                                                className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-red-100 dark:hover:bg-red-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-all flex-shrink-0 group"
                                                 title="Descartar"
                                             >
-                                                <X className="w-4 h-4" />
+                                                <X className="w-3 h-3" />
                                             </button>
                                         </div>
                                     );
