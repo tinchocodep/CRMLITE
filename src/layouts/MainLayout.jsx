@@ -229,7 +229,7 @@ const MainLayout = () => {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="fixed top-16 right-4 w-80 bg-white border border-slate-200 rounded-xl shadow-2xl overflow-hidden z-[100] xl:top-20"
+                            className="fixed top-16 right-4 w-80 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] xl:top-20"
                         >
                             {/* Header */}
                             <div className="p-4 border-b border-slate-200 bg-slate-50">
