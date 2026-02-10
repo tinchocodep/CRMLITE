@@ -287,64 +287,6 @@ export const useNotifications = () => {
             ...getFollowUpNotifications
         ];
 
-        // TEMPORARY: Add mock notifications for testing dismiss button
-        const mockNotifications = [
-            {
-                id: 'mock-1',
-                type: 'upcoming_activity',
-                priority: 'high',
-                title: 'Reunión en 30 minutos',
-                description: 'Reunión con Robert Mols - 15:30',
-                timestamp: new Date(),
-                timeAgo: 'Hace 5 min',
-                icon: Calendar,
-                color: 'bg-blue-100 text-blue-600',
-                action: '/agenda',
-                relatedId: 'mock-1'
-            },
-            {
-                id: 'mock-2',
-                type: 'incomplete_opportunity',
-                priority: 'medium',
-                title: 'Registrar oportunidad',
-                description: 'No olvides anotar la oportunidad de venta con Empresa XYZ',
-                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-                timeAgo: 'Hace 2 horas',
-                icon: Briefcase,
-                color: 'bg-amber-100 text-amber-600',
-                action: '/oportunidades',
-                relatedId: 'mock-2'
-            },
-            {
-                id: 'mock-3',
-                type: 'follow_up',
-                priority: 'medium',
-                title: 'Seguimiento pendiente',
-                description: 'Contactar a Claudia Sharlin - Prospecto caliente',
-                timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-                timeAgo: 'Ayer',
-                icon: UserCheck,
-                color: 'bg-purple-100 text-purple-600',
-                action: '/prospectos',
-                relatedId: 'mock-3'
-            },
-            {
-                id: 'mock-4',
-                type: 'upcoming_activity',
-                priority: 'low',
-                title: 'Completar resumen de visita',
-                description: 'Visita a Donald Cotta - Agregar notas y próximos pasos',
-                timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
-                timeAgo: 'Hace 3 horas',
-                icon: Map,
-                color: 'bg-green-100 text-green-600',
-                action: '/visitas',
-                relatedId: 'mock-4'
-            }
-        ];
-
-        allNotifications.push(...mockNotifications);
-
         // Filter out dismissed notifications
         const active = allNotifications.filter(n => !dismissedIds.includes(n.id));
 
