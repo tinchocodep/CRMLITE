@@ -263,7 +263,7 @@ const MainLayout = () => {
                                                     <div className={`w-10 h-10 rounded-lg ${notification.color} flex items-center justify-center flex-shrink-0`}>
                                                         <IconComponent className="w-5 h-5" />
                                                     </div>
-                                                    <div className="flex-1 pr-6">
+                                                    <div className="flex-1 pr-12">
                                                         <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
                                                         <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
                                                         <span className={`text-xs font-medium mt-1 inline-block ${notification.priority === 'critical' ? 'text-red-600' :
