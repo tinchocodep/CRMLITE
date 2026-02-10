@@ -340,7 +340,7 @@ const MainLayout = () => {
                 </AnimatePresence>
 
                 {/* Floating Action Buttons - Top Right (Desktop Only) */}
-                <div className="hidden xl:flex absolute top-20 right-4 z-50 items-center gap-2">
+                <div className="hidden lg:flex absolute top-20 right-4 z-50 items-center gap-2">
                     <button
                         onClick={() => navigate('/agenda')}
                         className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
