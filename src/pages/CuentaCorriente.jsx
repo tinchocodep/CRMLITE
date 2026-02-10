@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle, X, Eye, Download, ExternalLink, Bell, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
