@@ -258,12 +258,12 @@ const MainLayout = () => {
                                                         navigate(notification.action);
                                                         setNotificationsOpen(false);
                                                     }}
-                                                    className="flex gap-3 cursor-pointer"
+                                                    className="flex gap-3 cursor-pointer items-start"
                                                 >
                                                     <div className={`w-10 h-10 rounded-lg ${notification.color} flex items-center justify-center flex-shrink-0`}>
                                                         <IconComponent className="w-5 h-5" />
                                                     </div>
-                                                    <div className="flex-1 pr-12">
+                                                    <div className="flex-1 pr-2">
                                                         <p className="text-sm font-semibold text-slate-800">{notification.title}</p>
                                                         <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
                                                         <span className={`text-xs font-medium mt-1 inline-block ${notification.priority === 'critical' ? 'text-red-600' :
@@ -274,18 +274,18 @@ const MainLayout = () => {
                                                             {notification.timeAgo}
                                                         </span>
                                                     </div>
+                                                    {/* Dismiss Button */}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            dismissNotification(notification.id);
+                                                        }}
+                                                        className="p-2 rounded-lg bg-red-500 hover:bg-red-600 border-2 border-red-700 transition-all text-white shadow-lg flex-shrink-0"
+                                                        title="Descartar notificación"
+                                                    >
+                                                        <X size={18} className="stroke-[3]" />
+                                                    </button>
                                                 </div>
-                                                {/* Dismiss Button - Always Visible */}
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        dismissNotification(notification.id);
-                                                    }}
-                                                    className="absolute top-2 right-2 p-3 rounded-lg bg-red-500 hover:bg-red-600 border-2 border-red-700 transition-all text-white shadow-2xl z-[999]"
-                                                    title="Descartar notificación"
-                                                >
-                                                    <X size={20} className="stroke-[3]" />
-                                                </button>
                                             </div>
                                         );
                                     })
