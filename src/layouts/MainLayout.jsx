@@ -310,16 +310,16 @@ const MainLayout = () => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                {/* Dismiss Button - OUTSIDE clickable div */}
+                                                {/* Dismiss Button - Clean and Visible */}
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         dismissNotification(notification.id);
                                                     }}
-                                                    className="w-12 h-12 rounded-lg bg-red-600 hover:bg-red-700 flex items-center justify-center text-white transition-all font-bold text-2xl flex-shrink-0 shadow-lg border-4 border-yellow-400"
+                                                    className="w-8 h-8 rounded-full bg-slate-200 hover:bg-red-100 flex items-center justify-center text-slate-600 hover:text-red-600 transition-all flex-shrink-0 group"
                                                     title="Descartar"
                                                 >
-                                                    ×
+                                                    <X className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         );

@@ -18,11 +18,9 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [headerVisible, setHeaderVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-    const notificationsRef = useRef(null);
 
     // Fetch real data from Supabase
     const { companies: allCompanies, loading: loadingCompanies } = useCompanies();
@@ -77,18 +75,7 @@ const Dashboard = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // Close notifications when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
-                setNotificationsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+
 
     // Calculate stats from real data
     const prospects = allCompanies.filter(c => c.company_type === 'prospect' && c.is_active);
@@ -223,14 +210,7 @@ const Dashboard = () => {
                 >
                     <Calendar className="w-5 h-5 text-slate-700 dark:text-slate-200" />
                 </button>
-                <button
-                    onClick={() => setNotificationsOpen(!notificationsOpen)}
-                    className="relative w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105"
-                    title="Notificaciones"
-                >
-                    <Bell className="w-5 h-5 text-slate-700 dark:text-slate-200" />
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
-                </button>
+                {/* Notifications Button - Removed (centralized in MainLayout) */}
                 <button
                     onClick={() => setLogoutModalOpen(true)}
                     className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-all shadow-md border border-slate-200 dark:border-slate-600 hover:scale-105 group"
@@ -258,90 +238,7 @@ const Dashboard = () => {
                 </p>
             </motion.div>
 
-            {/* Notifications Dropdown */}
-            <AnimatePresence>
-                {notificationsOpen && (
-                    <motion.div
-                        ref={notificationsRef}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="fixed top-16 right-4 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden z-[100]"
-                    >
-                        {/* Header */}
-                        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                            <h3 className="font-bold text-slate-800 dark:text-slate-100">Notificaciones</h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Mantente al día con tu CRM</p>
-                        </div>
 
-                        {/* Notifications List */}
-                        <div className="max-h-96 overflow-y-auto">
-                            {/* Actividad Próxima */}
-                            <div className="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
-                                <div className="flex gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                                        <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Reunión en 30 minutos</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Reunión con Robert Mols - 15:30</p>
-                                        <span className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1 inline-block">Hace 5 min</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Recordatorio Oportunidad */}
-                            <div className="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
-                                <div className="flex gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                                        <Briefcase className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Registrar oportunidad</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">No olvides anotar la oportunidad de venta con Empresa XYZ</p>
-                                        <span className="text-xs text-amber-600 dark:text-amber-400 font-medium mt-1 inline-block">Hace 2 horas</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Seguimiento Prospecto */}
-                            <div className="p-4 border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
-                                <div className="flex gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
-                                        <UserCheck className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Seguimiento pendiente</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Contactar a Claudia Sharlin - Prospecto caliente</p>
-                                        <span className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1 inline-block">Ayer</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Resumen Visita */}
-                            <div className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer">
-                                <div className="flex gap-3">
-                                    <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
-                                        <Map className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Completar resumen de visita</p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Visita a Donald Cotta - Agregar notas y próximos pasos</p>
-                                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1 inline-block">Hace 3 días</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                            <button className="w-full text-center text-sm font-semibold text-advanta-bronze dark:text-advanta-orange-light hover:text-advanta-orange dark:hover:text-advanta-orange transition-colors">
-                                Ver todas las notificaciones
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             {/* Stats Grid - Compact Design */}
             <motion.div
