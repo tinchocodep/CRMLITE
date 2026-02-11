@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
+import { useRoleBasedFilter } from './useRoleBasedFilter';
 
 export const useContacts = () => {
     const { user } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
+    const { applyRoleFilter, selectedComercialId } = useRoleBasedFilter();
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,14 +26,21 @@ export const useContacts = () => {
             setError(null);
 
             // Fetch contacts with their company relationships
-            const { data: contactsData, error: contactsError } = await supabase
+            let query = supabase
                 .from('contacts')
                 .select(`
                     *,
                     comercial:comerciales!comercial_id(id, name, email)
                 `)
-                .eq('tenant_id', tenantId)
-                .order('created_at', { ascending: false });
+                .eq('tenant_id', tenantId);
+
+            // Apply role-based filter (admin sees all, comercial sees only theirs)
+            query = applyRoleFilter(query);
+
+            // Execute query
+            query = query.order('created_at', { ascending: false });
+
+            const { data: contactsData, error: contactsError } = await query;
 
             if (contactsError) throw contactsError;
 
@@ -302,7 +311,7 @@ export const useContacts = () => {
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [user, tenantId, tenantLoading]);
+    }, [user, tenantId, tenantLoading, selectedComercialId]);
 
     return {
         contacts,

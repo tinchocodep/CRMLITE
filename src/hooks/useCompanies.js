@@ -2,10 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
+import { useRoleBasedFilter } from './useRoleBasedFilter';
 
 export const useCompanies = (type = null) => {
     const { user } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
+    const { applyRoleFilter, selectedComercialId } = useRoleBasedFilter();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -39,18 +41,23 @@ export const useCompanies = (type = null) => {
 
             setLoading(true);
 
-            // Build query
+            // Build query with tenant filter
             let query = supabase
                 .from('companies')
                 .select('*')
                 .eq('is_active', true)
-                .eq('tenant_id', tenantId)
-                .order('created_at', { ascending: false });
+                .eq('tenant_id', tenantId);
 
             // Filter by type if specified
             if (type) {
                 query = query.eq('company_type', type);
             }
+
+            // Apply role-based filter (admin sees all, comercial sees only theirs)
+            query = applyRoleFilter(query);
+
+            // Execute query
+            query = query.order('created_at', { ascending: false });
 
             const { data, error: fetchError } = await query;
 
@@ -72,7 +79,7 @@ export const useCompanies = (type = null) => {
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [type, user, tenantId, tenantLoading]);
+    }, [type, user, tenantId, tenantLoading, selectedComercialId]);
 
     const createCompany = async (companyData) => {
         try {
