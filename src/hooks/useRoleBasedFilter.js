@@ -87,8 +87,7 @@ export const useRoleBasedFilter = () => {
             isAdmin,
             isSupervisor,
             comercialId,
-            selectedComercialId,
-            role: userRole
+            selectedComercialId
         });
 
         if (isAdmin) {
