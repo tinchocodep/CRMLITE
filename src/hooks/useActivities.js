@@ -95,8 +95,7 @@ export const useActivities = (daysAhead = 30) => {
                 .insert([{
                     ...activityData,
                     tenant_id: userData.tenant_id,
-                    comercial_id: activityData.comercial_id || userData.comercial_id,
-                    created_by: user.id
+                    comercial_id: activityData.comercial_id || userData.comercial_id
                 }])
                 .select()
                 .single();
