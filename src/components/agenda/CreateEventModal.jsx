@@ -357,12 +357,16 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                         {/* Dropdown selector */}
                         <div className="relative">
                             <button
-                                onClick={() => setShowUserSelector(!showUserSelector)}
+                                onClick={() => {
+                                    console.log('[DEBUG] Team members:', teamMembers);
+                                    alert(`Team members count: ${teamMembers.length}\nTeam members: ${JSON.stringify(teamMembers, null, 2)}`);
+                                    setShowUserSelector(!showUserSelector);
+                                }}
                                 className="w-full flex items-center justify-between gap-2 p-3 bg-white border border-slate-200 rounded-xl hover:border-advanta-green/50 transition-colors"
                             >
                                 <div className="flex items-center gap-2 text-slate-600">
                                     <UserPlus size={16} />
-                                    <span className="text-sm font-medium">Agregar persona</span>
+                                    <span className="text-sm font-medium">Agregar persona ({teamMembers.length} disponibles)</span>
                                 </div>
                                 <ChevronDown size={16} className={`text-slate-400 transition-transform ${showUserSelector ? 'rotate-180' : ''}`} />
                             </button>
