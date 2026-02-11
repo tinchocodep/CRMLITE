@@ -39,6 +39,12 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     const [isLinking, setIsLinking] = useState(false);
 
     useEffect(() => {
+        console.log('🔍 [EditProspectModal] Prospect changed:', {
+            prospectId: prospect?.id,
+            comercialId: prospect?.comercial_id,
+            tradeName: prospect?.trade_name,
+            legalName: prospect?.legal_name
+        });
         setFormData({ ...prospect });
     }, [prospect]);
 
@@ -48,6 +54,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     };
 
     const handleSubmit = () => {
+        console.log('💾 [EditProspectModal] Submitting formData:', {
+            id: formData.id,
+            comercial_id: formData.comercial_id,
+            trade_name: formData.trade_name,
+            legal_name: formData.legal_name,
+            fullFormData: formData
+        });
         onSave(formData);
         onClose();
     };
