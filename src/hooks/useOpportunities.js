@@ -121,8 +121,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                     opportunity_id: opportunityId,
                     auto_generated: true,
                     opportunity_status: opportunity.status || 'iniciado', // NEW: Store opportunity status
-                    tenant_id: userData.tenant_id,
-                    created_by: user.id
+                    tenant_id: userData.tenant_id
                 });
             }
 
@@ -142,8 +141,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                     opportunity_id: opportunityId,
                     auto_generated: true,
                     opportunity_status: opportunity.status || 'iniciado', // NEW: Store opportunity status
-                    tenant_id: userData.tenant_id,
-                    created_by: user.id
+                    tenant_id: userData.tenant_id
                 });
             }
 
@@ -177,8 +175,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                 .insert([{
                     ...opportunityData,
                     tenant_id: userData.tenant_id,
-                    comercial_id: opportunityData.comercial_id || userData.comercial_id,
-                    created_by: user.id
+                    comercial_id: opportunityData.comercial_id || userData.comercial_id
                 }])
                 .select()
                 .single();
