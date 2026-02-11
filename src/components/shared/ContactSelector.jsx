@@ -20,10 +20,27 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     const availableContacts = useMemo(() => {
         if (!comercialId) return [];
 
+        console.log('🔍 [ContactSelector] Filtering contacts:', {
+            comercialId,
+            totalContacts: contacts.length,
+            contactsWithComercialId: contacts.filter(c => c.comercialId).length
+        });
+
         return contacts.filter(contact => {
-            // Get the comercial_id from the original contact data
-            const contactComercialId = contact._original?.comercial_id;
-            return contactComercialId === comercialId;
+            // Access comercialId directly from the contact object (mapped from comercial_id in useContacts)
+            const contactComercialId = contact.comercialId;
+            const matches = contactComercialId === comercialId;
+
+            if (matches) {
+                console.log('✅ Contact matches:', {
+                    contactId: contact.id,
+                    contactName: `${contact.firstName} ${contact.lastName}`,
+                    contactComercialId,
+                    filterComercialId: comercialId
+                });
+            }
+
+            return matches;
         });
     }, [contacts, comercialId]);
 
