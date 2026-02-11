@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useCompanies = (type = null) => {
     const { user } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,6 +30,13 @@ export const useCompanies = (type = null) => {
 
     const fetchCompanies = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setCompanies([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
 
             // Build query
@@ -35,6 +44,7 @@ export const useCompanies = (type = null) => {
                 .from('companies')
                 .select('*')
                 .eq('is_active', true)
+                .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 
             // Filter by type if specified
@@ -57,13 +67,20 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
-        if (user) {
+        if (user && tenantId) {
             fetchCompanies();
+        } else if (!tenantLoading) {
+            setLoading(false);
         }
-    }, [type, user]);
+    }, [type, user, tenantId, tenantLoading]);
 
     const createCompany = async (companyData) => {
         try {
+            // Don't create if tenant_id is not available
+            if (!tenantId) {
+                throw new Error('Tenant ID not available');
+            }
+
             // Get current user's data for created_by
             const { data: { user: authUser } } = await supabase.auth.getUser();
 
@@ -71,6 +88,7 @@ export const useCompanies = (type = null) => {
                 .from('companies')
                 .insert([{
                     ...companyData,
+                    tenant_id: tenantId,
                     created_by: authUser?.id,
                     is_active: true
                 }])
@@ -96,6 +114,7 @@ export const useCompanies = (type = null) => {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
+                .eq('tenant_id', tenantId)
                 .select()
                 .single();
 
@@ -118,7 +137,8 @@ export const useCompanies = (type = null) => {
                     is_active: false,
                     updated_at: new Date().toISOString()
                 })
-                .eq('id', id);
+                .eq('id', id)
+                .eq('tenant_id', tenantId);
 
             if (deleteError) throw deleteError;
 
@@ -140,6 +160,7 @@ export const useCompanies = (type = null) => {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', companyId)
+                .eq('tenant_id', tenantId)
                 .select()
                 .single();
 
@@ -155,7 +176,7 @@ export const useCompanies = (type = null) => {
 
     return {
         companies,
-        loading,
+        loading: loading || tenantLoading,
         error,
         refetch: fetchCompanies,
         createCompany,
@@ -166,3 +187,4 @@ export const useCompanies = (type = null) => {
         mapStatusToQualification
     };
 };
+
