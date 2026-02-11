@@ -14,19 +14,16 @@ import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useToast } from '../contexts/ToastContext';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
-import { opportunities as mockOpportunities } from '../data/opportunities';
 
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
-    const { opportunities: supabaseOpportunities, loading: opportunitiesLoading } = useOpportunities();
+    const { opportunities, loading: opportunitiesLoading } = useOpportunities();
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
     const { showToast } = useToast();
     const { showError } = useSystemToast();
     const hasShownInitialToast = useRef(false);
 
-    // USE MOCK DATA for opportunities (temporary until Supabase is ready)
-    const opportunities = mockOpportunities;
 
     // Role-based filtering
     const {
