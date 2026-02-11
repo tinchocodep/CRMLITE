@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [comercialId, setComercialId] = useState(null);
+    const [comercialIdLoaded, setComercialIdLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     // Check for existing session on mount
@@ -51,6 +52,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(null);
                 setUserProfile(null);
                 setComercialId(null);
+                setComercialIdLoaded(false);
             }
             setIsLoading(false);
         });
@@ -77,6 +79,7 @@ export const AuthProvider = ({ children }) => {
                 setUserProfile(profile);
                 // Set comercial_id directly from user profile
                 setComercialId(profile.comercial_id || null);
+                setComercialIdLoaded(true);
             }
         } catch (error) {
             // Only log if not aborted
@@ -147,6 +150,7 @@ export const AuthProvider = ({ children }) => {
         user,
         userProfile,
         comercialId,
+        comercialIdLoaded,
         isLoading,
         login,
         signup,

@@ -5,7 +5,7 @@ import { useCurrentTenant } from './useCurrentTenant';
 import { useRoleBasedFilter } from './useRoleBasedFilter';
 
 export const useCompanies = (type = null) => {
-    const { user, isLoading: authLoading } = useAuth();
+    const { user, isLoading: authLoading, comercialId, comercialIdLoaded, isAdmin } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
     const { applyRoleFilter, selectedComercialId } = useRoleBasedFilter();
     const [companies, setCompanies] = useState([]);
@@ -80,12 +80,20 @@ export const useCompanies = (type = null) => {
             return;
         }
 
+        // For non-admin users, wait for comercialId to be loaded
+        // Admin can see all, so they don't strictly need comercialId
+        if (!isAdmin && !comercialIdLoaded) {
+            console.log('⏳ [useCompanies] Waiting for comercialId to load...');
+            setLoading(true);
+            return;
+        }
+
         if (user && tenantId) {
             fetchCompanies();
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading]);
+    }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin]);
 
     const createCompany = async (companyData) => {
         try {
