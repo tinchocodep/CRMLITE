@@ -59,6 +59,7 @@ const Prospects = () => {
     };
 
     const handleCreateClick = () => {
+        console.log('🆕 [Prospects] Creating new prospect with comercialId:', comercialId);
         setSelectedProspect({
             id: Date.now(), // Temporary ID
             created_at: new Date().toISOString(),
@@ -87,6 +88,13 @@ const Prospects = () => {
                         return;
                     }
                 }
+
+                console.log('📝 [Prospects] Creating prospect with data:', {
+                    company_type: 'prospect',
+                    comercial_id: updatedProspect.comercial_id,
+                    trade_name: updatedProspect.tradeName || updatedProspect.trade_name,
+                    legal_name: updatedProspect.companyName || updatedProspect.legal_name
+                });
 
                 const result = await createCompany({
                     company_type: 'prospect',
