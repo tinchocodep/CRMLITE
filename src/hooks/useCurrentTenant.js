@@ -13,6 +13,8 @@ export function useCurrentTenant() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        let abortController = new AbortController();
+
         const fetchTenantId = async () => {
             try {
                 setLoading(true);
@@ -22,6 +24,9 @@ export function useCurrentTenant() {
                 const { data: { user }, error: authError } = await supabase.auth.getUser();
 
                 if (authError) throw authError;
+
+                // Check if request was aborted
+                if (abortController.signal.aborted) return;
 
                 if (!user) {
                     setTenantId(null);
@@ -38,13 +43,21 @@ export function useCurrentTenant() {
 
                 if (fetchError) throw fetchError;
 
-                setTenantId(data?.tenant_id);
+                // Check if request was aborted before setting state
+                if (!abortController.signal.aborted) {
+                    setTenantId(data?.tenant_id);
+                }
             } catch (err) {
-                console.error('Error fetching tenant_id:', err);
-                setError(err.message);
-                setTenantId(null);
+                // Only log errors if not aborted
+                if (!abortController.signal.aborted) {
+                    console.error('Error fetching tenant_id:', err);
+                    setError(err.message);
+                    setTenantId(null);
+                }
             } finally {
-                setLoading(false);
+                if (!abortController.signal.aborted) {
+                    setLoading(false);
+                }
             }
         };
 
@@ -52,10 +65,15 @@ export function useCurrentTenant() {
 
         // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+            // Cancel previous request
+            abortController.abort();
+            // Create new controller for new request
+            abortController = new AbortController();
             fetchTenantId();
         });
 
         return () => {
+            abortController.abort();
             subscription?.unsubscribe();
         };
     }, []);

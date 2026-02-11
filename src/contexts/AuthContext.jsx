@@ -19,23 +19,34 @@ export const AuthProvider = ({ children }) => {
 
     // Check for existing session on mount
     useEffect(() => {
+        let abortController = new AbortController();
+
         // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session?.user) {
+            if (session?.user && !abortController.signal.aborted) {
                 setUser(session.user);
-                loadUserProfile(session.user.id);
+                loadUserProfile(session.user.id, abortController.signal);
             }
         }).catch((err) => {
-            console.error('Error getting session:', err);
+            if (!abortController.signal.aborted) {
+                console.error('Error getting session:', err);
+            }
         }).finally(() => {
-            setIsLoading(false);
+            if (!abortController.signal.aborted) {
+                setIsLoading(false);
+            }
         });
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            // Cancel previous requests
+            abortController.abort();
+            // Create new controller
+            abortController = new AbortController();
+
             if (session?.user) {
                 setUser(session.user);
-                loadUserProfile(session.user.id);
+                loadUserProfile(session.user.id, abortController.signal);
             } else {
                 setUser(null);
                 setUserProfile(null);
@@ -44,10 +55,13 @@ export const AuthProvider = ({ children }) => {
             setIsLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            abortController.abort();
+            subscription.unsubscribe();
+        };
     }, []);
 
-    const loadUserProfile = async (userId) => {
+    const loadUserProfile = async (userId, signal = null) => {
         try {
             // Get user profile (includes comercial_id)
             const { data: profile, error: profileError } = await supabase
@@ -57,12 +71,18 @@ export const AuthProvider = ({ children }) => {
                 .single();
 
             if (profileError) throw profileError;
-            setUserProfile(profile);
 
-            // Set comercial_id directly from user profile
-            setComercialId(profile.comercial_id || null);
+            // Only update state if not aborted
+            if (!signal || !signal.aborted) {
+                setUserProfile(profile);
+                // Set comercial_id directly from user profile
+                setComercialId(profile.comercial_id || null);
+            }
         } catch (error) {
-            console.error('Error loading user profile:', error);
+            // Only log if not aborted
+            if (!signal || !signal.aborted) {
+                console.error('Error loading user profile:', error);
+            }
         }
     };
 
