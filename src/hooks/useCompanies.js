@@ -113,6 +113,15 @@ export const useCompanies = (type = null) => {
 
             if (insertError) {
                 console.error('❌ [createCompany] Insert error:', insertError);
+
+                // Provide user-friendly error messages
+                if (insertError.code === '23505') {
+                    if (insertError.message.includes('companies_cuit_key')) {
+                        throw new Error('Ya existe una empresa con este CUIT');
+                    }
+                    throw new Error('Ya existe una empresa con estos datos');
+                }
+
                 throw insertError;
             }
 
