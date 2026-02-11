@@ -1,7 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { mockClients } from '../data/mockClients';
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useCompanies = (type = null) => {
+    const { user } = useAuth();
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,16 +30,23 @@ export const useCompanies = (type = null) => {
         try {
             setLoading(true);
 
-            // Simulate async delay
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Build query
+            let query = supabase
+                .from('companies')
+                .select('*')
+                .eq('is_active', true)
+                .order('created_at', { ascending: false });
 
             // Filter by type if specified
-            let filteredCompanies = [...mockClients];
             if (type) {
-                filteredCompanies = filteredCompanies.filter(c => c.company_type === type);
+                query = query.eq('company_type', type);
             }
 
-            setCompanies(filteredCompanies);
+            const { data, error: fetchError } = await query;
+
+            if (fetchError) throw fetchError;
+
+            setCompanies(data || []);
             setError(null);
         } catch (err) {
             console.error('Error fetching companies:', err);
@@ -48,22 +57,30 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
-        fetchCompanies();
-    }, [type]);
-
+        if (user) {
+            fetchCompanies();
+        }
+    }, [type, user]);
 
     const createCompany = async (companyData) => {
         try {
-            const newCompany = {
-                id: mockClients.length + 1,
-                ...companyData,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
+            // Get current user's data for created_by
+            const { data: { user: authUser } } = await supabase.auth.getUser();
 
-            mockClients.push(newCompany);
+            const { data, error: insertError } = await supabase
+                .from('companies')
+                .insert([{
+                    ...companyData,
+                    created_by: authUser?.id,
+                    is_active: true
+                }])
+                .select()
+                .single();
+
+            if (insertError) throw insertError;
+
             await fetchCompanies();
-            return { success: true, data: newCompany };
+            return { success: true, data };
         } catch (err) {
             console.error('Error creating company:', err);
             return { success: false, error: err.message };
@@ -72,16 +89,20 @@ export const useCompanies = (type = null) => {
 
     const updateCompany = async (id, updates) => {
         try {
-            const index = mockClients.findIndex(c => c.id === id);
-            if (index !== -1) {
-                mockClients[index] = {
-                    ...mockClients[index],
+            const { data, error: updateError } = await supabase
+                .from('companies')
+                .update({
                     ...updates,
                     updated_at: new Date().toISOString()
-                };
-            }
+                })
+                .eq('id', id)
+                .select()
+                .single();
+
+            if (updateError) throw updateError;
+
             await fetchCompanies();
-            return { success: true, data: mockClients[index] };
+            return { success: true, data };
         } catch (err) {
             console.error('Error updating company:', err);
             return { success: false, error: err.message };
@@ -90,10 +111,17 @@ export const useCompanies = (type = null) => {
 
     const deleteCompany = async (id) => {
         try {
-            const index = mockClients.findIndex(c => c.id === id);
-            if (index !== -1) {
-                mockClients[index].status = 'inactive';
-            }
+            // Soft delete - mark as inactive
+            const { error: deleteError } = await supabase
+                .from('companies')
+                .update({
+                    is_active: false,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', id);
+
+            if (deleteError) throw deleteError;
+
             await fetchCompanies();
             return { success: true };
         } catch (err) {
@@ -104,17 +132,21 @@ export const useCompanies = (type = null) => {
 
     const convertToClient = async (companyId, clientData) => {
         try {
-            const index = mockClients.findIndex(c => c.id === companyId);
-            if (index !== -1) {
-                mockClients[index] = {
-                    ...mockClients[index],
+            const { data, error: updateError } = await supabase
+                .from('companies')
+                .update({
                     company_type: 'client',
                     ...clientData,
                     updated_at: new Date().toISOString()
-                };
-            }
+                })
+                .eq('id', companyId)
+                .select()
+                .single();
+
+            if (updateError) throw updateError;
+
             await fetchCompanies();
-            return { success: true, data: mockClients[index] };
+            return { success: true, data };
         } catch (err) {
             console.error('Error converting to client:', err);
             return { success: false, error: err.message };
@@ -129,6 +161,8 @@ export const useCompanies = (type = null) => {
         createCompany,
         updateCompany,
         deleteCompany,
-        convertToClient
+        convertToClient,
+        mapQualificationToStatus,
+        mapStatusToQualification
     };
 };
