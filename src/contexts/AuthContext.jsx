@@ -21,50 +21,38 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         let abortController = new AbortController();
 
-        const initializeAuth = async () => {
-            try {
-                // Get initial session
-                const { data: { session } } = await supabase.auth.getSession();
-
-                if (session?.user && !abortController.signal.aborted) {
-                    setUser(session.user);
-                    // Wait for profile to load before setting isLoading to false
-                    await loadUserProfile(session.user.id, abortController.signal);
-                }
-            } catch (err) {
-                if (!abortController.signal.aborted) {
-                    console.error('Error getting session:', err);
-                }
-            } finally {
-                if (!abortController.signal.aborted) {
-                    setIsLoading(false);
-                }
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user && !abortController.signal.aborted) {
+                setUser(session.user);
+                loadUserProfile(session.user.id, abortController.signal);
             }
-        };
-
-        initializeAuth();
+        }).catch((err) => {
+            if (!abortController.signal.aborted) {
+                console.error('Error getting session:', err);
+            }
+        }).finally(() => {
+            if (!abortController.signal.aborted) {
+                setIsLoading(false);
+            }
+        });
 
         // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             // Cancel previous requests
             abortController.abort();
             // Create new controller
             abortController = new AbortController();
 
-            setIsLoading(true);
-
             if (session?.user) {
                 setUser(session.user);
-                await loadUserProfile(session.user.id, abortController.signal);
+                loadUserProfile(session.user.id, abortController.signal);
             } else {
                 setUser(null);
                 setUserProfile(null);
                 setComercialId(null);
             }
-
-            if (!abortController.signal.aborted) {
-                setIsLoading(false);
-            }
+            setIsLoading(false);
         });
 
         return () => {
