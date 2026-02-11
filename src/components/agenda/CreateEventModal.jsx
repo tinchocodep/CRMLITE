@@ -45,7 +45,7 @@ const durationOptions = [
     { value: 180, label: '3 horas' },
 ];
 
-const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
+const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comerciales = [] }) => {
     const { user } = useAuth();
     const [teamMembers, setTeamMembers] = useState([]);
     const [validationDialog, setValidationDialog] = useState({ isOpen: false, message: '' });
@@ -62,20 +62,17 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
 
     const [showUserSelector, setShowUserSelector] = useState(false);
 
-    // Fetch team members (comerciales) from Supabase
+    // Format comerciales from prop and set current user as default
     useEffect(() => {
-        const fetchComerciales = async () => {
+        const setupComerciales = async () => {
             try {
-                console.log('[CreateEventModal] Fetching comerciales...');
-                const { data, error } = await supabase
-                    .from('comerciales')
-                    .select('id, name, email')
-                    .eq('is_active', true)
-                    .order('name');
+                console.log('[CreateEventModal] Received comerciales prop:', comerciales);
 
-                console.log('[CreateEventModal] Comerciales query result:', { data, error });
-
-                if (error) throw error;
+                if (!comerciales || comerciales.length === 0) {
+                    console.warn('[CreateEventModal] No comerciales received from prop');
+                    setTeamMembers([]);
+                    return;
+                }
 
                 // Get current user's comercial_id
                 const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -89,7 +86,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
 
                 const currentComercialId = userData?.comercial_id;
 
-                const formattedComerciales = data.map(c => ({
+                // Format comerciales with isCurrentUser flag
+                const formattedComerciales = comerciales.map(c => ({
                     id: c.id,
                     name: c.name || c.email?.split('@')[0] || 'Sin nombre',
                     email: c.email,
@@ -109,15 +107,15 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                     }));
                 }
             } catch (error) {
-                console.error('[CreateEventModal] Error fetching comerciales:', error);
+                console.error('[CreateEventModal] Error setting up comerciales:', error);
                 setTeamMembers([]);
             }
         };
 
         if (isOpen) {
-            fetchComerciales();
+            setupComerciales();
         }
-    }, [isOpen, user]);
+    }, [isOpen, comerciales, user]);
 
     // CRITICAL: All hooks must be called BEFORE any conditional returns
     if (!isOpen) return null;

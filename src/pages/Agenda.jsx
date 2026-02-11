@@ -450,6 +450,7 @@ const Agenda = () => {
                 onClose={() => setIsCreateModalOpen(false)}
                 onCreate={handleCreateEvent}
                 companies={companies}
+                comerciales={comerciales}
             />
         </div>
     );
