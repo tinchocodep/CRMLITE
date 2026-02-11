@@ -5,7 +5,7 @@ import { useCurrentTenant } from './useCurrentTenant';
 import { useRoleBasedFilter } from './useRoleBasedFilter';
 
 export const useCompanies = (type = null) => {
-    const { user } = useAuth();
+    const { user, isLoading: authLoading } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
     const { applyRoleFilter, selectedComercialId } = useRoleBasedFilter();
     const [companies, setCompanies] = useState([]);
@@ -74,12 +74,18 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
+        // Wait for auth to finish loading before fetching
+        if (authLoading) {
+            setLoading(true);
+            return;
+        }
+
         if (user && tenantId) {
             fetchCompanies();
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [type, user, tenantId, tenantLoading, selectedComercialId]);
+    }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading]);
 
     const createCompany = async (companyData) => {
         try {
