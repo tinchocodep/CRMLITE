@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { mockContacts } from '../data/mockContacts';
-import { mockClients } from '../data/mockClients';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useContacts = () => {
+    const { user } = useAuth();
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,31 +14,61 @@ export const useContacts = () => {
             setLoading(true);
             setError(null);
 
-            // Simulate async delay
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Fetch contacts with their company relationships
+            const { data: contactsData, error: contactsError } = await supabase
+                .from('contacts')
+                .select(`
+                    *,
+                    comercial:comerciales!comercial_id(id, name, email)
+                `)
+                .order('created_at', { ascending: false });
 
-            // Transform mock data to match expected structure
-            const transformedData = mockContacts.map(contact => {
-                const company = mockClients.find(c => c.id === contact.company_id);
+            if (contactsError) throw contactsError;
+
+            // Fetch contact-company relationships
+            const { data: relationshipsData, error: relationshipsError } = await supabase
+                .from('contact_companies')
+                .select(`
+                    *,
+                    company:companies!company_id(
+                        id,
+                        trade_name,
+                        legal_name,
+                        company_type,
+                        status,
+                        is_active
+                    )
+                `);
+
+            if (relationshipsError) throw relationshipsError;
+
+            // Transform data to match expected structure
+            const transformedData = (contactsData || []).map(contact => {
+                // Find all companies for this contact
+                const contactCompanies = (relationshipsData || [])
+                    .filter(rel => rel.contact_id === contact.id)
+                    .map(rel => ({
+                        companyId: rel.company?.id,
+                        companyName: rel.company?.trade_name || rel.company?.legal_name,
+                        companyType: rel.company?.company_type,
+                        companyStatus: rel.company?.status,
+                        isCompanyActive: rel.company?.is_active,
+                        role: rel.role,
+                        isPrimary: rel.is_primary,
+                        addedDate: rel.created_at
+                    }));
 
                 return {
                     id: contact.id,
-                    firstName: contact.name.split(' ')[0],
-                    lastName: contact.name.split(' ').slice(1).join(' '),
+                    firstName: contact.first_name,
+                    lastName: contact.last_name,
                     email: contact.email,
                     phone: contact.phone,
-                    position: contact.position,
-                    notes: '',
-                    companies: company ? [{
-                        companyId: company.id,
-                        companyName: company.business_name,
-                        companyType: company.company_type,
-                        companyStatus: company.status,
-                        isCompanyActive: true,
-                        role: contact.position,
-                        isPrimary: true,
-                        addedDate: contact.created_at
-                    }] : [],
+                    mobile: contact.mobile,
+                    notes: contact.notes,
+                    comercialId: contact.comercial_id,
+                    comercial: contact.comercial,
+                    companies: contactCompanies,
                     createdAt: contact.created_at,
                     updatedAt: contact.updated_at
                 };
@@ -57,18 +88,48 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            const newContact = {
-                id: mockContacts.length + 1,
-                name: `${contactData.firstName} ${contactData.lastName}`,
-                email: contactData.email,
-                phone: contactData.phone,
-                position: contactData.companies?.[0]?.role || 'Contacto',
-                company_id: contactData.companies?.[0]?.companyId || null,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            };
+            // Get current user's data
+            const { data: { user: authUser } } = await supabase.auth.getUser();
+            const { data: userData } = await supabase
+                .from('users')
+                .select('comercial_id')
+                .eq('id', authUser?.id)
+                .single();
 
-            mockContacts.push(newContact);
+            // Insert contact
+            const { data: newContact, error: insertError } = await supabase
+                .from('contacts')
+                .insert([{
+                    first_name: contactData.firstName,
+                    last_name: contactData.lastName,
+                    email: contactData.email,
+                    phone: contactData.phone,
+                    mobile: contactData.mobile,
+                    notes: contactData.notes,
+                    comercial_id: contactData.comercialId || userData?.comercial_id,
+                    created_by: authUser?.id
+                }])
+                .select()
+                .single();
+
+            if (insertError) throw insertError;
+
+            // Create company relationships if provided
+            if (contactData.companies && contactData.companies.length > 0) {
+                const relationships = contactData.companies.map(company => ({
+                    contact_id: newContact.id,
+                    company_id: company.companyId,
+                    role: company.role,
+                    is_primary: company.isPrimary || false
+                }));
+
+                const { error: relError } = await supabase
+                    .from('contact_companies')
+                    .insert(relationships);
+
+                if (relError) throw relError;
+            }
+
             await fetchContacts();
             return { success: true, data: newContact };
         } catch (err) {
@@ -83,21 +144,52 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            const index = mockContacts.findIndex(c => c.id === id);
-            if (index !== -1) {
-                mockContacts[index] = {
-                    ...mockContacts[index],
-                    name: `${contactData.firstName} ${contactData.lastName}`,
+            // Update contact
+            const { data: updatedContact, error: updateError } = await supabase
+                .from('contacts')
+                .update({
+                    first_name: contactData.firstName,
+                    last_name: contactData.lastName,
                     email: contactData.email,
                     phone: contactData.phone,
-                    position: contactData.companies?.[0]?.role || mockContacts[index].position,
-                    company_id: contactData.companies?.[0]?.companyId || mockContacts[index].company_id,
+                    mobile: contactData.mobile,
+                    notes: contactData.notes,
+                    comercial_id: contactData.comercialId,
                     updated_at: new Date().toISOString()
-                };
+                })
+                .eq('id', id)
+                .select()
+                .single();
+
+            if (updateError) throw updateError;
+
+            // Update company relationships if provided
+            if (contactData.companies) {
+                // Delete existing relationships
+                await supabase
+                    .from('contact_companies')
+                    .delete()
+                    .eq('contact_id', id);
+
+                // Create new relationships
+                if (contactData.companies.length > 0) {
+                    const relationships = contactData.companies.map(company => ({
+                        contact_id: id,
+                        company_id: company.companyId,
+                        role: company.role,
+                        is_primary: company.isPrimary || false
+                    }));
+
+                    const { error: relError } = await supabase
+                        .from('contact_companies')
+                        .insert(relationships);
+
+                    if (relError) throw relError;
+                }
             }
 
             await fetchContacts();
-            return { success: true, data: mockContacts[index] };
+            return { success: true, data: updatedContact };
         } catch (err) {
             console.error('Error updating contact:', err);
             setError(err.message);
@@ -110,10 +202,19 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            const index = mockContacts.findIndex(c => c.id === id);
-            if (index !== -1) {
-                mockContacts.splice(index, 1);
-            }
+            // Delete company relationships first (cascade should handle this, but being explicit)
+            await supabase
+                .from('contact_companies')
+                .delete()
+                .eq('contact_id', id);
+
+            // Delete contact
+            const { error: deleteError } = await supabase
+                .from('contacts')
+                .delete()
+                .eq('id', id);
+
+            if (deleteError) throw deleteError;
 
             await fetchContacts();
             return { success: true };
@@ -129,11 +230,16 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            const index = mockContacts.findIndex(c => c.id === contactId);
-            if (index !== -1) {
-                mockContacts[index].company_id = companyId;
-                mockContacts[index].position = role;
-            }
+            const { error: linkError } = await supabase
+                .from('contact_companies')
+                .insert([{
+                    contact_id: contactId,
+                    company_id: companyId,
+                    role: role,
+                    is_primary: isPrimary
+                }]);
+
+            if (linkError) throw linkError;
 
             await fetchContacts();
         } catch (err) {
@@ -148,10 +254,13 @@ export const useContacts = () => {
         try {
             setError(null);
 
-            const index = mockContacts.findIndex(c => c.id === contactId);
-            if (index !== -1 && mockContacts[index].company_id === companyId) {
-                mockContacts[index].company_id = null;
-            }
+            const { error: unlinkError } = await supabase
+                .from('contact_companies')
+                .delete()
+                .eq('contact_id', contactId)
+                .eq('company_id', companyId);
+
+            if (unlinkError) throw unlinkError;
 
             await fetchContacts();
         } catch (err) {
@@ -163,8 +272,10 @@ export const useContacts = () => {
 
     // Load contacts on mount
     useEffect(() => {
-        fetchContacts();
-    }, []);
+        if (user) {
+            fetchContacts();
+        }
+    }, [user]);
 
     return {
         contacts,
