@@ -128,6 +128,14 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        // Validate that comercial_id is assigned
+        const finalComercialId = formData.comercialId || comercialId;
+        if (!finalComercialId) {
+            alert('⚠️ Debe asignar un comercial antes de guardar');
+            return;
+        }
+
         // Only send fields that exist in the companies table
         const dataToSubmit = {
             // Include ID if editing existing client
@@ -149,8 +157,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             })(),
             payment_terms: formData.paymentTerms || null,
             credit_limit: formData.creditLimit || null,
-            // Comercial assignment - use current user's comercial_id
-            comercial_id: formData.comercialId || comercialId,
+            // Comercial assignment - REQUIRED
+            comercial_id: finalComercialId,
             // Contact assignments
             contactIds: selectedContactIds
         };

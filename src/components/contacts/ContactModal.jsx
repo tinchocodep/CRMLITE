@@ -178,6 +178,10 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Email inválido';
         }
+        // Require comercial_id
+        if (!formData.comercialId) {
+            newErrors.comercialId = 'Debe asignar un comercial';
+        }
         // Only require company if not preselected (will be added on save)
         if (formData.companies.length === 0 && !preselectedCompany) {
             newErrors.companies = 'Debe vincular al menos una empresa';
@@ -355,9 +359,12 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                 <ComercialSelector
                                     value={formData.comercialId}
                                     onChange={(value) => setFormData(prev => ({ ...prev, comercialId: value }))}
-                                    label="Asignar a Comercial"
-                                    required={false}
+                                    label="Asignar a Comercial *"
+                                    required={true}
                                 />
+                                {errors.comercialId && (
+                                    <p className="text-xs text-red-600 mt-1">{errors.comercialId}</p>
+                                )}
                             </div>
                         </div>
 
