@@ -106,6 +106,8 @@ export const useContacts = () => {
     // Create new contact with company relationships
     const createContact = async (contactData) => {
         try {
+            console.log('🔍 [createContact] Starting with data:', contactData);
+
             // Don't create if tenant_id is not available
             if (!tenantId) {
                 throw new Error('Tenant ID not available');
@@ -121,24 +123,47 @@ export const useContacts = () => {
                 .eq('id', authUser?.id)
                 .single();
 
+            console.log('🔍 [createContact] User data:', { authUser: authUser?.id, comercialId: userData?.comercial_id });
+
+            const dataToInsert = {
+                first_name: contactData.firstName,
+                last_name: contactData.lastName,
+                email: contactData.email,
+                phone: contactData.phone,
+                mobile: contactData.mobile,
+                notes: contactData.notes,
+                comercial_id: contactData.comercialId || userData?.comercial_id,
+                tenant_id: tenantId,
+                created_by: authUser?.id
+            };
+
+            console.log('📝 [createContact] Data to insert:', dataToInsert);
+
             // Insert contact
             const { data: newContact, error: insertError } = await supabase
                 .from('contacts')
-                .insert([{
-                    first_name: contactData.firstName,
-                    last_name: contactData.lastName,
-                    email: contactData.email,
-                    phone: contactData.phone,
-                    mobile: contactData.mobile,
-                    notes: contactData.notes,
-                    comercial_id: contactData.comercialId || userData?.comercial_id,
-                    tenant_id: tenantId,
-                    created_by: authUser?.id
-                }])
+                .insert([dataToInsert])
                 .select()
                 .single();
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('❌ [createContact] Insert error:', insertError);
+
+                // Provide user-friendly error messages
+                if (insertError.code === '23502') {
+                    if (insertError.message.includes('first_name')) {
+                        throw new Error('El nombre es obligatorio');
+                    }
+                    if (insertError.message.includes('last_name')) {
+                        throw new Error('El apellido es obligatorio');
+                    }
+                    if (insertError.message.includes('comercial_id')) {
+                        throw new Error('Debe asignar un comercial');
+                    }
+                }
+
+                throw insertError;
+            }
 
             // Create company relationships if provided
             if (contactData.companies && contactData.companies.length > 0) {
