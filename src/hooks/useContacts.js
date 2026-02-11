@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 export const useContacts = () => {
     const { user } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,6 +13,13 @@ export const useContacts = () => {
     // Fetch all contacts with their companies
     const fetchContacts = async () => {
         try {
+            // Don't fetch if tenant_id is not available yet
+            if (!tenantId) {
+                setContacts([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setError(null);
 
@@ -21,6 +30,7 @@ export const useContacts = () => {
                     *,
                     comercial:comerciales!comercial_id(id, name, email)
                 `)
+                .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 
             if (contactsError) throw contactsError;
@@ -38,7 +48,8 @@ export const useContacts = () => {
                         status,
                         is_active
                     )
-                `);
+                `)
+                .eq('tenant_id', tenantId);
 
             if (relationshipsError) throw relationshipsError;
 
@@ -86,6 +97,11 @@ export const useContacts = () => {
     // Create new contact with company relationships
     const createContact = async (contactData) => {
         try {
+            // Don't create if tenant_id is not available
+            if (!tenantId) {
+                throw new Error('Tenant ID not available');
+            }
+
             setError(null);
 
             // Get current user's data
@@ -107,6 +123,7 @@ export const useContacts = () => {
                     mobile: contactData.mobile,
                     notes: contactData.notes,
                     comercial_id: contactData.comercialId || userData?.comercial_id,
+                    tenant_id: tenantId,
                     created_by: authUser?.id
                 }])
                 .select()
@@ -120,7 +137,8 @@ export const useContacts = () => {
                     contact_id: newContact.id,
                     company_id: company.companyId,
                     role: company.role,
-                    is_primary: company.isPrimary || false
+                    is_primary: company.isPrimary || false,
+                    tenant_id: tenantId
                 }));
 
                 const { error: relError } = await supabase
@@ -158,6 +176,7 @@ export const useContacts = () => {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
+                .eq('tenant_id', tenantId)
                 .select()
                 .single();
 
@@ -169,7 +188,8 @@ export const useContacts = () => {
                 await supabase
                     .from('contact_companies')
                     .delete()
-                    .eq('contact_id', id);
+                    .eq('contact_id', id)
+                    .eq('tenant_id', tenantId);
 
                 // Create new relationships
                 if (contactData.companies.length > 0) {
@@ -177,7 +197,8 @@ export const useContacts = () => {
                         contact_id: id,
                         company_id: company.companyId,
                         role: company.role,
-                        is_primary: company.isPrimary || false
+                        is_primary: company.isPrimary || false,
+                        tenant_id: tenantId
                     }));
 
                     const { error: relError } = await supabase
@@ -206,13 +227,15 @@ export const useContacts = () => {
             await supabase
                 .from('contact_companies')
                 .delete()
-                .eq('contact_id', id);
+                .eq('contact_id', id)
+                .eq('tenant_id', tenantId);
 
             // Delete contact
             const { error: deleteError } = await supabase
                 .from('contacts')
                 .delete()
-                .eq('id', id);
+                .eq('id', id)
+                .eq('tenant_id', tenantId);
 
             if (deleteError) throw deleteError;
 
@@ -236,7 +259,8 @@ export const useContacts = () => {
                     contact_id: contactId,
                     company_id: companyId,
                     role: role,
-                    is_primary: isPrimary
+                    is_primary: isPrimary,
+                    tenant_id: tenantId
                 }]);
 
             if (linkError) throw linkError;
@@ -258,7 +282,8 @@ export const useContacts = () => {
                 .from('contact_companies')
                 .delete()
                 .eq('contact_id', contactId)
-                .eq('company_id', companyId);
+                .eq('company_id', companyId)
+                .eq('tenant_id', tenantId);
 
             if (unlinkError) throw unlinkError;
 
@@ -272,14 +297,16 @@ export const useContacts = () => {
 
     // Load contacts on mount
     useEffect(() => {
-        if (user) {
+        if (user && tenantId) {
             fetchContacts();
+        } else if (!tenantLoading) {
+            setLoading(false);
         }
-    }, [user]);
+    }, [user, tenantId, tenantLoading]);
 
     return {
         contacts,
-        loading,
+        loading: loading || tenantLoading,
         error,
         refetch: fetchContacts,
         createContact,
