@@ -158,7 +158,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
             comercial_id: newEvent.assignedTo[0],
             scheduled_date: datePart, // Already in YYYY-MM-DD format
             scheduled_time: `${hours}:${minutes}`, // HH:MM
-            duration_minutes: newEvent.duration,
             description: newEvent.description || null,
             status: 'pending'
         };
