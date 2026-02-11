@@ -83,17 +83,28 @@ export const useRoleBasedFilter = () => {
      * @returns {Object} Query modificada con los filtros aplicados
      */
     const applyRoleFilter = (query) => {
+        console.log('🔍 [applyRoleFilter] Applying filter:', {
+            isAdmin,
+            isSupervisor,
+            comercialId,
+            selectedComercialId,
+            role: userRole
+        });
+
         if (isAdmin) {
             // Admin: Si seleccionó un comercial específico, filtrar por él
             if (selectedComercialId !== 'all' && selectedComercialId !== null && selectedComercialId !== '') {
+                console.log('✅ [applyRoleFilter] Admin filtering by selected comercial:', selectedComercialId);
                 return query.eq('comercial_id', selectedComercialId);
             }
             // Si es 'all', no aplicar filtro (ve todo)
+            console.log('✅ [applyRoleFilter] Admin seeing all');
             return query;
         } else if (isSupervisor) {
             // Supervisor: Ve lo suyo + lo de sus comerciales
             if (selectedComercialId !== 'all' && selectedComercialId !== null && selectedComercialId !== '') {
                 // Si seleccionó un comercial específico
+                console.log('✅ [applyRoleFilter] Supervisor filtering by selected comercial:', selectedComercialId);
                 return query.eq('comercial_id', selectedComercialId);
             } else {
                 // Ve lo suyo + todos sus comerciales
@@ -101,14 +112,17 @@ export const useRoleBasedFilter = () => {
                 if (comercialId) {
                     comercialIds.push(comercialId);
                 }
+                console.log('✅ [applyRoleFilter] Supervisor seeing own + team:', comercialIds);
                 return query.in('comercial_id', comercialIds);
             }
         } else {
             // Comercial/User: Solo ve lo suyo
             if (comercialId) {
+                console.log('✅ [applyRoleFilter] User/Comercial filtering by own ID:', comercialId);
                 return query.eq('comercial_id', comercialId);
             }
             // Si no tiene comercial_id, usar .is() para NULL
+            console.log('⚠️ [applyRoleFilter] User has no comercial_id, showing NULL records');
             return query.is('comercial_id', null);
         }
     };
