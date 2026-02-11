@@ -3,6 +3,7 @@ import { X, Building2, UserPlus, Plus, Trash2, Star, CheckCircle } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
+import ComercialSelector from '../shared/ComercialSelector';
 
 
 const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedCompany = null }) => {
@@ -14,6 +15,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         email: '',
         phone: '',
         notes: '',
+        comercialId: null,
         companies: []
     });
 
@@ -51,6 +53,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                 email: contact.email || '',
                 phone: contact.phone || '',
                 notes: contact.notes || '',
+                comercialId: contact.comercialId || contact.comercial_id || null,
                 companies: contact.companies || []
             });
         } else {
@@ -72,6 +75,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                 email: '',
                 phone: '',
                 notes: '',
+                comercialId: null,
                 companies: initialCompanies
             });
         }
@@ -345,6 +349,16 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                     placeholder="+54 9 11 1234-5678"
                                 />
                             </div>
+
+                            {/* Comercial Assignment */}
+                            <div>
+                                <ComercialSelector
+                                    value={formData.comercialId}
+                                    onChange={(value) => setFormData(prev => ({ ...prev, comercialId: value }))}
+                                    label="Asignar a Comercial"
+                                    required={false}
+                                />
+                            </div>
                         </div>
 
                         {/* Companies */}
@@ -570,7 +584,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                     </div>
                 </motion.div>
             </div>
-        </AnimatePresence>
+        </AnimatePresence >
     );
 };
 
