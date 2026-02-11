@@ -9,6 +9,7 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
+import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 
 const Prospects = () => {
@@ -16,6 +17,7 @@ const Prospects = () => {
     const { companies: prospects, loading, createCompany, updateCompany, deleteCompany, convertToClient } = useCompanies('prospect');
     const { contacts: allContacts } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
+    const { comercialId } = useAuth();
 
     // Role-based filtering
     const {
@@ -67,7 +69,8 @@ const Prospects = () => {
             contact: '',
             city: '',
             province: '',
-            notes: ''
+            notes: '',
+            comercial_id: comercialId // Initialize with current user's comercial_id
         });
         setIsEditModalOpen(true);
     };

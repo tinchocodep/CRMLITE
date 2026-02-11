@@ -83,31 +83,44 @@ export const useCompanies = (type = null) => {
 
     const createCompany = async (companyData) => {
         try {
+            console.log('🔍 [createCompany] Starting with data:', companyData);
+            console.log('🔍 [createCompany] Current tenantId:', tenantId);
+
             // Don't create if tenant_id is not available
             if (!tenantId) {
+                console.error('❌ [createCompany] Tenant ID not available!');
                 throw new Error('Tenant ID not available');
             }
 
             // Get current user's data for created_by
             const { data: { user: authUser } } = await supabase.auth.getUser();
+            console.log('🔍 [createCompany] Auth user:', authUser?.id);
+
+            const dataToInsert = {
+                ...companyData,
+                tenant_id: tenantId,
+                created_by: authUser?.id,
+                is_active: true
+            };
+
+            console.log('📝 [createCompany] Data to insert:', dataToInsert);
 
             const { data, error: insertError } = await supabase
                 .from('companies')
-                .insert([{
-                    ...companyData,
-                    tenant_id: tenantId,
-                    created_by: authUser?.id,
-                    is_active: true
-                }])
+                .insert([dataToInsert])
                 .select()
                 .single();
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('❌ [createCompany] Insert error:', insertError);
+                throw insertError;
+            }
 
+            console.log('✅ [createCompany] Successfully created company:', data);
             await fetchCompanies();
             return { success: true, data };
         } catch (err) {
-            console.error('Error creating company:', err);
+            console.error('❌ [createCompany] Error creating company:', err);
             return { success: false, error: err.message };
         }
     };
