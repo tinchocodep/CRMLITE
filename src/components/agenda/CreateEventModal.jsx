@@ -66,11 +66,14 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
     useEffect(() => {
         const fetchComerciales = async () => {
             try {
+                console.log('[CreateEventModal] Fetching comerciales...');
                 const { data, error } = await supabase
                     .from('comerciales')
                     .select('id, name, email')
                     .eq('is_active', true)
                     .order('name');
+
+                console.log('[CreateEventModal] Comerciales query result:', { data, error });
 
                 if (error) throw error;
 
@@ -82,6 +85,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                     .eq('id', authUser?.id)
                     .single();
 
+                console.log('[CreateEventModal] Current user data:', { authUser: authUser?.id, userData });
+
                 const currentComercialId = userData?.comercial_id;
 
                 const formattedComerciales = data.map(c => ({
@@ -91,6 +96,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                     isCurrentUser: c.id === currentComercialId,
                     avatar: null
                 }));
+
+                console.log('[CreateEventModal] Formatted comerciales:', formattedComerciales);
 
                 setTeamMembers(formattedComerciales);
 
@@ -102,7 +109,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [] }) => {
                     }));
                 }
             } catch (error) {
-                console.error('Error fetching comerciales:', error);
+                console.error('[CreateEventModal] Error fetching comerciales:', error);
                 setTeamMembers([]);
             }
         };
