@@ -85,14 +85,14 @@ export const useRoleBasedFilter = () => {
     const applyRoleFilter = (query) => {
         if (isAdmin) {
             // Admin: Si seleccionó un comercial específico, filtrar por él
-            if (selectedComercialId !== 'all') {
+            if (selectedComercialId !== 'all' && selectedComercialId !== null && selectedComercialId !== '') {
                 return query.eq('comercial_id', selectedComercialId);
             }
             // Si es 'all', no aplicar filtro (ve todo)
             return query;
         } else if (isSupervisor) {
             // Supervisor: Ve lo suyo + lo de sus comerciales
-            if (selectedComercialId !== 'all') {
+            if (selectedComercialId !== 'all' && selectedComercialId !== null && selectedComercialId !== '') {
                 // Si seleccionó un comercial específico
                 return query.eq('comercial_id', selectedComercialId);
             } else {
@@ -108,8 +108,8 @@ export const useRoleBasedFilter = () => {
             if (comercialId) {
                 return query.eq('comercial_id', comercialId);
             }
-            // Si no tiene comercial_id, no mostrar nada
-            return query.eq('comercial_id', null);
+            // Si no tiene comercial_id, usar .is() para NULL
+            return query.is('comercial_id', null);
         }
     };
 
