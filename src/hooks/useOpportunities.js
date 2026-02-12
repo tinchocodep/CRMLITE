@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
-import { saveQuotation, getQuotationsByOpportunity } from '../services/quotationsService';
+
 
 export const useOpportunities = (refreshKey = 'default') => {
     const [opportunities, setOpportunities] = useState([]);
@@ -218,55 +218,126 @@ export const useOpportunities = (refreshKey = 'default') => {
 
             if (updateError) throw updateError;
 
-            // Check if probability reached 60% or more
+
+            // Check if probability reached 60% or status changed to 'won'
             const previousProbability = currentOpp?.probability || 0;
             const newProbability = updates.probability !== undefined ? updates.probability : previousProbability;
+            const previousStatus = currentOpp?.status || '';
+            const newStatus = updates.status !== undefined ? updates.status : previousStatus;
 
-            // Auto-create quotation if probability reaches 60% and no quotation exists yet
-            if (newProbability >= 60 && previousProbability < 60) {
-                const existingQuotations = getQuotationsByOpportunity(numericId);
+            // Auto-create quotation if:
+            // 1. Probability reaches 60% (and was below before), OR
+            // 2. Status changes to 'won'
+            const shouldCreateQuotation =
+                (newProbability >= 60 && previousProbability < 60) ||
+                (newStatus === 'won' && previousStatus !== 'won');
 
-                if (existingQuotations.length === 0) {
-                    console.log('🎯 Probability reached 60%! Auto-creating quotation...');
+            if (shouldCreateQuotation) {
+                try {
+                    // Check if quotation already exists for this opportunity
+                    const { data: existingQuotations } = await supabase
+                        .from('quotations')
+                        .select('id, quotation_number')
+                        .eq('opportunity_id', numericId);
 
-                    // Create quotation from opportunity data
-                    const newQuotation = saveQuotation({
-                        opportunityId: numericId,
-                        clientId: currentOpp.company_id,
-                        clientName: currentOpp.company?.trade_name || currentOpp.company?.legal_name || 'Cliente',
-                        saleType: 'Venta Directa',
-                        paymentCondition: 'A definir',
-                        deliveryDate: currentOpp.close_date || new Date().toISOString().split('T')[0],
-                        originAddress: '',
-                        destinationAddress: '',
-                        status: 'draft',
-                        lines: [{
-                            id: 1,
-                            productName: currentOpp.product_type || 'Producto',
-                            quantity: 1,
-                            unitPrice: currentOpp.amount || 0,
-                            total: currentOpp.amount || 0
-                        }],
-                        subtotal: currentOpp.amount || 0,
-                        tax: (currentOpp.amount || 0) * 0.21,
-                        total: (currentOpp.amount || 0) * 1.21,
-                        notes: `Cotización generada automáticamente desde oportunidad: ${currentOpp.opportunity_name}`
-                    });
+                    if (!existingQuotations || existingQuotations.length === 0) {
+                        console.log('🎯 Auto-creating quotation in database...');
 
-                    console.log('✅ Auto-created quotation:', newQuotation);
+                        // Get user data for tenant_id
+                        const { data: { user: authUser } } = await supabase.auth.getUser();
+                        const { data: userData } = await supabase
+                            .from('users')
+                            .select('tenant_id, comercial_id')
+                            .eq('id', authUser.id)
+                            .single();
 
-                    // Show notification (will be handled by the component)
-                    if (window.showToast) {
-                        window.showToast({
-                            id: `auto-quotation-${numericId}`,
-                            title: '🎉 Cotización Creada Automáticamente',
-                            description: `Se creó la cotización ${newQuotation.quotationNumber} porque la oportunidad alcanzó 60% de probabilidad`,
-                            priority: 'high',
-                            timeAgo: 'Ahora'
-                        });
+                        // Generate quotation number
+                        const currentYear = new Date().getFullYear();
+                        const prefix = `COT-${currentYear}-`;
+                        const { data: lastQuotation } = await supabase
+                            .from('quotations')
+                            .select('quotation_number')
+                            .eq('tenant_id', userData.tenant_id)
+                            .like('quotation_number', `${prefix}%`)
+                            .order('quotation_number', { ascending: false })
+                            .limit(1);
+
+                        let nextNumber = 1;
+                        if (lastQuotation && lastQuotation.length > 0) {
+                            const lastNumber = parseInt(lastQuotation[0].quotation_number.split('-')[2]);
+                            nextNumber = lastNumber + 1;
+                        }
+                        const quotationNumber = `${prefix}${String(nextNumber).padStart(3, '0')}`;
+
+                        // Calculate delivery date (30 days from now if not specified)
+                        const deliveryDate = currentOpp.close_date ||
+                            new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+                        // Calculate totals
+                        const subtotal = currentOpp.amount || 0;
+                        const tax = subtotal * 0.21;
+                        const total = subtotal + tax;
+
+                        // Create quotation
+                        const { data: newQuotation, error: quotationError } = await supabase
+                            .from('quotations')
+                            .insert([{
+                                quotation_number: quotationNumber,
+                                opportunity_id: numericId,
+                                company_id: currentOpp.company_id,
+                                tenant_id: userData.tenant_id,
+                                comercial_id: currentOpp.comercial_id || userData.comercial_id,
+                                client_name: currentOpp.company?.trade_name || currentOpp.company?.legal_name || 'Cliente',
+                                client_cuit: currentOpp.company?.cuit,
+                                sale_type: 'Venta Directa',
+                                payment_condition: '30d',
+                                delivery_date: deliveryDate,
+                                origin_address: 'Depósito Central',
+                                destination_address: 'A definir',
+                                status: newStatus === 'won' ? 'draft' : 'draft',
+                                subtotal,
+                                tax,
+                                total,
+                                notes: `Cotización generada automáticamente desde oportunidad: ${currentOpp.opportunity_name}`
+                            }])
+                            .select()
+                            .single();
+
+                        if (quotationError) throw quotationError;
+
+                        // Create quotation line
+                        const { error: lineError } = await supabase
+                            .from('quotation_lines')
+                            .insert([{
+                                quotation_id: newQuotation.id,
+                                product_name: currentOpp.product_type || 'Producto',
+                                quantity: 1,
+                                unit_price: subtotal,
+                                subtotal,
+                                tax_rate: 21,
+                                total,
+                                line_order: 0
+                            }]);
+
+                        if (lineError) throw lineError;
+
+                        console.log('✅ Auto-created quotation in database:', newQuotation);
+
+                        // Return quotation data for notification
+                        data.autoCreatedQuotation = {
+                            quotationNumber: newQuotation.quotation_number,
+                            total: newQuotation.total
+                        };
+                    } else {
+                        console.log('ℹ️ Quotation already exists for this opportunity');
+                        data.existingQuotation = existingQuotations[0];
                     }
+                } catch (quotationError) {
+                    console.error('❌ Error auto-creating quotation:', quotationError);
+                    // Don't fail the opportunity update if quotation creation fails
                 }
             }
+
 
             // Delete old auto-generated activities for this opportunity
             await supabase

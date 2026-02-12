@@ -4,7 +4,7 @@ import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
 import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
 import { opportunities as mockOpportunities } from '../data/opportunities';
-import { quotations as mockQuotations } from '../data/quotations';
+import { useNotifications } from '../hooks/useNotifications';
 
 const stageConfig = {
     // Estados del Cotizador
@@ -24,30 +24,7 @@ const Opportunities = () => {
     const [opportunityToEdit, setOpportunityToEdit] = useState(null);
     const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
 
-    // Estado para usar datos mock
-    const [useMockData, setUseMockData] = useState(true);
-
-    // Transform mock opportunities to match expected format
-    const transformedMockOpportunities = mockOpportunities.map(opp => ({
-        ...opp,
-        opportunityName: opp.title,
-        opportunity_name: opp.title,
-        productType: opp.products[0]?.productName || 'N/A',
-        product_type: opp.products[0]?.productName || 'N/A',
-        product: opp.products[0]?.productName || 'N/A', // For card display
-        business_unit: opp.clientName, // For card display
-        amount: opp.estimatedValue,
-        closeDate: opp.expectedCloseDate,
-        close_date: opp.expectedCloseDate,
-        linkedEntity: {
-            id: opp.clientId,
-            type: 'client',
-            name: opp.clientName
-        }
-    }));
-
-    const [localOpportunities, setLocalOpportunities] = useState(transformedMockOpportunities);
-    const [localQuotations, setLocalQuotations] = useState(mockQuotations);
+    const { addNotification } = useNotifications();
 
     useEffect(() => {
         console.log('🟢 Opportunities component MOUNTED');
@@ -77,54 +54,55 @@ const Opportunities = () => {
     }, [statusDropdownOpen]);
 
     // Función para marcar como ganado y crear cotización
-    const handleMarkAsWon = (opportunity) => {
-        // Actualizar estado de oportunidad a "ganado"
-        setLocalOpportunities(prev =>
-            prev.map(opp =>
-                opp.id === opportunity.id
-                    ? { ...opp, status: 'won' }
-                    : opp
-            )
-        );
+    const handleMarkAsWon = async (opportunity) => {
+        try {
+            // Update opportunity status to 'won' - this will trigger auto-quotation creation in useOpportunities
+            const result = await updateOpportunity(opportunity.id, { status: 'won' });
 
-        // Crear cotización automáticamente
-        const newQuotation = {
-            id: `quot-${Date.now()}`,
-            number: `COT-2026-${String(localQuotations.length + 1).padStart(3, '0')}`,
-            clientId: opportunity.clientId,
-            clientName: opportunity.clientName,
-            saleType: opportunity.saleType,
-            paymentCondition: '30d', // Default
-            deliveryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // +30 días
-            originAddress: 'Depósito Central - Av. Libertador 1500, CABA',
-            destinationAddress: 'A definir',
-            status: 'draft',
-            lines: opportunity.products.map((prod, index) => ({
-                id: `line-${index + 1}`,
-                productSapCode: prod.sapCode,
-                productName: prod.productName,
-                quantity: prod.quantity,
-                volume: prod.quantity * 0.02,
-                unitPrice: prod.estimatedPrice,
-                subtotal: prod.quantity * prod.estimatedPrice,
-                taxRate: 21,
-                total: prod.quantity * prod.estimatedPrice * 1.21
-            })),
-            subtotal: opportunity.estimatedValue,
-            tax: opportunity.estimatedValue * 0.21,
-            total: opportunity.estimatedValue * 1.21,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-
-        setLocalQuotations(prev => [...prev, newQuotation]);
-
-        // Mostrar notificación
-        alert(`✅ Oportunidad marcada como GANADA!\n\n📋 Se creó la cotización: ${newQuotation.number}\n💰 Total: $${newQuotation.total.toLocaleString('es-AR')}\n\nPuedes verla en el módulo "Cotizaciones"`);
+            if (result.success) {
+                // Show success notification
+                if (result.data.autoCreatedQuotation) {
+                    addNotification({
+                        id: `won - ${opportunity.id} -${Date.now()} `,
+                        title: '✅ Oportunidad marcada como GANADA!',
+                        description: `Se creó la cotización: ${result.data.autoCreatedQuotation.quotationNumber} \n💰 Total: $${result.data.autoCreatedQuotation.total.toLocaleString('es-AR')} \n\nPuedes verla en el módulo "Cotizaciones"`,
+                        priority: 'high',
+                        timeAgo: 'Ahora'
+                    });
+                } else if (result.data.existingQuotation) {
+                    addNotification({
+                        id: `won - existing - ${opportunity.id} -${Date.now()} `,
+                        title: '✅ Oportunidad marcada como GANADA!',
+                        description: `Ya existe una cotización para esta oportunidad: ${result.data.existingQuotation.quotation_number} `,
+                        priority: 'medium',
+                        timeAgo: 'Ahora'
+                    });
+                } else {
+                    addNotification({
+                        id: `won - ${opportunity.id} -${Date.now()} `,
+                        title: '✅ Oportunidad marcada como GANADA!',
+                        description: 'La oportunidad se actualizó correctamente.',
+                        priority: 'medium',
+                        timeAgo: 'Ahora'
+                    });
+                }
+            } else {
+                throw new Error(result.error || 'Error al actualizar la oportunidad');
+            }
+        } catch (error) {
+            console.error('Error marking opportunity as won:', error);
+            addNotification({
+                id: `error - ${opportunity.id} -${Date.now()} `,
+                title: '❌ Error',
+                description: `No se pudo marcar la oportunidad como ganada: ${error.message} `,
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
+        }
     };
 
-    // Usar datos mock o de la base de datos
-    const displayOpportunities = useMockData ? localOpportunities : opportunities;
+    // Use database opportunities only
+    const displayOpportunities = opportunities;
 
     // Filter opportunities
     const filteredOpportunities = useMemo(() => {
@@ -313,7 +291,7 @@ const Opportunities = () => {
                                     <div className="relative status-dropdown-container ml-2">
                                         <button
                                             onClick={() => setStatusDropdownOpen(statusDropdownOpen === opportunity.id ? null : opportunity.id)}
-                                            className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 hover:opacity-80 transition-opacity`}
+                                            className={`px - 2 py - 1 rounded - lg text - xs font - semibold border ${status.color} flex items - center gap - 1 hover: opacity - 80 transition - opacity`}
                                         >
                                             <span>{status.icon}</span>
                                             <span>{status.label}</span>
@@ -325,7 +303,7 @@ const Opportunities = () => {
                                                     <button
                                                         key={key}
                                                         onClick={() => handleStatusChange(opportunity.id, key)}
-                                                        className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
+                                                        className={`w - full px - 3 py - 2 text - left text - xs font - semibold flex items - center gap - 2 hover: bg - slate - 50 dark: hover: bg - slate - 700 transition - colors first: rounded - t - lg last: rounded - b - lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''} `}
                                                     >
                                                         <span>{config.icon}</span>
                                                         <span className={config.color.split(' ')[1]}>{config.label}</span>
@@ -352,7 +330,7 @@ const Opportunities = () => {
                                     <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                         <div
                                             className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full transition-all"
-                                            style={{ width: `${opportunity.probability || 0}%` }}
+                                            style={{ width: `${opportunity.probability || 0}% ` }}
                                         />
                                     </div>
                                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
@@ -421,14 +399,14 @@ const Opportunities = () => {
                                     return (
                                         <tr
                                             key={opp.id}
-                                            className={`border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'
-                                                }`}
+                                            className={`border - b border - slate - 100 dark: border - slate - 700 hover: bg - slate - 50 dark: hover: bg - slate - 700 / 30 transition - colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'
+                                                } `}
                                         >
                                             <td className="py-3 px-4">
                                                 <div className="relative status-dropdown-container">
                                                     <button
                                                         onClick={() => setStatusDropdownOpen(statusDropdownOpen === opp.id ? null : opp.id)}
-                                                        className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit hover:opacity-80 transition-opacity`}
+                                                        className={`px - 2 py - 1 rounded - lg text - xs font - semibold border ${status.color} flex items - center gap - 1 w - fit hover: opacity - 80 transition - opacity`}
                                                     >
                                                         <span>{status.icon}</span>
                                                         <span>{status.label}</span>
@@ -440,7 +418,7 @@ const Opportunities = () => {
                                                                 <button
                                                                     key={key}
                                                                     onClick={() => handleStatusChange(opp.id, key)}
-                                                                    className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
+                                                                    className={`w - full px - 3 py - 2 text - left text - xs font - semibold flex items - center gap - 2 hover: bg - slate - 50 dark: hover: bg - slate - 700 transition - colors first: rounded - t - lg last: rounded - b - lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''} `}
                                                                 >
                                                                     <span>{config.icon}</span>
                                                                     <span className={config.color.split(' ')[1]}>{config.label}</span>
@@ -480,7 +458,7 @@ const Opportunities = () => {
                                                     <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden max-w-[80px]">
                                                         <div
                                                             className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all"
-                                                            style={{ width: `${opp.probability || 0}%` }}
+                                                            style={{ width: `${opp.probability || 0}% ` }}
                                                         />
                                                     </div>
                                                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
