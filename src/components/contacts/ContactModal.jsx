@@ -227,7 +227,10 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                 // Update existing contact
                 const result = await updateContact(contact.id, formData);
                 if (result.success) {
-                    onSave?.(result.data); // Call optional callback
+                    // Wait for onSave callback to complete before closing
+                    if (onSave) {
+                        await onSave(result.data);
+                    }
                     onClose();
                 } else {
                     addNotification({
@@ -242,7 +245,10 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                 // Create new contact
                 const result = await createContact(formData);
                 if (result.success) {
-                    onSave?.(result.data); // Call optional callback
+                    // Wait for onSave callback to complete before closing
+                    if (onSave) {
+                        await onSave(result.data);
+                    }
                     onClose();
                 } else {
                     addNotification({
@@ -257,7 +263,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         } catch (error) {
             console.error('Error in handleSubmit:', error);
             addNotification({
-                id: `error-unexpected-${Date.now()}`,
+                id: `error-submit-${Date.now()}`,
                 title: '❌ Error inesperado',
                 description: error.message || 'Ocurrió un error al procesar la solicitud',
                 priority: 'high',
