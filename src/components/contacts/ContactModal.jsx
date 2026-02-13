@@ -29,6 +29,11 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         isPrimary: false
     });
 
+    const [validationErrors, setValidationErrors] = useState({
+        role: false,
+        company: false
+    });
+
     const [errors, setErrors] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -106,36 +111,21 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
     };
 
     const handleAddCompany = () => {
+        // Reset validation errors
+        setValidationErrors({ role: false, company: false });
+
         // Validate
         if (!newCompany.companyId) {
-            addNotification({
-                id: `validation-company-${Date.now()}`,
-                title: 'ℹ️ Empresa requerida',
-                description: 'Por favor selecciona una empresa antes de continuar',
-                priority: 'medium',
-                timeAgo: 'Ahora'
-            });
+            setValidationErrors(prev => ({ ...prev, company: true }));
             return;
         }
         if (!newCompany.role.trim()) {
-            addNotification({
-                id: `validation-role-${Date.now()}`,
-                title: 'ℹ️ Rol requerido',
-                description: 'Por favor ingresa el rol o cargo del contacto en la empresa',
-                priority: 'medium',
-                timeAgo: 'Ahora'
-            });
+            setValidationErrors(prev => ({ ...prev, role: true }));
             return;
         }
         // Check if company already added
         if (formData.companies.some(c => c.companyId === newCompany.companyId)) {
-            addNotification({
-                id: `validation-duplicate-${Date.now()}`,
-                title: '⚠️ Empresa duplicada',
-                description: 'Esta empresa ya está vinculada a este contacto',
-                priority: 'medium',
-                timeAgo: 'Ahora'
-            });
+            showToast('Esta empresa ya está vinculada a este contacto', 'warning');
             return;
         }
 
@@ -223,15 +213,14 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         }
 
         try {
-            console.log('🔍 [ContactModal] handleSubmit - preselectedCompany:', preselectedCompany);
-            console.log('🔍 [ContactModal] handleSubmit - formData.companies:', formData.companies);
+
 
             // CRITICAL: Check if this is a pending contact (no valid company ID)
             // This happens when creating a contact for an unsaved prospect
             const hasValidCompanyId = formData.companies.some(c => c.companyId && c.companyId !== null);
 
             if (!hasValidCompanyId && formData.companies.length > 0) {
-                console.log('✅ [ContactModal] Pending contact detected - passing to parent');
+
                 // This is a pending contact for an unsaved prospect
                 // Just pass the data to the parent via onSave callback
                 // The parent (EditProspectModal) will handle closing the modal
@@ -596,8 +585,16 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                                 <input
                                                     type="text"
                                                     value={newCompany.role}
-                                                    onChange={(e) => setNewCompany(prev => ({ ...prev, role: e.target.value }))}
-                                                    className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-advanta-green/20"
+                                                    onChange={(e) => {
+                                                        setNewCompany(prev => ({ ...prev, role: e.target.value }));
+                                                        if (validationErrors.role) {
+                                                            setValidationErrors(prev => ({ ...prev, role: false }));
+                                                        }
+                                                    }}
+                                                    className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${validationErrors.role
+                                                            ? 'border-red-500 focus:ring-red-200'
+                                                            : 'border-slate-200 focus:ring-advanta-green/20'
+                                                        }`}
                                                     placeholder="Gerente Comercial"
                                                 />
                                             </div>

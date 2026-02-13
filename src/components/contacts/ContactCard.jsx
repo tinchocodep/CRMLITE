@@ -134,7 +134,10 @@ END:VCARD`;
                             Editar
                         </button>
                         <button
-                            onClick={(e) => { e.stopPropagation(); onDelete(contact.id); }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(contact.id);
+                            }}
                             className="flex-1 px-3 py-2 bg-slate-100 hover:bg-red-600 hover:text-white text-slate-700 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5"
                         >
                             <Trash2 size={14} />

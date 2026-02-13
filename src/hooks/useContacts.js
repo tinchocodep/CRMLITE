@@ -255,28 +255,80 @@ export const useContacts = () => {
     // Delete contact
     const deleteContact = async (id) => {
         try {
+            console.log('🗑️ [useContacts] deleteContact called with ID:', id, 'tenantId:', tenantId);
             setError(null);
 
+            // First, verify the contact exists and we can see it
+            const { data: existingContact, error: fetchError } = await supabase
+                .from('contacts')
+                .select('*')
+                .eq('id', id)
+                .single();
+
+            // Get current user ID for comparison
+            const { data: { user } } = await supabase.auth.getUser();
+
+            console.log('🔍 [useContacts] Contact exists check:', {
+                exists: !!existingContact,
+                contactComercialId: existingContact?.comercial_id,
+                currentUserId: user?.id,
+                idsMatch: existingContact?.comercial_id === user?.id,
+                contactTenantId: existingContact?.tenant_id,
+                currentTenantId: tenantId,
+                fetchError
+            });
+
+            if (fetchError || !existingContact) {
+                throw new Error('El contacto no existe o no tienes permisos para verlo');
+            }
+
             // Delete company relationships first (cascade should handle this, but being explicit)
-            await supabase
+            // This is OK even if contact has no companies - it will just delete 0 rows
+            const { data: relData, error: relError } = await supabase
                 .from('contact_companies')
                 .delete()
                 .eq('contact_id', id)
-                .eq('tenant_id', tenantId);
+                .select();
 
-            // Delete contact
-            const { error: deleteError } = await supabase
+            console.log('📊 [useContacts] contact_companies delete result:', {
+                deletedRelations: relData?.length || 0,
+                relError
+            });
+
+            // Don't fail if no relationships - contact might not have companies
+            if (relError) {
+                console.error('❌ Error deleting contact_companies:', relError);
+                throw relError;
+            }
+
+            // Delete contact - use .select() to verify it was actually deleted
+            const { data: contactData, error: deleteError } = await supabase
                 .from('contacts')
                 .delete()
                 .eq('id', id)
-                .eq('tenant_id', tenantId);
+                .select();
 
-            if (deleteError) throw deleteError;
+            console.log('📊 [useContacts] contacts delete result:', {
+                deletedContact: contactData?.[0],
+                deleteError
+            });
 
+            if (deleteError) {
+                console.error('❌ Error deleting contact:', deleteError);
+                throw deleteError;
+            }
+
+            // Verify deletion actually happened
+            if (!contactData || contactData.length === 0) {
+                console.warn('⚠️ No contact was deleted - RLS policy blocking DELETE');
+                throw new Error('No tienes permisos para eliminar este contacto. Verifica las políticas RLS en Supabase.');
+            }
+
+            console.log('✅ Contact deleted successfully, refreshing list...');
             await fetchContacts();
             return { success: true };
         } catch (err) {
-            console.error('Error deleting contact:', err);
+            console.error('❌ Error deleting contact:', err);
             setError(err.message);
             return { success: false, error: err.message };
         }

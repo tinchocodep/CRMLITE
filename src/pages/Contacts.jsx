@@ -49,14 +49,7 @@ const Contacts = () => {
             companyName.includes(searchLower);
     });
 
-    // Debug logging
-    console.log('🔍 Contacts Page Debug:', {
-        rawContacts: contacts?.length || 0,
-        afterRoleFilter: filteredByRole?.length || 0,
-        afterSearchFilter: filteredContacts?.length || 0,
-        searchTerm: debouncedSearch,
-        sampleContact: filteredContacts?.[0]
-    });
+
 
     const handleToggleExpand = (contactId) => {
         setExpandedContactId(expandedContactId === contactId ? null : contactId);
@@ -68,12 +61,18 @@ const Contacts = () => {
     };
 
     const handleDeleteContact = (contactId) => {
+        console.log('🗑️ [Contacts] handleDeleteContact called with ID:', contactId);
         setConfirmDelete({ isOpen: true, contactId });
     };
 
     const confirmDeleteContact = async () => {
+        console.log('✅ [Contacts] confirmDeleteContact called for ID:', confirmDelete.contactId);
         const result = await deleteContact(confirmDelete.contactId);
-        if (!result.success) {
+        console.log('📊 [Contacts] Delete result:', result);
+        if (result.success) {
+            showSuccess('Contacto eliminado exitosamente');
+            setConfirmDelete({ isOpen: false, contactId: null });
+        } else {
             showError('Error al eliminar contacto: ' + result.error);
         }
     };
@@ -216,7 +215,7 @@ const Contacts = () => {
                     <ContactsTable
                         contacts={filteredContacts}
                         onEdit={handleEditContact}
-                        onDelete={deleteContact}
+                        onDelete={handleDeleteContact}
                     />
                 )}
             </div>

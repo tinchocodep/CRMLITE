@@ -6,7 +6,7 @@ export const ToastProvider = ({ children }) => {
     const [toasts, setToasts] = useState([]);
 
     const showToast = useCallback((notification) => {
-        console.log('[ToastContext] showToast called with:', notification);
+
 
         // Add unique timestamp to ensure unique IDs
         const toastWithId = {
@@ -18,11 +18,11 @@ export const ToastProvider = ({ children }) => {
             // Check if this notification is already showing
             const exists = prev.some(t => t.id === notification.id);
             if (exists) {
-                console.log('[ToastContext] Toast already exists, skipping');
+
                 return prev;
             }
 
-            console.log('[ToastContext] Adding toast to state');
+
             // Add new toast to the beginning
             return [toastWithId, ...prev];
         });

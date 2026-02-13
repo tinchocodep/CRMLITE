@@ -121,8 +121,8 @@ export const useRoleBasedFilter = () => {
     const filterDataByRole = (data) => {
         if (!data || !Array.isArray(data)) return [];
 
-        // Helper function to get comercial_id from item (handles both direct and nested _original)
-        const getComercialId = (item) => item.comercial_id || item._original?.comercial_id;
+        // Helper function to get comercial_id from item (handles both camelCase and snake_case)
+        const getComercialId = (item) => item.comercialId || item.comercial_id || item._original?.comercial_id;
 
         if (isAdmin) {
             // Admin: Si seleccionó un comercial específico, filtrar por él

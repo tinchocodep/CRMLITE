@@ -239,7 +239,10 @@ const ContactsTable = ({ contacts, onEdit, onDelete }) => {
                                             <Edit2 size={15} />
                                         </button>
                                         <button
-                                            onClick={() => onDelete(contact.id)}
+                                            onClick={() => {
+                                                console.log('🔴 [ContactsTable] Delete button clicked!', contact.id);
+                                                onDelete(contact.id);
+                                            }}
                                             className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all ml-1"
                                             title="Eliminar"
                                         >
