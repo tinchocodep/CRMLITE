@@ -133,7 +133,6 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
 
     const confirmDeleteEvent = async () => {
         try {
-            console.log('Deleting event:', event.id);
             await onDelete(event.id);
             setShowDetails(false);
         } catch (error) {
@@ -161,15 +160,8 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
     // Quick date change action - Save button instead of auto-save
     const handleDateChangeSave = async () => {
         if (!tempDate) {
-            console.log('No temp date selected');
             return;
         }
-
-        console.log('Saving date change:', {
-            eventId: event.id,
-            oldDate: editedEvent.scheduled_date,
-            newDate: tempDate
-        });
 
         try {
             // Only send the fields that exist in the database
@@ -177,10 +169,8 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                 scheduled_date: tempDate
             };
 
-            console.log('Calling onUpdate with:', updatedEvent);
             await onUpdate(event.id, updatedEvent);
 
-            console.log('Date updated successfully');
             setShowDatePicker(false);
             setTempDate('');
         } catch (error) {
@@ -214,7 +204,6 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
                 description: editedEvent.description
             };
 
-            console.log('EventCard - Saving changes:', updateData);
             await onUpdate(editedEvent.id, updateData);
             setIsEditing(false);
         } catch (error) {
@@ -710,4 +699,16 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
     );
 };
 
-export default EventCard;
+// Memoize EventCard to prevent unnecessary re-renders
+export default React.memo(EventCard, (prevProps, nextProps) => {
+    // Only re-render if event data, view, or callbacks have changed
+    return (
+        prevProps.event.id === nextProps.event.id &&
+        prevProps.event.title === nextProps.event.title &&
+        prevProps.event.priority === nextProps.event.priority &&
+        prevProps.event.scheduled_date === nextProps.event.scheduled_date &&
+        prevProps.view === nextProps.view &&
+        prevProps.onUpdate === nextProps.onUpdate &&
+        prevProps.onDelete === nextProps.onDelete
+    );
+});

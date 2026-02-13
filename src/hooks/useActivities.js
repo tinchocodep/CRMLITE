@@ -79,7 +79,6 @@ export const useActivities = (daysAhead = 30) => {
 
         // For non-admin/non-supervisor users, wait for comercialId to be loaded
         if (!isAdmin && !isSupervisor && !comercialIdLoaded) {
-            console.log('⏳ [useActivities] Waiting for comercialId to load...');
             setLoading(true);
             return;
         }

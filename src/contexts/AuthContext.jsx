@@ -16,9 +16,8 @@ export const AuthProvider = ({ children }) => {
     const [userProfile, setUserProfile] = useState(null);
     const [comercialId, setComercialId] = useState(null);
 
-    // OPTIMIZATION: Start as true to prevent hooks from waiting
-    // The actual comercialId will be loaded asynchronously
-    const [comercialIdLoaded, setComercialIdLoaded] = useState(true);
+    // Track if comercialId has been loaded (starts false, set to true after loading)
+    const [comercialIdLoaded, setComercialIdLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
 
@@ -70,8 +69,8 @@ export const AuthProvider = ({ children }) => {
                 setUserProfile(null);
                 setComercialId(null);
                 setComercialIdLoaded(false);
+                setIsLoading(false); // Only set to false when logging out
             }
-            setIsLoading(false);
         });
 
         return () => {
@@ -95,6 +94,8 @@ export const AuthProvider = ({ children }) => {
             if (!signal || !signal.aborted) {
                 setUserProfile(profile);
                 setComercialId(profile.comercial_id || null);
+                setComercialIdLoaded(true); // Signal that comercialId is loaded
+                setIsLoading(false); // Auth is fully loaded
 
                 console.log('✅ [AuthContext] User profile loaded:', {
                     role: profile.role,
@@ -102,9 +103,16 @@ export const AuthProvider = ({ children }) => {
                 });
             }
         } catch (error) {
-            // Only log if not aborted
+            // Silently ignore AbortErrors (intentional cancellations from React StrictMode)
+            if (error.name === 'AbortError' || error.message?.includes('AbortError')) {
+                return;
+            }
+
+            // Only log non-abort errors if not aborted
             if (!signal || !signal.aborted) {
                 console.error('Error loading user profile:', error);
+                setComercialIdLoaded(true); // Even on error, mark as loaded to prevent infinite wait
+                setIsLoading(false);
             }
         }
     };

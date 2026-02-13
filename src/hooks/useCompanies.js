@@ -93,22 +93,43 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
+        console.log('🔍 [useCompanies] useEffect triggered:', {
+            type,
+            authLoading,
+            comercialIdLoaded,
+            isAdmin,
+            user: !!user,
+            tenantId,
+            tenantLoading,
+            selectedComercialId
+        });
+
         // Wait for auth to finish loading before fetching
         if (authLoading) {
+            console.log('⏸️ [useCompanies] Waiting - authLoading is true');
             setLoading(true);
+            return;
+        }
+
+        // Wait for tenant to finish loading before proceeding
+        if (tenantLoading) {
+            console.log('⏸️ [useCompanies] Waiting - tenantLoading is true');
+            setLoading(true);
+            return;
+        }
+
+        // If no user or tenantId after loading finished, stop
+        if (!user || !tenantId) {
+            console.log('⏹️ [useCompanies] No user or tenantId - stopping loading');
+            setLoading(false);
             return;
         }
 
         // OPTIMIZATION: Admin users don't need to wait for comercialId
         // They can see all data regardless of comercial_id
         if (isAdmin) {
-            console.log('⚡ [useCompanies] Admin user - skipping comercialId wait');
-            if (user && tenantId) {
-                fetchCompanies();
-            } else if (!tenantLoading) {
-                // Tenant loading finished, but no user/tenantId - stop loading
-                setLoading(false);
-            }
+            console.log('⚡ [useCompanies] Admin user - fetching now!');
+            fetchCompanies();
             return;
         }
 
@@ -119,12 +140,8 @@ export const useCompanies = (type = null) => {
             return;
         }
 
-        if (user && tenantId) {
-            fetchCompanies();
-        } else if (!tenantLoading) {
-            // Tenant loading finished, but no user/tenantId - stop loading
-            setLoading(false);
-        }
+        console.log('✅ [useCompanies] All checks passed - fetching companies now!');
+        fetchCompanies();
     }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin]);
 
     const createCompany = async (companyData) => {
@@ -177,6 +194,46 @@ export const useCompanies = (type = null) => {
         } catch (err) {
             console.error('❌ [createCompany] Error creating company:', err);
             return { success: false, error: err.message };
+        }
+    };
+
+    /**
+     * Generate the next available file_number for a new client
+     * Format: LEG-XXXX (e.g., LEG-0001, LEG-0002)
+     */
+    const generateNextFileNumber = async () => {
+        try {
+            // Get the highest file_number from all clients in this tenant
+            const { data, error } = await supabase
+                .from('companies')
+                .select('file_number')
+                .eq('tenant_id', tenantId)
+                .eq('company_type', 'client')
+                .not('file_number', 'is', null)
+                .order('file_number', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+
+            let nextNumber = 1;
+
+            // If clients exist, extract the number and increment
+            if (data && data.length > 0 && data[0].file_number) {
+                // Extract number from format "LEG-0001" -> 1
+                const match = data[0].file_number.match(/LEG-(\d+)/);
+                if (match) {
+                    const currentMax = parseInt(match[1], 10);
+                    nextNumber = isNaN(currentMax) ? 1 : currentMax + 1;
+                }
+            }
+
+            // Format as LEG-XXXX with 4-digit padding
+            return `LEG-${String(nextNumber).padStart(4, '0')}`;
+        } catch (err) {
+            console.error('Error generating file_number:', err);
+            // Fallback to timestamp-based number if query fails
+            const fallbackNumber = Date.now() % 10000;
+            return `LEG-${String(fallbackNumber).padStart(4, '0')}`;
         }
     };
 
@@ -258,6 +315,7 @@ export const useCompanies = (type = null) => {
         updateCompany,
         deleteCompany,
         convertToClient,
+        generateNextFileNumber, // Export for manual file_number generation
         mapQualificationToStatus,
         mapStatusToQualification
     };

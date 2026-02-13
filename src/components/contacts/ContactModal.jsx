@@ -223,6 +223,25 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         }
 
         try {
+            console.log('🔍 [ContactModal] handleSubmit - preselectedCompany:', preselectedCompany);
+            console.log('🔍 [ContactModal] handleSubmit - formData.companies:', formData.companies);
+
+            // CRITICAL: Check if this is a pending contact (no valid company ID)
+            // This happens when creating a contact for an unsaved prospect
+            const hasValidCompanyId = formData.companies.some(c => c.companyId && c.companyId !== null);
+
+            if (!hasValidCompanyId && formData.companies.length > 0) {
+                console.log('✅ [ContactModal] Pending contact detected - passing to parent');
+                // This is a pending contact for an unsaved prospect
+                // Just pass the data to the parent via onSave callback
+                // The parent (EditProspectModal) will handle closing the modal
+                if (onSave) {
+                    await onSave(formData);
+                }
+                // Don't call onClose() here - let parent handle it to avoid race condition
+                return;
+            }
+
             if (contact?.id) {
                 // Update existing contact
                 const result = await updateContact(contact.id, formData);

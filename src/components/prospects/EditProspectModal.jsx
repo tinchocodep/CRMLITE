@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
 import { safeFormat } from '../../utils/dateUtils';
 import { useContacts } from '../../hooks/useContacts';
+import { useToast } from '../../contexts/ToastContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import ContactModal from '../contacts/ContactModal';
 import { ConfirmDialog } from '../ConfirmDialog';
@@ -17,6 +18,7 @@ const statusOptions = [
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     const { contacts, unlinkFromCompany, createContact, linkToCompany } = useContacts();
     const { addNotification } = useNotifications();
+    const { showToast } = useToast();
     const [showContactModal, setShowContactModal] = useState(false);
     const [showLinkContactModal, setShowLinkContactModal] = useState(false);
     const [confirmUnlink, setConfirmUnlink] = useState({ isOpen: false, contactId: null, contactName: '' });
@@ -33,6 +35,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [preselectedCompany, setPreselectedCompany] = useState(null);
     const [expandedContacts, setExpandedContacts] = useState({});
+    const [pendingContacts, setPendingContacts] = useState([]); // Contacts created before prospect is saved
 
     // Contact search and linking states
     const [contactSearchTerm, setContactSearchTerm] = useState('');
@@ -41,12 +44,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     const [isLinking, setIsLinking] = useState(false);
 
     useEffect(() => {
-        console.log('🔍 [EditProspectModal] Prospect changed:', {
-            prospectId: prospect?.id,
-            comercialId: prospect?.comercial_id,
-            tradeName: prospect?.trade_name,
-            legalName: prospect?.legal_name
-        });
         setFormData({ ...prospect });
     }, [prospect]);
 
@@ -56,14 +53,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     };
 
     const handleSubmit = () => {
-        console.log('💾 [EditProspectModal] Submitting formData:', {
-            id: formData.id,
-            comercial_id: formData.comercial_id,
-            trade_name: formData.trade_name,
-            legal_name: formData.legal_name,
-            fullFormData: formData
-        });
-        onSave(formData);
+        // Pass both formData and pendingContacts to parent
+        onSave(formData, pendingContacts);
         onClose();
     };
 
@@ -96,9 +87,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     };
 
     const handleCreateContact = () => {
+        // Check if prospect has a REAL database ID (not temporary)
+        // Temporary IDs are large numbers (> 1000000)
+        const isRealId = prospect?.id && typeof prospect.id === 'number' && prospect.id < 1000000;
+
         setPreselectedCompany({
-            companyId: prospect.id,
-            companyName: prospect.trade_name || prospect.legal_name,
+            companyId: isRealId ? prospect.id : null, // null if prospect not saved yet
+            companyName: prospect?.trade_name || prospect?.legal_name || 'Nuevo Prospecto',
             companyType: 'prospect'
         });
         setIsContactModalOpen(true);
@@ -106,15 +101,34 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
 
     const handleContactSave = async (contactData) => {
         try {
-            // Save contact to Supabase
+            // If prospect doesn't have an ID yet, store contact as pending
+            if (!prospect?.id || (typeof prospect.id === 'number' && prospect.id > 1000000)) {
+                console.log('📋 [EditProspectModal] Adding pending contact:', contactData);
+                // Add to pending contacts list
+                setPendingContacts(prev => [...prev, contactData]);
+
+                showToast({
+                    id: `pending-contact-${Date.now()}`,
+                    title: '✅ Contacto agregado',
+                    description: `${contactData.first_name} ${contactData.last_name} se vinculará al guardar el prospecto`,
+                    priority: 'medium',
+                    timeAgo: 'Ahora'
+                });
+
+                setIsContactModalOpen(false);
+                setPreselectedCompany(null);
+                return;
+            }
+
+            // If prospect has ID, create contact normally
             const result = await createContact(contactData);
 
             if (result.success) {
                 // Show success notification
-                addNotification({
+                showToast({
                     id: `contact-created-${Date.now()}`,
                     title: '✅ Contacto creado correctamente',
-                    description: `${contactData.firstName} ${contactData.lastName} ha sido creado exitosamente`,
+                    description: `${contactData.first_name} ${contactData.last_name} ha sido creado exitosamente`,
                     priority: 'medium',
                     timeAgo: 'Ahora'
                 });
@@ -133,7 +147,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                 // Force re-render
                 setFormData({ ...formData });
             } else {
-                addNotification({
+                showToast({
                     id: `error-save-contact-${Date.now()}`,
                     title: '❌ Error al guardar contacto',
                     description: result.error || 'No se pudo guardar el contacto',
@@ -143,7 +157,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
             }
         } catch (error) {
             console.error('Error saving contact:', error);
-            addNotification({
+            showToast({
                 id: `error-save-contact-unexpected-${Date.now()}`,
                 title: '❌ Error inesperado',
                 description: error.message || 'Ocurrió un error al guardar el contacto',
@@ -222,14 +236,12 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         <div
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200"
             onClick={(e) => {
-                console.log('🔴 BACKDROP CLICKED - CLOSING MODAL', e.target);
                 onClose();
             }}
         >
             <div
                 className="w-full max-w-2xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300 flex flex-col max-h-[90vh]"
                 onClick={(e) => {
-                    console.log('✅ MODAL CONTENT CLICKED - STOPPING PROPAGATION', e.target);
                     e.stopPropagation();
                 }}
             >
@@ -350,7 +362,42 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide flex items-center gap-2">
                                 <User size={14} />
                                 Contactos Vinculados
+                                {pendingContacts.length > 0 && (
+                                    <span className="ml-auto px-2 py-0.5 bg-orange-100 text-orange-700 rounded-md text-[10px] font-bold">
+                                        {pendingContacts.length} PENDIENTE{pendingContacts.length > 1 ? 'S' : ''}
+                                    </span>
+                                )}
                             </h3>
+
+                            {/* Pending Contacts (not yet saved) */}
+                            {pendingContacts.length > 0 && (
+                                <div className="space-y-2">
+                                    <p className="text-xs text-orange-600 font-semibold">
+                                        ⏳ Estos contactos se crearán al guardar el prospecto:
+                                    </p>
+                                    {pendingContacts.map((contact, idx) => (
+                                        <div key={idx} className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                            <div className="flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-sm font-bold text-slate-800">
+                                                        {contact.first_name} {contact.last_name}
+                                                    </p>
+                                                    <p className="text-xs text-slate-600">
+                                                        {contact.email || contact.phone || 'Sin datos de contacto'}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setPendingContacts(prev => prev.filter((_, i) => i !== idx))}
+                                                    className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
+                                                    title="Eliminar contacto pendiente"
+                                                >
+                                                    <Trash2 size={16} className="text-red-600" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             {/* Get contacts linked to this prospect */}
                             {(() => {
@@ -385,13 +432,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                                             <div
                                                                 className="p-4 flex items-start justify-between cursor-pointer hover:bg-slate-100 transition-colors"
                                                                 onClick={(e) => {
-                                                                    console.log('🟢 CONTACT CARD CLICKED', {
-                                                                        contactName: `${contact.firstName} ${contact.lastName}`,
-                                                                        target: e.target,
-                                                                        currentTarget: e.currentTarget
-                                                                    });
                                                                     e.stopPropagation();
-                                                                    console.log('✋ PROPAGATION STOPPED FOR CONTACT CARD');
                                                                     setExpandedContacts(prev => ({
                                                                         ...prev,
                                                                         [contact.id]: !prev[contact.id]
@@ -413,7 +454,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
 
                                                                     {/* Quick Actions */}
                                                                     <div className="flex items-center gap-1 mt-2" onClick={(e) => {
-                                                                        console.log('🔵 QUICK ACTIONS CLICKED - STOPPING PROPAGATION');
                                                                         e.stopPropagation();
                                                                     }}>
                                                                         {contact.phone && (
@@ -631,6 +671,7 @@ END:VCARD`;
                                             <button
                                                 onClick={handleCreateContact}
                                                 className="w-full px-4 py-3 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                title="Crear nuevo contacto"
                                             >
                                                 <UserPlus size={16} />
                                                 Crear Nuevo Contacto

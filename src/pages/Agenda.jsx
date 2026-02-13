@@ -65,11 +65,25 @@ const Agenda = () => {
 
     const today = () => setCurrentDate(new Date());
 
-    const getDaysInMonth = () => {
+    // Memoize getDaysInMonth to avoid recalculating on every render
+    const getDaysInMonth = React.useMemo(() => {
         const monthStart = startOfMonth(currentDate);
         const monthEnd = endOfMonth(monthStart);
         const startDate = startOfWeek(monthStart);
         const endDate = endOfWeek(monthEnd);
+
+        // Pre-group events by date for O(1) lookup instead of filtering on each iteration
+        const eventsByDate = events.reduce((acc, event) => {
+            if (!event.start) return acc;
+            try {
+                const dateKey = format(event.start, 'yyyy-MM-dd');
+                if (!acc[dateKey]) acc[dateKey] = [];
+                acc[dateKey].push(event);
+            } catch {
+                // Skip events with invalid dates
+            }
+            return acc;
+        }, {});
 
         const dateFormat = "d";
         const rows = [];
@@ -81,16 +95,10 @@ const Agenda = () => {
             for (let i = 0; i < 7; i++) {
                 formattedDate = format(day, dateFormat);
                 const cloneDay = day;
-                // Filter events for this specific day
-                // Use the normalized 'start' property (already converted from scheduled_date)
-                const dayEvents = events.filter(e => {
-                    if (!e.start) return false; // Skip events without normalized start date
-                    try {
-                        return isSameDay(e.start, cloneDay);
-                    } catch {
-                        return false; // Skip events with invalid dates
-                    }
-                });
+
+                // O(1) lookup instead of O(n) filter
+                const dateKey = format(cloneDay, 'yyyy-MM-dd');
+                const dayEvents = eventsByDate[dateKey] || [];
 
                 days.push(
                     <div
@@ -142,7 +150,7 @@ const Agenda = () => {
             days = [];
         }
         return <div className="space-y-px">{rows}</div>;
-    };
+    }, [currentDate, events, updateActivity, deleteActivity]);
 
     // Weekdays header
     const renderWeekDays = () => {
@@ -434,7 +442,7 @@ const Agenda = () => {
                 {view === 'month' && (
                     <div className="h-full overflow-auto p-0 md:p-2">
                         {renderWeekDays()}
-                        {getDaysInMonth()}
+                        {getDaysInMonth}
                     </div>
                 )}
                 {view === 'list' && <div className="p-4">{renderList()}</div>}

@@ -34,8 +34,6 @@ export const useOpportunities = (refreshKey = 'default') => {
 
             if (fetchError) throw fetchError;
 
-            console.log('📊 Raw opportunities data from DB:', data);
-
             // Transform data to match OpportunityCard expectations
             const transformedData = (data || []).map(opp => ({
                 ...opp,
@@ -63,8 +61,6 @@ export const useOpportunities = (refreshKey = 'default') => {
                 } : null
             }));
 
-            console.log('✨ Transformed opportunities data:', transformedData);
-
             setOpportunities(transformedData);
             setError(null);
         } catch (err) {
@@ -86,7 +82,6 @@ export const useOpportunities = (refreshKey = 'default') => {
 
         // For non-admin/non-supervisor users, wait for comercialId to be loaded
         if (!isAdmin && !isSupervisor && !comercialIdLoaded) {
-            console.log('⏳ [useOpportunities] Waiting for comercialId to load...');
             setLoading(true);
             return;
         }
@@ -254,7 +249,6 @@ export const useOpportunities = (refreshKey = 'default') => {
                         .eq('opportunity_id', numericId);
 
                     if (!existingQuotations || existingQuotations.length === 0) {
-                        console.log('🎯 Auto-creating quotation in database...');
 
                         // Get user data for tenant_id
                         const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -334,15 +328,12 @@ export const useOpportunities = (refreshKey = 'default') => {
 
                         if (lineError) throw lineError;
 
-                        console.log('✅ Auto-created quotation in database:', newQuotation);
-
                         // Return quotation data for notification
                         data.autoCreatedQuotation = {
                             quotationNumber: newQuotation.quotation_number,
                             total: newQuotation.total
                         };
                     } else {
-                        console.log('ℹ️ Quotation already exists for this opportunity');
                         data.existingQuotation = existingQuotations[0];
                     }
                 } catch (quotationError) {

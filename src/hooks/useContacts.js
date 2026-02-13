@@ -106,7 +106,6 @@ export const useContacts = () => {
     // Create new contact with company relationships
     const createContact = async (contactData) => {
         try {
-            console.log('🔍 [createContact] Starting with data:', contactData);
 
             // Don't create if tenant_id is not available
             if (!tenantId) {
@@ -123,8 +122,6 @@ export const useContacts = () => {
                 .eq('id', authUser?.id)
                 .single();
 
-            console.log('🔍 [createContact] User data:', { authUser: authUser?.id, comercialId: userData?.comercial_id });
-
             const dataToInsert = {
                 first_name: contactData.firstName,
                 last_name: contactData.lastName,
@@ -136,8 +133,6 @@ export const useContacts = () => {
                 tenant_id: tenantId,
                 created_by: authUser?.id
             };
-
-            console.log('📝 [createContact] Data to insert:', dataToInsert);
 
             // Insert contact
             const { data: newContact, error: insertError } = await supabase
@@ -165,21 +160,26 @@ export const useContacts = () => {
                 throw insertError;
             }
 
-            // Create company relationships if provided
+            // Create company relationships if provided and have valid IDs
             if (contactData.companies && contactData.companies.length > 0) {
-                const relationships = contactData.companies.map(company => ({
-                    contact_id: newContact.id,
-                    company_id: company.companyId,
-                    role: company.role,
-                    is_primary: company.isPrimary || false,
-                    tenant_id: tenantId
-                }));
+                // Filter out companies without valid IDs (pending prospects)
+                const validCompanies = contactData.companies.filter(c => c.companyId);
 
-                const { error: relError } = await supabase
-                    .from('contact_companies')
-                    .insert(relationships);
+                if (validCompanies.length > 0) {
+                    const relationships = validCompanies.map(company => ({
+                        contact_id: newContact.id,
+                        company_id: company.companyId,
+                        role: company.role,
+                        is_primary: company.isPrimary || false,
+                        tenant_id: tenantId
+                    }));
 
-                if (relError) throw relError;
+                    const { error: relError } = await supabase
+                        .from('contact_companies')
+                        .insert(relationships);
+
+                    if (relError) throw relError;
+                }
             }
 
             await fetchContacts();
@@ -339,7 +339,6 @@ export const useContacts = () => {
 
         // For non-admin users, wait for comercialId to be loaded
         if (!isAdmin && !comercialIdLoaded) {
-            console.log('⏳ [useContacts] Waiting for comercialId to load...');
             setLoading(true);
             return;
         }

@@ -205,6 +205,15 @@ export const useProspects = () => {
 
     // Load prospects on mount
     useEffect(() => {
+        console.log('🔍 [useProspects] useEffect triggered:', {
+            authLoading,
+            comercialIdLoaded,
+            isAdmin,
+            isSupervisor,
+            tenantId,
+            tenantLoading
+        });
+
         // Wait for auth to finish loading before fetching
         if (authLoading) {
             setLoading(true);
@@ -213,12 +222,12 @@ export const useProspects = () => {
 
         // For non-admin/non-supervisor users, wait for comercialId to be loaded
         if (!isAdmin && !isSupervisor && !comercialIdLoaded) {
-            console.log('⏳ [useProspects] Waiting for comercialId to load...');
             setLoading(true);
             return;
         }
 
         if (tenantId) {
+            console.log('✅ [useProspects] Fetching prospects now!');
             fetchProspects();
         } else if (!tenantLoading) {
             setLoading(false);

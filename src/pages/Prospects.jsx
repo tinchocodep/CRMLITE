@@ -15,8 +15,8 @@ import { supabase } from '../lib/supabase';
 
 const Prospects = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { companies: prospects, loading, createCompany, updateCompany, deleteCompany, convertToClient } = useCompanies('prospect');
-    const { contacts: allContacts } = useContacts();
+    const { companies: prospects, loading, createCompany, updateCompany, deleteCompany, convertToClient, generateNextFileNumber } = useCompanies('prospect');
+    const { contacts: allContacts, createContact } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
     const { comercialId } = useAuth();
 
@@ -85,7 +85,7 @@ const Prospects = () => {
         setIsEditModalOpen(true);
     }, [comercialId]);
 
-    const handleSaveProspect = async (updatedProspect) => {
+    const handleSaveProspect = async (updatedProspect, pendingContacts = []) => {
         try {
             if (updatedProspect.id && typeof updatedProspect.id === 'number' && updatedProspect.id > 1000000) {
                 // New prospect (temporary ID)
@@ -122,7 +122,28 @@ const Prospects = () => {
                 });
 
                 if (result.success) {
-                    showSuccess('Nuevo Prospecto creado exitosamente!');
+                    // Create pending contacts if any
+                    if (pendingContacts.length > 0 && result.data?.id) {
+                        for (const contactData of pendingContacts) {
+                            // Add the prospect to the contact's companies list
+                            const contactWithCompany = {
+                                ...contactData,
+                                companies: [{
+                                    companyId: result.data.id,
+                                    companyName: result.data.trade_name || result.data.legal_name,
+                                    companyType: 'prospect',
+                                    role: contactData.companies?.[0]?.role || '',
+                                    isPrimary: true
+                                }]
+                            };
+
+                            await createContact(contactWithCompany);
+                        }
+
+                        showSuccess(`Prospecto creado con ${pendingContacts.length} contacto(s) vinculado(s)!`);
+                    } else {
+                        showSuccess('Nuevo Prospecto creado exitosamente!');
+                    }
                 } else {
                     showError('Error al crear prospecto: ' + result.error);
                 }
@@ -166,27 +187,23 @@ const Prospects = () => {
     };
 
 
+
     const handleConfirmConversion = async (clientData) => {
         try {
-            console.log('🔍 [Prospects] Starting conversion for prospect:', selectedProspect);
-            console.log('📦 [Prospects] Client data received from modal:', clientData);
             // Extract contactIds and file_number before preparing data
-            // file_number should NOT be sent in the update - let the database trigger handle it
-            // id should NOT be sent in the update - it's used as a query parameter
             const { contactIds, file_number, id, ...restClientData } = clientData;
 
+            // CRITICAL: Generate a new unique file_number for the client
+            // The database trigger only runs on INSERT, not UPDATE
+            // So we must manually generate the file_number when converting
+            const newFileNumber = await generateNextFileNumber();
+
             // Prepare the data for updating the prospect to client
-            // NOTE: Do NOT include 'id' or 'file_number' in the update payload
-            // - 'id' is used as a filter parameter
-            // - 'file_number' is handled by the database trigger auto_assign_file_number()
             const dataToUpdate = {
                 ...restClientData,
-                company_type: 'client'
+                company_type: 'client',
+                file_number: newFileNumber // Assign the new unique file_number
             };
-
-            console.log('🔍 [Prospects] Updating prospect to client with data:', dataToUpdate);
-            console.log('📋 [Prospects] Fields in dataToUpdate:', Object.keys(dataToUpdate));
-            console.log('🚨 [Prospects] Has file_number?', 'file_number' in dataToUpdate, dataToUpdate.file_number);
 
             // Update the existing prospect record to become a client
             const result = await updateCompany(selectedProspect.id, dataToUpdate);

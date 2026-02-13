@@ -44,12 +44,6 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
     const [selectedContactIds, setSelectedContactIds] = useState([]);
 
     useEffect(() => {
-        console.log('🔄 ConvertToClientModal useEffect triggered:', {
-            hasProspect: !!prospect,
-            prospectId: prospect?.id,
-            contactsCount: contacts?.length || 0,
-            prospect: prospect
-        });
 
         if (prospect) {
             setFormData(prev => ({
@@ -78,36 +72,16 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
 
             // Load existing contacts for this client
             if (prospect.id && contacts.length > 0) {
-                console.log('🔍 Loading contacts for client:', {
-                    clientId: prospect.id,
-                    totalContacts: contacts.length,
-                    contacts: contacts,
-                    prospectData: prospect
-                });
 
                 const clientContacts = contacts.filter(contact => {
                     const hasCompany = contact.companies?.some(company => {
-                        console.log('Checking company:', {
-                            contactId: contact.id,
-                            contactName: `${contact.firstName} ${contact.lastName}`,
-                            companyId: company.companyId,
-                            clientId: prospect.id,
-                            matches: company.companyId === prospect.id
-                        });
                         return company.companyId === prospect.id;
                     });
                     return hasCompany;
                 });
 
-                console.log('✅ Found client contacts:', {
-                    count: clientContacts.length,
-                    contactIds: clientContacts.map(c => c.id),
-                    contacts: clientContacts
-                });
-
                 setSelectedContactIds(clientContacts.map(c => c.id));
             } else {
-                console.log('⚠️ No contacts to load:', { hasId: !!prospect.id, contactsLength: contacts.length });
                 setSelectedContactIds([]);
             }
         } else {
@@ -169,9 +143,6 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             // Contact assignments
             contactIds: selectedContactIds
         };
-
-        console.log('🚀 [ConvertToClientModal] Submitting data:', dataToSubmit);
-        console.log('🔍 [ConvertToClientModal] Original prospect:', prospect);
 
         onConvert(dataToSubmit);
     };
