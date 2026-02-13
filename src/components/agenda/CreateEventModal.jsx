@@ -60,6 +60,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
         assignedTo: [] // Will be set after users load
     });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const [showUserSelector, setShowUserSelector] = useState(false);
 
     // Format comerciales from prop and set current user as default
@@ -126,7 +128,10 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
         return addMinutes(startDate, newEvent.duration);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        // Prevent double submission
+        if (isSubmitting) return;
+
         console.log('CreateEventModal - Validating:', {
             title: newEvent.title,
             company_id: newEvent.company_id,
@@ -144,27 +149,35 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
             return;
         }
 
-        // Parse datetime-local string directly (format: "2026-02-04T12:00")
-        // DO NOT use new Date() as it interprets the string as UTC
-        const [datePart, timePart] = newEvent.start.split('T');
-        const [year, month, day] = datePart.split('-');
-        const [hours, minutes] = timePart.split(':');
+        // Set submitting state
+        setIsSubmitting(true);
 
-        const activityData = {
-            title: newEvent.title,
-            activity_type: newEvent.type,
-            priority: newEvent.priority,
-            company_id: parseInt(newEvent.company_id),
-            comercial_id: newEvent.assignedTo[0],
-            scheduled_date: datePart, // Already in YYYY-MM-DD format
-            scheduled_time: `${hours}:${minutes}`, // HH:MM
-            description: newEvent.description || null,
-            status: 'pending'
-        };
+        try {
+            // Parse datetime-local string directly (format: "2026-02-04T12:00")
+            // DO NOT use new Date() as it interprets the string as UTC
+            const [datePart, timePart] = newEvent.start.split('T');
+            const [year, month, day] = datePart.split('-');
+            const [hours, minutes] = timePart.split(':');
 
-        console.log('CreateEventModal - Sending to database:', activityData);
-        onCreate(activityData);
-        onClose();
+            const activityData = {
+                title: newEvent.title,
+                activity_type: newEvent.type,
+                priority: newEvent.priority,
+                company_id: parseInt(newEvent.company_id),
+                comercial_id: newEvent.assignedTo[0],
+                scheduled_date: datePart, // Already in YYYY-MM-DD format
+                scheduled_time: `${hours}:${minutes}`, // HH:MM
+                description: newEvent.description || null,
+                status: 'pending'
+            };
+
+            console.log('CreateEventModal - Sending to database:', activityData);
+            await onCreate(activityData);
+            onClose();
+        } catch (error) {
+            console.error('Error creating activity:', error);
+            setIsSubmitting(false);
+        }
     };
 
     return createPortal(
@@ -428,9 +441,13 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                                disabled={isSubmitting}
+                                className={`px-8 py-2.5 rounded-xl font-bold shadow-lg transition-all transform ${isSubmitting
+                                        ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] hover:-translate-y-0.5 active:translate-y-0'
+                                    }`}
                             >
-                                Crear Actividad
+                                {isSubmitting ? 'Creando...' : 'Crear Actividad'}
                             </button>
                         </div>
                     </div>
