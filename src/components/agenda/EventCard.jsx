@@ -4,6 +4,7 @@ import { Calendar, Clock, MapPin, Phone, User, CheckCircle2, AlertCircle, X, Max
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ConfirmDialog } from '../ConfirmDialog';
+import { useNotifications } from '../../hooks/useNotifications';
 
 // Safe format wrapper to prevent RangeError
 const safeFormat = (date, formatStr, options = {}) => {
@@ -53,6 +54,7 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [tempDate, setTempDate] = useState('');
     const [editedEvent, setEditedEvent] = useState(event);
+    const { addNotification } = useNotifications();
 
     // Normalize event data to handle both Supabase format (scheduled_date/time) and mock format (start/end)
     const normalizedEvent = React.useMemo(() => {
@@ -116,7 +118,13 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
 
         if (!onDelete) {
             console.error('onDelete prop is required for EventCard');
-            alert('Error: No se puede eliminar la actividad');
+            addNotification({
+                id: `error-delete-missing-${Date.now()}`,
+                title: '❌ Error',
+                description: 'No se puede eliminar la actividad',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
@@ -130,7 +138,13 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
             setShowDetails(false);
         } catch (error) {
             console.error('Error deleting event:', error);
-            alert('Error al eliminar la actividad');
+            addNotification({
+                id: `error-delete-event-${Date.now()}`,
+                title: '❌ Error al eliminar',
+                description: error.message || 'No se pudo eliminar la actividad',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
@@ -171,7 +185,13 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
             setTempDate('');
         } catch (error) {
             console.error('Error updating date:', error);
-            alert('Error al cambiar la fecha: ' + error.message);
+            addNotification({
+                id: `error-update-date-${Date.now()}`,
+                title: '❌ Error al cambiar fecha',
+                description: error.message || 'No se pudo actualizar la fecha de la actividad',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
@@ -199,7 +219,13 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
             setIsEditing(false);
         } catch (error) {
             console.error('Error saving activity:', error);
-            alert('Error al guardar los cambios');
+            addNotification({
+                id: `error-save-activity-${Date.now()}`,
+                title: '❌ Error al guardar',
+                description: error.message || 'No se pudieron guardar los cambios',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

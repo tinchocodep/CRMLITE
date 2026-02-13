@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CheckCircle2, FileText, X } from 'lucide-react';
 import PhotoUploader from './PhotoUploader';
 import { useLegajoDocuments } from '../../hooks/useLegajoDocuments';
+import { useNotifications } from '../../hooks/useNotifications';
 
 const docTypes = {
     dni_front: { label: 'DNI Frente', required: true },
@@ -16,6 +17,7 @@ const LegajoModal = ({ isOpen, onClose, client }) => {
     if (!isOpen || !client) return null;
 
     const companyId = client.id;
+    const { addNotification } = useNotifications();
     const {
         documents,
         loading,
@@ -43,7 +45,13 @@ const LegajoModal = ({ isOpen, onClose, client }) => {
             setUploadingType(null);
         } catch (error) {
             console.error('Error saving document:', error);
-            alert('Error al guardar el documento');
+            addNotification({
+                id: `error-save-document-${Date.now()}`,
+                title: '❌ Error al guardar documento',
+                description: error.message || 'No se pudo guardar el documento',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

@@ -4,12 +4,14 @@ import { es } from 'date-fns/locale';
 import { Clock, MoreVertical, Check, CalendarClock, Trash2 } from 'lucide-react';
 import { useActivities } from '../hooks/useActivities';
 import { useOpportunities } from '../hooks/useOpportunities';
+import { useNotifications } from '../hooks/useNotifications';
 import { ConfirmDialog } from './ConfirmDialog';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(7);
     const { opportunities, loading: opportunitiesLoading } = useOpportunities();
+    const { addNotification } = useNotifications();
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
     const [tempDate, setTempDate] = useState('');
@@ -160,7 +162,13 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
             setTempDate('');
         } catch (error) {
             console.error('Error updating date:', error);
-            alert('Error al cambiar la fecha: ' + error.message);
+            addNotification({
+                id: `error-date-change-${Date.now()}`,
+                title: '❌ Error al cambiar fecha',
+                description: error.message || 'No se pudo actualizar la fecha de la actividad',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Lock, Shield } from 'lucide-react';
+import { useNotifications } from '../../hooks/useNotifications';
 
 const STORAGE_KEY = 'createUserFormData';
 
 const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
+    const { addNotification } = useNotifications();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -57,6 +59,16 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
 
         if (result.success) {
             console.log('✅ User created successfully:', result.user);
+
+            // Show success toast
+            addNotification({
+                id: `user-created-${Date.now()}`,
+                title: '✅ Usuario creado correctamente',
+                description: `${formData.fullName} ha sido creado exitosamente`,
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
+
             // Clear localStorage and reset form on success
             localStorage.removeItem(STORAGE_KEY);
             setFormData({

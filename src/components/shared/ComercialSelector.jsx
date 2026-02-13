@@ -61,9 +61,38 @@ const ComercialSelector = ({
         }
     };
 
-    // Si no es Admin, no mostrar el selector (se asigna automáticamente)
+    // Si no es Admin, mostrar campo de solo lectura con el comercial asignado automáticamente
     if (!isAdmin) {
-        return null;
+        if (loading) {
+            return (
+                <div className={`space-y-2 ${className}`}>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                        {label} {required && <span className="text-red-500">*</span>}
+                    </label>
+                    <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                        <div className="w-4 h-4 border-2 border-advanta-green border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-sm text-slate-500 dark:text-slate-400">Cargando...</span>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className={`space-y-2 ${className}`}>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {label} {required && <span className="text-red-500">*</span>}
+                </label>
+                <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+                    <div className="w-full pl-10 pr-4 py-3 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-slate-600 dark:text-slate-300">
+                        Asignado automáticamente a tu comercial
+                    </div>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                    El contacto se asignará automáticamente a tu comercial
+                </p>
+            </div>
+        );
     }
 
     if (loading) {

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
 import { safeFormat } from '../../utils/dateUtils';
 import { useContacts } from '../../hooks/useContacts';
+import { useNotifications } from '../../hooks/useNotifications';
 import ContactModal from '../contacts/ContactModal';
 import { ConfirmDialog } from '../ConfirmDialog';
 import ComercialSelector from '../shared/ComercialSelector';
@@ -15,6 +16,7 @@ const statusOptions = [
 
 const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate }) => {
     const { contacts, unlinkFromCompany, createContact, linkToCompany } = useContacts();
+    const { addNotification } = useNotifications();
     const [showContactModal, setShowContactModal] = useState(false);
     const [showLinkContactModal, setShowLinkContactModal] = useState(false);
     const [confirmUnlink, setConfirmUnlink] = useState({ isOpen: false, contactId: null, contactName: '' });
@@ -81,7 +83,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
             setFormData({ ...formData });
         } catch (error) {
             console.error('Error unlinking contact:', error);
-            alert('Error al desvincular contacto');
+            addNotification({
+                id: `error-unlink-contact-${Date.now()}`,
+                title: '❌ Error al desvincular',
+                description: error.message || 'No se pudo desvincular el contacto',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         } finally {
             setConfirmUnlink({ isOpen: false, contactId: null, contactName: '' });
         }
@@ -102,6 +110,15 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
             const result = await createContact(contactData);
 
             if (result.success) {
+                // Show success notification
+                addNotification({
+                    id: `contact-created-${Date.now()}`,
+                    title: '✅ Contacto creado correctamente',
+                    description: `${contactData.firstName} ${contactData.lastName} ha sido creado exitosamente`,
+                    priority: 'medium',
+                    timeAgo: 'Ahora'
+                });
+
                 // Notify parent to refresh
                 if (onContactsUpdate) {
                     onContactsUpdate();
@@ -111,11 +128,23 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                 // Force re-render
                 setFormData({ ...formData });
             } else {
-                alert('Error al guardar contacto: ' + result.error);
+                addNotification({
+                    id: `error-save-contact-${Date.now()}`,
+                    title: '❌ Error al guardar contacto',
+                    description: result.error || 'No se pudo guardar el contacto',
+                    priority: 'high',
+                    timeAgo: 'Ahora'
+                });
             }
         } catch (error) {
             console.error('Error saving contact:', error);
-            alert('Error al guardar contacto');
+            addNotification({
+                id: `error-save-contact-unexpected-${Date.now()}`,
+                title: '❌ Error inesperado',
+                description: error.message || 'Ocurrió un error al guardar el contacto',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
@@ -138,7 +167,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     // Handle linking existing contact
     const handleLinkExistingContact = async () => {
         if (!selectedContactToLink || !linkRole.trim()) {
-            alert('Por favor selecciona un contacto y especifica el rol');
+            addNotification({
+                id: `validation-link-contact-${Date.now()}`,
+                title: 'ℹ️ Datos incompletos',
+                description: 'Por favor selecciona un contacto y especifica el rol',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
@@ -163,7 +198,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
             setFormData({ ...formData });
         } catch (error) {
             console.error('Error linking contact:', error);
-            alert('Error al vincular contacto');
+            addNotification({
+                id: `error-link-contact-${Date.now()}`,
+                title: '❌ Error al vincular',
+                description: error.message || 'No se pudo vincular el contacto',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         } finally {
             setIsLinking(false);
         }

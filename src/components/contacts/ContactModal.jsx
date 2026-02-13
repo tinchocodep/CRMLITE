@@ -3,12 +3,14 @@ import { X, Building2, UserPlus, Plus, Trash2, Star, CheckCircle } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
+import { useNotifications } from '../../hooks/useNotifications';
 import ComercialSelector from '../shared/ComercialSelector';
 
 
 const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedCompany = null }) => {
     const { companies } = useCompanies();
     const { createContact, updateContact } = useContacts();
+    const { addNotification } = useNotifications();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -58,7 +60,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
             });
         } else {
             // If creating new contact with preselected company, add it automatically
-            const initialCompanies = preselectedCompany ? [{
+            // BUT only if the company has a valid ID (prospect must be saved first)
+            const initialCompanies = (preselectedCompany && preselectedCompany.companyId) ? [{
                 companyId: preselectedCompany.companyId,
                 companyName: preselectedCompany.companyName,
                 companyType: preselectedCompany.companyType,
@@ -105,16 +108,34 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
     const handleAddCompany = () => {
         // Validate
         if (!newCompany.companyId) {
-            alert('Selecciona una empresa');
+            addNotification({
+                id: `validation-company-${Date.now()}`,
+                title: 'ℹ️ Empresa requerida',
+                description: 'Por favor selecciona una empresa antes de continuar',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
         if (!newCompany.role.trim()) {
-            alert('Ingresa el rol/cargo del contacto');
+            addNotification({
+                id: `validation-role-${Date.now()}`,
+                title: 'ℹ️ Rol requerido',
+                description: 'Por favor ingresa el rol o cargo del contacto en la empresa',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
         // Check if company already added
         if (formData.companies.some(c => c.companyId === newCompany.companyId)) {
-            alert('Esta empresa ya está vinculada');
+            addNotification({
+                id: `validation-duplicate-${Date.now()}`,
+                title: '⚠️ Empresa duplicada',
+                description: 'Esta empresa ya está vinculada a este contacto',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
@@ -182,10 +203,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
         if (!formData.comercialId) {
             newErrors.comercialId = 'Debe asignar un comercial';
         }
-        // Only require company if not preselected (will be added on save)
-        if (formData.companies.length === 0 && !preselectedCompany) {
-            newErrors.companies = 'Debe vincular al menos una empresa';
-        }
+        // Companies are optional - contacts can exist without being linked to any company
+        // Only validate if there ARE companies that at least one is active
         // Check that at least one company is active
         const hasActiveCompany = formData.companies.some(c => c.isCompanyActive);
         if (!hasActiveCompany && formData.companies.length > 0) {
@@ -211,7 +230,13 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                     onSave?.(result.data); // Call optional callback
                     onClose();
                 } else {
-                    alert('Error al actualizar contacto: ' + result.error);
+                    addNotification({
+                        id: `error-update-contact-${Date.now()}`,
+                        title: '❌ Error al actualizar',
+                        description: result.error || 'No se pudo actualizar el contacto',
+                        priority: 'high',
+                        timeAgo: 'Ahora'
+                    });
                 }
             } else {
                 // Create new contact
@@ -220,12 +245,24 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                     onSave?.(result.data); // Call optional callback
                     onClose();
                 } else {
-                    alert('Error al crear contacto: ' + result.error);
+                    addNotification({
+                        id: `error-create-contact-${Date.now()}`,
+                        title: '❌ Error al crear contacto',
+                        description: result.error || 'No se pudo crear el contacto',
+                        priority: 'high',
+                        timeAgo: 'Ahora'
+                    });
                 }
             }
         } catch (error) {
             console.error('Error in handleSubmit:', error);
-            alert('Error inesperado: ' + error.message);
+            addNotification({
+                id: `error-unexpected-${Date.now()}`,
+                title: '❌ Error inesperado',
+                description: error.message || 'Ocurrió un error al procesar la solicitud',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

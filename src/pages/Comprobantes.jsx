@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Receipt, Search, Filter, Plus, Eye, Download, DollarSign, Calendar, Building2, FileText, CheckCircle, XCircle, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getComprobantes } from '../services/comprobantesService';
+import { useNotifications } from '../hooks/useNotifications';
 import PDFPreviewModal from '../components/PDFPreviewModal';
 
 const Comprobantes = () => {
+    const { addNotification } = useNotifications();
     const [searchTerm, setSearchTerm] = useState('');
     const [typeFilter, setTypeFilter] = useState('all'); // all, FACTURA, REMITO, NOTA_CREDITO
     const [statusFilter, setStatusFilter] = useState('all'); // all, paid, pending, cancelled
@@ -249,7 +251,13 @@ const Comprobantes = () => {
                                                             }
                                                         });
                                                     } else {
-                                                        alert('PDF no disponible para este comprobante');
+                                                        addNotification({
+                                                            id: `pdf-not-available-${Date.now()}`,
+                                                            title: 'ℹ️ PDF no disponible',
+                                                            description: 'El PDF no está disponible para este comprobante',
+                                                            priority: 'medium',
+                                                            timeAgo: 'Ahora'
+                                                        });
                                                     }
                                                 }}
                                                 className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"
@@ -269,7 +277,13 @@ const Comprobantes = () => {
                                                         link.click();
                                                         document.body.removeChild(link);
                                                     } else {
-                                                        alert('PDF no disponible para este comprobante');
+                                                        addNotification({
+                                                            id: `pdf-download-not-available-${Date.now()}`,
+                                                            title: 'ℹ️ PDF no disponible',
+                                                            description: 'El PDF no está disponible para descargar',
+                                                            priority: 'medium',
+                                                            timeAgo: 'Ahora'
+                                                        });
                                                     }
                                                 }}
                                                 className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors"

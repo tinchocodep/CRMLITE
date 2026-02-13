@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotifications } from '../hooks/useNotifications';
 import sailoLogo from '/logo-advanta.svg';
 import { ArrowRight, Lock, Mail, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,6 +9,7 @@ import { motion } from 'framer-motion';
 const Login = () => {
     const navigate = useNavigate();
     const { login, isAuthenticated } = useAuth();
+    const { addNotification } = useNotifications();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -241,7 +243,13 @@ const Login = () => {
                                     className="text-advanta-bronze-dark dark:text-advanta-orange hover:text-advanta-orange dark:hover:text-advanta-orange-light font-semibold transition-colors"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        alert('Función de recuperación de contraseña próximamente');
+                                        addNotification({
+                                            id: `password-recovery-${Date.now()}`,
+                                            title: 'ℹ️ Próximamente',
+                                            description: 'La función de recuperación de contraseña estará disponible pronto',
+                                            priority: 'medium',
+                                            timeAgo: 'Ahora'
+                                        });
                                     }}
                                 >
                                     ¿Olvidaste tu contraseña?

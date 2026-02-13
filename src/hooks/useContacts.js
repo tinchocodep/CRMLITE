@@ -5,7 +5,7 @@ import { useCurrentTenant } from './useCurrentTenant';
 import { useRoleBasedFilter } from './useRoleBasedFilter';
 
 export const useContacts = () => {
-    const { user } = useAuth();
+    const { user, isLoading: authLoading, comercialIdLoaded, isAdmin } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
     const { applyRoleFilter, selectedComercialId } = useRoleBasedFilter();
     const [contacts, setContacts] = useState([]);
@@ -331,12 +331,25 @@ export const useContacts = () => {
 
     // Load contacts on mount
     useEffect(() => {
+        // Wait for auth to finish loading before fetching
+        if (authLoading) {
+            setLoading(true);
+            return;
+        }
+
+        // For non-admin users, wait for comercialId to be loaded
+        if (!isAdmin && !comercialIdLoaded) {
+            console.log('⏳ [useContacts] Waiting for comercialId to load...');
+            setLoading(true);
+            return;
+        }
+
         if (user && tenantId) {
             fetchContacts();
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [user, tenantId, tenantLoading, selectedComercialId]);
+    }, [user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin]);
 
     return {
         contacts,

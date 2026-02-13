@@ -508,10 +508,22 @@ const MainLayout = () => {
                             }]);
 
                         if (error) throw error;
-                        alert('Actividad creada exitosamente');
+                        addNotification({
+                            id: `activity-created-${Date.now()}`,
+                            title: '✅ Actividad creada',
+                            description: 'La actividad se guardó exitosamente en la agenda',
+                            priority: 'medium',
+                            timeAgo: 'Ahora'
+                        });
                     } catch (err) {
                         console.error('Error saving event:', err);
-                        alert('Error al guardar la actividad: ' + err.message);
+                        addNotification({
+                            id: `activity-error-${Date.now()}`,
+                            title: '❌ Error al guardar',
+                            description: `No se pudo guardar la actividad: ${err.message}`,
+                            priority: 'high',
+                            timeAgo: 'Ahora'
+                        });
                     }
                 }}
             />
@@ -536,10 +548,22 @@ const MainLayout = () => {
                     });
 
                     if (result.success) {
-                        alert('Prospecto creado exitosamente');
+                        addNotification({
+                            id: `prospect-created-${Date.now()}`,
+                            title: '✅ Prospecto creado',
+                            description: `${result.data?.trade_name || 'Nuevo prospecto'} se agregó correctamente`,
+                            priority: 'medium',
+                            timeAgo: 'Ahora'
+                        });
                         setIsProspectModalOpen(false);
                     } else {
-                        alert('Error al crear prospecto: ' + result.error);
+                        addNotification({
+                            id: `prospect-error-${Date.now()}`,
+                            title: '❌ Error al crear prospecto',
+                            description: result.error || 'No se pudo crear el prospecto',
+                            priority: 'high',
+                            timeAgo: 'Ahora'
+                        });
                     }
                 }}
             />
@@ -557,7 +581,13 @@ const MainLayout = () => {
                 prospect={prospectToConvert}
                 onConvert={(newClient) => {
                     console.log('Client Created/Converted:', newClient);
-                    alert('Cliente convertido! (Lógica real pendiente en componente)');
+                    addNotification({
+                        id: `client-converted-${Date.now()}`,
+                        title: '✅ Cliente convertido',
+                        description: 'El prospecto se convirtió a cliente exitosamente',
+                        priority: 'medium',
+                        timeAgo: 'Ahora'
+                    });
                     setIsClientModalOpen(false);
                 }}
             />
@@ -567,7 +597,13 @@ const MainLayout = () => {
                 onClose={() => setIsContactModalOpen(false)}
                 onSave={(newContact) => {
                     console.log('Global Contact Created:', newContact);
-                    alert('Contacto creado! (Lógica real pendiente en componente)');
+                    addNotification({
+                        id: `contact-created-${Date.now()}`,
+                        title: '✅ Contacto creado',
+                        description: `${newContact.name || 'Nuevo contacto'} se agregó correctamente`,
+                        priority: 'medium',
+                        timeAgo: 'Ahora'
+                    });
                     setIsContactModalOpen(false);
                 }}
                 contact={null}

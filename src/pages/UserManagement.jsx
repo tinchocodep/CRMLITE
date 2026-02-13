@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Shield, Users, AlertCircle, UserCog, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
+import { useNotifications } from '../hooks/useNotifications';
 import CreateUserModal from '../components/settings/CreateUserModal';
 import TeamManagement from './TeamManagement';
 
@@ -20,6 +21,7 @@ const UserManagement = () => {
         assignComercial,
         toggleUserActive
     } = useUsers();
+    const { addNotification } = useNotifications();
     const [searchTerm, setSearchTerm] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('usuarios'); // 'usuarios' or 'equipos'
@@ -35,13 +37,25 @@ const UserManagement = () => {
 
         // Prevent admin from removing their own admin role
         if (userId === user.id && newRole !== 'admin') {
-            alert('No puedes cambiar tu propio rol de administrador');
+            addNotification({
+                id: `security-own-role-${Date.now()}`,
+                title: '⚠️ Acción no permitida',
+                description: 'No puedes cambiar tu propio rol de administrador',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
         const result = await updateUserRole(userId, newRole);
         if (!result.success) {
-            alert('Error al actualizar rol: ' + result.error);
+            addNotification({
+                id: `error-update-role-${Date.now()}`,
+                title: '❌ Error al actualizar rol',
+                description: result.error || 'No se pudo cambiar el rol del usuario',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
@@ -50,13 +64,25 @@ const UserManagement = () => {
 
         // Prevent admin from deactivating themselves
         if (userId === user.id) {
-            alert('No puedes desactivar tu propia cuenta');
+            addNotification({
+                id: `security-own-account-${Date.now()}`,
+                title: '⚠️ Acción no permitida',
+                description: 'No puedes desactivar tu propia cuenta',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
         const result = await toggleUserActive(userId, !currentStatus);
         if (!result.success) {
-            alert('Error al cambiar estado: ' + result.error);
+            addNotification({
+                id: `error-toggle-active-${Date.now()}`,
+                title: '❌ Error al cambiar estado',
+                description: result.error || 'No se pudo cambiar el estado del usuario',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
@@ -73,7 +99,13 @@ const UserManagement = () => {
 
         const result = await assignComercial(userId, comercialId);
         if (!result.success) {
-            alert('Error al asignar comercial: ' + result.error);
+            addNotification({
+                id: `error-assign-comercial-${Date.now()}`,
+                title: '❌ Error al asignar comercial',
+                description: result.error || 'No se pudo asignar el comercial al usuario',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

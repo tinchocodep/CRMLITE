@@ -8,7 +8,7 @@ export const useOpportunities = (refreshKey = 'default') => {
     const [opportunities, setOpportunities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { comercialId, isAdmin, isSupervisor } = useAuth();
+    const { comercialId, isAdmin, isSupervisor, isLoading: authLoading, comercialIdLoaded } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     const fetchOpportunities = async () => {
@@ -78,6 +78,19 @@ export const useOpportunities = (refreshKey = 'default') => {
 
     // Fetch opportunities on mount and when auth state changes
     useEffect(() => {
+        // Wait for auth to finish loading before fetching
+        if (authLoading) {
+            setLoading(true);
+            return;
+        }
+
+        // For non-admin/non-supervisor users, wait for comercialId to be loaded
+        if (!isAdmin && !isSupervisor && !comercialIdLoaded) {
+            console.log('⏳ [useOpportunities] Waiting for comercialId to load...');
+            setLoading(true);
+            return;
+        }
+
         if (tenantId && (comercialId || isAdmin || isSupervisor)) {
             fetchOpportunities();
         } else if (!tenantLoading) {
@@ -88,7 +101,7 @@ export const useOpportunities = (refreshKey = 'default') => {
         return () => {
             // This ensures the component will fetch fresh data when remounted
         };
-    }, [comercialId, isAdmin, isSupervisor, refreshKey, tenantId, tenantLoading]);
+    }, [comercialId, isAdmin, isSupervisor, refreshKey, tenantId, tenantLoading, authLoading, comercialIdLoaded]);
 
     // Helper function to create activities from opportunity dates
     const createActivitiesFromOpportunity = async (opportunity, opportunityId) => {

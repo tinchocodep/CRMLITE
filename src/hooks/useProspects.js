@@ -7,7 +7,7 @@ export const useProspects = () => {
     const [prospects, setProspects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { user } = useAuth();
+    const { user, isLoading: authLoading, comercialIdLoaded, isAdmin, isSupervisor } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     // Fetch all prospects for current tenant
@@ -205,12 +205,25 @@ export const useProspects = () => {
 
     // Load prospects on mount
     useEffect(() => {
+        // Wait for auth to finish loading before fetching
+        if (authLoading) {
+            setLoading(true);
+            return;
+        }
+
+        // For non-admin/non-supervisor users, wait for comercialId to be loaded
+        if (!isAdmin && !isSupervisor && !comercialIdLoaded) {
+            console.log('⏳ [useProspects] Waiting for comercialId to load...');
+            setLoading(true);
+            return;
+        }
+
         if (tenantId) {
             fetchProspects();
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [tenantId, tenantLoading]);
+    }, [tenantId, tenantLoading, authLoading, comercialIdLoaded, isAdmin, isSupervisor]);
 
     return {
         prospects,

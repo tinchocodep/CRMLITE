@@ -7,7 +7,7 @@ export const useActivities = (daysAhead = 30) => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { comercialId, isAdmin, isSupervisor } = useAuth();
+    const { comercialId, isAdmin, isSupervisor, isLoading: authLoading, comercialIdLoaded } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
 
     const fetchActivities = async () => {
@@ -71,12 +71,25 @@ export const useActivities = (daysAhead = 30) => {
     };
 
     useEffect(() => {
+        // Wait for auth to finish loading before fetching
+        if (authLoading) {
+            setLoading(true);
+            return;
+        }
+
+        // For non-admin/non-supervisor users, wait for comercialId to be loaded
+        if (!isAdmin && !isSupervisor && !comercialIdLoaded) {
+            console.log('⏳ [useActivities] Waiting for comercialId to load...');
+            setLoading(true);
+            return;
+        }
+
         if (tenantId && (comercialId || isAdmin || isSupervisor)) {
             fetchActivities();
         } else if (!tenantLoading) {
             setLoading(false);
         }
-    }, [comercialId, daysAhead, isAdmin, isSupervisor, tenantId, tenantLoading]);
+    }, [comercialId, daysAhead, isAdmin, isSupervisor, tenantId, tenantLoading, authLoading, comercialIdLoaded]);
 
     const createActivity = async (activityData) => {
         try {

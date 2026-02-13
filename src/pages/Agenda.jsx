@@ -11,6 +11,7 @@ import { useActivities } from '../hooks/useActivities';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { useCompanies } from '../hooks/useCompanies';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
+import { useUsers } from '../hooks/useUsers';
 import { useToast } from '../contexts/ToastContext';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
@@ -20,6 +21,7 @@ const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
     const { opportunities, loading: opportunitiesLoading } = useOpportunities();
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
+    const { users } = useUsers(); // Get all users for CreateEventModal
     const { showToast } = useToast();
     const { showError } = useSystemToast();
     const hasShownInitialToast = useRef(false);
@@ -447,7 +449,11 @@ const Agenda = () => {
                 onClose={() => setIsCreateModalOpen(false)}
                 onCreate={handleCreateEvent}
                 companies={companies}
-                comerciales={comerciales}
+                comerciales={users
+                    .filter(u => u.is_active && u.comercial) // Only active users with comercial assigned
+                    .map(u => u.comercial) // Extract comercial object
+                    .filter((c, index, self) => c && self.findIndex(t => t.id === c.id) === index) // Remove duplicates
+                }
             />
         </div>
     );

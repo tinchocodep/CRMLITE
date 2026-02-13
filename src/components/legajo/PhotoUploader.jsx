@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, CheckCircle2, AlertCircle, X, Camera, Image as ImageIcon } from 'lucide-react';
 import { useFileUpload } from '../../hooks/useFileUpload';
+import { useNotifications } from '../../hooks/useNotifications';
 import CameraCapture from './CameraCapture';
 
 /**
@@ -20,6 +21,7 @@ const PhotoUploader = ({
     const [selectedFile, setSelectedFile] = useState(null);
     const [showCamera, setShowCamera] = useState(false);
     const { uploadFile, uploading, progress, error } = useFileUpload();
+    const { addNotification } = useNotifications();
 
     const handleFileSelect = (e) => {
         const file = e.target.files[0];
@@ -35,13 +37,25 @@ const PhotoUploader = ({
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Solo se permiten archivos JPEG, PNG o PDF');
+            addNotification({
+                id: `validation-file-type-${Date.now()}`,
+                title: '⚠️ Tipo de archivo no permitido',
+                description: 'Solo se permiten archivos JPEG, PNG o PDF',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
         // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert('El archivo no puede superar los 5MB');
+            addNotification({
+                id: `validation-file-size-${Date.now()}`,
+                title: '⚠️ Archivo demasiado grande',
+                description: 'El archivo no puede superar los 5MB',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
@@ -75,7 +89,13 @@ const PhotoUploader = ({
             });
 
             if (uploadError) {
-                alert(`Error al subir: ${uploadError.message}`);
+                addNotification({
+                    id: `error-upload-${Date.now()}`,
+                    title: '❌ Error al subir archivo',
+                    description: uploadError.message || 'No se pudo subir el archivo',
+                    priority: 'high',
+                    timeAgo: 'Ahora'
+                });
                 return;
             }
 
@@ -94,7 +114,13 @@ const PhotoUploader = ({
             setSelectedFile(null);
         } catch (err) {
             console.error('Upload error:', err);
-            alert('Error al subir el archivo');
+            addNotification({
+                id: `error-upload-unexpected-${Date.now()}`,
+                title: '❌ Error inesperado',
+                description: err.message || 'Error al subir el archivo',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

@@ -4,6 +4,7 @@ import ComercialSelector from '../shared/ComercialSelector';
 import ContactSelector from '../shared/ContactSelector';
 import { useAuth } from '../../contexts/AuthContext';
 import { useContacts } from '../../hooks/useContacts';
+import { useNotifications } from '../../hooks/useNotifications';
 
 const importanceConfig = [
     { id: 'low', label: 'Baja', color: 'bg-blue-50 border-blue-200 text-blue-700' },
@@ -14,6 +15,7 @@ const importanceConfig = [
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) => {
     const { comercialId } = useAuth();
     const { contacts } = useContacts();
+    const { addNotification } = useNotifications();
     const [formData, setFormData] = useState({
         // Basic Info (Inherited from prospect)
         legalName: '',
@@ -132,7 +134,13 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
         // Validate that comercial_id is assigned
         const finalComercialId = formData.comercialId || comercialId;
         if (!finalComercialId) {
-            alert('⚠️ Debe asignar un comercial antes de guardar');
+            addNotification({
+                id: `validation-commercial-${Date.now()}`,
+                title: '⚠️ Asignar comercial',
+                description: 'Debe asignar un comercial antes de guardar',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             return;
         }
 
