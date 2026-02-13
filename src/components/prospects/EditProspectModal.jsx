@@ -123,8 +123,13 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                 if (onContactsUpdate) {
                     onContactsUpdate();
                 }
+
+                // Close the contact modal
                 setIsContactModalOpen(false);
+
+                // Reset preselected company
                 setPreselectedCompany(null);
+
                 // Force re-render
                 setFormData({ ...formData });
             } else {

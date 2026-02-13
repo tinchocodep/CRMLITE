@@ -188,4 +188,17 @@ const ProspectCard = ({ prospect, onPromote, onEdit, allContacts = [] }) => {
     );
 };
 
-export default ProspectCard;
+// OPTIMIZATION: Memoize component to prevent unnecessary re-renders
+// Only re-render if prospect data, handlers, or contacts actually change
+export default React.memo(ProspectCard, (prevProps, nextProps) => {
+    // Custom comparison function for better performance
+    return (
+        prevProps.prospect?.id === nextProps.prospect?.id &&
+        prevProps.prospect?.status === nextProps.prospect?.status &&
+        prevProps.prospect?.trade_name === nextProps.prospect?.trade_name &&
+        prevProps.allContacts?.length === nextProps.allContacts?.length &&
+        prevProps.onPromote === nextProps.onPromote &&
+        prevProps.onEdit === nextProps.onEdit
+    );
+});
+

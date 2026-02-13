@@ -15,40 +15,57 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [comercialId, setComercialId] = useState(null);
-    const [comercialIdLoaded, setComercialIdLoaded] = useState(false);
+
+    // OPTIMIZATION: Start as true to prevent hooks from waiting
+    // The actual comercialId will be loaded asynchronously
+    const [comercialIdLoaded, setComercialIdLoaded] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
+
 
     // Check for existing session on mount
     useEffect(() => {
         let abortController = new AbortController();
+        let currentUserId = null;
 
         // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session?.user && !abortController.signal.aborted) {
+                currentUserId = session.user.id;
                 setUser(session.user);
                 loadUserProfile(session.user.id, abortController.signal);
+            } else {
+                // No session - mark as loaded to prevent infinite loading
+                setIsLoading(false);
+                setComercialIdLoaded(true);
             }
         }).catch((err) => {
             if (!abortController.signal.aborted) {
                 console.error('Error getting session:', err);
-            }
-        }).finally(() => {
-            if (!abortController.signal.aborted) {
                 setIsLoading(false);
+                setComercialIdLoaded(true); // Prevent infinite loading
             }
         });
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            // Cancel previous requests
+            // OPTIMIZATION: Only abort if user actually changed
+            // This prevents aborting queries for the same user
+            if (session?.user && session.user.id === currentUserId) {
+                console.log('✅ [AuthContext] Same user - not aborting');
+                return;
+            }
+
+            // Cancel previous requests only if user changed
             abortController.abort();
             // Create new controller
             abortController = new AbortController();
 
             if (session?.user) {
+                currentUserId = session.user.id;
                 setUser(session.user);
                 loadUserProfile(session.user.id, abortController.signal);
             } else {
+                currentUserId = null;
                 setUser(null);
                 setUserProfile(null);
                 setComercialId(null);
@@ -77,9 +94,12 @@ export const AuthProvider = ({ children }) => {
             // Only update state if not aborted
             if (!signal || !signal.aborted) {
                 setUserProfile(profile);
-                // Set comercial_id directly from user profile
                 setComercialId(profile.comercial_id || null);
-                setComercialIdLoaded(true);
+
+                console.log('✅ [AuthContext] User profile loaded:', {
+                    role: profile.role,
+                    comercial_id: profile.comercial_id
+                });
             }
         } catch (error) {
             // Only log if not aborted

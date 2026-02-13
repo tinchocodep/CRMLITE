@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Search, Filter, Plus, UserPlus, CheckCircle2, X } from 'lucide-react';
 import ProspectCard from '../components/prospects/ProspectCard';
 import ProspectsTable from '../components/prospects/ProspectsTable';
@@ -10,6 +10,7 @@ import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { useAuth } from '../contexts/AuthContext';
+import { useDebounce } from '../hooks/useDebounce';
 import { supabase } from '../lib/supabase';
 
 const Prospects = () => {
@@ -35,30 +36,38 @@ const Prospects = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 
+    // Debounce search term to avoid excessive filtering while typing
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
     // Apply role-based filter first
     const roleFilteredProspects = useMemo(() => {
         return filterDataByRole(prospects);
     }, [prospects, selectedComercialId, filterDataByRole]);
 
-    // Then apply search filter
-    const filteredProspects = roleFilteredProspects.filter(p =>
-        (p.trade_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.legal_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (p.cuit?.includes(searchTerm))
-    );
+    // Then apply search filter (memoized with debounced search)
+    const filteredProspects = useMemo(() => {
+        if (!debouncedSearchTerm) return roleFilteredProspects;
+
+        const searchLower = debouncedSearchTerm.toLowerCase();
+        return roleFilteredProspects.filter(p =>
+            (p.trade_name || '').toLowerCase().includes(searchLower) ||
+            (p.legal_name || '').toLowerCase().includes(searchLower) ||
+            (p.cuit?.includes(debouncedSearchTerm))
+        );
+    }, [roleFilteredProspects, debouncedSearchTerm]);
 
 
-    const handlePromoteClick = (prospect) => {
+    const handlePromoteClick = useCallback((prospect) => {
         setSelectedProspect(prospect);
         setIsConvertModalOpen(true);
-    };
+    }, []);
 
-    const handleEditClick = (prospect) => {
+    const handleEditClick = useCallback((prospect) => {
         setSelectedProspect(prospect);
         setIsEditModalOpen(true);
-    };
+    }, []);
 
-    const handleCreateClick = () => {
+    const handleCreateClick = useCallback(() => {
         console.log('🆕 [Prospects] Creating new prospect with comercialId:', comercialId);
         setSelectedProspect({
             id: Date.now(), // Temporary ID
@@ -74,7 +83,7 @@ const Prospects = () => {
             comercial_id: comercialId // Initialize with current user's comercial_id
         });
         setIsEditModalOpen(true);
-    };
+    }, [comercialId]);
 
     const handleSaveProspect = async (updatedProspect) => {
         try {
@@ -159,18 +168,25 @@ const Prospects = () => {
 
     const handleConfirmConversion = async (clientData) => {
         try {
-            // Extract contactIds before preparing data (same pattern as Clients.jsx)
-            const { contactIds, ...restClientData } = clientData;
+            console.log('🔍 [Prospects] Starting conversion for prospect:', selectedProspect);
+            console.log('📦 [Prospects] Client data received from modal:', clientData);
+            // Extract contactIds and file_number before preparing data
+            // file_number should NOT be sent in the update - let the database trigger handle it
+            // id should NOT be sent in the update - it's used as a query parameter
+            const { contactIds, file_number, id, ...restClientData } = clientData;
 
             // Prepare the data for updating the prospect to client
+            // NOTE: Do NOT include 'id' or 'file_number' in the update payload
+            // - 'id' is used as a filter parameter
+            // - 'file_number' is handled by the database trigger auto_assign_file_number()
             const dataToUpdate = {
                 ...restClientData,
-                company_type: 'client',
-                // Keep the same ID
-                id: selectedProspect.id
+                company_type: 'client'
             };
 
             console.log('🔍 [Prospects] Updating prospect to client with data:', dataToUpdate);
+            console.log('📋 [Prospects] Fields in dataToUpdate:', Object.keys(dataToUpdate));
+            console.log('🚨 [Prospects] Has file_number?', 'file_number' in dataToUpdate, dataToUpdate.file_number);
 
             // Update the existing prospect record to become a client
             const result = await updateCompany(selectedProspect.id, dataToUpdate);

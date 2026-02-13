@@ -3,14 +3,14 @@ import { X, Building2, UserPlus, Plus, Trash2, Star, CheckCircle } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
-import { useNotifications } from '../../hooks/useNotifications';
+import { useToast } from '../../contexts/ToastContext';
 import ComercialSelector from '../shared/ComercialSelector';
 
 
 const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedCompany = null }) => {
     const { companies } = useCompanies();
     const { createContact, updateContact } = useContacts();
-    const { addNotification } = useNotifications();
+    const { showToast } = useToast();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -233,7 +233,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                     }
                     onClose();
                 } else {
-                    addNotification({
+                    showToast({
                         id: `error-update-contact-${Date.now()}`,
                         title: '❌ Error al actualizar',
                         description: result.error || 'No se pudo actualizar el contacto',
@@ -245,13 +245,22 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                 // Create new contact
                 const result = await createContact(formData);
                 if (result.success) {
+                    // Show success notification
+                    showToast({
+                        id: `success-create-contact-${Date.now()}`,
+                        title: '✅ Contacto creado exitosamente',
+                        description: `${formData.firstName} ${formData.lastName} ha sido agregado`,
+                        priority: 'medium',
+                        timeAgo: 'Ahora'
+                    });
+
                     // Wait for onSave callback to complete before closing
                     if (onSave) {
                         await onSave(result.data);
                     }
                     onClose();
                 } else {
-                    addNotification({
+                    showToast({
                         id: `error-create-contact-${Date.now()}`,
                         title: '❌ Error al crear contacto',
                         description: result.error || 'No se pudo crear el contacto',
@@ -262,7 +271,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
             }
         } catch (error) {
             console.error('Error in handleSubmit:', error);
-            addNotification({
+            showToast({
                 id: `error-submit-${Date.now()}`,
                 title: '❌ Error inesperado',
                 description: error.message || 'Ocurrió un error al procesar la solicitud',

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 
 /**
@@ -11,6 +11,9 @@ export function useCurrentTenant() {
     const [tenantId, setTenantId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // Use ref to persist currentUserId across re-renders and closures
+    const currentUserIdRef = useRef(null);
 
     useEffect(() => {
         let abortController = new AbortController();
@@ -29,10 +32,14 @@ export function useCurrentTenant() {
                 if (abortController.signal.aborted) return;
 
                 if (!user) {
+                    currentUserIdRef.current = null;
                     setTenantId(null);
                     setLoading(false);
                     return;
                 }
+
+                // Track current user ID in ref
+                currentUserIdRef.current = user.id;
 
                 // Fetch user's tenant_id from the users table
                 const { data, error: fetchError } = await supabase
@@ -64,8 +71,18 @@ export function useCurrentTenant() {
         fetchTenantId();
 
         // Listen for auth state changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-            // Cancel previous request
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            // OPTIMIZATION: Only abort and refetch if user actually changed
+            const newUserId = session?.user?.id || null;
+
+            if (newUserId === currentUserIdRef.current) {
+                console.log('✅ [useCurrentTenant] Same user - not refetching');
+                return;
+            }
+
+            console.log('🔄 [useCurrentTenant] User changed - refetching tenant_id');
+
+            // Cancel previous request only if user changed
             abortController.abort();
             // Create new controller for new request
             abortController = new AbortController();

@@ -52,8 +52,9 @@ const Clients = () => {
 
     const handleSaveClient = async (clientData) => {
         try {
-            // Extract contactIds before preparing data
-            const { contactIds, ...restClientData } = clientData;
+            // Extract contactIds and id before preparing data
+            // id should NOT be sent in the update - it's used as a query parameter
+            const { contactIds, id, ...restClientData } = clientData;
 
             // Prepare the data with correct field names and company_type
             const dataToSave = {

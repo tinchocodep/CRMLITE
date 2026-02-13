@@ -7,17 +7,17 @@ import {
 } from 'lucide-react';
 
 const sidebarModules = [
-    { name: 'Home', path: '/dashboard', icon: Home, locked: false },
-    { name: 'Portal Clientes', path: '/portal-clientes', icon: Users, locked: true },
-    { name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true, locked: false },
-    { name: 'Usuarios', path: '/usuarios', icon: Users },
-    { name: 'Administración', path: '/cotizador', icon: Package, isCotizador: true, locked: false },
-    { name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp, locked: true },
-    { name: 'Marketing', path: '/marketing', icon: Megaphone, locked: true },
-    { name: 'Logística (TMS)', path: '/logistica', icon: Truck, locked: true },
-    { name: 'Sustentabilidad', path: '/sustentabilidad', icon: Leaf, locked: true },
-    { name: 'Soluciones Financieras', path: '/finanzas', icon: DollarSign, locked: true },
-    { name: 'Portal Proveedores', path: '/proveedores', icon: Building2, locked: true }
+    { id: 'home', name: 'Home', path: '/dashboard', icon: Home, locked: false },
+    { id: 'portal-clientes', name: 'Portal Clientes', path: '/portal-clientes', icon: Users, locked: true },
+    { id: 'crm', name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true, locked: false },
+    { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users },
+    { id: 'administracion', name: 'Administración', path: '/cotizador', icon: Package, isCotizador: true, locked: false },
+    { id: 'mercado-granos', name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp, locked: true },
+    { id: 'marketing', name: 'Marketing', path: '/marketing', icon: Megaphone, locked: true },
+    { id: 'logistica', name: 'Logística (TMS)', path: '/logistica', icon: Truck, locked: true },
+    { id: 'sustentabilidad', name: 'Sustentabilidad', path: '/sustentabilidad', icon: Leaf, locked: true },
+    { id: 'finanzas', name: 'Soluciones Financieras', path: '/finanzas', icon: DollarSign, locked: true },
+    { id: 'proveedores', name: 'Portal Proveedores', path: '/proveedores', icon: Building2, locked: true }
 ];
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
@@ -66,7 +66,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                         // Render locked modules as divs
                         return (
                             <div
-                                key={module.path}
+                                key={module.id}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
@@ -97,7 +97,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                     // Render unlocked modules as NavLinks
                     return (
                         <NavLink
-                            key={module.path}
+                            key={module.id}
                             to={module.path}
                             className={({ isActive }) => {
                                 const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative text-slate-800';

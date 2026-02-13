@@ -41,10 +41,29 @@ export const useCompanies = (type = null) => {
 
             setLoading(true);
 
+            // OPTIMIZATION: Only fetch essential fields for list view
+            // This significantly reduces payload size and query time
+            const essentialFields = [
+                'id',
+                'created_at',
+                'trade_name',
+                'legal_name',
+                'cuit',
+                'company_type',
+                'status',
+                'qualification_score',
+                'comercial_id',
+                'tenant_id',
+                'is_active',
+                'city',
+                'province',
+                'file_number'
+            ].join(',');
+
             // Build query with tenant filter
             let query = supabase
                 .from('companies')
-                .select('*')
+                .select(essentialFields)
                 .eq('is_active', true)
                 .eq('tenant_id', tenantId);
 
@@ -56,7 +75,7 @@ export const useCompanies = (type = null) => {
             // Apply role-based filter (admin sees all, comercial sees only theirs)
             query = applyRoleFilter(query);
 
-            // Execute query
+            // Execute query with ordering
             query = query.order('created_at', { ascending: false });
 
             const { data, error: fetchError } = await query;
@@ -80,9 +99,21 @@ export const useCompanies = (type = null) => {
             return;
         }
 
+        // OPTIMIZATION: Admin users don't need to wait for comercialId
+        // They can see all data regardless of comercial_id
+        if (isAdmin) {
+            console.log('⚡ [useCompanies] Admin user - skipping comercialId wait');
+            if (user && tenantId) {
+                fetchCompanies();
+            } else if (!tenantLoading) {
+                // Tenant loading finished, but no user/tenantId - stop loading
+                setLoading(false);
+            }
+            return;
+        }
+
         // For non-admin users, wait for comercialId to be loaded
-        // Admin can see all, so they don't strictly need comercialId
-        if (!isAdmin && !comercialIdLoaded) {
+        if (!comercialIdLoaded) {
             console.log('⏳ [useCompanies] Waiting for comercialId to load...');
             setLoading(true);
             return;
@@ -91,6 +122,7 @@ export const useCompanies = (type = null) => {
         if (user && tenantId) {
             fetchCompanies();
         } else if (!tenantLoading) {
+            // Tenant loading finished, but no user/tenantId - stop loading
             setLoading(false);
         }
     }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin]);

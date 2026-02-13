@@ -145,9 +145,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
         }
 
         // Only send fields that exist in the companies table
+        // NOTE: Do NOT include 'id' in the update payload - it's used as a filter parameter
         const dataToSubmit = {
-            // Include ID if editing existing client
-            ...(formData.id && { id: formData.id }),
             // Map camelCase to snake_case for existing DB fields
             trade_name: formData.tradeName,
             legal_name: formData.legalName,
@@ -170,6 +169,10 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             // Contact assignments
             contactIds: selectedContactIds
         };
+
+        console.log('🚀 [ConvertToClientModal] Submitting data:', dataToSubmit);
+        console.log('🔍 [ConvertToClientModal] Original prospect:', prospect);
+
         onConvert(dataToSubmit);
     };
 
