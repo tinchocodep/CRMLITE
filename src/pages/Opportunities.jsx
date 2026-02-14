@@ -307,6 +307,9 @@ const Opportunities = () => {
                 ) : (
                     filteredOpportunities.map(opportunity => {
                         const status = stageConfig[opportunity.status] || stageConfig.iniciado;
+                        const isWon = opportunity.status === 'won' || opportunity.status === 'ganado';
+                        const isLost = opportunity.status === 'lost' || opportunity.status === 'perdido';
+                        const canMarkAsWon = !isWon && !isLost && (opportunity.probability || 0) > 60;
                         return (
                             <div
                                 key={opportunity.id}
@@ -375,24 +378,44 @@ const Opportunities = () => {
                                 </div>
 
                                 <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                                    <button
-                                        onClick={() => handleEdit(opportunity)}
-                                        className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center gap-1"
-                                    >
-                                        <Edit2 size={14} />
-                                        <span>Editar</span>
-                                    </button>
-                                    <button
-                                        onClick={async (e) => {
-                                            e.stopPropagation();
-                                            console.log('Delete button clicked, opportunity ID:', opportunity.id);
-                                            await deleteOpportunity(opportunity.id);
-                                        }}
-                                        className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1"
-                                    >
-                                        <Trash2 size={14} />
-                                        <span>Eliminar</span>
-                                    </button>
+                                    {canMarkAsWon && (
+                                        <button
+                                            onClick={() => handleMarkAsWon(opportunity)}
+                                            className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg text-sm font-semibold transition-all flex items-center gap-1 shadow-sm"
+                                            title="Marcar como Ganado"
+                                        >
+                                            <Trophy size={14} />
+                                            <span>Ganado</span>
+                                        </button>
+                                    )}
+                                    {isWon && (
+                                        <span className="px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm font-bold flex items-center gap-1">
+                                            <Trophy size={14} />
+                                            <span>GANADA</span>
+                                        </span>
+                                    )}
+                                    {!isWon && (
+                                        <>
+                                            <button
+                                                onClick={() => handleEdit(opportunity)}
+                                                className="px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg text-sm font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center gap-1"
+                                            >
+                                                <Edit2 size={14} />
+                                                <span>Editar</span>
+                                            </button>
+                                            <button
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    console.log('Delete button clicked, opportunity ID:', opportunity.id);
+                                                    await deleteOpportunity(opportunity.id);
+                                                }}
+                                                className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1"
+                                            >
+                                                <Trash2 size={14} />
+                                                <span>Eliminar</span>
+                                            </button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -434,7 +457,8 @@ const Opportunities = () => {
                                     const closeDate = opp.expectedCloseDate || opp.close_date;
                                     const parsedDate = closeDate ? new Date(closeDate) : null;
                                     const isWon = opp.status === 'won' || opp.status === 'ganado';
-                                    const canMarkAsWon = !isWon && ['negotiation', 'proposal', 'negociado'].includes(opp.status);
+                                    const isLost = opp.status === 'lost' || opp.status === 'perdido';
+                                    const canMarkAsWon = !isWon && !isLost && (opp.probability || 0) > 60;
 
                                     return (
                                         <tr
