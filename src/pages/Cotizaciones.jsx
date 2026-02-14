@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { FileText, Search, Plus, Edit2, Eye, Send, CheckCircle, Clock, DollarSign, Calendar, Building2, ShoppingCart, XCircle, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { quotations as mockQuotations } from '../data/quotations';
 import { orders as mockOrders } from '../data/orders';
-import { saveOrder } from '../services/ordersService';
-import { getAllQuotations } from '../services/quotationsService';
 import { useToast } from '../contexts/ToastContext';
 import QuotationDetailsModal from '../components/QuotationDetailsModal';
 import EditQuotationModal from '../components/EditQuotationModal';
+import { useQuotations } from '../hooks/useQuotations';
+import { useOrders } from '../hooks/useOrders';
 
 const Cotizaciones = () => {
     const { showToast } = useToast();
@@ -18,25 +17,35 @@ const Cotizaciones = () => {
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [quotationToEdit, setQuotationToEdit] = useState(null);
 
-    // Estado para usar datos mock + datos del servicio
-    const [localQuotations, setLocalQuotations] = useState(() => {
-        // Merge mock quotations with quotations from service
-        const serviceQuotations = getAllQuotations();
-        const mockQuotationIds = new Set(mockQuotations.map(q => q.id));
-        const uniqueServiceQuotations = serviceQuotations.filter(q => !mockQuotationIds.has(q.id));
-        return [...mockQuotations, ...uniqueServiceQuotations];
-    });
+    // Usar hook de Supabase para cotizaciones
+    const {
+        quotations,
+        loading,
+        error,
+        updateQuotation,
+        deleteQuotation
+    } = useQuotations();
+
+    // Usar hook de Supabase para pedidos
+    const { createOrder } = useOrders();
+
     const [localOrders, setLocalOrders] = useState(mockOrders);
 
     // Función para actualizar el estado de una cotización
-    const handleUpdateStatus = (quotation, newStatus) => {
-        setLocalQuotations(prev =>
-            prev.map(q =>
-                q.id === quotation.id
-                    ? { ...q, status: newStatus, updatedAt: new Date().toISOString() }
-                    : q
-            )
-        );
+    const handleUpdateStatus = async (quotation, newStatus) => {
+        const result = await updateQuotation(quotation.id, { status: newStatus });
+
+        if (!result.success) {
+            showToast({
+                id: `error-${quotation.id}-${Date.now()}`,
+                title: '❌ Error',
+                description: result.error || 'No se pudo actualizar el estado',
+                priority: 'high',
+                icon: XCircle,
+                timeAgo: 'Ahora'
+            });
+            return;
+        }
 
         const statusLabels = {
             draft: 'Borrador',
@@ -55,7 +64,7 @@ const Cotizaciones = () => {
         showToast({
             id: `status-${quotation.id}-${Date.now()}`,
             title: `✅ Estado Actualizado`,
-            description: `Cotización ${quotation.number} marcada como ${statusLabels[newStatus]}`,
+            description: `Cotización ${quotation.quotation_number || quotation.number} marcada como ${statusLabels[newStatus]}`,
             priority: 'high',
             icon: statusIcons[newStatus],
             timeAgo: 'Ahora'
@@ -69,19 +78,25 @@ const Cotizaciones = () => {
     };
 
     // Guardar cambios de cotización
-    const handleSaveQuotation = (updatedData) => {
-        setLocalQuotations(prev =>
-            prev.map(q =>
-                q.id === quotationToEdit.id
-                    ? { ...q, ...updatedData }
-                    : q
-            )
-        );
+    const handleSaveQuotation = async (updatedData) => {
+        const result = await updateQuotation(quotationToEdit.id, updatedData);
+
+        if (!result.success) {
+            showToast({
+                id: `error-${quotationToEdit.id}-${Date.now()}`,
+                title: '❌ Error',
+                description: result.error || 'No se pudo actualizar la cotización',
+                priority: 'high',
+                icon: XCircle,
+                timeAgo: 'Ahora'
+            });
+            return;
+        }
 
         showToast({
             id: `edit-${quotationToEdit.id}-${Date.now()}`,
             title: '✅ Cotización Actualizada',
-            description: `Los cambios en ${quotationToEdit.number} se guardaron correctamente`,
+            description: `Los cambios en ${quotationToEdit.quotation_number || quotationToEdit.number} se guardaron correctamente`,
             priority: 'high',
             icon: CheckCircle,
             timeAgo: 'Ahora'
@@ -90,8 +105,10 @@ const Cotizaciones = () => {
 
 
     // Apply filters
-    const filteredQuotations = localQuotations.filter(quot => {
-        const matchesSearch = quot.number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filteredQuotations = quotations.filter(quot => {
+        const matchesSearch = quot.quotation_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            quot.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            quot.number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             quot.clientName?.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' || quot.status === statusFilter;
@@ -102,28 +119,28 @@ const Cotizaciones = () => {
     const stats = [
         {
             label: 'Total',
-            value: localQuotations.length,
+            value: quotations.length,
             icon: FileText,
             color: 'from-blue-500 to-blue-600',
             textColor: 'text-blue-600'
         },
         {
             label: 'Borradores',
-            value: localQuotations.filter(q => q.status === 'draft').length,
+            value: quotations.filter(q => q.status === 'draft').length,
             icon: Edit2,
             color: 'from-amber-500 to-amber-600',
             textColor: 'text-amber-600'
         },
         {
             label: 'Enviadas',
-            value: localQuotations.filter(q => q.status === 'sent').length,
+            value: quotations.filter(q => q.status === 'sent').length,
             icon: Send,
             color: 'from-purple-500 to-purple-600',
             textColor: 'text-purple-600'
         },
         {
             label: 'Aprobadas',
-            value: localQuotations.filter(q => q.status === 'approved').length,
+            value: quotations.filter(q => q.status === 'approved').length,
             icon: CheckCircle,
             color: 'from-green-500 to-green-600',
             textColor: 'text-green-600'
@@ -152,41 +169,59 @@ const Cotizaciones = () => {
     };
 
     // Función para confirmar cotización y crear pedido
-    const handleConfirmQuotation = (quotation) => {
+    const handleConfirmQuotation = async (quotation) => {
         // Actualizar estado de cotización a "approved"
-        setLocalQuotations(prev =>
-            prev.map(q =>
-                q.id === quotation.id
-                    ? { ...q, status: 'approved' }
-                    : q
-            )
-        );
+        const result = await updateQuotation(quotation.id, { status: 'approved' });
 
-        // Crear pedido usando el servicio (se guarda en localStorage)
-        const newOrder = saveOrder({
-            quotationId: quotation.id,
-            clientId: quotation.clientId,
-            clientName: quotation.clientName,
-            saleType: quotation.saleType,
-            paymentCondition: quotation.paymentCondition,
-            deliveryDate: quotation.deliveryDate,
-            originAddress: quotation.originAddress,
-            destinationAddress: quotation.destinationAddress,
+        if (!result.success) {
+            showToast({
+                id: `error-confirm-${quotation.id}-${Date.now()}`,
+                title: '❌ Error',
+                description: result.error || 'No se pudo confirmar la cotización',
+                priority: 'high',
+                icon: XCircle,
+                timeAgo: 'Ahora'
+            });
+            return;
+        }
+
+        // Crear pedido en Supabase
+        const orderResult = await createOrder({
+            quotation_id: quotation.id,
+            company_id: quotation.company_id,
+            comercial_id: quotation.comercial_id,
+            client_name: quotation.client_name || quotation.clientName,
+            client_cuit: quotation.client_cuit || quotation.clientCuit,
+            sale_type: quotation.sale_type || quotation.saleType,
+            payment_condition: quotation.payment_condition || quotation.paymentCondition,
+            delivery_date: quotation.delivery_date || quotation.deliveryDate,
+            origin_address: quotation.origin_address || quotation.originAddress,
+            destination_address: quotation.destination_address || quotation.destinationAddress,
             status: 'pending',
             lines: quotation.lines,
             subtotal: quotation.subtotal,
             tax: quotation.tax,
-            total: quotation.total
+            total: quotation.total,
+            notes: quotation.notes
         });
 
-        // Actualizar estado local también (para mantener sincronización)
-        setLocalOrders(prev => [...prev, newOrder]);
+        if (!orderResult.success) {
+            showToast({
+                id: `error-order-${quotation.id}-${Date.now()}`,
+                title: '❌ Error',
+                description: orderResult.error || 'No se pudo crear el pedido',
+                priority: 'high',
+                icon: XCircle,
+                timeAgo: 'Ahora'
+            });
+            return;
+        }
 
         // Mostrar notificación
         showToast({
             id: `quotation-confirmed-${quotation.id}`,
             title: '✅ Cotización Confirmada',
-            description: `Se creó el pedido ${newOrder.orderNumber} por ${formatCurrency(newOrder.total)}`,
+            description: `Se creó el pedido ${orderResult.data.order_number} por ${formatCurrency(parseFloat(orderResult.data.total))}`,
             priority: 'high',
             icon: CheckCircle,
             timeAgo: 'Ahora'
@@ -267,7 +302,21 @@ const Cotizaciones = () => {
 
             {/* Quotations List - Mobile Optimized Cards */}
             <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
-                {filteredQuotations.length === 0 ? (
+                {loading ? (
+                    <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-advanta-green"></div>
+                    </div>
+                ) : error ? (
+                    <div className="text-center py-12">
+                        <XCircle className="w-12 h-12 sm:w-16 sm:h-16 text-red-500 mx-auto mb-3 sm:mb-4" />
+                        <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                            Error al cargar cotizaciones
+                        </h3>
+                        <p className="text-sm text-red-600 dark:text-red-400 px-4">
+                            {error}
+                        </p>
+                    </div>
+                ) : filteredQuotations.length === 0 ? (
                     <div className="text-center py-12 sm:py-16">
                         <FileText className="w-12 h-12 sm:w-16 sm:h-16 text-slate-300 dark:text-slate-700 mx-auto mb-3 sm:mb-4" />
                         <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-2">
@@ -280,7 +329,7 @@ const Cotizaciones = () => {
                 ) : (
                     <div className="grid gap-3 sm:gap-4">
                         {filteredQuotations.map((quotation, index) => {
-                            const canConfirm = quotation.status === 'approved' || quotation.status === 'sent';
+                            const canConfirm = quotation.status === 'sent';
                             const isApproved = quotation.status === 'approved';
 
                             return (
@@ -301,21 +350,21 @@ const Cotizaciones = () => {
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-2 mb-1 sm:mb-2">
                                                     <h3 className="text-sm sm:text-lg font-bold text-slate-900 dark:text-white truncate">
-                                                        {quotation.number}
+                                                        {quotation.quotation_number || quotation.number}
                                                     </h3>
                                                     {getStatusBadge(quotation.status)}
                                                 </div>
                                                 <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                                                     <Building2 size={14} className="flex-shrink-0" />
-                                                    <span className="font-medium truncate">{quotation.clientName}</span>
+                                                    <span className="font-medium truncate">{quotation.client_name || quotation.clientName}</span>
                                                 </div>
                                             </div>
                                             <div className="text-right ml-2 flex-shrink-0">
                                                 <div className="text-lg sm:text-2xl font-bold text-green-600 dark:text-green-400">
-                                                    {formatCurrency(quotation.total)}
+                                                    {formatCurrency(parseFloat(quotation.total))}
                                                 </div>
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
-                                                    + IVA {formatCurrency(quotation.tax)}
+                                                    + IVA {formatCurrency(parseFloat(quotation.tax))}
                                                 </div>
                                             </div>
                                         </div>
@@ -325,45 +374,45 @@ const Cotizaciones = () => {
                                             <div>
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-0.5 sm:mb-1">Tipo</div>
                                                 <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {quotation.saleType === 'own' ? '🏢 Propia' : '🤝 Partner'}
+                                                    {(quotation.sale_type || quotation.saleType) === 'own' ? '🏢 Propia' : '🤝 Partner'}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-0.5 sm:mb-1">Pago</div>
                                                 <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white truncate">
-                                                    {quotation.paymentCondition === 'cash' ? '💵 Contado' :
-                                                        quotation.paymentCondition === '30d' ? '📅 30d' :
-                                                            quotation.paymentCondition === '60d' ? '📅 60d' : '📅 90d'}
+                                                    {(quotation.payment_condition || quotation.paymentCondition) === 'cash' ? '💵 Contado' :
+                                                        (quotation.payment_condition || quotation.paymentCondition) === '30d' ? '📅 30d' :
+                                                            (quotation.payment_condition || quotation.paymentCondition) === '60d' ? '📅 60d' : '📅 90d'}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-0.5 sm:mb-1">Entrega</div>
                                                 <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {formatDate(quotation.deliveryDate)}
+                                                    {formatDate(quotation.delivery_date || quotation.deliveryDate)}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-0.5 sm:mb-1">Productos</div>
                                                 <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {quotation.lines.length} ítem(s)
+                                                    {quotation.lines?.length || 0} ítem(s)
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Products List - Mobile Optimized */}
                                         <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
-                                            {quotation.lines.slice(0, 2).map((line, idx) => (
+                                            {quotation.lines?.slice(0, 2).map((line, idx) => (
                                                 <div key={idx} className="flex items-center justify-between text-xs sm:text-sm">
                                                     <div className="flex-1 min-w-0 mr-2">
-                                                        <span className="text-slate-700 dark:text-slate-300 truncate block">{line.productName}</span>
+                                                        <span className="text-slate-700 dark:text-slate-300 truncate block">{line.product_name || line.productName}</span>
                                                         <span className="text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs">× {line.quantity}</span>
                                                     </div>
                                                     <div className="font-semibold text-slate-900 dark:text-white flex-shrink-0">
-                                                        {formatCurrency(line.total)}
+                                                        {formatCurrency(parseFloat(line.total))}
                                                     </div>
                                                 </div>
                                             ))}
-                                            {quotation.lines.length > 2 && (
+                                            {quotation.lines && quotation.lines.length > 2 && (
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 italic">
                                                     + {quotation.lines.length - 2} producto(s) más
                                                 </div>
@@ -373,7 +422,7 @@ const Cotizaciones = () => {
                                         {/* Actions - Mobile Optimized */}
                                         <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-slate-200 dark:border-slate-700">
                                             <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
-                                                {formatDate(quotation.createdAt)}
+                                                {formatDate(quotation.created_at || quotation.createdAt)}
                                             </div>
                                             <div className="flex items-center gap-1.5 sm:gap-2">
                                                 {canConfirm && !isApproved && (

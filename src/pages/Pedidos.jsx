@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { orders as mockOrders } from '../data/orders';
 import { stockMovementsOut as mockStockMovements } from '../data/stock';
 import { invoices as mockInvoices } from '../data/invoices';
 import { useToast } from '../contexts/ToastContext';
@@ -10,11 +9,15 @@ import PreInvoiceModal from '../components/PreInvoiceModal';
 import InvoiceActionModal from '../components/orders/InvoiceActionModal';
 import ComprobantesList, { PDFPreviewModal } from '../components/orders/ComprobantesList';
 import { getComprobantesByOrder, getShippedQuantities } from '../services/comprobantesService';
-import { getAllOrders } from '../services/ordersService';
+import { useOrders } from '../hooks/useOrders';
 
 
 const Pedidos = () => {
     const { showToast } = useToast();
+
+    // Usar hook de Supabase para pedidos
+    const { orders, loading, error, updateOrder } = useOrders();
+
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -30,14 +33,6 @@ const Pedidos = () => {
     const [selectedComprobante, setSelectedComprobante] = useState(null);
     const [comprobantesMap, setComprobantesMap] = useState({});
 
-    // Estado para usar datos mock + datos del servicio
-    const [localOrders, setLocalOrders] = useState(() => {
-        // Merge mock orders with orders from service
-        const serviceOrders = getAllOrders();
-        const mockOrderIds = new Set(mockOrders.map(o => o.id));
-        const uniqueServiceOrders = serviceOrders.filter(o => !mockOrderIds.has(o.id));
-        return [...mockOrders, ...uniqueServiceOrders];
-    });
     const [localStockMovements, setLocalStockMovements] = useState(mockStockMovements);
     const [localInvoices, setLocalInvoices] = useState(mockInvoices);
 
@@ -46,7 +41,7 @@ const Pedidos = () => {
         const loadComprobantes = () => {
             console.log('🔄 Loading comprobantes for all orders...');
             const map = {};
-            localOrders.forEach(order => {
+            orders.forEach(order => {
                 const orderComprobantes = getComprobantesByOrder(order.id);
                 map[order.id] = orderComprobantes;
                 if (orderComprobantes.length > 0) {
@@ -64,7 +59,7 @@ const Pedidos = () => {
             console.log('🔄 Modal closed, reloading comprobantes...');
             loadComprobantes();
         }
-    }, [localOrders, invoiceActionModalOpen]);
+    }, [orders, invoiceActionModalOpen]);
 
     // Toggle order expansion
     const toggleOrderExpansion = (orderId) => {
@@ -349,7 +344,7 @@ const Pedidos = () => {
 
 
     // Apply filters
-    const filteredOrders = localOrders.filter(order => {
+    const filteredOrders = orders.filter(order => {
         const matchesSearch = order.orderNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order.clientName?.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -361,28 +356,28 @@ const Pedidos = () => {
     const stats = [
         {
             label: 'Total Pedidos',
-            value: localOrders.length,
+            value: orders.length,
             icon: Package,
             color: 'from-indigo-500 to-indigo-600',
             textColor: 'text-indigo-600'
         },
         {
             label: 'Pendientes',
-            value: localOrders.filter(o => o.status === 'pending').length,
+            value: orders.filter(o => o.status === 'pending').length,
             icon: Clock,
             color: 'from-amber-500 to-amber-600',
             textColor: 'text-amber-600'
         },
         {
             label: 'Remitidos',
-            value: localOrders.filter(o => o.status === 'shipped').length,
+            value: orders.filter(o => o.status === 'shipped').length,
             icon: Truck,
             color: 'from-blue-500 to-blue-600',
             textColor: 'text-blue-600'
         },
         {
             label: 'Completados',
-            value: localOrders.filter(o => o.status === 'completed' || o.status === 'paid').length,
+            value: orders.filter(o => o.status === 'completed' || o.status === 'paid').length,
             icon: CheckCircle,
             color: 'from-green-500 to-green-600',
             textColor: 'text-green-600'
