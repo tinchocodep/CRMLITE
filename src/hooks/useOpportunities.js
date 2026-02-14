@@ -13,6 +13,7 @@ export const useOpportunities = (refreshKey = 'default') => {
 
     const fetchOpportunities = async () => {
         try {
+            console.log('📊 [fetchOpportunities] Starting fetch, tenantId:', tenantId);
             // Don't fetch if tenant_id is not available yet
             if (!tenantId) {
                 setOpportunities([]);
@@ -31,6 +32,11 @@ export const useOpportunities = (refreshKey = 'default') => {
                 `)
                 .eq('tenant_id', tenantId)
                 .order('close_date', { ascending: true });
+
+            console.log('📊 [fetchOpportunities] Query result:', {
+                count: data?.length,
+                error: fetchError
+            });
 
             if (fetchError) throw fetchError;
 
@@ -61,10 +67,11 @@ export const useOpportunities = (refreshKey = 'default') => {
                 } : null
             }));
 
+            console.log('✅ [fetchOpportunities] Setting state with', transformedData.length, 'opportunities');
             setOpportunities(transformedData);
             setError(null);
         } catch (err) {
-            console.error('Error fetching opportunities:', err);
+            console.error('❌ [fetchOpportunities] Error:', err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -363,16 +370,26 @@ export const useOpportunities = (refreshKey = 'default') => {
 
     const deleteOpportunity = async (id) => {
         try {
-            const { error: deleteError } = await supabase
+            console.log('🗑️ [deleteOpportunity] Starting delete for ID:', id);
+
+            const { data, error: deleteError } = await supabase
                 .from('opportunities')
                 .delete()
-                .eq('id', id);
+                .eq('id', id)
+                .select();
 
-            if (deleteError) throw deleteError;
+            console.log('🗑️ [deleteOpportunity] Delete response:', { data, error: deleteError });
+
+            if (deleteError) {
+                console.error('❌ [deleteOpportunity] Delete error:', deleteError);
+                throw deleteError;
+            }
+
+            console.log('✅ [deleteOpportunity] Delete successful, fetching updated list');
             await fetchOpportunities();
             return { success: true };
         } catch (err) {
-            console.error('Error deleting opportunity:', err);
+            console.error('❌ [deleteOpportunity] Error deleting opportunity:', err);
             return { success: false, error: err.message };
         }
     };

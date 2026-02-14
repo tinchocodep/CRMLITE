@@ -101,6 +101,39 @@ const Opportunities = () => {
         }
     };
 
+    // Handle status change from dropdown
+    const handleStatusChange = async (opportunityId, newStatus) => {
+        try {
+            console.log('🔄 Changing status:', { opportunityId, newStatus });
+
+            // Calculate probability based on status
+            const statusToProbability = {
+                'prospecting': 10,
+                'qualification': 30,
+                'proposal': 50,
+                'negotiation': 70,
+                'won': 100,
+                'lost': 0
+            };
+
+            const probability = statusToProbability[newStatus] || 0;
+
+            const result = await updateOpportunity(opportunityId, {
+                status: newStatus,
+                probability: probability
+            });
+
+            if (result.success) {
+                setStatusDropdownOpen(null); // Close dropdown
+                console.log('✅ Status updated successfully');
+            } else {
+                throw new Error(result.error || 'Error al actualizar el estado');
+            }
+        } catch (err) {
+            console.error('❌ Error changing status:', err);
+        }
+    };
+
     // Use database opportunities only
     const displayOpportunities = opportunities;
 
@@ -179,11 +212,6 @@ const Opportunities = () => {
         setIsCreateModalOpen(false);
         setIsEditModalOpen(false);
         setOpportunityToEdit(null);
-    };
-
-    const handleStatusChange = async (opportunityId, newStatus) => {
-        await updateOpportunity(opportunityId, { status: newStatus });
-        setStatusDropdownOpen(null);
     };
 
     return (
@@ -290,20 +318,28 @@ const Opportunities = () => {
                                     </h3>
                                     <div className="relative status-dropdown-container ml-2">
                                         <button
-                                            onClick={() => setStatusDropdownOpen(statusDropdownOpen === opportunity.id ? null : opportunity.id)}
-                                            className={`px - 2 py - 1 rounded - lg text - xs font - semibold border ${status.color} flex items - center gap - 1 hover: opacity - 80 transition - opacity`}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                console.log('Status button clicked, opportunity:', opportunity.id);
+                                                setStatusDropdownOpen(statusDropdownOpen === opportunity.id ? null : opportunity.id);
+                                            }}
+                                            className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 hover:opacity-80 transition-opacity`}
                                         >
                                             <span>{status.icon}</span>
                                             <span>{status.label}</span>
                                             <ChevronDown size={12} />
                                         </button>
                                         {statusDropdownOpen === opportunity.id && (
-                                            <div className="absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
+                                            <div className="absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-[100] min-w-[140px]">
                                                 {Object.entries(stageConfig).map(([key, config]) => (
                                                     <button
                                                         key={key}
-                                                        onClick={() => handleStatusChange(opportunity.id, key)}
-                                                        className={`w - full px - 3 py - 2 text - left text - xs font - semibold flex items - center gap - 2 hover: bg - slate - 50 dark: hover: bg - slate - 700 transition - colors first: rounded - t - lg last: rounded - b - lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''} `}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            console.log('Status option clicked:', key);
+                                                            handleStatusChange(opportunity.id, key);
+                                                        }}
+                                                        className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
                                                     >
                                                         <span>{config.icon}</span>
                                                         <span className={config.color.split(' ')[1]}>{config.label}</span>
@@ -347,8 +383,12 @@ const Opportunities = () => {
                                         <span>Editar</span>
                                     </button>
                                     <button
-                                        onClick={() => deleteOpportunity(opportunity.id)}
-                                        className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-100 dark:hover:bg-green-900/50 transition-colors flex items-center gap-1"
+                                        onClick={async (e) => {
+                                            e.stopPropagation();
+                                            console.log('Delete button clicked, opportunity ID:', opportunity.id);
+                                            await deleteOpportunity(opportunity.id);
+                                        }}
+                                        className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1"
                                     >
                                         <Trash2 size={14} />
                                         <span>Eliminar</span>
@@ -399,26 +439,33 @@ const Opportunities = () => {
                                     return (
                                         <tr
                                             key={opp.id}
-                                            className={`border - b border - slate - 100 dark: border - slate - 700 hover: bg - slate - 50 dark: hover: bg - slate - 700 / 30 transition - colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'
-                                                } `}
+                                            className={`border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'}`}
                                         >
                                             <td className="py-3 px-4">
-                                                <div className="relative status-dropdown-container">
+                                                <div className="status-dropdown-container" style={{ position: 'relative', zIndex: statusDropdownOpen === opp.id ? 9999 : 1 }}>
                                                     <button
-                                                        onClick={() => setStatusDropdownOpen(statusDropdownOpen === opp.id ? null : opp.id)}
-                                                        className={`px - 2 py - 1 rounded - lg text - xs font - semibold border ${status.color} flex items - center gap - 1 w - fit hover: opacity - 80 transition - opacity`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            console.log('Desktop status button clicked, opportunity:', opp.id);
+                                                            setStatusDropdownOpen(statusDropdownOpen === opp.id ? null : opp.id);
+                                                        }}
+                                                        className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit hover:opacity-80 transition-opacity`}
                                                     >
                                                         <span>{status.icon}</span>
                                                         <span>{status.label}</span>
                                                         <ChevronDown size={12} />
                                                     </button>
                                                     {statusDropdownOpen === opp.id && (
-                                                        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[140px]">
+                                                        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-[9999] min-w-[160px]">
                                                             {Object.entries(stageConfig).map(([key, config]) => (
                                                                 <button
                                                                     key={key}
-                                                                    onClick={() => handleStatusChange(opp.id, key)}
-                                                                    className={`w - full px - 3 py - 2 text - left text - xs font - semibold flex items - center gap - 2 hover: bg - slate - 50 dark: hover: bg - slate - 700 transition - colors first: rounded - t - lg last: rounded - b - lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''} `}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        console.log('Desktop status option clicked:', key);
+                                                                        handleStatusChange(opp.id, key);
+                                                                    }}
+                                                                    className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
                                                                 >
                                                                     <span>{config.icon}</span>
                                                                     <span className={config.color.split(' ')[1]}>{config.label}</span>
@@ -455,12 +502,46 @@ const Opportunities = () => {
                                             </td>
                                             <td className="py-3 px-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden max-w-[80px]">
-                                                        <div
-                                                            className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all"
-                                                            style={{ width: `${opp.probability || 0}% ` }}
-                                                        />
-                                                    </div>
+                                                    <input
+                                                        type="range"
+                                                        min="0"
+                                                        max="60"
+                                                        step="10"
+                                                        value={Math.min(opp.probability || 0, 60)}
+                                                        onChange={async (e) => {
+                                                            const newProbability = parseInt(e.target.value);
+
+                                                            // Auto-calculate status based on probability
+                                                            let newStatus = opp.status;
+                                                            if (newProbability >= 0 && newProbability <= 20) newStatus = 'prospecting';
+                                                            else if (newProbability <= 40) newStatus = 'qualification';
+                                                            else if (newProbability <= 60) newStatus = 'proposal';
+                                                            else if (newProbability <= 80) newStatus = 'negotiation';
+                                                            else if (newProbability > 80) newStatus = 'won';
+
+                                                            console.log('📊 Probability changed:', { newProbability, newStatus });
+                                                            await updateOpportunity(opp.id, {
+                                                                probability: newProbability,
+                                                                status: newStatus
+                                                            });
+                                                        }}
+                                                        className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full appearance-none cursor-pointer max-w-[80px]
+                                                            [&::-webkit-slider-thumb]:appearance-none
+                                                            [&::-webkit-slider-thumb]:w-4
+                                                            [&::-webkit-slider-thumb]:h-4
+                                                            [&::-webkit-slider-thumb]:rounded-full
+                                                            [&::-webkit-slider-thumb]:bg-blue-600
+                                                            [&::-webkit-slider-thumb]:cursor-pointer
+                                                            [&::-moz-range-thumb]:w-4
+                                                            [&::-moz-range-thumb]:h-4
+                                                            [&::-moz-range-thumb]:rounded-full
+                                                            [&::-moz-range-thumb]:bg-blue-600
+                                                            [&::-moz-range-thumb]:border-0
+                                                            [&::-moz-range-thumb]:cursor-pointer"
+                                                        style={{
+                                                            background: `linear-gradient(to right, rgb(37 99 235) 0%, rgb(37 99 235) ${(Math.min(opp.probability || 0, 60) / 60) * 100}%, rgb(226 232 240) ${(Math.min(opp.probability || 0, 60) / 60) * 100}%, rgb(226 232 240) 100%)`
+                                                        }}
+                                                    />
                                                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
                                                         {opp.probability || 0}%
                                                     </span>
@@ -499,7 +580,11 @@ const Opportunities = () => {
                                                                 <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
                                                             </button>
                                                             <button
-                                                                onClick={() => deleteOpportunity(opp.id)}
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    console.log('Desktop delete button clicked, opportunity ID:', opp.id);
+                                                                    await deleteOpportunity(opp.id);
+                                                                }}
                                                                 className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                                                 title="Eliminar"
                                                             >

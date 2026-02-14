@@ -117,13 +117,12 @@ const BusinessUnitPicker = ({
                                 {selectedEntity.displayName || selectedEntity.trade_name || selectedEntity.legal_name}
                             </p>
                         </div>
-                        <button
-                            type="button"
+                        <div
                             onClick={handleClear}
-                            className="p-1 hover:bg-slate-200 rounded-full transition-colors flex-shrink-0"
+                            className="p-1 hover:bg-slate-200 rounded-full transition-colors flex-shrink-0 cursor-pointer"
                         >
                             <X size={14} className="text-slate-500" />
-                        </button>
+                        </div>
                     </div>
                 ) : (
                     <span className="text-slate-400">Seleccionar cliente o prospecto...</span>
@@ -222,8 +221,8 @@ const BusinessUnitPicker = ({
                                                         }
                                                     </div>
                                                     <span className={`text-xs font-semibold px-2 py-0.5 rounded ${entity.type === 'client'
-                                                            ? 'bg-emerald-100 text-emerald-700'
-                                                            : 'bg-purple-100 text-purple-700'
+                                                        ? 'bg-emerald-100 text-emerald-700'
+                                                        : 'bg-purple-100 text-purple-700'
                                                         }`}>
                                                         {entity.type === 'client' ? 'Cliente' : 'Prospecto'}
                                                     </span>

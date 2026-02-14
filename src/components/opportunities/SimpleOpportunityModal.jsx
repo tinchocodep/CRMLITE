@@ -31,8 +31,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
         status: opportunity?.status || 'prospecting',
         notes: opportunity?.notes || '',
         next_action: opportunity?.next_action || '',
-        next_action_date: opportunity?.next_action_date || '',
-        source: opportunity?.source || ''
+        next_action_date: opportunity?.next_action_date || ''
     });
 
     // Actualizar formData cuando cambia opportunity (para edit)
@@ -49,8 +48,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 status: opportunity.status || 'prospecting',
                 notes: opportunity.notes || '',
                 next_action: opportunity.next_action || '',
-                next_action_date: opportunity.next_action_date || '',
-                source: opportunity.source || ''
+                next_action_date: opportunity.next_action_date || ''
             });
         }
     }, [opportunity]);
@@ -72,8 +70,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
             status: formData.status,
             notes: formData.notes || null,
             next_action: formData.next_action || null,
-            next_action_date: formData.next_action_date || null,
-            source: formData.source || null
+            next_action_date: formData.next_action_date || null
         };
 
         onSave(submitData);
@@ -183,22 +180,15 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
 
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                    Origen de la Oportunidad
+                                    Fecha de Cierre Estimada
                                 </label>
-                                <select
-                                    name="source"
-                                    value={formData.source}
+                                <input
+                                    type="date"
+                                    name="close_date"
+                                    value={formData.close_date}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="">Seleccionar...</option>
-                                    <option value="inbound">Inbound - Cliente nos contactó</option>
-                                    <option value="outbound">Outbound - Prospección activa</option>
-                                    <option value="referral">Referido</option>
-                                    <option value="event">Evento/Feria</option>
-                                    <option value="partner">Socio comercial</option>
-                                    <option value="other">Otro</option>
-                                </select>
+                                />
                             </div>
                         </div>
                     </div>
@@ -229,18 +219,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                                 </select>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                    Fecha de Cierre Estimada
-                                </label>
-                                <input
-                                    type="date"
-                                    name="close_date"
-                                    value={formData.close_date}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
+
                         </div>
 
                         <div>
