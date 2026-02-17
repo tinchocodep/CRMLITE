@@ -71,6 +71,55 @@ const Cotizaciones = () => {
             icon: statusIcons[newStatus],
             timeAgo: 'Ahora'
         });
+
+        // Si se aprueba la cotización, crear pedido automáticamente
+        if (newStatus === 'approved') {
+            console.log('🛒 Creating order from approved quotation:', quotation);
+
+            const orderData = {
+                quotation_id: quotation.id,
+                company_id: quotation.company_id,
+                order_date: new Date().toISOString(),
+                delivery_date: quotation.delivery_date,
+                status: 'pending',
+                sale_type: quotation.sale_type,
+                payment_condition: quotation.payment_condition,
+                origin_address: quotation.origin_address || '',
+                destination_address: quotation.destination_address || '',
+                subtotal: quotation.subtotal,
+                tax: quotation.tax,
+                total: quotation.total,
+                lines: quotation.lines.map(line => ({
+                    product_sap_code: line.product_sap_code,
+                    product_name: line.product_name,
+                    quantity: line.quantity,
+                    unit_price: line.unit_price,
+                    subtotal: line.subtotal
+                }))
+            };
+
+            const orderResult = await createOrder(orderData);
+
+            if (orderResult.success) {
+                showToast({
+                    id: `order-created-${quotation.id}-${Date.now()}`,
+                    title: '🛒 Pedido Creado',
+                    description: `Se creó el pedido ${orderResult.data.order_number} automáticamente desde la cotización ${quotation.quotation_number || quotation.number}`,
+                    priority: 'high',
+                    icon: ShoppingCart,
+                    timeAgo: 'Ahora'
+                });
+            } else {
+                showToast({
+                    id: `order-error-${quotation.id}-${Date.now()}`,
+                    title: '⚠️ Advertencia',
+                    description: `La cotización se aprobó pero hubo un error al crear el pedido: ${orderResult.error}`,
+                    priority: 'high',
+                    icon: XCircle,
+                    timeAgo: 'Ahora'
+                });
+            }
+        }
     };
 
     // Función para editar cotización
