@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { stockMovementsOut as mockStockMovements } from '../data/stock';
 import { invoices as mockInvoices } from '../data/invoices';
@@ -16,7 +16,7 @@ const Pedidos = () => {
     const { showToast } = useToast();
 
     // Usar hook de Supabase para pedidos
-    const { orders, loading, error, updateOrder } = useOrders();
+    const { orders, loading, error, updateOrder, deleteOrder } = useOrders();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -26,6 +26,8 @@ const Pedidos = () => {
     const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState(null);
     const [invoiceActionModalOpen, setInvoiceActionModalOpen] = useState(false);
     const [selectedOrderForAction, setSelectedOrderForAction] = useState(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [orderToDelete, setOrderToDelete] = useState(null);
 
     // Comprobantes state
     const [expandedOrders, setExpandedOrders] = useState(new Set());
@@ -85,6 +87,39 @@ const Pedidos = () => {
         cobrar: '' // URL para registrar pago
     };
 
+    // Función para eliminar pedido
+    const handleDeleteOrder = async () => {
+        if (!orderToDelete) return;
+
+        const result = await deleteOrder(orderToDelete.id);
+
+        if (!result.success) {
+            showToast({
+                id: `error-delete-${orderToDelete.id}-${Date.now()}`,
+                title: '❌ Error',
+                description: result.error || 'No se pudo eliminar el pedido',
+                priority: 'high',
+                icon: AlertCircle,
+                timeAgo: 'Ahora'
+            });
+            setDeleteConfirmOpen(false);
+            setOrderToDelete(null);
+            return;
+        }
+
+        showToast({
+            id: `delete-${orderToDelete.id}-${Date.now()}`,
+            title: '✅ Pedido Eliminado',
+            description: `El pedido ${orderToDelete.order_number} fue eliminado correctamente`,
+            priority: 'high',
+            icon: CheckCircle,
+            timeAgo: 'Ahora'
+        });
+
+        setDeleteConfirmOpen(false);
+        setOrderToDelete(null);
+    };
+
     const statusConfig = {
         pending: { label: 'Pendiente', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: '⏳' },
         shipped: { label: 'Remitido', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '📦' },
@@ -124,14 +159,15 @@ const Pedidos = () => {
 
             setLocalStockMovements(prev => [...prev, ...newMovements]);
 
-            // Actualizar estado del pedido
-            setLocalOrders(prev =>
-                prev.map(o =>
-                    o.id === order.id
-                        ? { ...o, status: 'shipped', shippedAt: new Date().toISOString() }
-                        : o
-                )
-            );
+            // Actualizar estado del pedido en Supabase
+            const result = await updateOrder(order.id, {
+                status: 'shipped',
+                shipped_at: new Date().toISOString()
+            });
+
+            if (!result.success) {
+                throw new Error(result.error || 'Error al actualizar el pedido');
+            }
 
             // TODO: Cuando tengas el webhook, descomentar esto:
             // if (WEBHOOK_URLS.remitir) {
@@ -155,7 +191,7 @@ const Pedidos = () => {
             showToast({
                 id: `error-remitir-${order.id}`,
                 title: '❌ Error al Remitir',
-                description: 'No se pudo remitir el pedido. Intente nuevamente.',
+                description: error.message || 'No se pudo remitir el pedido. Intente nuevamente.',
                 priority: 'critical',
                 icon: AlertCircle,
                 timeAgo: 'Ahora'
@@ -196,14 +232,16 @@ const Pedidos = () => {
 
             setLocalInvoices(prev => [...prev, newInvoice]);
 
-            // Actualizar estado del pedido
-            setLocalOrders(prev =>
-                prev.map(o =>
-                    o.id === order.id
-                        ? { ...o, status: 'invoiced', invoicedAt: new Date().toISOString(), invoiceId: newInvoice.id }
-                        : o
-                )
-            );
+            // Actualizar estado del pedido en Supabase
+            const result = await updateOrder(order.id, {
+                status: 'invoiced',
+                invoiced_at: new Date().toISOString(),
+                invoice_id: newInvoice.id
+            });
+
+            if (!result.success) {
+                throw new Error(result.error || 'Error al actualizar el pedido');
+            }
 
             // TODO: Cuando tengas el webhook, descomentar esto:
             // if (WEBHOOK_URLS.facturar) {
@@ -229,7 +267,7 @@ const Pedidos = () => {
             showToast({
                 id: `error-facturar-${order.id}`,
                 title: '❌ Error al Facturar',
-                description: 'No se pudo generar la factura. Intente nuevamente.',
+                description: error.message || 'No se pudo generar la factura. Intente nuevamente.',
                 priority: 'critical',
                 icon: AlertCircle,
                 timeAgo: 'Ahora'
@@ -286,21 +324,17 @@ const Pedidos = () => {
             const totalPaid = previousPaidAmount + paymentData.amount;
             const isFullyPaid = totalPaid >= order.total;
 
-            // Actualizar estado del pedido
-            setLocalOrders(prev =>
-                prev.map(o =>
-                    o.id === order.id
-                        ? {
-                            ...o,
-                            status: isFullyPaid ? 'paid' : 'invoiced',
-                            paidAmount: totalPaid,
-                            paidAt: isFullyPaid ? new Date().toISOString() : o.paidAt,
-                            paymentId: newPayment.id,
-                            payments: [...(o.payments || []), newPayment]
-                        }
-                        : o
-                )
-            );
+            // Actualizar estado del pedido en Supabase
+            const result = await updateOrder(order.id, {
+                status: isFullyPaid ? 'paid' : 'invoiced',
+                paid_amount: totalPaid,
+                paid_at: isFullyPaid ? new Date().toISOString() : order.paidAt,
+                payment_id: newPayment.id
+            });
+
+            if (!result.success) {
+                throw new Error(result.error || 'Error al actualizar el pedido');
+            }
 
             // TODO: Cuando tengas el webhook, descomentar esto:
             // if (WEBHOOK_URLS.cobrar) {
@@ -334,7 +368,7 @@ const Pedidos = () => {
             showToast({
                 id: `error-cobrar-${selectedOrderForPayment.id}`,
                 title: '❌ Error al Registrar Pago',
-                description: 'No se pudo registrar el pago. Intente nuevamente.',
+                description: error.message || 'No se pudo registrar el pago. Intente nuevamente.',
                 priority: 'critical',
                 icon: AlertCircle,
                 timeAgo: 'Ahora'
@@ -612,6 +646,17 @@ const Pedidos = () => {
                                                         </button>
                                                     );
                                                 })()}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setOrderToDelete(order);
+                                                        setDeleteConfirmOpen(true);
+                                                    }}
+                                                    className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                    title="Eliminar pedido"
+                                                >
+                                                    <Trash2 size={18} className="text-red-600 dark:text-red-400" />
+                                                </button>
                                             </div>
                                         </div>
 
@@ -689,7 +734,7 @@ const Pedidos = () => {
                     setInvoiceActionModalOpen(false);
                     setSelectedOrderForAction(null);
                 }}
-                onSuccess={(result) => {
+                onSuccess={async (result) => {
                     console.log('✅ Action completed:', result);
 
                     // Update order status based on comprobante type
@@ -711,14 +756,21 @@ const Pedidos = () => {
                             // If partial payment, keep current status (invoiced or shipped)
                         }
 
-                        // Update local orders
-                        setLocalOrders(prev =>
-                            prev.map(o =>
-                                o.id === selectedOrderForAction.id
-                                    ? { ...o, status: newStatus }
-                                    : o
-                            )
-                        );
+                        // Update order in Supabase
+                        const updateResult = await updateOrder(selectedOrderForAction.id, { status: newStatus });
+
+                        if (!updateResult.success) {
+                            console.error('Error updating order status:', updateResult.error);
+                            showToast({
+                                id: `error-update-${selectedOrderForAction.id}`,
+                                title: '⚠️ Advertencia',
+                                description: 'La acción se completó pero no se pudo actualizar el estado del pedido',
+                                priority: 'warning',
+                                icon: AlertCircle,
+                                timeAgo: 'Ahora'
+                            });
+                            return;
+                        }
 
                         // Show success toast
                         const actionLabels = {
@@ -748,6 +800,59 @@ const Pedidos = () => {
                     setSelectedComprobante(null);
                 }}
             />
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirmOpen && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    onClick={() => {
+                        setDeleteConfirmOpen(false);
+                        setOrderToDelete(null);
+                    }}
+                >
+                    <motion.div
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.95, opacity: 0 }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6"
+                    >
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Eliminar Pedido</h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-400">Esta acción no se puede deshacer</p>
+                            </div>
+                        </div>
+                        <p className="text-slate-700 dark:text-slate-300 mb-6">
+                            ¿Estás seguro de que deseas eliminar el pedido <span className="font-bold">{orderToDelete?.order_number}</span>?
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => {
+                                    setDeleteConfirmOpen(false);
+                                    setOrderToDelete(null);
+                                }}
+                                className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-lg font-semibold transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleDeleteOrder}
+                                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                            >
+                                <Trash2 size={18} />
+                                Eliminar
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
+            )}
         </div>
 
     );

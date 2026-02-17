@@ -4,6 +4,7 @@ import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
 import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
 import { opportunities as mockOpportunities } from '../data/opportunities';
+import { useToast } from '../contexts/ToastContext';
 import { useNotifications } from '../hooks/useNotifications';
 
 const stageConfig = {
@@ -23,8 +24,10 @@ const Opportunities = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [opportunityToEdit, setOpportunityToEdit] = useState(null);
     const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [opportunityToDelete, setOpportunityToDelete] = useState(null);
 
-    const { addNotification } = useNotifications();
+    const { showToast } = useToast();
 
     useEffect(() => {
         console.log('🟢 Opportunities component MOUNTED');
@@ -99,6 +102,39 @@ const Opportunities = () => {
                 timeAgo: 'Ahora'
             });
         }
+    };
+
+    // Función para eliminar oportunidad
+    const handleDeleteOpportunity = async () => {
+        if (!opportunityToDelete) return;
+
+        const result = await deleteOpportunity(opportunityToDelete.id);
+
+        if (!result.success) {
+            showToast({
+                id: `error-delete-${opportunityToDelete.id}-${Date.now()}`,
+                title: '❌ Error',
+                description: result.error || 'No se pudo eliminar la oportunidad',
+                priority: 'high',
+                icon: XCircle,
+                timeAgo: 'Ahora'
+            });
+            setDeleteConfirmOpen(false);
+            setOpportunityToDelete(null);
+            return;
+        }
+
+        showToast({
+            id: `delete-${opportunityToDelete.id}-${Date.now()}`,
+            title: '✅ Oportunidad Eliminada',
+            description: `La oportunidad ${opportunityToDelete.opportunity_name || opportunityToDelete.title} fue eliminada correctamente`,
+            priority: 'high',
+            icon: CheckCircle,
+            timeAgo: 'Ahora'
+        });
+
+        setDeleteConfirmOpen(false);
+        setOpportunityToDelete(null);
     };
 
     // Handle status change from dropdown
@@ -604,10 +640,10 @@ const Opportunities = () => {
                                                                 <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
                                                             </button>
                                                             <button
-                                                                onClick={async (e) => {
+                                                                onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    console.log('Desktop delete button clicked, opportunity ID:', opp.id);
-                                                                    await deleteOpportunity(opp.id);
+                                                                    setOpportunityToDelete(opp);
+                                                                    setDeleteConfirmOpen(true);
                                                                 }}
                                                                 className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                                                 title="Eliminar"
@@ -652,8 +688,64 @@ const Opportunities = () => {
                     setIsEditModalOpen(false);
                     setOpportunityToEdit(null);
                 }}
-                opportunity={opportunityToEdit}
+                opportunity={opportunityToDelete}
             />
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirmOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => {
+                            setDeleteConfirmOpen(false);
+                            setOpportunityToDelete(null);
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-md w-full p-6"
+                        >
+                            <div className="flex items-start gap-4">
+                                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                    <Trash2 className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">
+                                        Eliminar Oportunidad
+                                    </h3>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                                        ¿Estás seguro de eliminar la oportunidad <span className="font-semibold">{opportunityToDelete?.opportunity_name || opportunityToDelete?.title}</span>? Esta acción no se puede deshacer.
+                                    </p>
+                                    <div className="flex gap-3 justify-end">
+                                        <button
+                                            onClick={() => {
+                                                setDeleteConfirmOpen(false);
+                                                setOpportunityToDelete(null);
+                                            }}
+                                            className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                        >
+                                            Cancelar
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteOpportunity}
+                                            className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors flex items-center gap-2"
+                                        >
+                                            <Trash2 size={16} />
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

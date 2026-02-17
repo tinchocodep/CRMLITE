@@ -6,7 +6,7 @@ export const useOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { currentTenantId } = useCurrentTenant();
+    const { tenantId } = useCurrentTenant();
 
     // Fetch all orders with their lines
     const fetchOrders = async () => {
@@ -14,7 +14,7 @@ export const useOrders = () => {
             setLoading(true);
             setError(null);
 
-            if (!currentTenantId) {
+            if (!tenantId) {
                 setOrders([]);
                 setLoading(false);
                 return;
@@ -24,7 +24,7 @@ export const useOrders = () => {
             const { data: ordersData, error: ordersError } = await supabase
                 .from('orders')
                 .select('*')
-                .eq('tenant_id', currentTenantId)
+                .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 
             if (ordersError) throw ordersError;
@@ -57,7 +57,7 @@ export const useOrders = () => {
     // Create a new order
     const createOrder = async (orderData) => {
         try {
-            if (!currentTenantId) {
+            if (!tenantId) {
                 return { success: false, error: 'No tenant ID available' };
             }
 
@@ -78,7 +78,7 @@ export const useOrders = () => {
                 .insert([{
                     ...orderFields,
                     order_number: orderNumber,
-                    tenant_id: currentTenantId
+                    tenant_id: tenantId
                 }])
                 .select()
                 .single();
@@ -87,25 +87,41 @@ export const useOrders = () => {
 
             // Insert order lines
             if (lines && lines.length > 0) {
-                const orderLines = lines.map((line, index) => ({
-                    order_id: newOrder.id,
-                    product_sap_code: line.product_sap_code || line.productSapCode,
-                    product_name: line.product_name || line.productName,
-                    quantity: line.quantity,
-                    volume: line.volume,
-                    unit: line.unit || 'Unid.',
-                    unit_price: line.unit_price || line.unitPrice,
-                    subtotal: line.subtotal,
-                    tax_rate: line.tax_rate || line.taxRate || 21.00,
-                    total: line.total,
-                    line_order: index
-                }));
+                const orderLines = lines.map((line, index) => {
+                    // Ensure all numeric fields have valid values (not null/undefined)
+                    const unitPrice = line.unit_price || line.unitPrice || 0;
+                    const quantity = line.quantity || 0;
+                    const volume = line.volume || 0;
+                    const subtotal = line.subtotal || 0;
+                    const taxRate = line.tax_rate || line.taxRate || 21.00;
+                    const total = line.total || 0;
+
+                    return {
+                        order_id: newOrder.id,
+                        product_sap_code: line.product_sap_code || line.productSapCode,
+                        product_name: line.product_name || line.productName,
+                        quantity: quantity,
+                        volume: volume,
+                        unit: line.unit || 'Unid.',
+                        unit_price: unitPrice,
+                        subtotal: subtotal,
+                        tax_rate: taxRate,
+                        total: total,
+                        line_order: index
+                    };
+                });
+
+                console.log('📦 Inserting order lines:', orderLines);
 
                 const { error: linesError } = await supabase
                     .from('order_lines')
                     .insert(orderLines);
 
-                if (linesError) throw linesError;
+                if (linesError) {
+                    console.error('❌ Error inserting order lines:', linesError);
+                    console.error('📋 Lines data that failed:', orderLines);
+                    throw linesError;
+                }
             }
 
             // Refresh orders list
@@ -128,7 +144,7 @@ export const useOrders = () => {
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', id)
-                .eq('tenant_id', currentTenantId)
+                .eq('tenant_id', tenantId)
                 .select()
                 .single();
 
@@ -151,7 +167,7 @@ export const useOrders = () => {
                 .from('orders')
                 .delete()
                 .eq('id', id)
-                .eq('tenant_id', currentTenantId);
+                .eq('tenant_id', tenantId);
 
             if (deleteError) throw deleteError;
 
@@ -172,7 +188,7 @@ export const useOrders = () => {
                 .from('orders')
                 .select('*, order_lines(*)')
                 .eq('quotation_id', quotationId)
-                .eq('tenant_id', currentTenantId)
+                .eq('tenant_id', tenantId)
                 .single();
 
             if (error) throw error;
@@ -187,7 +203,7 @@ export const useOrders = () => {
     // Fetch orders on mount and when tenant changes
     useEffect(() => {
         fetchOrders();
-    }, [currentTenantId]);
+    }, [tenantId]);
 
     return {
         orders,

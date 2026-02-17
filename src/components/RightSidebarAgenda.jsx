@@ -10,7 +10,7 @@ import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(7);
-    const { opportunities, loading: opportunitiesLoading } = useOpportunities();
+    const { opportunities, loading: opportunitiesLoading, deleteOpportunity } = useOpportunities();
     const { addNotification } = useNotifications();
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
@@ -122,32 +122,108 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         setShowDatePickerId(null);
     };
 
-    const handleMarkAsDone = async (activityId, e) => {
+    const handleMarkAsDone = async (activity, e) => {
         e.stopPropagation();
-        try {
-            await deleteActivity(activityId);
+
+        // Check if it's an opportunity (can't mark opportunities as done from calendar)
+        if (activity.eventType === 'opportunity') {
+            addNotification({
+                id: `opp-no-complete-${Date.now()}`,
+                title: '⚠️ No disponible',
+                description: 'Las oportunidades no se pueden marcar como completadas desde aquí',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
             setOpenMenuId(null);
+            return;
+        }
+
+        try {
+            await updateActivity(activity.id, { status: 'completed' });
+            setOpenMenuId(null);
+            addNotification({
+                id: `activity-completed-${activity.id}`,
+                title: '✅ Actividad completada',
+                description: 'La actividad se marcó como completada',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
         } catch (error) {
             console.error('Error marking activity as done:', error);
+            addNotification({
+                id: `error-complete-${activity.id}`,
+                title: '❌ Error',
+                description: 'No se pudo marcar la actividad como completada',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
-    const handleDelete = (activityId, e) => {
+    const handleDelete = (activity, e) => {
         e.stopPropagation();
-        setConfirmDialog({ isOpen: true, activityId });
+        setConfirmDialog({ isOpen: true, activity });
     };
 
     const confirmDelete = async () => {
+        const activity = confirmDialog.activity;
+        if (!activity) return;
+
         try {
-            await deleteActivity(confirmDialog.activityId);
+            // Check if it's an opportunity or activity
+            if (activity.eventType === 'opportunity') {
+                // Extract original opportunity ID (remove 'opp-' prefix)
+                const oppId = activity.id.replace('opp-', '');
+                await deleteOpportunity(oppId);
+                addNotification({
+                    id: `opp-deleted-${oppId}`,
+                    title: '✅ Oportunidad eliminada',
+                    description: 'La oportunidad se eliminó correctamente',
+                    priority: 'medium',
+                    timeAgo: 'Ahora'
+                });
+            } else {
+                // It's an activity
+                await deleteActivity(activity.id);
+                addNotification({
+                    id: `activity-deleted-${activity.id}`,
+                    title: '✅ Actividad eliminada',
+                    description: 'La actividad se eliminó correctamente',
+                    priority: 'medium',
+                    timeAgo: 'Ahora'
+                });
+            }
+
             setOpenMenuId(null);
+            setConfirmDialog({ isOpen: false, activity: null });
         } catch (error) {
-            console.error('Error deleting activity:', error);
+            console.error('Error deleting:', error);
+            addNotification({
+                id: `error-delete-${activity.id}`,
+                title: '❌ Error',
+                description: 'No se pudo eliminar el elemento',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 
     const handleShowDatePicker = (activity, e) => {
         e.stopPropagation();
+
+        // Can't change date for opportunities from calendar
+        if (activity.eventType === 'opportunity') {
+            addNotification({
+                id: `opp-no-date-${Date.now()}`,
+                title: '⚠️ No disponible',
+                description: 'No puedes cambiar la fecha de cierre de oportunidades desde aquí',
+                priority: 'medium',
+                timeAgo: 'Ahora'
+            });
+            setOpenMenuId(null);
+            return;
+        }
+
         setShowDatePickerId(activity.id);
         setTempDate(activity.scheduled_date || '');
         setOpenMenuId(null);
@@ -283,7 +359,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                             className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600 space-y-1"
                                                         >
                                                             <button
-                                                                onClick={(e) => handleMarkAsDone(activity.id, e)}
+                                                                onClick={(e) => handleMarkAsDone(activity, e)}
                                                                 className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] font-medium text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
                                                             >
                                                                 <Check size={12} />
@@ -297,7 +373,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                                 Cambiar fecha
                                                             </button>
                                                             <button
-                                                                onClick={(e) => handleDelete(activity.id, e)}
+                                                                onClick={(e) => handleDelete(activity, e)}
                                                                 className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                                                             >
                                                                 <Trash2 size={12} />
@@ -356,10 +432,10 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
             {/* Confirmation Dialog */}
             <ConfirmDialog
                 isOpen={confirmDialog.isOpen}
-                onClose={() => setConfirmDialog({ isOpen: false, activityId: null })}
+                onClose={() => setConfirmDialog({ isOpen: false, activity: null })}
                 onConfirm={confirmDelete}
-                title="Eliminar actividad"
-                message="¿Estás seguro de eliminar esta actividad? Esta acción no se puede deshacer."
+                title={confirmDialog.activity?.eventType === 'opportunity' ? 'Eliminar oportunidad' : 'Eliminar actividad'}
+                message={`¿Estás seguro de eliminar ${confirmDialog.activity?.eventType === 'opportunity' ? 'esta oportunidad' : 'esta actividad'}? Esta acción no se puede deshacer.`}
                 confirmText="Eliminar"
                 cancelText="Cancelar"
                 variant="danger"
