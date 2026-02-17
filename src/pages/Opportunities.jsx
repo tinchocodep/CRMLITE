@@ -688,7 +688,7 @@ const Opportunities = () => {
                     setIsEditModalOpen(false);
                     setOpportunityToEdit(null);
                 }}
-                opportunity={opportunityToDelete}
+                opportunity={opportunityToEdit}
             />
 
             {/* Delete Confirmation Modal */}
