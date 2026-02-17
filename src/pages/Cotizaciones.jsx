@@ -72,6 +72,9 @@ const Cotizaciones = () => {
             timeAgo: 'Ahora'
         });
 
+        // Debug: Log newStatus to see what value we're getting
+        console.log('🔍 [handleUpdateStatus] newStatus:', newStatus, 'quotation:', quotation);
+
         // Si se aprueba la cotización, crear pedido automáticamente
         if (newStatus === 'approved') {
             console.log('🛒 Creating order from approved quotation:', quotation);
@@ -254,62 +257,8 @@ const Cotizaciones = () => {
 
     // Función para confirmar cotización y crear pedido
     const handleConfirmQuotation = async (quotation) => {
-        // Actualizar estado de cotización a "approved"
-        const result = await updateQuotation(quotation.id, { status: 'approved' });
-
-        if (!result.success) {
-            showToast({
-                id: `error-confirm-${quotation.id}-${Date.now()}`,
-                title: '❌ Error',
-                description: result.error || 'No se pudo confirmar la cotización',
-                priority: 'high',
-                icon: XCircle,
-                timeAgo: 'Ahora'
-            });
-            return;
-        }
-
-        // Crear pedido en Supabase
-        const orderResult = await createOrder({
-            quotation_id: quotation.id,
-            company_id: quotation.company_id,
-            comercial_id: quotation.comercial_id,
-            client_name: quotation.client_name || quotation.clientName,
-            client_cuit: quotation.client_cuit || quotation.clientCuit,
-            sale_type: quotation.sale_type || quotation.saleType,
-            payment_condition: quotation.payment_condition || quotation.paymentCondition,
-            delivery_date: quotation.delivery_date || quotation.deliveryDate,
-            origin_address: quotation.origin_address || quotation.originAddress,
-            destination_address: quotation.destination_address || quotation.destinationAddress,
-            status: 'pending',
-            lines: quotation.lines,
-            subtotal: quotation.subtotal,
-            tax: quotation.tax,
-            total: quotation.total,
-            notes: quotation.notes
-        });
-
-        if (!orderResult.success) {
-            showToast({
-                id: `error-order-${quotation.id}-${Date.now()}`,
-                title: '❌ Error',
-                description: orderResult.error || 'No se pudo crear el pedido',
-                priority: 'high',
-                icon: XCircle,
-                timeAgo: 'Ahora'
-            });
-            return;
-        }
-
-        // Mostrar notificación
-        showToast({
-            id: `quotation-confirmed-${quotation.id}`,
-            title: '✅ Cotización Confirmada',
-            description: `Se creó el pedido ${orderResult.data.order_number} por ${formatCurrency(parseFloat(orderResult.data.total))}`,
-            priority: 'high',
-            icon: CheckCircle,
-            timeAgo: 'Ahora'
-        });
+        // Simplemente llamar a handleUpdateStatus que ya tiene toda la lógica
+        await handleUpdateStatus(quotation, 'approved');
     };
 
     const getStatusBadge = (status) => {
