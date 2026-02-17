@@ -63,6 +63,23 @@ const Pedidos = () => {
         }
     }, [orders, invoiceActionModalOpen]);
 
+    // Filter orders based on search term and status
+    const filteredOrders = React.useMemo(() => {
+        console.log('🔍 [Pedidos] Filtering orders:', orders.length, 'total orders');
+        return orders.filter(order => {
+            // Filter by search term
+            const matchesSearch = !searchTerm ||
+                order.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                order.client_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                order.company_id?.toString().includes(searchTerm);
+
+            // Filter by status
+            const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+
+            return matchesSearch && matchesStatus;
+        });
+    }, [orders, searchTerm, statusFilter]);
+
     // Toggle order expansion
     const toggleOrderExpansion = (orderId) => {
         const newExpanded = new Set(expandedOrders);
