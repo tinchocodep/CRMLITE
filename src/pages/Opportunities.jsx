@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy } from 'lucide-react';
+import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy, XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
 import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
 import { opportunities as mockOpportunities } from '../data/opportunities';
 import { useToast } from '../contexts/ToastContext';
-import { useNotifications } from '../hooks/useNotifications';
 
 const stageConfig = {
     // Estados del Cotizador
