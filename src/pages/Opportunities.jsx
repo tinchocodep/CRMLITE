@@ -631,27 +631,25 @@ const Opportunities = () => {
                                                         </span>
                                                     )}
                                                     {!isWon && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => handleEdit(opp)}
-                                                                className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-                                                                title="Editar"
-                                                            >
-                                                                <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
-                                                            </button>
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setOpportunityToDelete(opp);
-                                                                    setDeleteConfirmOpen(true);
-                                                                }}
-                                                                className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                                                                title="Eliminar"
-                                                            >
-                                                                <Trash2 size={16} className="text-red-600 dark:text-red-400" />
-                                                            </button>
-                                                        </>
+                                                        <button
+                                                            onClick={() => handleEdit(opp)}
+                                                            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
+                                                            title="Editar"
+                                                        >
+                                                            <Edit2 size={16} className="text-blue-600 dark:text-blue-400" />
+                                                        </button>
                                                     )}
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setOpportunityToDelete(opp);
+                                                            setDeleteConfirmOpen(true);
+                                                        }}
+                                                        className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                                        title="Eliminar"
+                                                    >
+                                                        <Trash2 size={16} className="text-red-600 dark:text-red-400" />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
