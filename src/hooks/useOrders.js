@@ -129,8 +129,12 @@ export const useOrders = () => {
 
             return { success: true, data: newOrder };
         } catch (err) {
-            console.error('Error creating order:', err);
-            return { success: false, error: err.message };
+            console.error('❌ Error creating order:', err);
+            console.error('📋 Full error object:', JSON.stringify(err, null, 2));
+            console.error('📋 Error message:', err.message);
+            console.error('📋 Error details:', err.details);
+            console.error('📋 Error hint:', err.hint);
+            return { success: false, error: err.message || err.details || 'Error desconocido al crear pedido' };
         }
     };
 

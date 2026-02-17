@@ -82,7 +82,6 @@ const Cotizaciones = () => {
             const orderData = {
                 quotation_id: quotation.id,
                 company_id: quotation.company_id,
-                order_date: new Date().toISOString(),
                 delivery_date: quotation.delivery_date,
                 status: 'pending',
                 sale_type: quotation.sale_type,
