@@ -527,13 +527,13 @@ const Pedidos = () => {
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                                                        {order.orderNumber}
+                                                        {order.order_number}
                                                     </h3>
                                                     {getStatusBadge(order.status)}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                                                     <Building2 size={16} />
-                                                    <span className="font-medium">{order.clientName}</span>
+                                                    <span className="font-medium">{order.client_name}</span>
                                                 </div>
                                             </div>
                                             <div className="text-right">
@@ -551,21 +551,21 @@ const Pedidos = () => {
                                             <div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Tipo de Venta</div>
                                                 <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {order.saleType === 'own' ? '🏢 Propia' : '🤝 Partner'}
+                                                    {order.sale_type === 'own' ? '🏢 Propia' : '🤝 Partner'}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Pago</div>
                                                 <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {order.paymentCondition === 'cash' ? '💵 Contado' :
-                                                        order.paymentCondition === '30d' ? '📅 30 días' :
-                                                            order.paymentCondition === '60d' ? '📅 60 días' : '📅 90 días'}
+                                                    {order.payment_condition === 'cash' ? '💵 Contado' :
+                                                        order.payment_condition === '30d' ? '📅 30 días' :
+                                                            order.payment_condition === '60d' ? '📅 60 días' : '📅 90 días'}
                                                 </div>
                                             </div>
                                             <div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Entrega</div>
                                                 <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {formatDate(order.deliveryDate)}
+                                                    {formatDate(order.delivery_date)}
                                                 </div>
                                             </div>
                                             <div>
@@ -581,11 +581,11 @@ const Pedidos = () => {
                                             {order.lines.slice(0, 2).map((line, idx) => (
                                                 <div key={idx} className="flex items-center justify-between text-sm">
                                                     <div className="flex-1">
-                                                        <span className="text-slate-700 dark:text-slate-300">{line.productName}</span>
+                                                        <span className="text-slate-700 dark:text-slate-300">{line.product_name}</span>
                                                         <span className="text-slate-500 dark:text-slate-400 ml-2">× {line.quantity}</span>
                                                     </div>
                                                     <div className="font-semibold text-slate-900 dark:text-white">
-                                                        {formatCurrency(line.total)}
+                                                        {formatCurrency(line.subtotal)}
                                                     </div>
                                                 </div>
                                             ))}
