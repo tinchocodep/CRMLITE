@@ -4,14 +4,14 @@ import { es } from 'date-fns/locale';
 import { Clock, MoreVertical, Check, CalendarClock, Trash2 } from 'lucide-react';
 import { useActivities } from '../hooks/useActivities';
 import { useOpportunities } from '../hooks/useOpportunities';
-import { useNotifications } from '../hooks/useNotifications';
+import { useToast } from '../contexts/ToastContext';
 import { ConfirmDialog } from './ConfirmDialog';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(7);
     const { opportunities, loading: opportunitiesLoading, deleteOpportunity } = useOpportunities();
-    const { addNotification } = useNotifications();
+    const { showToast } = useToast();
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
     const [tempDate, setTempDate] = useState('');
@@ -127,7 +127,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
 
         // Check if it's an opportunity (can't mark opportunities as done from calendar)
         if (activity.eventType === 'opportunity') {
-            addNotification({
+            showToast({
                 id: `opp-no-complete-${Date.now()}`,
                 title: '⚠️ No disponible',
                 description: 'Las oportunidades no se pueden marcar como completadas desde aquí',
@@ -143,7 +143,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
 
         if (result?.success === false) {
             console.error('Error marking activity as done:', result.error);
-            addNotification({
+            showToast({
                 id: `error-complete-${activity.id}`,
                 title: '❌ Error',
                 description: result.error || 'No se pudo marcar la actividad como completada',
@@ -151,7 +151,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                 timeAgo: 'Ahora'
             });
         } else {
-            addNotification({
+            showToast({
                 id: `activity-completed-${activity.id}`,
                 title: '✅ Actividad completada',
                 description: `"${activity.title}" marcada como completada`,
@@ -176,7 +176,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                 // Extract original opportunity ID (remove 'opp-' prefix)
                 const oppId = activity.id.replace('opp-', '');
                 await deleteOpportunity(oppId);
-                addNotification({
+                showToast({
                     id: `opp-deleted-${oppId}`,
                     title: '✅ Oportunidad eliminada',
                     description: 'La oportunidad se eliminó correctamente',
@@ -186,7 +186,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
             } else {
                 // It's an activity
                 await deleteActivity(activity.id);
-                addNotification({
+                showToast({
                     id: `activity-deleted-${activity.id}`,
                     title: '✅ Actividad eliminada',
                     description: 'La actividad se eliminó correctamente',
@@ -199,7 +199,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
             setConfirmDialog({ isOpen: false, activity: null });
         } catch (error) {
             console.error('Error deleting:', error);
-            addNotification({
+            showToast({
                 id: `error-delete-${activity.id}`,
                 title: '❌ Error',
                 description: 'No se pudo eliminar el elemento',
@@ -214,7 +214,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
 
         // Can't change date for opportunities from calendar
         if (activity.eventType === 'opportunity') {
-            addNotification({
+            showToast({
                 id: `opp-no-date-${Date.now()}`,
                 title: '⚠️ No disponible',
                 description: 'No puedes cambiar la fecha de cierre de oportunidades desde aquí',
@@ -239,7 +239,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
             setTempDate('');
         } catch (error) {
             console.error('Error updating date:', error);
-            addNotification({
+            showToast({
                 id: `error-date-change-${Date.now()}`,
                 title: '❌ Error al cambiar fecha',
                 description: error.message || 'No se pudo actualizar la fecha de la actividad',
