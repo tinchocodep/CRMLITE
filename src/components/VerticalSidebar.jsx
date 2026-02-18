@@ -5,6 +5,7 @@ import {
     Megaphone, Truck, Leaf, DollarSign, Building2,
     Plus, Settings, ShieldCheck, Lock
 } from 'lucide-react';
+import { useTenantBranding } from '../contexts/TenantBrandingContext';
 
 const sidebarModules = [
     { name: 'Home', path: '/dashboard', icon: Home, locked: false },
@@ -22,6 +23,7 @@ const sidebarModules = [
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const [isHovered, setIsHovered] = useState(false);
+    const { branding } = useTenantBranding();
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -40,11 +42,11 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
             className={`fixed left-0 top-0 h-screen bg-white border-r border-slate-200 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
                 }`}
         >
-            {/* Logo Section */}
+            {/* Logo Section — dynamic per tenant */}
             <div className="h-20 flex items-center justify-center border-b border-slate-200">
                 <img
-                    src="/logo.png"
-                    alt="SAILO"
+                    src={branding.sidebarLogoUrl}
+                    alt={branding.companyName}
                     className={`object-contain transition-all duration-300 ${isHovered ? 'w-12 h-12' : 'w-10 h-10'
                         }`}
                 />
@@ -92,8 +94,8 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             className={({ isActive }) => `
                                 flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative
                                 ${isActive || module.isCRM
-                                    ? 'bg-gradient-to-r from-brand-red to-red-600 text-white shadow-lg shadow-red-500/30'
-                                    : 'text-slate-600 hover:bg-red-50 hover:text-brand-red'
+                                    ? 'text-[hsl(var(--color-brand-primary))] bg-[hsl(var(--color-brand-primary)/0.08)] font-semibold'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                                 }
                             `}
                         >
@@ -113,31 +115,25 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
             </nav>
 
             {/* Bottom Actions */}
-            <div className="border-t border-slate-200 p-2">
-                {/* Quick Actions Button */}
+            <div className="border-t border-slate-200 p-2 space-y-1">
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-red to-red-600 text-white hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 mb-2"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all duration-200"
                 >
                     <Plus size={22} className="flex-shrink-0" />
-                    <span
-                        className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                            }`}
-                    >
+                    <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
                         Acciones Rápidas
                     </span>
                 </button>
-
-                {/* Settings Button */}
                 <NavLink
                     to="/configuracion"
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 transition-all duration-200"
+                    className={({ isActive }) => `
+                        flex items-center gap-4 px-4 py-2.5 rounded-xl transition-all duration-200
+                        ${isActive ? 'text-[hsl(var(--color-brand-primary))] bg-[hsl(var(--color-brand-primary)/0.08)] font-semibold' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}
+                    `}
                 >
                     <Settings size={22} className="flex-shrink-0" />
-                    <span
-                        className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                            }`}
-                    >
+                    <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
                         Configuración
                     </span>
                 </NavLink>

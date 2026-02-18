@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import sailoLogo from '../assets/sailo-logo.png';
+import { useTenantBranding } from '../contexts/TenantBrandingContext';
 import { ArrowRight, Lock, Mail, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = () => {
     const navigate = useNavigate();
     const { login, isAuthenticated } = useAuth();
+    const { branding } = useTenantBranding();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -98,6 +99,10 @@ const Login = () => {
         setAuthError('');
     };
 
+    // Derive accent color for submit button from branding
+    const brandPrimary = `hsl(${branding.primaryColor})`;
+    const brandHover = `hsl(${branding.primaryHover})`;
+
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center relative overflow-hidden">
 
@@ -112,7 +117,7 @@ const Login = () => {
                 className="container mx-auto px-4 z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-24 min-h-screen py-8 lg:py-0"
             >
 
-                {/* Left Side: Logo */}
+                {/* Left Side: Logo — dynamic per tenant */}
                 <motion.div
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -120,9 +125,10 @@ const Login = () => {
                     className="w-full lg:w-1/2 h-[200px] md:h-[300px] lg:h-[600px] flex items-center justify-center relative"
                 >
                     <img
-                        src={sailoLogo}
-                        alt="SAILO CRM"
+                        src={branding.loginLogoUrl}
+                        alt={`${branding.companyName} CRM`}
                         className="w-full max-w-[300px] md:max-w-[400px] lg:max-w-[500px] h-auto object-contain drop-shadow-2xl"
+                        onError={(e) => { e.currentTarget.src = '/logo.png'; }}
                     />
                 </motion.div>
 
@@ -250,11 +256,14 @@ const Login = () => {
                                 </a>
                             </div>
 
-                            {/* Submit Button */}
+                            {/* Submit Button — dynamic brand color */}
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-brand-red to-red-600 dark:from-red-600 dark:to-red-700 hover:from-red-700 hover:to-red-800 dark:hover:from-red-700 dark:hover:to-red-800 text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg shadow-brand-red/30 dark:shadow-red-900/30 hover:shadow-brand-red/50 dark:hover:shadow-red-900/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
+                                style={{
+                                    background: `linear-gradient(to right, ${brandPrimary}, ${brandHover})`,
+                                }}
+                                className="w-full text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
                             >
                                 {isLoading ? (
                                     <>
