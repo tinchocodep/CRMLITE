@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS comprobantes (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     tenant_id INTEGER NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+    order_id BIGINT REFERENCES orders(id) ON DELETE CASCADE,
     order_number TEXT,
     tipo TEXT NOT NULL CHECK (tipo IN ('FACTURA', 'REMITO', 'COBRO')),
     letra TEXT,
@@ -75,3 +75,32 @@ CREATE TRIGGER comprobantes_updated_at
     BEFORE UPDATE ON comprobantes
     FOR EACH ROW
     EXECUTE FUNCTION update_comprobantes_updated_at();
+
+-- ─── Auto-populate client_name on orders ─────────────────────────────────────
+-- Trigger: whenever an order is inserted or updated, auto-fill client_name
+-- from the related company (trade_name preferred, fallback to legal_name)
+
+CREATE OR REPLACE FUNCTION sync_order_client_name()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.company_id IS NOT NULL THEN
+        SELECT COALESCE(trade_name, legal_name)
+        INTO NEW.client_name
+        FROM companies
+        WHERE id = NEW.company_id;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER orders_sync_client_name
+    BEFORE INSERT OR UPDATE OF company_id ON orders
+    FOR EACH ROW
+    EXECUTE FUNCTION sync_order_client_name();
+
+-- Backfill existing orders that have no client_name
+UPDATE orders o
+SET client_name = COALESCE(c.trade_name, c.legal_name)
+FROM companies c
+WHERE o.company_id = c.id
+AND (o.client_name IS NULL OR o.client_name = '');
