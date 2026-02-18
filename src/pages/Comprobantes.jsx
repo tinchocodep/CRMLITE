@@ -13,22 +13,22 @@ const Comprobantes = () => {
     const [vouchers, setVouchers] = useState([]);
     const [previewModal, setPreviewModal] = useState({ isOpen: false, comprobante: null });
 
-    // Load real comprobantes from localStorage
+    // Load real comprobantes from Supabase
     useEffect(() => {
-        const loadComprobantes = () => {
-            const comprobantes = getComprobantes();
+        const loadComprobantes = async () => {
+            const comprobantes = await getComprobantes();
             // Transform to match the expected format
             const transformed = comprobantes.map(comp => ({
                 id: comp.id,
                 voucherNumber: `${comp.tipo}-${comp.letra || ''}-${String(comp.punto_venta || 0).padStart(4, '0')}-${String(comp.numero_cbte || 0).padStart(8, '0')}`,
                 type: comp.tipo, // FACTURA, REMITO, NOTA_CREDITO
-                company: comp.clientName || 'Cliente',
+                company: comp.client_name || comp.clientName || 'Cliente',
                 status: comp.status || 'pending', // pending, paid, cancelled
                 amount: comp.total || 0,
                 issueDate: comp.fecha_emision || new Date().toISOString().split('T')[0],
                 dueDate: comp.fecha_vencimiento || null,
                 paymentDate: comp.fecha_pago || null,
-                orderNumber: comp.orderNumber || null,
+                orderNumber: comp.order_number || comp.orderNumber || null,
                 cae: comp.cae,
                 qr_url: comp.qr_url,
                 pdf_url: comp.pdf_url
@@ -37,10 +37,11 @@ const Comprobantes = () => {
         };
 
         loadComprobantes();
-        // Reload every 5 seconds to catch new comprobantes
-        const interval = setInterval(loadComprobantes, 5000);
+        // Reload every 30 seconds to catch new comprobantes
+        const interval = setInterval(loadComprobantes, 30000);
         return () => clearInterval(interval);
     }, []);
+
 
     const stats = [
         {
