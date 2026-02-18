@@ -359,13 +359,15 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                             ref={menuRef}
                                                             className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-600 space-y-1"
                                                         >
-                                                            <button
-                                                                onClick={(e) => handleMarkAsDone(activity, e)}
-                                                                className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] font-medium text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
-                                                            >
-                                                                <Check size={12} />
-                                                                Marcar como hecha
-                                                            </button>
+                                                            {activity.eventType !== 'opportunity' && (
+                                                                <button
+                                                                    onClick={(e) => handleMarkAsDone(activity, e)}
+                                                                    className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] font-medium text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                                                                >
+                                                                    <Check size={12} />
+                                                                    Marcar como hecha
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={(e) => handleShowDatePicker(activity, e)}
                                                                 className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] font-medium text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
