@@ -147,13 +147,25 @@ const EventCard = ({ event, view = 'day', onUpdate, onDelete, onExpand }) => {
         }
     };
 
-    // Quick complete action
+    // Quick complete action - marks activity as completed without deleting
     const handleQuickComplete = async (e) => {
         e.stopPropagation();
+        if (!onUpdate) {
+            console.error('onUpdate prop is required to mark as completed');
+            return;
+        }
         try {
-            await onDelete(event.id);
+            await onUpdate(event.id, { status: 'completed' });
+            setShowDetails(false);
         } catch (error) {
             console.error('Error completing activity:', error);
+            addNotification({
+                id: `error-complete-${Date.now()}`,
+                title: '❌ Error',
+                description: 'No se pudo marcar como completada',
+                priority: 'high',
+                timeAgo: 'Ahora'
+            });
         }
     };
 

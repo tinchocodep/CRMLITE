@@ -37,6 +37,7 @@ export const useActivities = (daysAhead = 30) => {
                     comercial:comerciales!activities_comercial_id_fkey(id, name)
                 `)
                 .eq('tenant_id', tenantId)
+                .neq('status', 'completed')  // Exclude completed activities from agenda
                 .gte('scheduled_date', today)
                 .lte('scheduled_date', futureDate);
 
