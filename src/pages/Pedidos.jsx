@@ -784,11 +784,18 @@ const Pedidos = () => {
                         showToast({
                             id: `action-success-${selectedOrderForAction.id}`,
                             title: `✅ ${actionLabels[actionType]}`,
-                            description: result.message || `Pedido ${selectedOrderForAction.orderNumber} procesado correctamente`,
+                            description: result.message || `Pedido ${selectedOrderForAction.order_number} procesado correctamente`,
                             priority: 'high',
                             icon: actionType === 'FACTURA' ? FileText : actionType === 'REMITO' ? Truck : DollarSign,
                             timeAgo: 'Ahora'
                         });
+
+                        // 🎯 AUTO-OPEN PDF PREVIEW for FACTURA and REMITO (not COBRO)
+                        if (result.comprobante.pdf_url && (actionType === 'FACTURA' || actionType === 'REMITO')) {
+                            console.log('📄 Auto-opening PDF preview for:', result.comprobante);
+                            setSelectedComprobante(result.comprobante);
+                            setPdfPreviewOpen(true);
+                        }
                     }
                 }}
             />
