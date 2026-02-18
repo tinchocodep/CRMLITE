@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle, X, Eye, Download, ExternalLink, Bell, LogOut } from 'lucide-react';
+import { CreditCard, Search, Filter, TrendingUp, TrendingDown, DollarSign, Calendar, Building2, FileText, AlertCircle, X, Eye, Download, ExternalLink, Bell, LogOut, Edit2, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAllClientBalances, getClientMovements } from '../services/cuentaCorrienteService';
+import { getAllClientBalances, getClientMovements, updateCreditLimit } from '../services/cuentaCorrienteService';
 import PDFPreviewModal from '../components/PDFPreviewModal';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,6 +21,9 @@ const CuentaCorriente = () => {
     const [clientMovements, setClientMovements] = useState([]);
     const [pdfPreview, setPdfPreview] = useState({ isOpen: false, comprobante: null });
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+    // Credit limit inline editing
+    const [editingCreditLimit, setEditingCreditLimit] = useState(null); // account.id being edited
+    const [creditLimitInput, setCreditLimitInput] = useState('');
 
     const handleLogout = () => {
         logout();
@@ -107,25 +110,33 @@ const CuentaCorriente = () => {
     };
 
     const handleOpenPDF = (movement, event) => {
-        // Prevent row click event
-        if (event) {
-            event.stopPropagation();
+        if (event) event.stopPropagation();
+        // movement already has pdf_url from Supabase
+        if (movement.pdf_url) {
+            setPdfPreview({ isOpen: true, comprobante: movement });
         }
+    };
 
-        console.log('Opening PDF for movement:', movement);
+    const handleStartEditCreditLimit = (account, event) => {
+        event.stopPropagation();
+        setEditingCreditLimit(account.id);
+        setCreditLimitInput(String(account.creditLimit));
+    };
 
-        // Find the full comprobante data - use correct storage key
-        const comprobantes = JSON.parse(localStorage.getItem('crm_comprobantes') || '[]');
-        console.log('Available comprobantes:', comprobantes.length);
-
-        const comprobante = comprobantes.find(c => c.id === movement.id);
-        console.log('Found comprobante:', comprobante);
-
-        if (comprobante) {
-            setPdfPreview({ isOpen: true, comprobante });
-        } else {
-            console.error('Comprobante not found for movement:', movement);
+    const handleSaveCreditLimit = async (account) => {
+        const newLimit = parseFloat(creditLimitInput);
+        if (isNaN(newLimit) || newLimit < 0) {
+            setEditingCreditLimit(null);
+            return;
         }
+        if (account.companyId) {
+            await updateCreditLimit(account.companyId, newLimit);
+        }
+        // Optimistic update in local state
+        setAccounts(prev => prev.map(acc =>
+            acc.id === account.id ? { ...acc, creditLimit: newLimit } : acc
+        ));
+        setEditingCreditLimit(null);
     };
 
     return (
@@ -235,19 +246,46 @@ const CuentaCorriente = () => {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Límite de Crédito</p>
-                                            <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                ${account.creditLimit.toLocaleString()}
-                                            </p>
+                                            {editingCreditLimit === account.id ? (
+                                                <div className="flex items-center gap-1 justify-end">
+                                                    <span className="text-sm text-slate-500">$</span>
+                                                    <input
+                                                        type="number"
+                                                        value={creditLimitInput}
+                                                        onChange={e => setCreditLimitInput(e.target.value)}
+                                                        onBlur={() => handleSaveCreditLimit(account)}
+                                                        onKeyDown={e => { if (e.key === 'Enter') handleSaveCreditLimit(account); if (e.key === 'Escape') setEditingCreditLimit(null); }}
+                                                        className="w-28 text-sm font-semibold text-right border border-advanta-green rounded px-2 py-0.5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-advanta-green"
+                                                        autoFocus
+                                                    />
+                                                    <button onClick={() => handleSaveCreditLimit(account)} className="text-green-600 hover:text-green-700">
+                                                        <Check className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-1 justify-end group">
+                                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                        ${(account.creditLimit || 0).toLocaleString()}
+                                                    </p>
+                                                    <button
+                                                        onClick={e => handleStartEditCreditLimit(account, e)}
+                                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-advanta-green"
+                                                        title="Editar límite de crédito"
+                                                    >
+                                                        <Edit2 className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            )}
                                             <div className="mt-2">
                                                 <div className="w-32 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                                     <div
-                                                        className={`h-full ${Math.abs(account.balance) / account.creditLimit > 0.8
+                                                        className={`h-full transition-all ${account.creditLimit > 0 && Math.abs(account.balance) / account.creditLimit > 0.8
                                                             ? 'bg-red-500'
-                                                            : Math.abs(account.balance) / account.creditLimit > 0.5
+                                                            : account.creditLimit > 0 && Math.abs(account.balance) / account.creditLimit > 0.5
                                                                 ? 'bg-amber-500'
                                                                 : 'bg-green-500'
                                                             }`}
-                                                        style={{ width: `${Math.min((Math.abs(account.balance) / account.creditLimit) * 100, 100)}%` }}
+                                                        style={{ width: account.creditLimit > 0 ? `${Math.min((Math.abs(account.balance) / account.creditLimit) * 100, 100)}%` : '0%' }}
                                                     />
                                                 </div>
                                             </div>

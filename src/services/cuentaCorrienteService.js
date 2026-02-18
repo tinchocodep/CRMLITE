@@ -1,19 +1,28 @@
 /**
  * Cuenta Corriente Service
  * Calculates client account balances from comprobantes stored in Supabase
+ * Reads credit_limit from the companies table
  */
 
 import { supabase } from '../lib/supabase';
 
 /**
  * Get all client balances from comprobantes in Supabase
+ * Joins with companies to get the real credit_limit per client
  * @returns {Promise<Array>} Array of client account summaries
  */
 export const getAllClientBalances = async () => {
     try {
+        // Fetch comprobantes joined with orders → companies to get credit_limit
         const { data: comprobantes, error } = await supabase
             .from('comprobantes')
-            .select('*')
+            .select(`
+                *,
+                order:orders!order_id(
+                    company_id,
+                    company:companies!company_id(id, trade_name, legal_name, credit_limit)
+                )
+            `)
             .order('created_at', { ascending: true });
 
         if (error) throw error;
@@ -24,21 +33,33 @@ export const getAllClientBalances = async () => {
 
         comprobantes.forEach(comp => {
             const clientName = comp.client_name || 'Cliente Desconocido';
+            const company = comp.order?.company;
+            const creditLimit = company?.credit_limit ?? 200000;
+            const companyId = company?.id ?? null;
 
             if (!clientMap.has(clientName)) {
                 clientMap.set(clientName, {
                     company: clientName,
+                    companyId,
                     comprobantes: [],
                     balance: 0,
                     pendingInvoices: 0,
                     overdueInvoices: 0,
                     lastMovement: null,
-                    creditLimit: 200000
+                    creditLimit
                 });
             }
 
             const client = clientMap.get(clientName);
             client.comprobantes.push(comp);
+
+            // Update creditLimit if we now have a real value from the company
+            if (creditLimit !== 200000 || client.creditLimit === 200000) {
+                client.creditLimit = creditLimit;
+            }
+            if (companyId && !client.companyId) {
+                client.companyId = companyId;
+            }
 
             const amount = comp.total || 0;
 
@@ -72,6 +93,27 @@ export const getAllClientBalances = async () => {
     } catch (error) {
         console.error('Error calculating client balances:', error);
         return [];
+    }
+};
+
+/**
+ * Update the credit limit for a company
+ * @param {number} companyId - Company ID
+ * @param {number} creditLimit - New credit limit
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export const updateCreditLimit = async (companyId, creditLimit) => {
+    try {
+        const { error } = await supabase
+            .from('companies')
+            .update({ credit_limit: creditLimit })
+            .eq('id', companyId);
+
+        if (error) throw error;
+        return { success: true };
+    } catch (error) {
+        console.error('Error updating credit limit:', error);
+        return { success: false, error: error.message };
     }
 };
 
@@ -125,7 +167,6 @@ export const getClientMovements = async (clientName) => {
                 balance: runningBalance,
                 cae: comp.cae,
                 pdf_url: comp.pdf_url || null,
-                // Payment details
                 paymentMethod: comp.payment_method,
                 isPartialPayment: comp.is_partial_payment,
                 remainingBalance: comp.remaining_balance,
