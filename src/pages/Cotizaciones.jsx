@@ -82,6 +82,7 @@ const Cotizaciones = () => {
             const orderData = {
                 quotation_id: quotation.id,
                 company_id: quotation.company_id,
+                client_name: quotation.company?.trade_name || quotation.company?.legal_name || quotation.client_name || 'Cliente Desconocido',
                 delivery_date: quotation.delivery_date,
                 status: 'pending',
                 sale_type: quotation.sale_type,
@@ -99,6 +100,7 @@ const Cotizaciones = () => {
                     subtotal: line.subtotal
                 }))
             };
+
 
             const orderResult = await createOrder(orderData);
 
