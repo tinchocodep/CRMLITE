@@ -124,16 +124,14 @@ export const useActivities = (daysAhead = 30) => {
 
     const updateActivity = async (id, updates) => {
         try {
-            const { data, error: updateError } = await supabase
+            const { error: updateError } = await supabase
                 .from('activities')
                 .update(updates)
-                .eq('id', id)
-                .select()
-                .single();
+                .eq('id', id);
 
             if (updateError) throw updateError;
             await fetchActivities();
-            return { success: true, data };
+            return { success: true };
         } catch (err) {
             console.error('Error updating activity:', err);
             return { success: false, error: err.message };

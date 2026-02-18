@@ -138,23 +138,24 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
             return;
         }
 
-        try {
-            await updateActivity(activity.id, { status: 'completed' });
-            setOpenMenuId(null);
-            addNotification({
-                id: `activity-completed-${activity.id}`,
-                title: '✅ Actividad completada',
-                description: 'La actividad se marcó como completada',
-                priority: 'medium',
-                timeAgo: 'Ahora'
-            });
-        } catch (error) {
-            console.error('Error marking activity as done:', error);
+        setOpenMenuId(null);
+        const result = await updateActivity(activity.id, { status: 'completed' });
+
+        if (result?.success === false) {
+            console.error('Error marking activity as done:', result.error);
             addNotification({
                 id: `error-complete-${activity.id}`,
                 title: '❌ Error',
-                description: 'No se pudo marcar la actividad como completada',
+                description: result.error || 'No se pudo marcar la actividad como completada',
                 priority: 'high',
+                timeAgo: 'Ahora'
+            });
+        } else {
+            addNotification({
+                id: `activity-completed-${activity.id}`,
+                title: '✅ Actividad completada',
+                description: `"${activity.title}" marcada como completada`,
+                priority: 'medium',
                 timeAgo: 'Ahora'
             });
         }
