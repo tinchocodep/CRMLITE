@@ -269,7 +269,7 @@ const CuentaCorriente = () => {
                                                     </p>
                                                     <button
                                                         onClick={e => handleStartEditCreditLimit(account, e)}
-                                                        className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-advanta-green"
+                                                        className="text-slate-400 hover:text-advanta-green transition-colors"
                                                         title="Editar límite de crédito"
                                                     >
                                                         <Edit2 className="w-3.5 h-3.5" />
