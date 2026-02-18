@@ -35,34 +35,38 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
     // Load existing comprobantes when modal opens
     useEffect(() => {
         if (isOpen && order) {
-            const comprobantes = getComprobantesByOrder(order.id);
-            setExistingComprobantes(comprobantes);
+            const loadComprobantes = async () => {
+                const comprobantes = await getComprobantesByOrder(order.id);
+                setExistingComprobantes(comprobantes);
 
-            // Calculate remaining balance for payment suggestion
-            const totalCobrado = comprobantes
-                .filter(c => c.tipo === 'COBRO')
-                .reduce((sum, c) => sum + (c.total || 0), 0);
-            const orderTotal = order?.total || order?.totalAmount || 0;
-            const saldoPendiente = orderTotal - totalCobrado;
+                // Calculate remaining balance for payment suggestion
+                const totalCobrado = comprobantes
+                    .filter(c => c.tipo === 'COBRO')
+                    .reduce((sum, c) => sum + (c.total || 0), 0);
+                const orderTotal = order?.total || order?.totalAmount || 0;
+                const saldoPendiente = orderTotal - totalCobrado;
 
-            // Reset payment config with remaining balance
-            setPaymentConfig({
-                amount: saldoPendiente > 0 ? saldoPendiente : 0,
-                paymentMethod: 'efectivo',
-                otherPaymentMethod: '',
-                paymentDate: new Date().toISOString().split('T')[0],
-                notes: ''
-            });
+                // Reset payment config with remaining balance
+                setPaymentConfig({
+                    amount: saldoPendiente > 0 ? saldoPendiente : 0,
+                    paymentMethod: 'efectivo',
+                    otherPaymentMethod: '',
+                    paymentDate: new Date().toISOString().split('T')[0],
+                    notes: ''
+                });
 
-            // Auto-select the next action if only one is available
-            const available = getAvailableActions(comprobantes);
-            if (available.filter(a => !a.disabled).length === 1) {
-                setSelectedAction(available.find(a => !a.disabled).id);
-            } else {
-                setSelectedAction(null);
-            }
+                // Auto-select the next action if only one is available
+                const available = getAvailableActions(comprobantes);
+                if (available.filter(a => !a.disabled).length === 1) {
+                    setSelectedAction(available.find(a => !a.disabled).id);
+                } else {
+                    setSelectedAction(null);
+                }
+            };
+            loadComprobantes();
         }
     }, [isOpen, order]);
+
 
     // Initialize remito quantities when REMITO is selected
     useEffect(() => {
@@ -186,10 +190,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         // Parse numero_cbte (handle string format with leading zeros)
                         const numeroCbte = parseInt(webhookData.numero_cbte || '0') || 0;
 
-                        const comprobante = saveComprobante({
+                        const comprobante = await saveComprobante({
                             tipo: 'FACTURA',
                             orderId: order.id,
-                            orderNumber: order.orderNumber,
+                            orderNumber: order.order_number,
                             punto_venta: puntoVenta,
                             numero_cbte: numeroCbte,
                             letra: config.letra,
@@ -198,7 +202,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             qr_url: webhookData.qr_url || '',
                             pdf_url: webhookData.pdf_url || '',
                             total: order.total || order.totalAmount || 0,
-                            clientName: order.clientName,
+                            clientName: order.client_name,
                             fecha_emision: new Date().toISOString().split('T')[0]
                         });
 
@@ -275,10 +279,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         const remitoTax = products.reduce((sum, p) => sum + (p.total - p.subtotal), 0);
                         const remitoTotal = products.reduce((sum, p) => sum + p.total, 0);
 
-                        const comprobante = saveComprobante({
+                        const comprobante = await saveComprobante({
                             tipo: 'REMITO',
                             orderId: order.id,
-                            orderNumber: order.orderNumber,
+                            orderNumber: order.order_number,
                             punto_venta: puntoVenta,
                             numero_cbte: numeroCbte,
                             letra: config.letra,
@@ -289,7 +293,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             subtotal: remitoSubtotal,
                             tax: remitoTax,
                             total: remitoTotal,
-                            clientName: order.clientName,
+                            clientName: order.client_name,
                             fecha_emision: new Date().toISOString().split('T')[0],
                             // Product quantities
                             products: products,
@@ -341,10 +345,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         : paymentConfig.paymentMethod;
 
                     // Save payment comprobante
-                    const paymentComprobante = saveComprobante({
+                    const paymentComprobante = await saveComprobante({
                         tipo: 'COBRO',
                         orderId: order.id,
-                        orderNumber: order.orderNumber,
+                        orderNumber: order.order_number,
                         punto_venta: 0,
                         numero_cbte: 0,
                         letra: '',
@@ -353,7 +357,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         qr_url: '',
                         pdf_url: '',
                         total: amountPaid,
-                        clientName: order.clientName,
+                        clientName: order.client_name,
                         fecha_emision: paymentConfig.paymentDate,
                         // Payment-specific fields
                         paymentMethod: finalPaymentMethod,

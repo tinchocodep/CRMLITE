@@ -38,30 +38,26 @@ const Pedidos = () => {
     const [localStockMovements, setLocalStockMovements] = useState(mockStockMovements);
     const [localInvoices, setLocalInvoices] = useState(mockInvoices);
 
-    // Load comprobantes for all orders
+    // Load comprobantes for all orders from Supabase
     useEffect(() => {
-        const loadComprobantes = () => {
-            console.log('🔄 Loading comprobantes for all orders...');
+        const loadComprobantes = async () => {
+            if (orders.length === 0) return;
+            console.log('🔄 Loading comprobantes for all orders from Supabase...');
             const map = {};
-            orders.forEach(order => {
-                const orderComprobantes = getComprobantesByOrder(order.id);
+            await Promise.all(orders.map(async (order) => {
+                const orderComprobantes = await getComprobantesByOrder(order.id);
                 map[order.id] = orderComprobantes;
                 if (orderComprobantes.length > 0) {
-                    console.log(`📄 Order ${order.id} has ${orderComprobantes.length} comprobantes:`, orderComprobantes);
+                    console.log(`📄 Order ${order.id} has ${orderComprobantes.length} comprobantes`);
                 }
-            });
+            }));
             setComprobantesMap(map);
-            console.log('✅ Comprobantes map updated:', map);
+            console.log('✅ Comprobantes map updated');
         };
 
         loadComprobantes();
-
-        // Reload when modal closes (in case new comprobante was added)
-        if (!invoiceActionModalOpen) {
-            console.log('🔄 Modal closed, reloading comprobantes...');
-            loadComprobantes();
-        }
     }, [orders, invoiceActionModalOpen]);
+
 
     // Toggle order expansion
     const toggleOrderExpansion = (orderId) => {

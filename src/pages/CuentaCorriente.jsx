@@ -27,16 +27,16 @@ const CuentaCorriente = () => {
         navigate('/login');
     };
 
-    // Load real client balances from comprobantes
+    // Load real client balances from comprobantes (Supabase)
     useEffect(() => {
-        const loadBalances = () => {
-            const balances = getAllClientBalances();
+        const loadBalances = async () => {
+            const balances = await getAllClientBalances();
             setAccounts(balances);
         };
 
         loadBalances();
-        // Reload every 5 seconds to catch new comprobantes
-        const interval = setInterval(loadBalances, 5000);
+        // Reload every 30 seconds to catch new comprobantes
+        const interval = setInterval(loadBalances, 30000);
         return () => clearInterval(interval);
     }, []);
 
@@ -99,9 +99,9 @@ const CuentaCorriente = () => {
         return matchesSearch && matchesStatus;
     });
 
-    const handleOpenDetail = (account) => {
+    const handleOpenDetail = async (account) => {
         setSelectedClient(account);
-        const movements = getClientMovements(account.company);
+        const movements = await getClientMovements(account.company);
         setClientMovements(movements);
         setShowDetailModal(true);
     };
