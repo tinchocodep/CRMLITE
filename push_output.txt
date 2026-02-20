@@ -1,0 +1,18 @@
+﻿git : Everything 
+up-to-date
+En línea: 1 Carácter: 1
++ git push origin 
+crm-lite-advanta 2>&1 | 
+Out-File -FilePath 
+"push_outp ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (E  
+  verything up-to-date:   
+ String) [], RemoteExc    
+eption
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, FileText, Truck, DollarSign, AlertCircle } from 'lucide-react';
 import { processInvoice, processRemito } from '../../services/invoiceService';
-import { saveComprobante, getComprobantesByOrder, getShippedQuantities } from '../../services/comprobantesService';
+import { saveComprobante, getComprobantesByOrder, getShippedQuantitiesAsync } from '../../services/comprobantesService';
 
 /**
  * Invoice/Remito Action Modal
@@ -32,12 +32,19 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
     // Remito quantities configuration (for partial remitos)
     const [remitoQuantities, setRemitoQuantities] = useState({});
 
-    // Load existing comprobantes when modal opens
+    // Shipped quantities loaded async from Supabase
+    const [shippedQuantitiesMap, setShippedQuantitiesMap] = useState({});
+
+    // Load existing comprobantes and shipped quantities when modal opens
     useEffect(() => {
         if (isOpen && order) {
             const loadComprobantes = async () => {
-                const comprobantes = await getComprobantesByOrder(order.id);
+                const [comprobantes, shipped] = await Promise.all([
+                    getComprobantesByOrder(order.id),
+                    getShippedQuantitiesAsync(order.id)
+                ]);
                 setExistingComprobantes(comprobantes);
+                setShippedQuantitiesMap(shipped);
 
                 // Calculate remaining balance for payment suggestion
                 const totalCobrado = comprobantes
@@ -56,7 +63,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                 });
 
                 // Auto-select the next action if only one is available
-                const available = getAvailableActions(comprobantes);
+                const available = getAvailableActions(comprobantes, shipped);
                 if (available.filter(a => !a.disabled).length === 1) {
                     setSelectedAction(available.find(a => !a.disabled).id);
                 } else {
@@ -71,11 +78,10 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
     // Initialize remito quantities when REMITO is selected
     useEffect(() => {
         if (selectedAction === 'REMITO' && order?.lines) {
-            const shippedQuantities = getShippedQuantities(order.id);
             const initialQuantities = {};
 
             order.lines.forEach(line => {
-                const alreadyShipped = shippedQuantities[line.id] || 0;
+                const alreadyShipped = shippedQuantitiesMap[line.id] || 0;
                 const pending = line.quantity - alreadyShipped;
                 // Initialize with pending quantity (user can modify)
                 initialQuantities[line.id] = pending > 0 ? pending : 0;
@@ -83,7 +89,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
 
             setRemitoQuantities(initialQuantities);
         }
-    }, [selectedAction, order]);
+    }, [selectedAction, order, shippedQuantitiesMap]);
 
     if (!isOpen || !order) return null;
 
@@ -93,7 +99,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
     const hasRemito = existingComprobantes.some(c => c.tipo === 'REMITO');
 
     // Get available actions based on what's already done
-    const getAvailableActions = (comprobantes = existingComprobantes) => {
+    const getAvailableActions = (comprobantes = existingComprobantes, shippedQtys = shippedQuantitiesMap) => {
         const hasF = comprobantes.some(c => c.tipo === 'FACTURA');
         const hasR = comprobantes.some(c => c.tipo === 'REMITO');
 
@@ -106,16 +112,15 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
         const saldoPendiente = orderTotal - totalCobrado;
         const isFullyPaid = saldoPendiente <= 0.01; // Small threshold for floating point
 
-        // Check if all products are fully shipped
-        const shippedQuantities = getShippedQuantities(order.id);
+        // Check if all products are fully shipped (using async-loaded Supabase data)
         const allProductsShipped = order?.lines?.every(line => {
-            const shipped = shippedQuantities[line.id] || 0;
+            const shipped = shippedQtys[line.id] || 0;
             return shipped >= line.quantity;
         }) ?? false;
 
         // Calculate total pending quantity
         const totalPendingQty = order?.lines?.reduce((sum, line) => {
-            const shipped = shippedQuantities[line.id] || 0;
+            const shipped = shippedQtys[line.id] || 0;
             const pending = line.quantity - shipped;
             return sum + (pending > 0 ? pending : 0);
         }, 0) || 0;
@@ -244,13 +249,12 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         // Parse numero_cbte (handle string format with leading zeros)
                         const numeroCbte = parseInt(webhookData.numero_cbte || '0') || 0;
 
-                        // Build products array with quantities
-                        const shippedQuantities = getShippedQuantities(order.id);
+                        // Build products array with quantities (use already-loaded Supabase data)
                         const products = order.lines
                             .filter(line => (remitoQuantities[line.id] || 0) > 0)
                             .map(line => {
                                 const quantityShipped = remitoQuantities[line.id] || 0;
-                                const alreadyShipped = shippedQuantities[line.id] || 0;
+                                const alreadyShipped = shippedQuantitiesMap[line.id] || 0;
                                 const pending = line.quantity - alreadyShipped - quantityShipped;
 
                                 return {
@@ -261,15 +265,15 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                     quantityShipped: quantityShipped,
                                     quantityPending: pending,
                                     unitPrice: line.unitPrice,
-                                    subtotal: quantityShipped * line.unitPrice,
+                                    subtotal: quantityShipped * (line.unitPrice || 0),
                                     taxRate: line.taxRate,
-                                    total: quantityShipped * line.unitPrice * (1 + line.taxRate / 100)
+                                    total: quantityShipped * (line.unitPrice || 0) * (1 + (line.taxRate || 0) / 100)
                                 };
                             });
 
-                        // Calculate if it's a partial remito
+                        // Calculate if it's a partial remito (using Supabase-loaded shipped data)
                         const allProductsFullyShipped = order.lines.every(line => {
-                            const totalShipped = (shippedQuantities[line.id] || 0) + (remitoQuantities[line.id] || 0);
+                            const totalShipped = (shippedQuantitiesMap[line.id] || 0) + (remitoQuantities[line.id] || 0);
                             return totalShipped >= line.quantity;
                         });
                         const isPartialRemito = !allProductsFullyShipped;
@@ -306,8 +310,11 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             ? `Remito parcial creado. ${products.length} producto(s) remitido(s).`
                             : 'Remito completo creado.';
 
-                        // Update existingComprobantes to refresh available actions
+                        // Update existingComprobantes AND shippedQuantitiesMap to refresh available actions
                         setExistingComprobantes(prev => [...prev, comprobante]);
+                        // Refresh shipped quantities from Supabase so UI reflects the new remito
+                        const newShipped = await getShippedQuantitiesAsync(order.id);
+                        setShippedQuantitiesMap(newShipped);
                     }
                     break;
 
@@ -522,8 +529,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                     </label>
                                     <div className="space-y-3 max-h-96 overflow-y-auto">
                                         {order.lines.map((line) => {
-                                            const shippedQuantities = getShippedQuantities(order.id);
-                                            const alreadyShipped = shippedQuantities[line.id] || 0;
+                                            const alreadyShipped = shippedQuantitiesMap[line.id] || 0;
                                             const pending = line.quantity - alreadyShipped;
                                             const selectedQty = remitoQuantities[line.id] || 0;
 

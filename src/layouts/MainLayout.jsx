@@ -222,7 +222,8 @@ const MainLayout = () => {
                                 onClick={() => navigate('/dashboard')}
                                 className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                             >
-                                <img src="/logo-advanta.png" alt="Advanta" className="w-9 h-9 object-contain drop-shadow-sm" />
+                                {/* [TODO: LOGO] Restaurar: <img src="/logo-advanta.png" alt="Advanta" className="w-9 h-9 object-contain drop-shadow-sm" /> */}
+                                <img src="/logo-potenza.png" alt="Potenza" className="w-14 h-14 object-contain drop-shadow-sm" />
                             </button>
 
                             {/* Right Actions */}

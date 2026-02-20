@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
-import sailoLogo from '/logo-advanta.svg';
+// [TODO: LOGO] Restaurar: import sailoLogo from '/logo-advanta.svg';
+import sailoLogo from '/logo-potenza.png';
 import { ArrowRight, Lock, Mail, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -121,9 +122,10 @@ const Login = () => {
                 >
                     <img
                         src={sailoLogo}
-                        alt="Advanta CRM"
-                        className="w-full max-w-[380px] md:max-w-[480px] lg:max-w-[580px] h-auto object-contain drop-shadow-2xl"
+                        alt="Lartirigoyen CRM"
+                        className="w-full max-w-[480px] md:max-w-[600px] lg:max-w-[700px] h-auto object-contain drop-shadow-2xl"
                     />
+                    {/* [TODO: LOGO] Logo anterior: logo-advanta.svg con alt="Advanta CRM" */}
                 </motion.div>
 
                 {/* Right Side: Login Form */}

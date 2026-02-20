@@ -74,7 +74,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
             setFormData({ ...formData });
         } catch (error) {
             console.error('Error unlinking contact:', error);
-            addNotification({
+            showToast({
                 id: `error-unlink-contact-${Date.now()}`,
                 title: '❌ Error al desvincular',
                 description: error.message || 'No se pudo desvincular el contacto',
@@ -186,7 +186,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     // Handle linking existing contact
     const handleLinkExistingContact = async () => {
         if (!selectedContactToLink || !linkRole.trim()) {
-            addNotification({
+            showToast({
                 id: `validation-link-contact-${Date.now()}`,
                 title: 'ℹ️ Datos incompletos',
                 description: 'Por favor selecciona un contacto y especifica el rol',
@@ -217,7 +217,7 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
             setFormData({ ...formData });
         } catch (error) {
             console.error('Error linking contact:', error);
-            addNotification({
+            showToast({
                 id: `error-link-contact-${Date.now()}`,
                 title: '❌ Error al vincular',
                 description: error.message || 'No se pudo vincular el contacto',

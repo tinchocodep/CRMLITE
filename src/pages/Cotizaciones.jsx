@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Search, Plus, Edit2, Eye, Send, CheckCircle, Clock, DollarSign, Calendar, Building2, ShoppingCart, XCircle, ChevronRight, Trash2 } from 'lucide-react';
+import { FileText, Search, Edit2, CheckCircle, DollarSign, Calendar, Building2, ShoppingCart, XCircle, ChevronRight, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { orders as mockOrders } from '../data/orders';
 import { useToast } from '../contexts/ToastContext';
@@ -18,6 +18,11 @@ const Cotizaciones = () => {
     const [quotationToEdit, setQuotationToEdit] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [quotationToDelete, setQuotationToDelete] = useState(null);
+    // Modal de selección de IVA previo a confirmar la cotización
+    const [ivaModalOpen, setIvaModalOpen] = useState(false);
+    const [quotationToConfirm, setQuotationToConfirm] = useState(null);
+    const [selectedIvaRate, setSelectedIvaRate] = useState('21');
+    const [isConfirming, setIsConfirming] = useState(false);
 
     // Usar hook de Supabase para cotizaciones
     const {
@@ -58,7 +63,7 @@ const Cotizaciones = () => {
 
         const statusIcons = {
             draft: Edit2,
-            sent: Send,
+            sent: FileText,
             approved: CheckCircle,
             rejected: XCircle
         };
@@ -222,7 +227,7 @@ const Cotizaciones = () => {
         {
             label: 'Enviadas',
             value: quotations.filter(q => q.status === 'sent').length,
-            icon: Send,
+            icon: FileText,
             color: 'from-purple-500 to-purple-600',
             textColor: 'text-purple-600'
         },
@@ -256,10 +261,48 @@ const Cotizaciones = () => {
         return date.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
     };
 
-    // Función para confirmar cotización y crear pedido
-    const handleConfirmQuotation = async (quotation) => {
-        // Simplemente llamar a handleUpdateStatus que ya tiene toda la lógica
-        await handleUpdateStatus(quotation, 'approved');
+    // Abre el modal de selección de IVA antes de confirmar
+    const handleConfirmQuotation = (quotation) => {
+        setQuotationToConfirm(quotation);
+        setSelectedIvaRate('21');
+        setIvaModalOpen(true);
+    };
+
+    // Confirma la cotización con el IVA seleccionado, recalcula importes y crea el pedido
+    const handleConfirmWithIva = async () => {
+        if (!quotationToConfirm || isConfirming) return;
+        setIsConfirming(true);
+
+        try {
+            const baseSubtotal = parseFloat(quotationToConfirm.subtotal) || 0;
+            const ivaMultiplier = selectedIvaRate === '21' ? 0.21
+                : selectedIvaRate === '10.5' ? 0.105
+                    : 0;
+
+            const newTax = parseFloat((baseSubtotal * ivaMultiplier).toFixed(2));
+            const newTotal = parseFloat((baseSubtotal + newTax).toFixed(2));
+
+            // Actualizar la cotización con los nuevos valores de IVA antes de aprobarla
+            await updateQuotation(quotationToConfirm.id, {
+                tax_rate: selectedIvaRate === 'none' ? 0 : parseFloat(selectedIvaRate),
+                tax: newTax,
+                total: newTotal,
+            });
+
+            // Aprobar y crear pedido con los valores actualizados
+            const updatedQuotation = {
+                ...quotationToConfirm,
+                tax: newTax,
+                total: newTotal,
+                subtotal: baseSubtotal,
+            };
+
+            setIvaModalOpen(false);
+            setQuotationToConfirm(null);
+            await handleUpdateStatus(updatedQuotation, 'approved');
+        } finally {
+            setIsConfirming(false);
+        }
     };
 
     const getStatusBadge = (status) => {
@@ -363,7 +406,8 @@ const Cotizaciones = () => {
                 ) : (
                     <div className="grid gap-3 sm:gap-4">
                         {filteredQuotations.map((quotation, index) => {
-                            const canConfirm = quotation.status === 'sent';
+                            // Permitir confirmar desde draft o sent (sin necesidad de pasar por sent)
+                            const canConfirm = quotation.status === 'draft' || quotation.status === 'sent';
                             const isApproved = quotation.status === 'approved';
 
                             return (
@@ -532,6 +576,119 @@ const Cotizaciones = () => {
                 quotation={quotationToEdit}
                 onSave={handleSaveQuotation}
             />
+
+            {/* ─── Modal de Selección de IVA ─────────────────────────────── */}
+            <AnimatePresence>
+                {ivaModalOpen && quotationToConfirm && (() => {
+                    const base = parseFloat(quotationToConfirm.subtotal) || 0;
+                    const ivaRate = selectedIvaRate === '21' ? 0.21
+                        : selectedIvaRate === '10.5' ? 0.105
+                            : 0;
+                    const previewTax = base * ivaRate;
+                    const previewTotal = base + previewTax;
+
+                    return (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                            onClick={() => !isConfirming && setIvaModalOpen(false)}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-6"
+                            >
+                                {/* Header */}
+                                <div className="flex items-center gap-3 mb-5">
+                                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                                        <ShoppingCart className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-base font-bold text-slate-900 dark:text-white">Confirmar Cotización</h3>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">{quotationToConfirm.quotation_number || quotationToConfirm.number}</p>
+                                    </div>
+                                </div>
+
+                                {/* IVA Options */}
+                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Seleccionar condición fiscal:</p>
+                                <div className="space-y-2 mb-5">
+                                    {[
+                                        { value: '21', label: 'IVA 21%', desc: 'Alícuota general' },
+                                        { value: '10.5', label: 'IVA 10.5%', desc: 'Alícuota reducida' },
+                                        { value: 'none', label: 'Sin IVA', desc: 'Exento / No gravado' },
+                                    ].map(opt => (
+                                        <label
+                                            key={opt.value}
+                                            className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${selectedIvaRate === opt.value
+                                                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                                                : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                                                }`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="iva-rate"
+                                                value={opt.value}
+                                                checked={selectedIvaRate === opt.value}
+                                                onChange={() => setSelectedIvaRate(opt.value)}
+                                                className="accent-green-500"
+                                            />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{opt.label}</p>
+                                                <p className="text-xs text-slate-500 dark:text-slate-400">{opt.desc}</p>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+
+                                {/* Price Preview */}
+                                <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 mb-5 space-y-2">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-slate-500 dark:text-slate-400">Subtotal neto</span>
+                                        <span className="font-semibold text-slate-800 dark:text-slate-200">{formatCurrency(base)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-slate-500 dark:text-slate-400">
+                                            {selectedIvaRate === 'none' ? 'IVA' : `IVA (${selectedIvaRate}%)`}
+                                        </span>
+                                        <span className="font-semibold text-slate-800 dark:text-slate-200">{formatCurrency(previewTax)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-base font-bold pt-2 border-t border-slate-200 dark:border-slate-600">
+                                        <span className="text-slate-900 dark:text-white">Total</span>
+                                        <span className="text-green-600 dark:text-green-400">{formatCurrency(previewTotal)}</span>
+                                    </div>
+                                </div>
+
+                                {/* Actions */}
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => !isConfirming && setIvaModalOpen(false)}
+                                        disabled={isConfirming}
+                                        className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-xl font-semibold transition-colors disabled:opacity-50"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        onClick={handleConfirmWithIva}
+                                        disabled={isConfirming}
+                                        className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+                                    >
+                                        {isConfirming ? (
+                                            <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <ShoppingCart size={16} />
+                                        )}
+                                        {isConfirming ? 'Confirmando...' : 'Confirmar Pedido'}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    );
+                })()}
+            </AnimatePresence>
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>

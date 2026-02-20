@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOpportunities } from '../hooks/useOpportunities';
@@ -7,19 +7,12 @@ import EditOpportunityModal from '../components/opportunities/EditOpportunityMod
 import { useToast } from '../contexts/ToastContext';
 
 const stageConfig = {
-    // Estados del Cotizador
-    prospecting: { label: 'Prospección', color: 'bg-indigo-100 text-indigo-700 border-indigo-200', icon: '🔍' },
-    qualification: { label: 'Calificación', color: 'bg-cyan-100 text-cyan-700 border-cyan-200', icon: '📊' },
-    proposal: { label: 'Propuesta', color: 'bg-purple-100 text-purple-700 border-purple-200', icon: '📝' },
-    negotiation: { label: 'Negociación', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: '💼' },
-    won: { label: 'Ganado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '🏆' },
-    lost: { label: 'Perdido', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: '❌' },
-    // Aliases para compatibilidad con datos legacy
-    iniciado: { label: 'Iniciado', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🚀' },
-    presupuestado: { label: 'Presupuestado', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '📋' },
-    negociado: { label: 'Negociado', color: 'bg-orange-100 text-orange-700 border-orange-200', icon: '🤝' },
-    ganado: { label: 'Ganado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '✅' },
-    perdido: { label: 'Perdido', color: 'bg-red-100 text-red-700 border-red-200', icon: '❌' },
+    prospecting: { label: 'Prospección', probability: 10, dot: 'bg-indigo-500', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700' },
+    qualification: { label: 'Calificación', probability: 25, dot: 'bg-cyan-500', badge: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-700' },
+    proposal: { label: 'Propuesta', probability: 50, dot: 'bg-purple-500', badge: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700' },
+    negotiation: { label: 'Negociación', probability: 75, dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' },
+    won: { label: 'Ganado', probability: 100, dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700' },
+    lost: { label: 'Perdido', probability: 0, dot: 'bg-rose-500', badge: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700' },
 };
 
 const Opportunities = () => {
@@ -29,6 +22,7 @@ const Opportunities = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [opportunityToEdit, setOpportunityToEdit] = useState(null);
     const [statusDropdownOpen, setStatusDropdownOpen] = useState(null);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [opportunityToDelete, setOpportunityToDelete] = useState(null);
 
@@ -61,6 +55,20 @@ const Opportunities = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [statusDropdownOpen]);
 
+    const openDropdown = useCallback((e, oppId) => {
+        e.stopPropagation();
+        if (statusDropdownOpen === oppId) {
+            setStatusDropdownOpen(null);
+            return;
+        }
+        const rect = e.currentTarget.getBoundingClientRect();
+        setDropdownPosition({
+            top: rect.bottom + 6,
+            left: rect.left,
+        });
+        setStatusDropdownOpen(oppId);
+    }, [statusDropdownOpen]);
+
     // Handle status change from dropdown
     const handleStatusChange = async (opportunityId, newStatus) => {
         try {
@@ -68,16 +76,11 @@ const Opportunities = () => {
 
             const statusToProbability = {
                 'prospecting': 10,
-                'qualification': 30,
+                'qualification': 25,
                 'proposal': 50,
-                'negotiation': 70,
+                'negotiation': 75,
                 'won': 100,
-                'ganado': 100,
                 'lost': 0,
-                'perdido': 0,
-                'iniciado': 10,
-                'presupuestado': 30,
-                'negociado': 70,
             };
 
             const probability = statusToProbability[newStatus] ?? 0;
@@ -328,14 +331,15 @@ const Opportunities = () => {
                                                 e.stopPropagation();
                                                 setStatusDropdownOpen(statusDropdownOpen === opportunity.id ? null : opportunity.id);
                                             }}
-                                            className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 hover:opacity-80 transition-opacity`}
+                                            className={`px-2.5 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 hover:opacity-80 transition-opacity ${status.badge}`}
                                         >
-                                            <span>{status.icon}</span>
+                                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status.dot}`} />
                                             <span>{status.label}</span>
-                                            <ChevronDown size={12} />
+                                            <span className="opacity-60">· {status.probability}%</span>
+                                            <ChevronDown size={11} className="opacity-60" />
                                         </button>
                                         {statusDropdownOpen === opportunity.id && (
-                                            <div className="absolute top-full right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-[100] min-w-[140px]">
+                                            <div className="absolute top-full right-0 mt-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-[100] min-w-[180px] overflow-hidden">
                                                 {Object.entries(stageConfig).map(([key, config]) => (
                                                     <button
                                                         key={key}
@@ -343,10 +347,12 @@ const Opportunities = () => {
                                                             e.stopPropagation();
                                                             handleStatusChange(opportunity.id, key);
                                                         }}
-                                                        className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
+                                                        className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''
+                                                            }`}
                                                     >
-                                                        <span>{config.icon}</span>
-                                                        <span className={config.color.split(' ')[1]}>{config.label}</span>
+                                                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${config.dot}`} />
+                                                        <span className="flex-1 text-slate-700 dark:text-slate-300">{config.label}</span>
+                                                        <span className="text-slate-400 dark:text-slate-500 font-normal">{config.probability}%</span>
                                                     </button>
                                                 ))}
                                             </div>
@@ -438,8 +444,8 @@ const Opportunities = () => {
                         <p className="text-slate-500 dark:text-slate-400 font-medium">No se encontraron oportunidades</p>
                     </div>
                 ) : (
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                        <table className="w-full">
+                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-visible">
+                        <table className="w-full" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
                             <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
                                 <tr>
                                     <th className="text-left py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Estado</th>
@@ -452,7 +458,7 @@ const Opportunities = () => {
                                     <th className="text-center py-3 px-4 text-xs font-semibold text-slate-600 dark:text-slate-400">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="overflow-visible">
                                 {filteredOpportunities.map((opp, index) => {
                                     const status = stageConfig[opp.status] || stageConfig.prospecting;
                                     const closeDate = opp.expectedCloseDate || opp.close_date;
@@ -466,36 +472,17 @@ const Opportunities = () => {
                                             key={opp.id}
                                             className={`border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-slate-50/50 dark:bg-slate-800/50'}`}
                                         >
-                                            <td className="py-3 px-4">
-                                                <div className="status-dropdown-container" style={{ position: 'relative', zIndex: statusDropdownOpen === opp.id ? 9999 : 1 }}>
+                                            <td className="py-3 px-4" style={{ position: 'relative', overflow: 'visible' }}>
+                                                <div className="status-dropdown-container">
                                                     <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setStatusDropdownOpen(statusDropdownOpen === opp.id ? null : opp.id);
-                                                        }}
-                                                        className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit hover:opacity-80 transition-opacity`}
+                                                        onClick={(e) => openDropdown(e, opp.id)}
+                                                        className={`px-2.5 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5 hover:opacity-80 transition-all w-fit ${status.badge}`}
                                                     >
-                                                        <span>{status.icon}</span>
+                                                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${status.dot}`} />
                                                         <span>{status.label}</span>
-                                                        <ChevronDown size={12} />
+                                                        <span className="opacity-60">· {status.probability}%</span>
+                                                        <ChevronDown size={11} className="opacity-60" />
                                                     </button>
-                                                    {statusDropdownOpen === opp.id && (
-                                                        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-[9999] min-w-[160px]">
-                                                            {Object.entries(stageConfig).map(([key, config]) => (
-                                                                <button
-                                                                    key={key}
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        handleStatusChange(opp.id, key);
-                                                                    }}
-                                                                    className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
-                                                                >
-                                                                    <span>{config.icon}</span>
-                                                                    <span className={config.color.split(' ')[1]}>{config.label}</span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </td>
                                             <td className="py-3 px-4">
@@ -524,50 +511,28 @@ const Opportunities = () => {
                                                 </p>
                                             </td>
                                             <td className="py-3 px-4">
-                                                <div className="flex items-center gap-2">
-                                                    <input
-                                                        type="range"
-                                                        min="0"
-                                                        max="100"
-                                                        step="10"
-                                                        value={opp.probability || 0}
-                                                        onChange={async (e) => {
-                                                            const newProbability = parseInt(e.target.value);
-
-                                                            let newStatus = opp.status;
-                                                            if (newProbability >= 0 && newProbability <= 20) newStatus = 'prospecting';
-                                                            else if (newProbability <= 40) newStatus = 'qualification';
-                                                            else if (newProbability <= 60) newStatus = 'proposal';
-                                                            else if (newProbability <= 80) newStatus = 'negotiation';
-                                                            else if (newProbability > 80) newStatus = 'won';
-
-                                                            console.log('📊 Probability changed:', { newProbability, newStatus });
-                                                            await updateOpportunity(opp.id, {
-                                                                probability: newProbability,
-                                                                status: newStatus,
-                                                            });
-                                                        }}
-                                                        className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full appearance-none cursor-pointer max-w-[80px]
-                                                            [&::-webkit-slider-thumb]:appearance-none
-                                                            [&::-webkit-slider-thumb]:w-4
-                                                            [&::-webkit-slider-thumb]:h-4
-                                                            [&::-webkit-slider-thumb]:rounded-full
-                                                            [&::-webkit-slider-thumb]:bg-blue-600
-                                                            [&::-webkit-slider-thumb]:cursor-pointer
-                                                            [&::-moz-range-thumb]:w-4
-                                                            [&::-moz-range-thumb]:h-4
-                                                            [&::-moz-range-thumb]:rounded-full
-                                                            [&::-moz-range-thumb]:bg-blue-600
-                                                            [&::-moz-range-thumb]:border-0
-                                                            [&::-moz-range-thumb]:cursor-pointer"
-                                                        style={{
-                                                            background: `linear-gradient(to right, rgb(37 99 235) 0%, rgb(37 99 235) ${opp.probability || 0}%, rgb(226 232 240) ${opp.probability || 0}%, rgb(226 232 240) 100%)`
-                                                        }}
-                                                    />
-                                                    <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
-                                                        {opp.probability || 0}%
-                                                    </span>
-                                                </div>
+                                                {/* Barra de progreso visual (read-only) - refleja el status actual */}
+                                                {(() => {
+                                                    const prob = opp.probability || 0;
+                                                    const barColor = prob >= 80 ? 'from-emerald-400 to-emerald-600'
+                                                        : prob >= 60 ? 'from-blue-400 to-blue-600'
+                                                            : prob >= 40 ? 'from-amber-400 to-amber-500'
+                                                                : prob >= 20 ? 'from-orange-400 to-orange-500'
+                                                                    : 'from-slate-300 to-slate-400';
+                                                    return (
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2 min-w-[80px] overflow-hidden">
+                                                                <div
+                                                                    className={`bg-gradient-to-r ${barColor} h-full rounded-full transition-all duration-500`}
+                                                                    style={{ width: `${prob}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 min-w-[35px] text-right">
+                                                                {prob}%
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })()}
                                             </td>
                                             <td className="py-3 px-4">
                                                 <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -695,6 +660,43 @@ const Opportunities = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Fixed dropdown portal - immune to parent overflow:hidden/auto */}
+            {statusDropdownOpen && (() => {
+                const oppId = statusDropdownOpen;
+                const opp = filteredOpportunities.find(o => o.id === oppId);
+                if (!opp) return null;
+                return (
+                    <div
+                        className="status-dropdown-container"
+                        style={{
+                            position: 'fixed',
+                            top: dropdownPosition.top,
+                            left: dropdownPosition.left,
+                            zIndex: 99999,
+                        }}
+                    >
+                        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl min-w-[190px] overflow-hidden">
+                            {Object.entries(stageConfig).map(([key, config]) => (
+                                <button
+                                    key={key}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleStatusChange(opp.id, key);
+                                    }}
+                                    className={`w-full px-3 py-2.5 text-left text-xs font-semibold flex items-center gap-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''
+                                        }`}
+                                >
+                                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${config.dot}`} />
+                                    <span className="flex-1 text-slate-700 dark:text-slate-300">{config.label}</span>
+                                    <span className="text-slate-400 dark:text-slate-500 font-normal">{config.probability}%</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })()}
+
         </div>
     );
 };

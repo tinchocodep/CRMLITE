@@ -51,10 +51,11 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
         >
             {/* Logo Section */}
             <div className="h-20 flex items-center justify-center border-b border-slate-200">
+                {/* [TODO: LOGO] Restaurar: src="/logo-advanta-zoom.svg" alt="Advanta" */}
                 <img
-                    src="/logo-advanta-zoom.svg"
-                    alt="Advanta"
-                    className={`object-contain transition-all duration-300 ${isHovered ? 'w-16 h-16' : 'w-14 h-14'
+                    src="/logo-potenza-color.png"
+                    alt="Potenza"
+                    className={`object-contain transition-all duration-300 ${isHovered ? 'w-28 h-28' : 'w-24 h-24'
                         }`}
                 />
             </div>

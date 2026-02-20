@@ -228,7 +228,7 @@ export const useNotifications = () => {
             });
     }, [companies]);
 
-    // Aggregate all notifications
+    // Aggregate all notifications from data sources
     useEffect(() => {
         const allNotifications = [
             ...getUpcomingActivityNotifications,
@@ -247,7 +247,11 @@ export const useNotifications = () => {
             return new Date(b.timestamp) - new Date(a.timestamp);
         });
 
-        setNotifications(sorted);
+        setNotifications(prev => {
+            // Keep any manually-added notifications (those with manualEntry flag)
+            const manual = prev.filter(n => n.manualEntry);
+            return [...manual, ...sorted];
+        });
     }, [
         getUpcomingActivityNotifications,
         getOverdueActivityNotifications,
@@ -255,6 +259,24 @@ export const useNotifications = () => {
         getStaleOpportunityNotifications,
         getFollowUpNotifications
     ]);
+
+    /**
+     * Manually add a transient notification (e.g. after a user action).
+     * It will be auto-removed after 5 seconds.
+     */
+    const addNotification = (notification) => {
+        const entry = {
+            ...notification,
+            manualEntry: true,
+            timestamp: notification.timestamp || new Date(),
+        };
+        setNotifications(prev => [entry, ...prev]);
+
+        // Auto-remove after 5s
+        setTimeout(() => {
+            setNotifications(prev => prev.filter(n => n.id !== entry.id));
+        }, 5000);
+    };
 
     // DISABLED: Automatic toast notifications
     // Toasts will now be triggered manually:
@@ -282,6 +304,7 @@ export const useNotifications = () => {
     */
 
     return {
-        notifications
+        notifications,
+        addNotification
     };
 };

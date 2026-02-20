@@ -8,7 +8,7 @@ import PaymentModal from '../components/PaymentModal';
 import PreInvoiceModal from '../components/PreInvoiceModal';
 import InvoiceActionModal from '../components/orders/InvoiceActionModal';
 import ComprobantesList, { PDFPreviewModal } from '../components/orders/ComprobantesList';
-import { getComprobantesByOrder, getShippedQuantities } from '../services/comprobantesService';
+import { getComprobantesByOrder } from '../services/comprobantesService';
 import { useOrders } from '../hooks/useOrders';
 
 
@@ -612,10 +612,22 @@ const Pedidos = () => {
                                                     const orderTotal = order?.total || order?.totalAmount || 0;
                                                     const saldoPendiente = orderTotal - totalCobrado;
 
+                                                    // Calculate shipped quantities from Supabase comprobantes (not localStorage)
+                                                    const shippedQtys = {};
+                                                    orderComprobantes
+                                                        .filter(c => c.tipo === 'REMITO')
+                                                        .forEach(remito => {
+                                                            if (remito.products && Array.isArray(remito.products)) {
+                                                                remito.products.forEach(p => {
+                                                                    shippedQtys[p.productId] =
+                                                                        (shippedQtys[p.productId] || 0) + (p.quantityShipped || 0);
+                                                                });
+                                                            }
+                                                        });
+
                                                     // Check if all products are fully shipped
-                                                    const shippedQuantities = getShippedQuantities(order.id);
                                                     const allProductsShipped = order.lines?.every(line => {
-                                                        const shipped = shippedQuantities[line.id] || 0;
+                                                        const shipped = shippedQtys[line.id] || 0;
                                                         return shipped >= line.quantity;
                                                     }) ?? false;
 
