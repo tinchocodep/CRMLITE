@@ -1,0 +1,69 @@
+﻿
+> blazing-star@1.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 3 modules transformed.
+node.exe : [31mΓ£ù[39m 
+Build failed in 44ms
+En línea: 1 Carácter: 1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (  
+  [31mΓ£ù[39m Build fa   
+ iled in 44ms:String)     
+[], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+[31merror during build:
+[31m[@tailwindcss/vite:ge
+nerate:build] Invalid 
+declaration: `<<<<<<< 
+HEAD`[31m
+file: [36mC:/Users/ASUS T
+uf/Documents/GitHub/CRMLIT
+E/src/index.css[31m
+    at $e (file:///C:/User
+s/ASUS%20Tuf/Documents/Git
+Hub/CRMLITE/node_modules/t
+ailwindcss/dist/chunk-CT46
+QCH7.mjs:1:3316)
+    at rf (file:///C:/User
+s/ASUS%20Tuf/Documents/Git
+Hub/CRMLITE/node_modules/t
+ailwindcss/dist/chunk-CT46
+QCH7.mjs:38:1384)
+    at lu (file:///C:/User
+s/ASUS%20Tuf/Documents/Git
+Hub/CRMLITE/node_modules/@
+tailwindcss/node/dist/inde
+x.mjs:10:3464)
+    at F.generate (file://
+/C:/Users/ASUS%20Tuf/Docum
+ents/GitHub/CRMLITE/node_m
+odules/@tailwindcss/vite/d
+ist/index.mjs:1:4355)
+    at Object.handler (fil
+e:///C:/Users/ASUS%20Tuf/D
+ocuments/GitHub/CRMLITE/no
+de_modules/@tailwindcss/vi
+te/dist/index.mjs:1:3126)
+    at Object.handler (fil
+e:///C:/Users/ASUS%20Tuf/D
+ocuments/GitHub/CRMLITE/no
+de_modules/vite/dist/node/
+chunks/config.js:33730:13)
+    at file:///C:/Users/AS
+US%20Tuf/Documents/GitHub/
+CRMLITE/node_modules/rollu
+p/dist/es/shared/node-entr
+y.js:22545:40[39m

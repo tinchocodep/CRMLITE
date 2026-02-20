@@ -3,6 +3,10 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { TenantBrandingProvider } from './contexts/TenantBrandingContext';
+import { ToastProvider } from './contexts/ToastContext';
+import ToastContainer from './components/shared/ToastContainer';
+import ErrorBoundary from './components/ErrorBoundary';
 import MainLayout from './layouts/MainLayout';
 import ModulePlaceholder from './pages/ModulePlaceholder';
 import Login from './pages/Login';
@@ -22,8 +26,6 @@ import Comprobantes from './pages/Comprobantes';
 import CuentaCorriente from './pages/CuentaCorriente';
 import Stock from './pages/Stock';
 import CotizadorIndex from './pages/CotizadorIndex';
-import { ToastProvider } from './contexts/ToastContext';
-import ToastContainer from './components/shared/ToastContainer';
 
 // Componente para proteger rutas que requieren autenticación
 function ProtectedRoute({ children }) {
@@ -68,7 +70,7 @@ function MobileRedirect({ children }) {
 
 function AppRoutes() {
   const modules = [
-    'Ficha 360°', 'Agenda', 'Prospectos', 'Clientes', 'Legajo',
+    'Ficha 360°', 'Agenda', 'Prospectores', 'Clientes', 'Legajo',
     'Visitas', 'Oportunidades', 'Objetivos', 'Territorios', 'Reclamos'
   ];
 
@@ -87,7 +89,7 @@ function AppRoutes() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="agenda" element={<Agenda />} />
-          <Route path="prospectos" element={<Prospects />} />
+          <Route path="prospectores" element={<Prospects />} />
           <Route path="clientes" element={<Clients />} />
           <Route path="contactos" element={<Contacts />} />
           <Route path="oportunidades" element={<Opportunities />} />
@@ -114,19 +116,19 @@ function AppRoutes() {
   );
 }
 
-import ErrorBoundary from './components/ErrorBoundary';
-
 function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <ToastProvider>
-            <BrowserRouter>
-              <AppRoutes />
-              <ToastContainer />
-            </BrowserRouter>
-          </ToastProvider>
+          <TenantBrandingProvider>
+            <ToastProvider>
+              <BrowserRouter>
+                <AppRoutes />
+                <ToastContainer />
+              </BrowserRouter>
+            </ToastProvider>
+          </TenantBrandingProvider>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

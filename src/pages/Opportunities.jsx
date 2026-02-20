@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
 import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
-import { opportunities as mockOpportunities } from '../data/opportunities';
 import { useToast } from '../contexts/ToastContext';
 
 const stageConfig = {
@@ -14,7 +13,13 @@ const stageConfig = {
     proposal: { label: 'Propuesta', color: 'bg-purple-100 text-purple-700 border-purple-200', icon: '📝' },
     negotiation: { label: 'Negociación', color: 'bg-amber-100 text-amber-700 border-amber-200', icon: '💼' },
     won: { label: 'Ganado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '🏆' },
-    lost: { label: 'Perdido', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: '❌' }
+    lost: { label: 'Perdido', color: 'bg-rose-100 text-rose-700 border-rose-200', icon: '❌' },
+    // Aliases para compatibilidad con datos legacy
+    iniciado: { label: 'Iniciado', color: 'bg-blue-100 text-blue-700 border-blue-200', icon: '🚀' },
+    presupuestado: { label: 'Presupuestado', color: 'bg-yellow-100 text-yellow-700 border-yellow-200', icon: '📋' },
+    negociado: { label: 'Negociado', color: 'bg-orange-100 text-orange-700 border-orange-200', icon: '🤝' },
+    ganado: { label: 'Ganado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: '✅' },
+    perdido: { label: 'Perdido', color: 'bg-red-100 text-red-700 border-red-200', icon: '❌' },
 };
 
 const Opportunities = () => {
@@ -56,37 +61,72 @@ const Opportunities = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [statusDropdownOpen]);
 
-    // Función para marcar como ganado y crear cotización
+    // Handle status change from dropdown
+    const handleStatusChange = async (opportunityId, newStatus) => {
+        try {
+            console.log('🔄 Changing status:', { opportunityId, newStatus });
+
+            const statusToProbability = {
+                'prospecting': 10,
+                'qualification': 30,
+                'proposal': 50,
+                'negotiation': 70,
+                'won': 100,
+                'ganado': 100,
+                'lost': 0,
+                'perdido': 0,
+                'iniciado': 10,
+                'presupuestado': 30,
+                'negociado': 70,
+            };
+
+            const probability = statusToProbability[newStatus] ?? 0;
+
+            const result = await updateOpportunity(opportunityId, {
+                status: newStatus,
+                probability,
+            });
+
+            if (result.success) {
+                setStatusDropdownOpen(null);
+                console.log('✅ Status updated successfully');
+            } else {
+                throw new Error(result.error || 'Error al actualizar el estado');
+            }
+        } catch (err) {
+            console.error('❌ Error changing status:', err);
+        }
+    };
+
+    // Función para marcar como ganado
     const handleMarkAsWon = async (opportunity) => {
         try {
-            // Update opportunity status to 'won' - this will trigger auto-quotation creation in useOpportunities
             const result = await updateOpportunity(opportunity.id, { status: 'won' });
 
             if (result.success) {
-                // Show success notification
-                if (result.data.autoCreatedQuotation) {
-                    addNotification({
-                        id: `won - ${opportunity.id} -${Date.now()} `,
+                if (result.data?.autoCreatedQuotation) {
+                    showToast({
+                        id: `won-${opportunity.id}-${Date.now()}`,
                         title: '✅ Oportunidad marcada como GANADA!',
-                        description: `Se creó la cotización: ${result.data.autoCreatedQuotation.quotationNumber} \n💰 Total: $${result.data.autoCreatedQuotation.total.toLocaleString('es-AR')} \n\nPuedes verla en el módulo "Cotizaciones"`,
+                        description: `Se creó la cotización: ${result.data.autoCreatedQuotation.quotationNumber}\n💰 Total: $${result.data.autoCreatedQuotation.total.toLocaleString('es-AR')}\n\nPuedes verla en el módulo "Cotizaciones"`,
                         priority: 'high',
-                        timeAgo: 'Ahora'
+                        timeAgo: 'Ahora',
                     });
-                } else if (result.data.existingQuotation) {
-                    addNotification({
-                        id: `won - existing - ${opportunity.id} -${Date.now()} `,
+                } else if (result.data?.existingQuotation) {
+                    showToast({
+                        id: `won-existing-${opportunity.id}-${Date.now()}`,
                         title: '✅ Oportunidad marcada como GANADA!',
-                        description: `Ya existe una cotización para esta oportunidad: ${result.data.existingQuotation.quotation_number} `,
+                        description: `Ya existe una cotización para esta oportunidad: ${result.data.existingQuotation.quotation_number}`,
                         priority: 'medium',
-                        timeAgo: 'Ahora'
+                        timeAgo: 'Ahora',
                     });
                 } else {
-                    addNotification({
-                        id: `won - ${opportunity.id} -${Date.now()} `,
+                    showToast({
+                        id: `won-${opportunity.id}-${Date.now()}`,
                         title: '✅ Oportunidad marcada como GANADA!',
                         description: 'La oportunidad se actualizó correctamente.',
                         priority: 'medium',
-                        timeAgo: 'Ahora'
+                        timeAgo: 'Ahora',
                     });
                 }
             } else {
@@ -94,17 +134,17 @@ const Opportunities = () => {
             }
         } catch (error) {
             console.error('Error marking opportunity as won:', error);
-            addNotification({
-                id: `error - ${opportunity.id} -${Date.now()} `,
+            showToast({
+                id: `error-${opportunity.id}-${Date.now()}`,
                 title: '❌ Error',
-                description: `No se pudo marcar la oportunidad como ganada: ${error.message} `,
+                description: `No se pudo marcar la oportunidad como ganada: ${error.message}`,
                 priority: 'high',
-                timeAgo: 'Ahora'
+                timeAgo: 'Ahora',
             });
         }
     };
 
-    // Función para eliminar oportunidad
+    // Función para eliminar oportunidad con confirmación
     const handleDeleteOpportunity = async () => {
         if (!opportunityToDelete) return;
 
@@ -117,7 +157,7 @@ const Opportunities = () => {
                 description: result.error || 'No se pudo eliminar la oportunidad',
                 priority: 'high',
                 icon: XCircle,
-                timeAgo: 'Ahora'
+                timeAgo: 'Ahora',
             });
             setDeleteConfirmOpen(false);
             setOpportunityToDelete(null);
@@ -127,115 +167,42 @@ const Opportunities = () => {
         showToast({
             id: `delete-${opportunityToDelete.id}-${Date.now()}`,
             title: '✅ Oportunidad Eliminada',
-            description: `La oportunidad ${opportunityToDelete.opportunity_name || opportunityToDelete.title} fue eliminada correctamente`,
+            description: `La oportunidad "${opportunityToDelete.opportunity_name || opportunityToDelete.title}" fue eliminada correctamente`,
             priority: 'high',
             icon: CheckCircle,
-            timeAgo: 'Ahora'
+            timeAgo: 'Ahora',
         });
 
         setDeleteConfirmOpen(false);
         setOpportunityToDelete(null);
     };
 
-    // Handle status change from dropdown
-    const handleStatusChange = async (opportunityId, newStatus) => {
-        try {
-            console.log('🔄 Changing status:', { opportunityId, newStatus });
-
-            // Calculate probability based on status
-            const statusToProbability = {
-                'prospecting': 10,
-                'qualification': 30,
-                'proposal': 50,
-                'negotiation': 70,
-                'won': 100,
-                'lost': 0
-            };
-
-            const probability = statusToProbability[newStatus] || 0;
-
-            const result = await updateOpportunity(opportunityId, {
-                status: newStatus,
-                probability: probability
-            });
-
-            if (result.success) {
-                setStatusDropdownOpen(null); // Close dropdown
-                console.log('✅ Status updated successfully');
-            } else {
-                throw new Error(result.error || 'Error al actualizar el estado');
-            }
-        } catch (err) {
-            console.error('❌ Error changing status:', err);
-        }
-    };
-
-    // Use database opportunities only
-    const displayOpportunities = opportunities;
-
     // Filter opportunities
     const filteredOpportunities = useMemo(() => {
-        return displayOpportunities.filter(opp =>
+        return opportunities.filter(opp =>
             (opp.title || opp.opportunity_name || '').toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [displayOpportunities, searchTerm]);
+    }, [opportunities, searchTerm]);
 
     // Calculate stats
     const stats = useMemo(() => ({
-        total: displayOpportunities.length,
-        totalAmount: displayOpportunities.reduce((sum, opp) => sum + (opp.estimatedValue || opp.amount || 0), 0),
-        won: displayOpportunities.filter(opp => opp.status === 'won' || opp.status === 'ganado').length,
-        inProgress: displayOpportunities.filter(opp => ['prospecting', 'qualification', 'proposal', 'negotiation', 'iniciado', 'presupuestado', 'negociado'].includes(opp.status)).length,
-    }), [displayOpportunities]);
+        total: opportunities.length,
+        totalAmount: opportunities.reduce((sum, opp) => sum + (opp.estimatedValue || opp.amount || 0), 0),
+        won: opportunities.filter(opp => opp.status === 'won' || opp.status === 'ganado').length,
+        inProgress: opportunities.filter(opp => ['prospecting', 'qualification', 'proposal', 'negotiation', 'iniciado', 'presupuestado', 'negociado'].includes(opp.status)).length,
+    }), [opportunities]);
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('es-AR', {
             style: 'currency',
             currency: 'ARS',
-            minimumFractionDigits: 0
+            minimumFractionDigits: 0,
         }).format(amount);
     };
 
     const handleEdit = (opportunity) => {
-        console.log('🔍 Opportunities - Original opportunity:', opportunity);
-
-        // Transform opportunity data to match modal format
-        const transformedOpportunity = {
-            id: opportunity.id,
-            opportunityName: opportunity.title,
-            linkedEntity: {
-                id: opportunity.clientId,
-                type: 'client'
-            },
-            comercial: {
-                id: 1 // Default comercial for mock
-            },
-            contact: null,
-            productType: opportunity.products[0]?.productName || '',
-            amount: opportunity.estimatedValue,
-            closeDate: opportunity.expectedCloseDate,
-            status: opportunity.status,
-            probability: opportunity.probability,
-            nextAction: '',
-            nextActionDate: '',
-            notes: opportunity.description,
-            // NEW FIELDS for quotation
-            products: opportunity.products.map(p => ({
-                productSapCode: p.sapCode,
-                productName: p.productName,
-                quantity: p.quantity,
-                unitPrice: p.estimatedPrice
-            })),
-            saleType: opportunity.saleType,
-            paymentCondition: 'cash',
-            deliveryDate: '',
-            originAddress: '',
-            destinationAddress: ''
-        };
-
-        console.log('✅ Opportunities - Transformed opportunity:', transformedOpportunity);
-
-        setOpportunityToEdit(transformedOpportunity);
+        console.log('🔍 Opportunities - Editing opportunity:', opportunity);
+        setOpportunityToEdit(opportunity);
         setIsEditModalOpen(true);
     };
 
@@ -279,7 +246,7 @@ const Opportunities = () => {
                 </div>
             </div>
 
-            {/* Stats Cards - Compact */}
+            {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="bg-white dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-2 mb-1">
@@ -342,7 +309,7 @@ const Opportunities = () => {
                     </div>
                 ) : (
                     filteredOpportunities.map(opportunity => {
-                        const status = stageConfig[opportunity.status] || stageConfig.iniciado;
+                        const status = stageConfig[opportunity.status] || stageConfig.prospecting;
                         const isWon = opportunity.status === 'won' || opportunity.status === 'ganado';
                         const isLost = opportunity.status === 'lost' || opportunity.status === 'perdido';
                         const canMarkAsWon = !isWon && !isLost && (opportunity.probability || 0) > 60;
@@ -353,13 +320,12 @@ const Opportunities = () => {
                             >
                                 <div className="flex justify-between items-start mb-3">
                                     <h3 className="font-bold text-slate-800 dark:text-slate-100 flex-1">
-                                        {opportunity.opportunity_name || 'Sin nombre'}
+                                        {opportunity.opportunity_name || opportunity.title || 'Sin nombre'}
                                     </h3>
                                     <div className="relative status-dropdown-container ml-2">
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                console.log('Status button clicked, opportunity:', opportunity.id);
                                                 setStatusDropdownOpen(statusDropdownOpen === opportunity.id ? null : opportunity.id);
                                             }}
                                             className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 hover:opacity-80 transition-opacity`}
@@ -375,7 +341,6 @@ const Opportunities = () => {
                                                         key={key}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            console.log('Status option clicked:', key);
                                                             handleStatusChange(opportunity.id, key);
                                                         }}
                                                         className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opportunity.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
@@ -405,7 +370,7 @@ const Opportunities = () => {
                                     <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                                         <div
                                             className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full transition-all"
-                                            style={{ width: `${opportunity.probability || 0}% ` }}
+                                            style={{ width: `${opportunity.probability || 0}%` }}
                                         />
                                     </div>
                                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
@@ -440,10 +405,10 @@ const Opportunities = () => {
                                                 <span>Editar</span>
                                             </button>
                                             <button
-                                                onClick={async (e) => {
+                                                onClick={(e) => {
                                                     e.stopPropagation();
-                                                    console.log('Delete button clicked, opportunity ID:', opportunity.id);
-                                                    await deleteOpportunity(opportunity.id);
+                                                    setOpportunityToDelete(opportunity);
+                                                    setDeleteConfirmOpen(true);
                                                 }}
                                                 className="px-3 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-semibold hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors flex items-center gap-1"
                                             >
@@ -506,7 +471,6 @@ const Opportunities = () => {
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            console.log('Desktop status button clicked, opportunity:', opp.id);
                                                             setStatusDropdownOpen(statusDropdownOpen === opp.id ? null : opp.id);
                                                         }}
                                                         className={`px-2 py-1 rounded-lg text-xs font-semibold border ${status.color} flex items-center gap-1 w-fit hover:opacity-80 transition-opacity`}
@@ -522,7 +486,6 @@ const Opportunities = () => {
                                                                     key={key}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
-                                                                        console.log('Desktop status option clicked:', key);
                                                                         handleStatusChange(opp.id, key);
                                                                     }}
                                                                     className={`w-full px-3 py-2 text-left text-xs font-semibold flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors first:rounded-t-lg last:rounded-b-lg ${opp.status === key ? 'bg-slate-100 dark:bg-slate-700' : ''}`}
@@ -565,13 +528,12 @@ const Opportunities = () => {
                                                     <input
                                                         type="range"
                                                         min="0"
-                                                        max="60"
+                                                        max="100"
                                                         step="10"
-                                                        value={Math.min(opp.probability || 0, 60)}
+                                                        value={opp.probability || 0}
                                                         onChange={async (e) => {
                                                             const newProbability = parseInt(e.target.value);
 
-                                                            // Auto-calculate status based on probability
                                                             let newStatus = opp.status;
                                                             if (newProbability >= 0 && newProbability <= 20) newStatus = 'prospecting';
                                                             else if (newProbability <= 40) newStatus = 'qualification';
@@ -582,7 +544,7 @@ const Opportunities = () => {
                                                             console.log('📊 Probability changed:', { newProbability, newStatus });
                                                             await updateOpportunity(opp.id, {
                                                                 probability: newProbability,
-                                                                status: newStatus
+                                                                status: newStatus,
                                                             });
                                                         }}
                                                         className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full appearance-none cursor-pointer max-w-[80px]
@@ -599,7 +561,7 @@ const Opportunities = () => {
                                                             [&::-moz-range-thumb]:border-0
                                                             [&::-moz-range-thumb]:cursor-pointer"
                                                         style={{
-                                                            background: `linear-gradient(to right, rgb(37 99 235) 0%, rgb(37 99 235) ${(Math.min(opp.probability || 0, 60) / 60) * 100}%, rgb(226 232 240) ${(Math.min(opp.probability || 0, 60) / 60) * 100}%, rgb(226 232 240) 100%)`
+                                                            background: `linear-gradient(to right, rgb(37 99 235) 0%, rgb(37 99 235) ${opp.probability || 0}%, rgb(226 232 240) ${opp.probability || 0}%, rgb(226 232 240) 100%)`
                                                         }}
                                                     />
                                                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 min-w-[35px]">
@@ -674,18 +636,7 @@ const Opportunities = () => {
                     setIsEditModalOpen(false);
                     setOpportunityToEdit(null);
                 }}
-                onSave={(opportunityId, updates) => {
-                    // Update local mock data
-                    setLocalOpportunities(prev =>
-                        prev.map(opp =>
-                            opp.id === opportunityId
-                                ? { ...opp, ...updates }
-                                : opp
-                        )
-                    );
-                    setIsEditModalOpen(false);
-                    setOpportunityToEdit(null);
-                }}
+                onSave={handleSaveOpportunity}
                 opportunity={opportunityToEdit}
             />
 
@@ -718,7 +669,7 @@ const Opportunities = () => {
                                         Eliminar Oportunidad
                                     </h3>
                                     <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                                        ¿Estás seguro de eliminar la oportunidad <span className="font-semibold">{opportunityToDelete?.opportunity_name || opportunityToDelete?.title}</span>? Esta acción no se puede deshacer.
+                                        ¿Estás seguro de eliminar la oportunidad <span className="font-semibold">"{opportunityToDelete?.opportunity_name || opportunityToDelete?.title}"</span>? Esta acción no se puede deshacer.
                                     </p>
                                     <div className="flex gap-3 justify-end">
                                         <button
@@ -749,4 +700,3 @@ const Opportunities = () => {
 };
 
 export default Opportunities;
-// Force deployment Fri Feb  6 04:37:04 -03 2026

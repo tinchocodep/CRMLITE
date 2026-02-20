@@ -273,8 +273,6 @@ export const useUsers = () => {
                 });
             }
 
-
-
             // Wait for trigger to create user in public.users
             let userExists = false;
             let attempts = 0;
@@ -292,9 +290,6 @@ export const useUsers = () => {
 
                 if (checkUser) {
                     userExists = true;
-
-                } else {
-
                 }
             }
 
@@ -302,7 +297,7 @@ export const useUsers = () => {
                 throw new Error('Trigger failed to create user in public.users after 5 seconds');
             }
 
-            // Create comercial
+            // Create comercial and link to user
             const { data: comercialData, error: comercialError } = await supabase
                 .from('comerciales')
                 .insert([{
@@ -319,8 +314,6 @@ export const useUsers = () => {
                 throw new Error(`Failed to create comercial: ${comercialError.message}`);
             }
 
-
-
             // Link comercial to user
             const { error: linkError } = await supabase
                 .from('users')
@@ -330,8 +323,6 @@ export const useUsers = () => {
             if (linkError) {
                 console.error('❌ Error linking comercial:', linkError);
             }
-
-
 
             // Refresh user list
             await fetchUsers();
