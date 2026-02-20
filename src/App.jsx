@@ -29,7 +29,7 @@ function ProtectedRoute({ children }) {
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
-               style={{ borderColor: 'var(--color-brand-primary)', borderTopColor: 'transparent' }}>
+            style={{ borderColor: 'var(--color-brand-primary)', borderTopColor: 'transparent' }}>
           </div>
           <p className="text-slate-600 dark:text-slate-400">Cargando...</p>
         </div>
@@ -110,17 +110,17 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <AuthProvider>
-          {/* TenantBrandingProvider debe ir dentro de AuthProvider para acceder al usuario */}
-          <TenantBrandingProvider>
+        {/* TenantBrandingProvider resuelve por URL/hostname, NO requiere auth */}
+        <TenantBrandingProvider>
+          <AuthProvider>
             <ToastProvider>
               <BrowserRouter>
                 <AppRoutes />
                 <ToastContainer />
               </BrowserRouter>
             </ToastProvider>
-          </TenantBrandingProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </TenantBrandingProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

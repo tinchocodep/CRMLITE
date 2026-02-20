@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useCurrentTenant } from '../hooks/useCurrentTenant';
-import { TENANT_BRANDING, DEFAULT_BRANDING } from '../config/tenantBranding';
+import { useDomainBranding } from '../hooks/useDomainBranding';
 
 /**
- * TenantBrandingContext
- * Aplica el logo y los colores de marca del tenant activo
- * mediante CSS custom properties en el :root del documento.
+ * TenantBrandingContext — v2
+ *
+ * Resuelve el branding POR HOSTNAME (window.location.host),
+ * sin requerir que el usuario esté autenticado.
+ *
+ * ✅ El Login screen ya muestra los colores correctos del tenant.
+ * ✅ No depende de AuthContext — puede wrapearlo.
  *
  * Principio: la UI es "tonta" — solo consume `useTenantBranding()`
  * y no sabe nada sobre qué tenant está activo.
@@ -13,10 +16,7 @@ import { TENANT_BRANDING, DEFAULT_BRANDING } from '../config/tenantBranding';
 
 const TenantBrandingContext = createContext(null);
 
-/**
- * Hook para consumir el branding del tenant activo.
- * @returns {{ branding: import('../config/tenantBranding').TenantBranding, isLoading: boolean }}
- */
+/** @returns {{ branding: import('../hooks/useDomainBranding').DomainBranding, isLoading: boolean }} */
 export const useTenantBranding = () => {
   const context = useContext(TenantBrandingContext);
   if (!context) {
@@ -26,41 +26,41 @@ export const useTenantBranding = () => {
 };
 
 /**
- * Aplica las CSS variables de color al :root del documento.
- * Esto permite que Tailwind v4 y cualquier CSS las consuma
- * sin necesidad de re-renderizar componentes individuales.
+ * Convierte colores HEX de la DB a CSS custom properties en el :root.
+ * Tailwind v4 y cualquier CSS los consume sin re-renderizar componentes.
  *
- * @param {import('../config/tenantBranding').TenantBranding} branding
+ * @param {import('../hooks/useDomainBranding').DomainBranding} branding
  */
 const applyBrandingToDom = (branding) => {
   const root = document.documentElement;
-  root.style.setProperty('--color-brand-primary', `hsl(${branding.primaryColor})`);
-  root.style.setProperty('--color-brand-primary-hover', `hsl(${branding.primaryHover})`);
-  root.style.setProperty('--color-brand-accent', `hsl(${branding.accentColor})`);
-  root.style.setProperty('--color-brand-text-on-primary', `hsl(${branding.textOnPrimary})`);
+  root.style.setProperty('--color-brand-primary', branding.primaryColor);
+  root.style.setProperty('--color-brand-secondary', branding.secondaryColor);
+  root.style.setProperty('--color-brand-accent', branding.accentColor);
+  root.style.setProperty('--color-brand-text-on-primary', branding.textOnPrimary);
+
+  // Actualizar favicon dinámicamente si está configurado
+  if (branding.faviconUrl) {
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) link.href = branding.faviconUrl;
+  }
+
+  // Actualizar el title del browser tab
+  if (branding.appName) {
+    document.title = `${branding.appName} | CRM`;
+  }
 };
 
 export const TenantBrandingProvider = ({ children }) => {
-  const { tenantId, loading: tenantLoading } = useCurrentTenant();
-  const [branding, setBranding] = useState(DEFAULT_BRANDING);
+  const { branding, isLoading } = useDomainBranding();
 
   useEffect(() => {
-    if (tenantLoading) return;
-
-    // Resolver el branding del tenant activo, con fallback al default
-    const resolvedBranding = TENANT_BRANDING[tenantId] ?? DEFAULT_BRANDING;
-    setBranding(resolvedBranding);
-    applyBrandingToDom(resolvedBranding);
-  }, [tenantId, tenantLoading]);
-
-  // Aplicar branding por defecto inmediatamente para evitar flash
-  useEffect(() => {
-    applyBrandingToDom(DEFAULT_BRANDING);
-  }, []);
+    // Aplicar branding al DOM cada vez que cambie (incluye el primer load)
+    applyBrandingToDom(branding);
+  }, [branding]);
 
   const value = {
     branding,
-    isLoading: tenantLoading,
+    isLoading,
   };
 
   return (
