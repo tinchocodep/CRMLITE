@@ -1,5 +1,31 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Component } from 'react';
 import { Search, Filter, Plus, UserPlus, CheckCircle2, X } from 'lucide-react';
+
+// ─── Error Boundary para capturar crashes de render ──────────────────────────
+class ProspectsErrorBoundary extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="p-8 bg-red-50 border border-red-200 rounded-xl m-4">
+                    <h2 className="text-red-700 font-bold text-lg mb-2">Error en Prospectos</h2>
+                    <pre className="text-red-600 text-sm whitespace-pre-wrap bg-red-100 p-4 rounded-lg overflow-auto">
+                        {this.state.error?.message}
+                        {'\n\n'}
+                        {this.state.error?.stack}
+                    </pre>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
 import ProspectCard from '../components/prospects/ProspectCard';
 import ProspectsTable from '../components/prospects/ProspectsTable';
 import EditProspectModal from '../components/prospects/EditProspectModal';
@@ -196,7 +222,7 @@ const Prospects = () => {
                     )}
 
                     <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-1 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm w-full md:w-auto">
-                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex-1 md:w-80 border border-slate-100 dark:border-slate-600 focus-within:ring-2 ring-brand-red/10 dark:ring-red-500/20 transition-all">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-700/50 rounded-xl flex-1 md:w-80 border border-slate-100 dark:border-slate-600 focus-within:ring-2 ring-brand-primary/10 dark:ring-red-500/20 transition-all">
                             <Search size={20} className="text-slate-400 dark:text-slate-500" />
                             <input
                                 type="text"
@@ -208,7 +234,7 @@ const Prospects = () => {
                         </div>
                         <button
                             onClick={handleCreateClick}
-                            className="px-4 py-2 bg-gradient-to-r from-[#E76E53] to-red-600 hover:from-[#D55E43] hover:to-red-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                            className="px-4 py-2 bg-gradient-to-r from-brand-primary to-red-600 hover:from-brand-primary-hover hover:to-brand-primary-hover text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                         >
                             <Plus size={18} />
                             <span className="hidden md:inline">Nuevo</span>
@@ -276,4 +302,10 @@ const Prospects = () => {
     );
 };
 
-export default Prospects;
+const ProspectsWithBoundary = () => (
+    <ProspectsErrorBoundary>
+        <Prospects />
+    </ProspectsErrorBoundary>
+);
+
+export default ProspectsWithBoundary;

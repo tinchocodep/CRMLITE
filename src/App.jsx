@@ -64,8 +64,7 @@ function MobileRedirect({ children }) {
 
 function AppRoutes() {
   const modules = [
-    'Ficha 360°', 'Agenda', 'Prospectores', 'Clientes', 'Legajo',
-    'Visitas', 'Oportunidades', 'Objetivos', 'Territorios', 'Reclamos'
+    'Ficha 360°', 'Visitas', 'Objetivos', 'Territorios', 'Reclamos'
   ];
 
   const slugify = (text) => (text || '').toLowerCase().replace(/°/g, '').replace(/\s+/g, '-');
@@ -83,7 +82,7 @@ function AppRoutes() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="agenda" element={<Agenda />} />
-          <Route path="prospectores" element={<Prospects />} />
+          <Route path="prospectos" element={<Prospects />} />
           <Route path="clientes" element={<Clients />} />
           <Route path="contactos" element={<Contacts />} />
           <Route path="oportunidades" element={<Opportunities />} />
@@ -91,7 +90,7 @@ function AppRoutes() {
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />
           <Route path="equipos" element={<TeamManagement />} />
-          {modules.filter(m => m !== 'Agenda' && m !== 'Prospectores' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
+          {modules.map((name) => (
             <Route
               key={name}
               path={slugify(name)}
