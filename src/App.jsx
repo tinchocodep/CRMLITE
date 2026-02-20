@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { TenantBrandingProvider } from './contexts/TenantBrandingContext';
 import MainLayout from './layouts/MainLayout';
 import ModulePlaceholder from './pages/ModulePlaceholder';
 import Login from './pages/Login';
@@ -27,7 +28,9 @@ function ProtectedRoute({ children }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-brand-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+            style={{ borderColor: 'var(--color-brand-primary)', borderTopColor: 'transparent' }}>
+          </div>
           <p className="text-slate-600 dark:text-slate-400">Cargando...</p>
         </div>
       </div>
@@ -61,7 +64,7 @@ function MobileRedirect({ children }) {
 
 function AppRoutes() {
   const modules = [
-    'Ficha 360°', 'Agenda', 'Prospectos', 'Clientes', 'Legajo',
+    'Ficha 360°', 'Agenda', 'Prospectores', 'Clientes', 'Legajo',
     'Visitas', 'Oportunidades', 'Objetivos', 'Territorios', 'Reclamos'
   ];
 
@@ -80,7 +83,7 @@ function AppRoutes() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="agenda" element={<Agenda />} />
-          <Route path="prospectos" element={<Prospects />} />
+          <Route path="prospectores" element={<Prospects />} />
           <Route path="clientes" element={<Clients />} />
           <Route path="contactos" element={<Contacts />} />
           <Route path="oportunidades" element={<Opportunities />} />
@@ -88,7 +91,7 @@ function AppRoutes() {
           <Route path="configuracion" element={<Settings />} />
           <Route path="usuarios" element={<UserManagement />} />
           <Route path="equipos" element={<TeamManagement />} />
-          {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
+          {modules.filter(m => m !== 'Agenda' && m !== 'Prospectores' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
             <Route
               key={name}
               path={slugify(name)}
@@ -107,14 +110,17 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            <BrowserRouter>
-              <AppRoutes />
-              <ToastContainer />
-            </BrowserRouter>
-          </ToastProvider>
-        </AuthProvider>
+        {/* TenantBrandingProvider resuelve por URL/hostname, NO requiere auth */}
+        <TenantBrandingProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <BrowserRouter>
+                <AppRoutes />
+                <ToastContainer />
+              </BrowserRouter>
+            </ToastProvider>
+          </AuthProvider>
+        </TenantBrandingProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
