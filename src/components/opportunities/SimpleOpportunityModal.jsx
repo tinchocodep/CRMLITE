@@ -112,9 +112,6 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Información Básica */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-2">
-                            📋 Información Básica
-                        </h3>
 
                         <div>
                             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -145,7 +142,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                                 clients={clients}
                                 prospects={prospects}
                                 required={true}
-                                label="Unidad de Negocio"
+                                label="Cliente / Prospecto"
                             />
 
                             <div>
