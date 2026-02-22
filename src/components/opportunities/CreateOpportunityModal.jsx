@@ -126,7 +126,6 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                 <div className="bg-slate-50 border-b border-slate-200 p-4 flex items-center justify-between xl:rounded-t-2xl flex-shrink-0">
                     <div>
                         <h2 className="text-lg font-bold text-slate-800">Nueva Oportunidad</h2>
-                        <p className="text-slate-500 text-xs mt-0.5">Completa la información</p>
                     </div>
                     <button onClick={onClose} className="w-9 h-9 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-all">
                         <X size={18} className="text-slate-600" />
@@ -177,7 +176,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             clients={clients}
                             prospects={prospects}
                             required={true}
-                            label="Unidad de Negocio"
+                            label="Cliente / Prospecto"
                         />
 
                         {/* Opportunity Name */}
