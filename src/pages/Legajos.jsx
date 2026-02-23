@@ -16,11 +16,8 @@ const Legajos = () => {
     // Calculate progress for each company
     useEffect(() => {
         const calculateProgress = async () => {
-            console.log('📊 [Progress] Starting calculation');
-            console.log('📊 [Progress] Raw companies:', rawCompanies);
 
             if (!rawCompanies || rawCompanies.length === 0) {
-                console.log('📊 [Progress] No companies, setting empty array');
                 setCompanies([]);
                 return;
             }
@@ -32,12 +29,9 @@ const Legajos = () => {
                 .eq('entity_type', 'company')
                 .eq('status', 'active');
 
-            console.log('📊 [Progress] Attachments:', attachments);
-            console.log('📊 [Progress] Error:', error);
 
             const companiesWithProgress = rawCompanies.map(company => {
                 const companyDocs = attachments?.filter(att => att.entity_id === company.id) || [];
-                console.log(`📊 [Progress] Company ${company.trade_name}: ${companyDocs.length} docs`);
 
                 const progress = {
                     current: companyDocs.length,
@@ -52,20 +46,15 @@ const Legajos = () => {
                 };
             });
 
-            console.log('📊 [Progress] Final companies with progress:', companiesWithProgress);
             setCompanies(companiesWithProgress);
         };
 
         calculateProgress();
     }, [rawCompanies]);
 
-    console.log('🔍 [Legajos] Component rendering');
-    console.log('🔍 [Legajos] Companies:', companies);
-    console.log('🔍 [Legajos] Loading:', loading);
 
     // Filter only clients (not prospects)
     const clients = companies.filter(c => c.company_type === 'client');
-    console.log('🔍 [Legajos] Filtered clients:', clients);
 
     // Filter by search term
     const filteredClients = clients.filter(c =>

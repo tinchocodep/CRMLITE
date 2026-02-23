@@ -78,11 +78,9 @@ const Cotizaciones = () => {
         });
 
         // Debug: Log newStatus to see what value we're getting
-        console.log('🔍 [handleUpdateStatus] newStatus:', newStatus, 'quotation:', quotation);
 
         // Si se aprueba la cotización, crear pedido automáticamente
         if (newStatus === 'approved') {
-            console.log('🛒 Creating order from approved quotation:', quotation);
 
             const orderData = {
                 quotation_id: quotation.id,

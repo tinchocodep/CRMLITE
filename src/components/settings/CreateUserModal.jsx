@@ -58,7 +58,6 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
         const result = await onCreateUser(formData);
 
         if (result.success) {
-            console.log('✅ User created successfully:', result.user);
 
             // Show success toast
             addNotification({

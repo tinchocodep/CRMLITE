@@ -50,7 +50,6 @@ export const AuthProvider = ({ children }) => {
             // OPTIMIZATION: Only abort if user actually changed
             // This prevents aborting queries for the same user
             if (session?.user && session.user.id === currentUserId) {
-                console.log('✅ [AuthContext] Same user - not aborting');
                 return;
             }
 
@@ -96,11 +95,6 @@ export const AuthProvider = ({ children }) => {
                 setComercialId(profile.comercial_id || null);
                 setComercialIdLoaded(true); // Signal that comercialId is loaded
                 setIsLoading(false); // Auth is fully loaded
-
-                console.log('✅ [AuthContext] User profile loaded:', {
-                    role: profile.role,
-                    comercial_id: profile.comercial_id
-                });
             }
         } catch (error) {
             // Silently ignore AbortErrors (intentional cancellations from React StrictMode)

@@ -68,7 +68,6 @@ const Prospects = () => {
     }, []);
 
     const handleCreateClick = useCallback(() => {
-        console.log('🆕 [Prospects] Creating new prospect with comercialId:', comercialId);
         setSelectedProspect({
             id: Date.now(), // Temporary ID
             created_at: new Date().toISOString(),
@@ -97,13 +96,6 @@ const Prospects = () => {
                         return;
                     }
                 }
-
-                console.log('📝 [Prospects] Creating prospect with data:', {
-                    company_type: 'prospect',
-                    comercial_id: updatedProspect.comercial_id,
-                    trade_name: updatedProspect.tradeName || updatedProspect.trade_name,
-                    legal_name: updatedProspect.companyName || updatedProspect.legal_name
-                });
 
                 const result = await createCompany({
                     company_type: 'prospect',
@@ -211,11 +203,6 @@ const Prospects = () => {
             if (result.success) {
                 // Handle contact-company relationships if contactIds provided
                 if (contactIds && contactIds.length > 0) {
-                    console.log('💾 [Prospects] Creating contact-company relationships:', {
-                        clientId: selectedProspect.id,
-                        selectedContactIds: contactIds
-                    });
-
                     // Add contacts to the newly converted client
                     for (const contactId of contactIds) {
                         try {

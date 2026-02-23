@@ -93,34 +93,20 @@ export const useCompanies = (type = null) => {
     };
 
     useEffect(() => {
-        console.log('🔍 [useCompanies] useEffect triggered:', {
-            type,
-            authLoading,
-            comercialIdLoaded,
-            isAdmin,
-            user: !!user,
-            tenantId,
-            tenantLoading,
-            selectedComercialId
-        });
-
         // Wait for auth to finish loading before fetching
         if (authLoading) {
-            console.log('⏸️ [useCompanies] Waiting - authLoading is true');
             setLoading(true);
             return;
         }
 
         // Wait for tenant to finish loading before proceeding
         if (tenantLoading) {
-            console.log('⏸️ [useCompanies] Waiting - tenantLoading is true');
             setLoading(true);
             return;
         }
 
         // If no user or tenantId after loading finished, stop
         if (!user || !tenantId) {
-            console.log('⏹️ [useCompanies] No user or tenantId - stopping loading');
             setLoading(false);
             return;
         }
@@ -128,26 +114,21 @@ export const useCompanies = (type = null) => {
         // OPTIMIZATION: Admin users don't need to wait for comercialId
         // They can see all data regardless of comercial_id
         if (isAdmin) {
-            console.log('⚡ [useCompanies] Admin user - fetching now!');
             fetchCompanies();
             return;
         }
 
         // For non-admin users, wait for comercialId to be loaded
         if (!comercialIdLoaded) {
-            console.log('⏳ [useCompanies] Waiting for comercialId to load...');
             setLoading(true);
             return;
         }
 
-        console.log('✅ [useCompanies] All checks passed - fetching companies now!');
         fetchCompanies();
     }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin]);
 
     const createCompany = async (companyData) => {
         try {
-            console.log('🔍 [createCompany] Starting with data:', companyData);
-            console.log('🔍 [createCompany] Current tenantId:', tenantId);
 
             // Don't create if tenant_id is not available
             if (!tenantId) {
@@ -157,7 +138,6 @@ export const useCompanies = (type = null) => {
 
             // Get current user's data for created_by
             const { data: { user: authUser } } = await supabase.auth.getUser();
-            console.log('🔍 [createCompany] Auth user:', authUser?.id);
 
             const dataToInsert = {
                 ...companyData,
@@ -166,7 +146,6 @@ export const useCompanies = (type = null) => {
                 is_active: true
             };
 
-            console.log('📝 [createCompany] Data to insert:', dataToInsert);
 
             const { data, error: insertError } = await supabase
                 .from('companies')
@@ -188,7 +167,6 @@ export const useCompanies = (type = null) => {
                 throw insertError;
             }
 
-            console.log('✅ [createCompany] Successfully created company:', data);
             await fetchCompanies();
             return { success: true, data };
         } catch (err) {

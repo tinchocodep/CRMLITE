@@ -5,12 +5,11 @@ import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 // Porcentajes de referencia por status (sugerencias, no obligatorios)
 const statusProbabilityReference = {
-    prospecting: 10,
-    qualification: 25,
-    proposal: 50,
-    negotiation: 75,
-    won: 100,
-    lost: 0
+    iniciado: 10,
+    presupuestado: 30,
+    negociado: 60,
+    ganado: 100,
+    perdido: 0
 };
 
 export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = null }) => {
@@ -28,7 +27,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
         amount: opportunity?.amount || '',
         probability: opportunity?.probability || 50,
         close_date: opportunity?.close_date || '',
-        status: opportunity?.status || 'prospecting',
+        status: opportunity?.status || 'iniciado',
         notes: opportunity?.notes || '',
         next_action: opportunity?.next_action || '',
         next_action_date: opportunity?.next_action_date || ''
@@ -45,7 +44,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 amount: opportunity.amount || '',
                 probability: opportunity.probability || 50,
                 close_date: opportunity.close_date || '',
-                status: opportunity.status || 'prospecting',
+                status: opportunity.status || 'iniciado',
                 notes: opportunity.notes || '',
                 next_action: opportunity.next_action || '',
                 next_action_date: opportunity.next_action_date || ''
@@ -68,7 +67,6 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
             probability: formData.probability,
             close_date: formData.close_date || null,
             status: formData.status,
-            notes: formData.notes || null,
             next_action: formData.next_action || null,
             next_action_date: formData.next_action_date || null
         };
@@ -207,12 +205,11 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                                     onChange={handleStatusChange}
                                     className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option value="prospecting">🔍 Prospección (ref: 10%)</option>
-                                    <option value="qualification">📊 Calificación (ref: 25%)</option>
-                                    <option value="proposal">📝 Propuesta (ref: 50%)</option>
-                                    <option value="negotiation">💼 Negociación (ref: 75%)</option>
-                                    <option value="won">🏆 Ganado (ref: 100%)</option>
-                                    <option value="lost">❌ Perdido (ref: 0%)</option>
+                                    <option value="iniciado">🚀 Iniciado (10%)</option>
+                                    <option value="presupuestado">📋 Presupuestado (30%)</option>
+                                    <option value="negociado">🤝 Negociado (60%)</option>
+                                    <option value="ganado">✅ Ganado (100%)</option>
+                                    <option value="perdido">❌ Perdido (0%)</option>
                                 </select>
                             </div>
 
@@ -283,19 +280,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                Notas
-                            </label>
-                            <textarea
-                                name="notes"
-                                value={formData.notes}
-                                onChange={handleChange}
-                                rows="4"
-                                placeholder="Agrega notas, comentarios o detalles importantes sobre esta oportunidad..."
-                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            />
-                        </div>
+
                     </div>
 
                     <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">

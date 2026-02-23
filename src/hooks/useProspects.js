@@ -205,7 +205,6 @@ export const useProspects = () => {
 
     // Load prospects on mount
     useEffect(() => {
-        console.log('🔍 [useProspects] useEffect triggered:', {
             authLoading,
             comercialIdLoaded,
             isAdmin,
@@ -227,7 +226,6 @@ export const useProspects = () => {
         }
 
         if (tenantId) {
-            console.log('✅ [useProspects] Fetching prospects now!');
             fetchProspects();
         } else if (!tenantLoading) {
             setLoading(false);

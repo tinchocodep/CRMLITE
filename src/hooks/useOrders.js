@@ -11,12 +11,10 @@ export const useOrders = () => {
     // Fetch all orders with their lines
     const fetchOrders = async () => {
         try {
-            console.log('📦 [useOrders] Fetching orders, tenantId:', tenantId);
             setLoading(true);
             setError(null);
 
             if (!tenantId) {
-                console.log('⚠️ [useOrders] No tenantId, skipping fetch');
                 setOrders([]);
                 setLoading(false);
                 return;
@@ -31,7 +29,6 @@ export const useOrders = () => {
 
             if (ordersError) throw ordersError;
 
-            console.log('📦 [useOrders] Fetched orders:', ordersData.length, 'orders');
 
             // Fetch order lines for all orders
             const orderIds = ordersData.map(o => o.id);
@@ -43,7 +40,6 @@ export const useOrders = () => {
 
             if (linesError) throw linesError;
 
-            console.log('📦 [useOrders] Fetched order lines:', linesData.length, 'lines');
 
             // Combine orders with their lines
             const ordersWithLines = ordersData.map(order => ({
@@ -51,7 +47,6 @@ export const useOrders = () => {
                 lines: linesData.filter(line => line.order_id === order.id)
             }));
 
-            console.log('✅ [useOrders] Setting orders state with', ordersWithLines.length, 'orders');
             setOrders(ordersWithLines);
         } catch (err) {
             console.error('❌ [useOrders] Error fetching orders:', err);
@@ -118,7 +113,6 @@ export const useOrders = () => {
                     };
                 });
 
-                console.log('📦 Inserting order lines:', orderLines);
 
                 const { error: linesError } = await supabase
                     .from('order_lines')

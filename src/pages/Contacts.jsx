@@ -61,14 +61,11 @@ const Contacts = () => {
     };
 
     const handleDeleteContact = (contactId) => {
-        console.log('🗑️ [Contacts] handleDeleteContact called with ID:', contactId);
         setConfirmDelete({ isOpen: true, contactId });
     };
 
     const confirmDeleteContact = async () => {
-        console.log('✅ [Contacts] confirmDeleteContact called for ID:', confirmDelete.contactId);
         const result = await deleteContact(confirmDelete.contactId);
-        console.log('📊 [Contacts] Delete result:', result);
         if (result.success) {
             showSuccess('Contacto eliminado exitosamente');
             setConfirmDelete({ isOpen: false, contactId: null });

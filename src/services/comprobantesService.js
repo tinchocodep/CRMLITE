@@ -82,7 +82,6 @@ export const saveComprobante = async (comprobante) => {
 
         if (error) throw error;
 
-        console.log('✅ Comprobante saved to Supabase:', data);
 
         // Return in the format expected by the rest of the app
         return {

@@ -55,7 +55,6 @@ export const saveQuotation = (quotationData) => {
         quotations.push(newQuotation);
         localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotations));
 
-        console.log('✅ Quotation saved:', newQuotation);
         return newQuotation;
     } catch (error) {
         console.error('Error saving quotation:', error);
@@ -83,7 +82,6 @@ export const updateQuotation = (quotationId, updates) => {
 
         localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(quotations));
 
-        console.log('✅ Quotation updated:', quotations[index]);
         return quotations[index];
     } catch (error) {
         console.error('Error updating quotation:', error);
@@ -116,7 +114,6 @@ export const deleteQuotation = (quotationId) => {
         const filtered = quotations.filter(q => q.id !== quotationId);
         localStorage.setItem(QUOTATIONS_STORAGE_KEY, JSON.stringify(filtered));
 
-        console.log('✅ Quotation deleted:', quotationId);
         return true;
     } catch (error) {
         console.error('Error deleting quotation:', error);

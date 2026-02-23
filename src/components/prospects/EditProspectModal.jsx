@@ -103,7 +103,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
         try {
             // If prospect doesn't have an ID yet, store contact as pending
             if (!prospect?.id || (typeof prospect.id === 'number' && prospect.id > 1000000)) {
-                console.log('📋 [EditProspectModal] Adding pending contact:', contactData);
                 // Add to pending contacts list
                 setPendingContacts(prev => [...prev, contactData]);
 

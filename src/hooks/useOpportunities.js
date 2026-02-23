@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
@@ -10,10 +10,11 @@ export const useOpportunities = (refreshKey = 'default') => {
     const [error, setError] = useState(null);
     const { comercialId, isAdmin, isSupervisor, isLoading: authLoading, comercialIdLoaded } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
+    // Ref-based lock: prevents concurrent/duplicate createOpportunity calls
+    const isCreatingRef = useRef(false);
 
-    const fetchOpportunities = async () => {
+    const fetchOpportunities = async ({ silent = false } = {}) => {
         try {
-            console.log('📊 [fetchOpportunities] Starting fetch, tenantId:', tenantId);
             // Don't fetch if tenant_id is not available yet
             if (!tenantId) {
                 setOpportunities([]);
@@ -21,7 +22,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                 return;
             }
 
-            setLoading(true);
+            if (!silent) setLoading(true);
             const { data, error: fetchError } = await supabase
                 .from('opportunities')
                 .select(`
@@ -32,11 +33,6 @@ export const useOpportunities = (refreshKey = 'default') => {
                 `)
                 .eq('tenant_id', tenantId)
                 .order('close_date', { ascending: true });
-
-            console.log('📊 [fetchOpportunities] Query result:', {
-                count: data?.length,
-                error: fetchError
-            });
 
             if (fetchError) throw fetchError;
 
@@ -67,11 +63,10 @@ export const useOpportunities = (refreshKey = 'default') => {
                 } : null
             }));
 
-            console.log('✅ [fetchOpportunities] Setting state with', transformedData.length, 'opportunities');
             setOpportunities(transformedData);
             setError(null);
         } catch (err) {
-            console.error('❌ [fetchOpportunities] Error:', err);
+            console.error('[Opp] fetchOpportunities error:', err);
             setError(err.message);
         } finally {
             setLoading(false);
@@ -105,6 +100,40 @@ export const useOpportunities = (refreshKey = 'default') => {
         };
     }, [comercialId, isAdmin, isSupervisor, refreshKey, tenantId, tenantLoading, authLoading, comercialIdLoaded]);
 
+    // Unique channel name per instance to prevent Supabase from deduplicating channels
+    const channelNameRef = useRef(`opportunities-rt-${Date.now()}-${Math.random()}`);
+    // Debounce timer: consolidates rapid Realtime events into a single refetch
+    const rtDebounceRef = useRef(null);
+    // Ref to always hold the latest fetchOpportunities (avoids stale closure in realtime)
+    const fetchOpportunitiesRef = useRef(fetchOpportunities);
+    useEffect(() => {
+        fetchOpportunitiesRef.current = fetchOpportunities;
+    });
+
+    // Realtime subscription: auto-refresh when opportunities change (insert/update/delete)
+    useEffect(() => {
+        if (!tenantId) return;
+
+        const channel = supabase
+            .channel(channelNameRef.current)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'opportunities',
+            }, () => {
+                clearTimeout(rtDebounceRef.current);
+                rtDebounceRef.current = setTimeout(() => {
+                    fetchOpportunitiesRef.current({ silent: true });
+                }, 50);
+            })
+            .subscribe();
+
+        return () => {
+            clearTimeout(rtDebounceRef.current);
+            supabase.removeChannel(channel);
+        };
+    }, [tenantId]);
+
     // Helper function to create activities from opportunity dates
     const createActivitiesFromOpportunity = async (opportunity, opportunityId) => {
         try {
@@ -114,48 +143,48 @@ export const useOpportunities = (refreshKey = 'default') => {
             const { data: { user } } = await supabase.auth.getUser();
             const { data: userData, error: userError } = await supabase
                 .from('users')
-                .select('tenant_id')
+                .select('tenant_id, comercial_id')
                 .eq('id', user.id)
                 .single();
 
             if (userError) throw userError;
 
+            const comercialId = opportunity.comercial_id || userData.comercial_id;
+
             // 1. Create activity for close date
             if (opportunity.close_date) {
                 activities.push({
-                    title: `🎯 Cierre: ${opportunity.opportunity_name}`,
+                    title: `🎯 Cierre: ${opportunity.opportunity_name || 'Oportunidad'}`,
                     activity_type: 'meeting',
                     priority: 'high',
                     scheduled_date: opportunity.close_date,
-                    scheduled_time: '09:00', // Default time
-                    duration_minutes: 60,
-                    company_id: opportunity.company_id,
-                    comercial_id: opportunity.comercial_id,
-                    description: `Fecha de cierre de oportunidad: ${opportunity.opportunity_name}\nMonto: $${opportunity.amount || 'N/A'}`,
+                    scheduled_time: '09:00',
+                    duration: 60,
+                    company_id: opportunity.company_id || null,
+                    comercial_id: comercialId || null,
+                    description: `Fecha de cierre de oportunidad: ${opportunity.opportunity_name || ''}. Monto: $${opportunity.amount || 'N/A'}`,
                     status: 'pending',
                     opportunity_id: opportunityId,
                     auto_generated: true,
-                    opportunity_status: opportunity.status || 'iniciado', // NEW: Store opportunity status
                     tenant_id: userData.tenant_id
                 });
             }
 
-            // 2. Create activity for next action date (if exists)
+            // 2. Create activity for next action date (if both date AND description exist)
             if (opportunity.next_action_date && opportunity.next_action) {
                 activities.push({
                     title: `📋 ${opportunity.next_action}`,
                     activity_type: 'task',
                     priority: 'medium',
                     scheduled_date: opportunity.next_action_date,
-                    scheduled_time: '10:00', // Default time
-                    duration_minutes: 30,
-                    company_id: opportunity.company_id,
-                    comercial_id: opportunity.comercial_id,
-                    description: `Próxima acción para: ${opportunity.opportunity_name}\n\n${opportunity.next_action}`,
+                    scheduled_time: '10:00',
+                    duration: 30,
+                    company_id: opportunity.company_id || null,
+                    comercial_id: comercialId || null,
+                    description: `Próxima acción para: ${opportunity.opportunity_name || ''}. ${opportunity.next_action}`,
                     status: 'pending',
                     opportunity_id: opportunityId,
                     auto_generated: true,
-                    opportunity_status: opportunity.status || 'iniciado', // NEW: Store opportunity status
                     tenant_id: userData.tenant_id
                 });
             }
@@ -169,11 +198,18 @@ export const useOpportunities = (refreshKey = 'default') => {
                 if (insertError) throw insertError;
             }
         } catch (err) {
-            console.error('Error creating activities from opportunity:', err);
+            console.error('[Opp] createActivitiesFromOpportunity error:', err);
         }
     };
 
+
     const createOpportunity = async (opportunityData) => {
+        // Synchronous ref lock — prevents duplicate DB inserts from double-clicks
+        if (isCreatingRef.current) {
+            console.warn('[CREATE_OPP] BLOCKED — creation already in progress');
+            return { success: false, error: 'Creation already in progress' };
+        }
+        isCreatingRef.current = true;
         try {
             // Get current user's tenant_id and comercial_id
             const { data: { user } } = await supabase.auth.getUser();
@@ -203,8 +239,11 @@ export const useOpportunities = (refreshKey = 'default') => {
             await fetchOpportunities();
             return { success: true, data };
         } catch (err) {
-            console.error('Error creating opportunity:', err);
+            console.error('[Opp] createOpportunity error:', err);
             return { success: false, error: err.message };
+        } finally {
+            // Release lock after 1s cooldown to absorb any residual rapid clicks
+            setTimeout(() => { isCreatingRef.current = false; }, 1000);
         }
     };
 
@@ -344,7 +383,6 @@ export const useOpportunities = (refreshKey = 'default') => {
                         data.existingQuotation = existingQuotations[0];
                     }
                 } catch (quotationError) {
-                    console.error('❌ Error auto-creating quotation:', quotationError);
                     // Don't fail the opportunity update if quotation creation fails
                 }
             }
@@ -363,14 +401,13 @@ export const useOpportunities = (refreshKey = 'default') => {
             await fetchOpportunities();
             return { success: true, data };
         } catch (err) {
-            console.error('Error updating opportunity:', err);
+            console.error('[Opp] updateOpportunity error:', err);
             return { success: false, error: err.message };
         }
     };
 
     const deleteOpportunity = async (id) => {
         try {
-            console.log('🗑️ [deleteOpportunity] Starting delete for ID:', id);
 
             const { data, error: deleteError } = await supabase
                 .from('opportunities')
@@ -378,18 +415,21 @@ export const useOpportunities = (refreshKey = 'default') => {
                 .eq('id', id)
                 .select();
 
-            console.log('🗑️ [deleteOpportunity] Delete response:', { data, error: deleteError });
-
             if (deleteError) {
-                console.error('❌ [deleteOpportunity] Delete error:', deleteError);
+                console.error('[DIAG deleteOpp] DB error:', deleteError);
                 throw deleteError;
             }
 
-            console.log('✅ [deleteOpportunity] Delete successful, fetching updated list');
-            await fetchOpportunities();
+            // Optimistic: remove from local state immediately
+            setOpportunities(prev => {
+                const filtered = prev.filter(o => String(o.id) !== String(id));
+                return filtered;
+            });
+            // Then refetch to ensure consistency
+            fetchOpportunities();
             return { success: true };
         } catch (err) {
-            console.error('❌ [deleteOpportunity] Error deleting opportunity:', err);
+            console.error('[DIAG deleteOpp] error:', err);
             return { success: false, error: err.message };
         }
     };

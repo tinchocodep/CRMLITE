@@ -16,7 +16,6 @@ export const initializeStockData = () => {
         const existing = localStorage.getItem(STOCK_BALANCES_KEY);
         if (!existing) {
             localStorage.setItem(STOCK_BALANCES_KEY, JSON.stringify(stockBalances));
-            console.log('✅ Stock data initialized with mock data');
         }
     } catch (error) {
         console.error('Error initializing stock data:', error);
@@ -73,7 +72,6 @@ export const addStockProduct = (product) => {
         balances.push(newProduct);
         localStorage.setItem(STOCK_BALANCES_KEY, JSON.stringify(balances));
 
-        console.log('✅ Product added to stock:', newProduct);
         return newProduct;
     } catch (error) {
         console.error('Error adding product to stock:', error);
@@ -109,7 +107,6 @@ export const updateStockBalance = (sapCode, quantityChange) => {
         balances[productIndex] = product;
         localStorage.setItem(STOCK_BALANCES_KEY, JSON.stringify(balances));
 
-        console.log('✅ Product balance updated:', product);
         return product;
     } catch (error) {
         console.error('Error updating product balance:', error);

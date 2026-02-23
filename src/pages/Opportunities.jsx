@@ -7,10 +7,17 @@ import EditOpportunityModal from '../components/opportunities/EditOpportunityMod
 import { useToast } from '../contexts/ToastContext';
 
 const stageConfig = {
-    prospecting: { label: 'Prospección', probability: 10, dot: 'bg-indigo-500', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700' },
-    qualification: { label: 'Calificación', probability: 25, dot: 'bg-cyan-500', badge: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-700' },
-    proposal: { label: 'Propuesta', probability: 50, dot: 'bg-purple-500', badge: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700' },
-    negotiation: { label: 'Negociación', probability: 75, dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' },
+    // Nuevos estados en español
+    iniciado: { label: 'Iniciado', probability: 10, dot: 'bg-indigo-500', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700' },
+    presupuestado: { label: 'Presupuestado', probability: 30, dot: 'bg-cyan-500', badge: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-700' },
+    negociado: { label: 'Negociado', probability: 60, dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' },
+    ganado: { label: 'Ganado', probability: 100, dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700' },
+    perdido: { label: 'Perdido', probability: 0, dot: 'bg-rose-500', badge: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700' },
+    // Compatibilidad con estados legacy en inglés
+    prospecting: { label: 'Iniciado', probability: 10, dot: 'bg-indigo-500', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700' },
+    qualification: { label: 'Presupuestado', probability: 30, dot: 'bg-cyan-500', badge: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/30 dark:text-cyan-300 dark:border-cyan-700' },
+    proposal: { label: 'Negociado', probability: 60, dot: 'bg-purple-500', badge: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700' },
+    negotiation: { label: 'Negociado', probability: 60, dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700' },
     won: { label: 'Ganado', probability: 100, dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700' },
     lost: { label: 'Perdido', probability: 0, dot: 'bg-rose-500', badge: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/30 dark:text-rose-300 dark:border-rose-700' },
 };
@@ -28,15 +35,10 @@ const Opportunities = () => {
 
     const { showToast } = useToast();
 
-    useEffect(() => {
-        console.log('🟢 Opportunities component MOUNTED');
-        return () => console.log('🔴 Opportunities component UNMOUNTED');
-    }, []);
 
     // Listen for global opportunity creation event from Quick Actions
     useEffect(() => {
         const handleOpenModal = () => {
-            console.log('📢 Received openOpportunityModal event');
             setIsCreateModalOpen(true);
         };
 
@@ -72,13 +74,19 @@ const Opportunities = () => {
     // Handle status change from dropdown
     const handleStatusChange = async (opportunityId, newStatus) => {
         try {
-            console.log('🔄 Changing status:', { opportunityId, newStatus });
 
             const statusToProbability = {
+                // Nuevos estados en español
+                'iniciado': 10,
+                'presupuestado': 30,
+                'negociado': 60,
+                'ganado': 100,
+                'perdido': 0,
+                // Legacy en inglés
                 'prospecting': 10,
-                'qualification': 25,
-                'proposal': 50,
-                'negotiation': 75,
+                'qualification': 30,
+                'proposal': 60,
+                'negotiation': 60,
                 'won': 100,
                 'lost': 0,
             };
@@ -92,7 +100,6 @@ const Opportunities = () => {
 
             if (result.success) {
                 setStatusDropdownOpen(null);
-                console.log('✅ Status updated successfully');
             } else {
                 throw new Error(result.error || 'Error al actualizar el estado');
             }
@@ -204,7 +211,6 @@ const Opportunities = () => {
     };
 
     const handleEdit = (opportunity) => {
-        console.log('🔍 Opportunities - Editing opportunity:', opportunity);
         setOpportunityToEdit(opportunity);
         setIsEditModalOpen(true);
     };
@@ -340,7 +346,7 @@ const Opportunities = () => {
                                         </button>
                                         {statusDropdownOpen === opportunity.id && (
                                             <div className="absolute top-full right-0 mt-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-[100] min-w-[180px] overflow-hidden">
-                                                {Object.entries(stageConfig).map(([key, config]) => (
+                                                {Object.entries(stageConfig).filter(([key]) => ['iniciado', 'presupuestado', 'negociado', 'ganado', 'perdido'].includes(key)).map(([key, config]) => (
                                                     <button
                                                         key={key}
                                                         onClick={(e) => {
@@ -677,7 +683,7 @@ const Opportunities = () => {
                         }}
                     >
                         <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl min-w-[190px] overflow-hidden">
-                            {Object.entries(stageConfig).map(([key, config]) => (
+                            {Object.entries(stageConfig).filter(([key]) => ['iniciado', 'presupuestado', 'negociado', 'ganado', 'perdido'].includes(key)).map(([key, config]) => (
                                 <button
                                     key={key}
                                     onClick={(e) => {

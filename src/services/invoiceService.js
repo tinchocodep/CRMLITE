@@ -21,7 +21,6 @@ const WEBHOOK_URL = 'https://n8n.neuracall.net/webhook/FACTURASAILO';
  */
 export const sendInvoiceToWebhook = async (invoiceData) => {
     try {
-        console.log('📤 Sending invoice data to webhook:', invoiceData);
 
         const response = await fetch(WEBHOOK_URL, {
             method: 'POST',
@@ -36,7 +35,6 @@ export const sendInvoiceToWebhook = async (invoiceData) => {
         }
 
         const result = await response.json();
-        console.log('✅ Webhook response:', result);
 
         return {
             success: true,
@@ -74,7 +72,6 @@ const formatDate = (date) => {
 export const createInvoiceFromOrder = (order, options, selectedQuantities = null) => {
     const { tipo_cbte, letra, fecha_pago } = options;
 
-    console.log('🔍 Creating invoice from order:', {
         orderId: order.id,
         orderNumber: order.orderNumber,
         clientName: order.clientName,
@@ -117,7 +114,6 @@ export const createInvoiceFromOrder = (order, options, selectedQuantities = null
             precio_unitario: tipo_cbte === 'REMITO' ? 0 : (line.unitPrice || line.estimatedPrice || 0)
         };
 
-        console.log('📦 Product mapped:', item);
         return item;
     });
 
@@ -170,7 +166,6 @@ export const createInvoiceFromOrder = (order, options, selectedQuantities = null
         order_number: order.orderNumber
     };
 
-    console.log('📄 Invoice data created:', JSON.stringify(invoiceData, null, 2));
 
     // NOTE: fiscal data (CAE, vto_cae, qr_url) is returned by n8n after AFIP processing
     // We don't send it, we receive it in the response
@@ -246,7 +241,6 @@ export const processRemito = async (order, remitoOptions, selectedQuantities = n
                             newBalance: updatedProduct.balance,
                             success: true
                         });
-                        console.log(`✅ Stock discounted: ${item.descripcion} (-${item.cantidad}), New balance: ${updatedProduct.balance}`);
                     } catch (stockError) {
                         console.warn(`⚠️ Could not discount stock for ${item.descripcion}:`, stockError.message);
                         stockResults.push({
@@ -290,8 +284,6 @@ export const processRemito = async (order, remitoOptions, selectedQuantities = n
 export const discountStockForOrder = async (order) => {
     // This function is now integrated into processRemito
     // Kept for backwards compatibility
-    console.log('📦 Discounting stock for order:', order.id);
-    console.log('Products to discount:', order.products);
 
     return {
         success: true,

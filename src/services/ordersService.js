@@ -55,7 +55,6 @@ export const saveOrder = (orderData) => {
         orders.push(newOrder);
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
 
-        console.log('✅ Order saved:', newOrder);
         return newOrder;
     } catch (error) {
         console.error('Error saving order:', error);
@@ -83,7 +82,6 @@ export const updateOrder = (orderId, updates) => {
 
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
 
-        console.log('✅ Order updated:', orders[index]);
         return orders[index];
     } catch (error) {
         console.error('Error updating order:', error);
@@ -116,7 +114,6 @@ export const deleteOrder = (orderId) => {
         const filtered = orders.filter(o => o.id !== orderId);
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(filtered));
 
-        console.log('✅ Order deleted:', orderId);
         return true;
     } catch (error) {
         console.error('Error deleting order:', error);

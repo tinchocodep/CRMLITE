@@ -20,7 +20,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     const availableContacts = useMemo(() => {
         if (!comercialId) return [];
 
-        console.log('🔍 [ContactSelector] Filtering contacts:', {
             comercialId,
             totalContacts: contacts.length,
             contactsWithComercialId: contacts.filter(c => c.comercialId).length
@@ -32,7 +31,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
             const matches = contactComercialId === comercialId;
 
             if (matches) {
-                console.log('✅ Contact matches:', {
                     contactId: contact.id,
                     contactName: `${contact.firstName} ${contact.lastName}`,
                     contactComercialId,
@@ -55,7 +53,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     }, [availableContacts, selectedContactIds]);
 
     const handleAddContact = (contactId) => {
-        console.log('➕ Adding contact:', {
             contactId,
             currentSelection: selectedContactIds,
             newSelection: [...selectedContactIds, contactId]
@@ -64,7 +61,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     };
 
     const handleRemoveContact = (contactId) => {
-        console.log('➖ Removing contact:', {
             contactId,
             currentSelection: selectedContactIds,
             newSelection: selectedContactIds.filter(id => id !== contactId)
@@ -137,7 +133,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
                 <select
                     onChange={(e) => {
                         const selectedId = e.target.value;
-                        console.log('🔍 Contact Selected:', {
                             selectedId,
                             type: typeof selectedId,
                             availableContacts: unselectedContacts.map(c => ({ id: c.id, name: `${c.firstName} ${c.lastName}` }))
@@ -146,7 +141,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
                         if (selectedId) {
                             // Convert string ID to number to match contact.id type
                             const contactId = parseInt(selectedId, 10);
-                            console.log('🔢 Converted ID:', { original: selectedId, converted: contactId, type: typeof contactId });
                             handleAddContact(contactId);
                             e.target.value = ''; // Reset select
                         }

@@ -6,11 +6,13 @@ import { useContacts } from '../../hooks/useContacts';
 import { supabase } from '../../lib/supabase';
 import ComercialSelector from '../shared/ComercialSelector';
 import BusinessUnitPicker from '../shared/BusinessUnitPicker';
+import { useSubmitGuard } from '../../hooks/useSubmitGuard';
 
 export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     const location = useLocation();
     const { companies } = useCompanies();
     const { contacts } = useContacts();
+    const { isSubmitting, withGuard } = useSubmitGuard();
 
     // Filter companies by type
     const clients = companies.filter(c => c.company_type === 'client');
@@ -44,7 +46,6 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // Update available contacts when entity is selected
     useEffect(() => {
         if (formData.linkedEntityId) {
-            console.log('Filtering contacts for entity:', {
                 linkedEntityId: formData.linkedEntityId,
                 linkedEntityType: formData.linkedEntityType,
                 totalContacts: contacts.length
@@ -60,7 +61,6 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                 return hasCompany;
             });
 
-            console.log('Filtered contacts:', entityContacts.length, entityContacts);
             setAvailableContacts(entityContacts);
         } else {
             setAvailableContacts([]);
@@ -84,37 +84,30 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        withGuard(() => {
+            const linkedEntity = formData.linkedEntityType === 'client'
+                ? clients.find(c => c.id === parseInt(formData.linkedEntityId))
+                : prospects.find(p => p.id === parseInt(formData.linkedEntityId));
+            const contact = contacts.find(c => c.id === parseInt(formData.contactId));
 
-        console.log('=== CREATING OPPORTUNITY ===');
-        console.log('Form Data:', formData);
+            const newOpportunity = {
+                opportunity_name: formData.opportunityName,
+                comercial_id: formData.comercialId,
+                company_id: parseInt(formData.linkedEntityId),
+                contact_id: formData.contactId ? parseInt(formData.contactId) : null,
+                product_type: formData.productType,
+                amount: parseFloat(formData.amount),
+                close_date: formData.closeDate,
+                status: formData.status,
+                probability: parseInt(formData.probability),
+                next_action: formData.nextAction,
+                next_action_date: formData.nextActionDate || null,
+                notes: formData.notes
+            };
 
-        const linkedEntity = formData.linkedEntityType === 'client'
-            ? clients.find(c => c.id === parseInt(formData.linkedEntityId))
-            : prospects.find(p => p.id === parseInt(formData.linkedEntityId));
-        const contact = contacts.find(c => c.id === parseInt(formData.contactId));
-
-        console.log('Resolved entities:', { linkedEntity, contact });
-
-        // Transform to database schema (only IDs, no nested objects)
-        const newOpportunity = {
-            opportunity_name: formData.opportunityName,
-            comercial_id: formData.comercialId,
-            company_id: parseInt(formData.linkedEntityId),
-            contact_id: formData.contactId ? parseInt(formData.contactId) : null,
-            product_type: formData.productType,
-            amount: parseFloat(formData.amount),
-            close_date: formData.closeDate,
-            status: formData.status,
-            probability: parseInt(formData.probability),
-            next_action: formData.nextAction,
-            next_action_date: formData.nextActionDate || null,
-            notes: formData.notes
-        };
-
-        console.log('Opportunity object to save:', newOpportunity);
-
-        onSave(newOpportunity);
-        onClose();
+            onSave(newOpportunity);
+            onClose();
+        });
     };
 
     if (!isOpen) return null;
@@ -352,9 +345,13 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 text-sm rounded-xl bg-gradient-to-r from-advanta-green to-green-600 text-white font-semibold hover:shadow-lg transition-all"
+                            disabled={isSubmitting}
+                            className={`flex-1 px-4 py-2.5 text-sm rounded-xl font-semibold transition-all ${isSubmitting
+                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-advanta-green to-green-600 text-white hover:shadow-lg'
+                                }`}
                         >
-                            Crear Oportunidad
+                            {isSubmitting ? 'Guardando...' : 'Crear Oportunidad'}
                         </button>
                     </div>
                 </form>

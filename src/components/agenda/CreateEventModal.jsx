@@ -68,7 +68,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
     useEffect(() => {
         const setupComerciales = async () => {
             try {
-                console.log('[CreateEventModal] Received comerciales prop:', comerciales);
 
                 if (!comerciales || comerciales.length === 0) {
                     console.warn('[CreateEventModal] No comerciales received from prop');
@@ -84,7 +83,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                     .eq('id', authUser?.id)
                     .single();
 
-                console.log('[CreateEventModal] Current user data:', { authUser: authUser?.id, userData });
 
                 const currentComercialId = userData?.comercial_id;
 
@@ -97,7 +95,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                     avatar: null
                 }));
 
-                console.log('[CreateEventModal] Formatted comerciales:', formattedComerciales);
 
                 setTeamMembers(formattedComerciales);
 
@@ -132,7 +129,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
         // Prevent double submission
         if (isSubmitting) return;
 
-        console.log('CreateEventModal - Validating:', {
             title: newEvent.title,
             company_id: newEvent.company_id,
             company_id_type: typeof newEvent.company_id,
@@ -171,7 +167,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                 status: 'pending'
             };
 
-            console.log('CreateEventModal - Sending to database:', activityData);
             await onCreate(activityData);
             onClose();
         } catch (error) {

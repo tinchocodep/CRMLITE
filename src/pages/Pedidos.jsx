@@ -42,17 +42,14 @@ const Pedidos = () => {
     useEffect(() => {
         const loadComprobantes = async () => {
             if (orders.length === 0) return;
-            console.log('🔄 Loading comprobantes for all orders from Supabase...');
             const map = {};
             await Promise.all(orders.map(async (order) => {
                 const orderComprobantes = await getComprobantesByOrder(order.id);
                 map[order.id] = orderComprobantes;
                 if (orderComprobantes.length > 0) {
-                    console.log(`📄 Order ${order.id} has ${orderComprobantes.length} comprobantes`);
                 }
             }));
             setComprobantesMap(map);
-            console.log('✅ Comprobantes map updated');
         };
 
         loadComprobantes();
@@ -745,7 +742,6 @@ const Pedidos = () => {
                     setSelectedOrderForAction(null);
                 }}
                 onSuccess={async (result) => {
-                    console.log('✅ Action completed:', result);
 
                     // Update order status based on comprobante type
                     if (result.comprobante) {
@@ -800,7 +796,6 @@ const Pedidos = () => {
 
                         // 🎯 AUTO-OPEN PDF PREVIEW for FACTURA and REMITO (not COBRO)
                         if (result.comprobante.pdf_url && (actionType === 'FACTURA' || actionType === 'REMITO')) {
-                            console.log('📄 Auto-opening PDF preview for:', result.comprobante);
                             setSelectedComprobante(result.comprobante);
                             setPdfPreviewOpen(true);
                         }

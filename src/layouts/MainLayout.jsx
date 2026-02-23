@@ -389,13 +389,10 @@ const MainLayout = () => {
                             setIsCreateModalOpen(true);
                         } else if (action === 'convert') {
                             // TODO: Implement convert prospect action
-                            console.log('Convert prospect action');
                         } else if (action === 'contact') {
                             // TODO: Implement create contact action
-                            console.log('Create contact action');
                         } else if (action === 'visit') {
                             // TODO: Implement create visit action
-                            console.log('Create visit action');
                         } else if (action === 'generate-invoice') {
                             // Navigate to Cotizaciones to select a won quote
                             navigate('/cotizaciones?filter=won');
@@ -490,7 +487,6 @@ const MainLayout = () => {
                 onClose={() => setIsCreateModalOpen(false)}
                 companies={companies}
                 onCreate={async (newEvent) => {
-                    console.log('Global Event Created:', newEvent);
                     try {
                         const { error } = await supabase
                             .from('activities')
@@ -534,7 +530,6 @@ const MainLayout = () => {
                 onClose={() => setIsProspectModalOpen(false)}
                 prospect={prospectData}
                 onSave={async (newProspect) => {
-                    console.log('Global Prospect Created:', newProspect);
 
                     // Remove dummy ID if present (from initialization)
                     // eslint-disable-next-line no-unused-vars
@@ -581,7 +576,6 @@ const MainLayout = () => {
                 onClose={() => setIsClientModalOpen(false)}
                 prospect={prospectToConvert}
                 onConvert={(newClient) => {
-                    console.log('Client Created/Converted:', newClient);
                     addNotification({
                         id: `client-converted-${Date.now()}`,
                         title: '✅ Cliente convertido',
@@ -597,7 +591,6 @@ const MainLayout = () => {
                 isOpen={isContactModalOpen}
                 onClose={() => setIsContactModalOpen(false)}
                 onSave={(newContact) => {
-                    console.log('Global Contact Created:', newContact);
                     addNotification({
                         id: `contact-created-${Date.now()}`,
                         title: '✅ Contacto creado',

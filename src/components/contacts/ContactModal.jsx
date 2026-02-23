@@ -5,12 +5,15 @@ import { useCompanies } from '../../hooks/useCompanies';
 import { useContacts } from '../../hooks/useContacts';
 import { useToast } from '../../contexts/ToastContext';
 import ComercialSelector from '../shared/ComercialSelector';
+import { useSubmitGuard } from '../../hooks/useSubmitGuard';
 
 
 const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedCompany = null }) => {
     const { companies } = useCompanies();
     const { createContact, updateContact } = useContacts();
     const { showToast } = useToast();
+    const { isSubmitting, withGuard } = useSubmitGuard();
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -208,85 +211,37 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validate()) {
-            return;
-        }
+        // Validation runs outside the guard so errors show immediately
+        if (!validate()) return;
 
-        try {
-
-
-            // CRITICAL: Check if this is a pending contact (no valid company ID)
-            // This happens when creating a contact for an unsaved prospect
+        await withGuard(async () => {
             const hasValidCompanyId = formData.companies.some(c => c.companyId && c.companyId !== null);
 
             if (!hasValidCompanyId && formData.companies.length > 0) {
-
-                // This is a pending contact for an unsaved prospect
-                // Just pass the data to the parent via onSave callback
-                // The parent (EditProspectModal) will handle closing the modal
-                if (onSave) {
-                    await onSave(formData);
-                }
-                // Don't call onClose() here - let parent handle it to avoid race condition
+                // Pending contact for unsaved prospect — let parent handle close
+                if (onSave) await onSave(formData);
                 return;
             }
 
             if (contact?.id) {
-                // Update existing contact
                 const result = await updateContact(contact.id, formData);
                 if (result.success) {
-                    // Wait for onSave callback to complete before closing
-                    if (onSave) {
-                        await onSave(result.data);
-                    }
+                    if (onSave) await onSave(result.data);
                     onClose();
                 } else {
-                    showToast({
-                        id: `error-update-contact-${Date.now()}`,
-                        title: '❌ Error al actualizar',
-                        description: result.error || 'No se pudo actualizar el contacto',
-                        priority: 'high',
-                        timeAgo: 'Ahora'
-                    });
+                    showToast({ id: `error-update-contact-${Date.now()}`, title: '❌ Error al actualizar', description: result.error || 'No se pudo actualizar el contacto', priority: 'high', timeAgo: 'Ahora' });
                 }
             } else {
-                // Create new contact
                 const result = await createContact(formData);
                 if (result.success) {
-                    // Show success notification
-                    showToast({
-                        id: `success-create-contact-${Date.now()}`,
-                        title: '✅ Contacto creado exitosamente',
-                        description: `${formData.firstName} ${formData.lastName} ha sido agregado`,
-                        priority: 'medium',
-                        timeAgo: 'Ahora'
-                    });
-
-                    // Wait for onSave callback to complete before closing
-                    if (onSave) {
-                        await onSave(result.data);
-                    }
+                    showToast({ id: `success-create-contact-${Date.now()}`, title: '✅ Contacto creado exitosamente', description: `${formData.firstName} ${formData.lastName} ha sido agregado`, priority: 'medium', timeAgo: 'Ahora' });
+                    if (onSave) await onSave(result.data);
                     onClose();
                 } else {
-                    showToast({
-                        id: `error-create-contact-${Date.now()}`,
-                        title: '❌ Error al crear contacto',
-                        description: result.error || 'No se pudo crear el contacto',
-                        priority: 'high',
-                        timeAgo: 'Ahora'
-                    });
+                    showToast({ id: `error-create-contact-${Date.now()}`, title: '❌ Error al crear contacto', description: result.error || 'No se pudo crear el contacto', priority: 'high', timeAgo: 'Ahora' });
                 }
             }
-        } catch (error) {
-            console.error('Error in handleSubmit:', error);
-            showToast({
-                id: `error-submit-${Date.now()}`,
-                title: '❌ Error inesperado',
-                description: error.message || 'Ocurrió un error al procesar la solicitud',
-                priority: 'high',
-                timeAgo: 'Ahora'
-            });
-        }
+        });
     };
 
     if (!isOpen) return null;
@@ -592,8 +547,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                                         }
                                                     }}
                                                     className={`w-full px-3 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 ${validationErrors.role
-                                                            ? 'border-red-500 focus:ring-red-200'
-                                                            : 'border-slate-200 focus:ring-advanta-green/20'
+                                                        ? 'border-red-500 focus:ring-red-200'
+                                                        : 'border-slate-200 focus:ring-advanta-green/20'
                                                         }`}
                                                     placeholder="Gerente Comercial"
                                                 />
@@ -652,9 +607,13 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-bold transition-colors"
+                            disabled={isSubmitting}
+                            className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${isSubmitting
+                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white'
+                                }`}
                         >
-                            {contact ? 'Guardar' : 'Crear Contacto'}
+                            {isSubmitting ? 'Guardando...' : (contact ? 'Guardar' : 'Crear Contacto')}
                         </button>
                     </div>
                 </motion.div>

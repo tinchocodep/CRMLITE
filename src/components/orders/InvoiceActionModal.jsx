@@ -182,7 +182,6 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     if (result.success) {
                         // Get data from webhook response (may contain template variables)
                         const webhookData = result.data || result.webhookResponse?.data || {};
-                        console.log('📄 Datos recibidos del webhook:', webhookData);
 
                         // Parse punto_venta (handle "punto de venta" with space and string format)
                         const puntoVenta = parseInt(
@@ -211,7 +210,6 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             fecha_emision: new Date().toISOString().split('T')[0]
                         });
 
-                        console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
 
                         // Update existingComprobantes to refresh available actions
@@ -236,7 +234,6 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                     if (result.success) {
                         // Get data from webhook response (may contain template variables)
                         const webhookData = result.data || result.webhookResponse?.data || {};
-                        console.log('📄 Datos recibidos del webhook:', webhookData);
 
                         // Parse punto_venta (handle "punto de venta" with space and string format)
                         const puntoVenta = parseInt(
@@ -304,7 +301,6 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                             isPartialRemito: isPartialRemito
                         });
 
-                        console.log('✅ Comprobante guardado:', comprobante);
                         result.comprobante = comprobante;
                         result.message = isPartialRemito
                             ? `Remito parcial creado. ${products.length} producto(s) remitido(s).`
@@ -373,7 +369,6 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         notes: paymentConfig.notes || ''
                     });
 
-                    console.log('✅ Payment comprobante saved:', paymentComprobante);
 
                     result = {
                         success: true,

@@ -19,12 +19,21 @@ import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 const Agenda = () => {
     const { activities: rawEvents, loading, createActivity, updateActivity, deleteActivity } = useActivities(30);
-    const { opportunities, loading: opportunitiesLoading } = useOpportunities();
+    const { opportunities, loading: opportunitiesLoading, deleteOpportunity } = useOpportunities();
     const { companies } = useCompanies(); // Fetch all companies (clients and prospects)
     const { users } = useUsers(); // Get all users for CreateEventModal
     const { showToast } = useToast();
     const { showError } = useSystemToast();
     const hasShownInitialToast = useRef(false);
+
+    // Unified delete handler: routes to deleteOpportunity or deleteActivity based on event type
+    const handleDeleteEvent = React.useCallback(async (eventId) => {
+        const id = String(eventId);
+        if (id.startsWith('opp-')) {
+            return deleteOpportunity(id.replace('opp-', ''));
+        }
+        return deleteActivity(eventId);
+    }, [deleteActivity, deleteOpportunity]);
 
 
     // Role-based filtering
@@ -116,7 +125,7 @@ const Agenda = () => {
                         {/* Desktop View: Full Cards */}
                         <div className="hidden md:block space-y-1">
                             {dayEvents.slice(0, 3).map(event => (
-                                <EventCard key={event.id} event={event} view="month" onUpdate={updateActivity} onDelete={deleteActivity} />
+                                <EventCard key={event.id} event={event} view="month" onUpdate={updateActivity} onDelete={handleDeleteEvent} />
                             ))}
                             {dayEvents.length > 3 && (
                                 <div className="text-[10px] text-slate-400 dark:text-slate-500 pl-1">+{dayEvents.length - 3} más</div>
@@ -150,7 +159,7 @@ const Agenda = () => {
             days = [];
         }
         return <div className="space-y-px">{rows}</div>;
-    }, [currentDate, events, updateActivity, deleteActivity]);
+    }, [currentDate, events, updateActivity, handleDeleteEvent]);
 
     // Weekdays header
     const renderWeekDays = () => {
@@ -285,7 +294,7 @@ const Agenda = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredEvents.map(event => (
-                            <EventCard key={event.id} event={event} view="list" onUpdate={updateActivity} onDelete={deleteActivity} />
+                            <EventCard key={event.id} event={event} view="list" onUpdate={updateActivity} onDelete={handleDeleteEvent} />
                         ))}
                     </div>
                 )}
@@ -447,9 +456,9 @@ const Agenda = () => {
                 )}
                 {view === 'list' && <div className="p-4">{renderList()}</div>}
 
-                {view === 'week' && <WeekView currentDate={currentDate} events={events} onUpdate={updateActivity} onDelete={deleteActivity} />}
+                {view === 'week' && <WeekView currentDate={currentDate} events={events} onUpdate={updateActivity} onDelete={handleDeleteEvent} />}
 
-                {view === 'day' && <DayView currentDate={currentDate} events={events} onUpdate={updateActivity} onDelete={deleteActivity} />}
+                {view === 'day' && <DayView currentDate={currentDate} events={events} onUpdate={updateActivity} onDelete={handleDeleteEvent} />}
             </div>
 
             <CreateEventModal

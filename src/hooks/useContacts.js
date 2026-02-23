@@ -255,7 +255,6 @@ export const useContacts = () => {
     // Delete contact
     const deleteContact = async (id) => {
         try {
-            console.log('🗑️ [useContacts] deleteContact called with ID:', id, 'tenantId:', tenantId);
             setError(null);
 
             // First, verify the contact exists and we can see it
@@ -268,7 +267,6 @@ export const useContacts = () => {
             // Get current user ID for comparison
             const { data: { user } } = await supabase.auth.getUser();
 
-            console.log('🔍 [useContacts] Contact exists check:', {
                 exists: !!existingContact,
                 contactComercialId: existingContact?.comercial_id,
                 currentUserId: user?.id,
@@ -290,7 +288,6 @@ export const useContacts = () => {
                 .eq('contact_id', id)
                 .select();
 
-            console.log('📊 [useContacts] contact_companies delete result:', {
                 deletedRelations: relData?.length || 0,
                 relError
             });
@@ -308,7 +305,6 @@ export const useContacts = () => {
                 .eq('id', id)
                 .select();
 
-            console.log('📊 [useContacts] contacts delete result:', {
                 deletedContact: contactData?.[0],
                 deleteError
             });
@@ -324,7 +320,6 @@ export const useContacts = () => {
                 throw new Error('No tienes permisos para eliminar este contacto. Verifica las políticas RLS en Supabase.');
             }
 
-            console.log('✅ Contact deleted successfully, refreshing list...');
             await fetchContacts();
             return { success: true };
         } catch (err) {

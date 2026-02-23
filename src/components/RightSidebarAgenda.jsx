@@ -9,19 +9,26 @@ import { ConfirmDialog } from './ConfirmDialog';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
-    const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(7);
+    const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(60);
     const { opportunities, loading: opportunitiesLoading, deleteOpportunity } = useOpportunities();
     const { showToast } = useToast();
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
     const [tempDate, setTempDate] = useState('');
-    const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, activityId: null });
+    const [confirmDialog, setConfirmDialog] = useState(false);
+    const activityToDeleteRef = useRef(null);
     const menuRef = useRef(null);
+    // Local tracking of deleted IDs for instant UI feedback (independent of hook/Realtime)
+    const [localDeletedIds, setLocalDeletedIds] = useState(new Set());
 
-    // Combine activities and opportunities
+    // Combine activities and opportunities, filtering out locally deleted items
     const combinedEvents = useMemo(() => {
-        return combineEventsAndOpportunities(rawActivities, opportunities);
-    }, [rawActivities, opportunities]);
+        const all = combineEventsAndOpportunities(rawActivities, opportunities);
+        const filtered = localDeletedIds.size > 0
+            ? all.filter(e => !localDeletedIds.has(String(e.id)))
+            : all;
+        return filtered;
+    }, [rawActivities, opportunities, localDeletedIds]);
 
     // Convert combined events back to activity format for the sidebar
     const activities = useMemo(() => {
@@ -163,18 +170,25 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
 
     const handleDelete = (activity, e) => {
         e.stopPropagation();
-        setConfirmDialog({ isOpen: true, activity });
+        activityToDeleteRef.current = activity; // store in ref - no stale closures possible
+        setConfirmDialog(true);
     };
 
     const confirmDelete = async () => {
-        const activity = confirmDialog.activity;
+        const activity = activityToDeleteRef.current;
         if (!activity) return;
 
+        // Close dialog and hide item immediately
+        // All synchronous setStates before the first await are batched by React 18 into ONE render
+        setLocalDeletedIds(prev => new Set([...prev, String(activity.id)]));
+        setOpenMenuId(null);
+        setConfirmDialog(false);
+        activityToDeleteRef.current = null;
+
         try {
-            // Check if it's an opportunity or activity
             if (activity.eventType === 'opportunity') {
-                // Extract original opportunity ID (remove 'opp-' prefix)
                 const oppId = activity.id.replace('opp-', '');
+                // deleteOpportunity also does optimistic setOpportunities first (no await before it)
                 await deleteOpportunity(oppId);
                 showToast({
                     id: `opp-deleted-${oppId}`,
@@ -184,7 +198,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                     timeAgo: 'Ahora'
                 });
             } else {
-                // It's an activity
+                // deleteActivity is truly optimistic: setActivities runs before await
                 await deleteActivity(activity.id);
                 showToast({
                     id: `activity-deleted-${activity.id}`,
@@ -194,13 +208,16 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                     timeAgo: 'Ahora'
                 });
             }
-
-            setOpenMenuId(null);
-            setConfirmDialog({ isOpen: false, activity: null });
         } catch (error) {
-            console.error('Error deleting:', error);
+            console.error('[DIAG confirmDelete] delete error:', error);
+            // Rollback localDeletedIds so the item reappears
+            setLocalDeletedIds(prev => {
+                const next = new Set(prev);
+                next.delete(String(activity.id));
+                return next;
+            });
             showToast({
-                id: `error-delete-${activity.id}`,
+                id: `error-delete-${Date.now()}`,
                 title: '❌ Error',
                 description: 'No se pudo eliminar el elemento',
                 priority: 'high',
@@ -250,7 +267,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     };
 
 
-    if (loading) {
+    if (loading && activities.length === 0) {
         return (
             <aside className={`fixed top-0 h-screen w-64 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-xl transition-all duration-300 ${isMainSidebarExpanded ? 'right-[-256px]' : 'right-0 hidden lg:block'}`}>
                 <div className="flex items-center justify-center h-full">
@@ -434,11 +451,11 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
 
             {/* Confirmation Dialog */}
             <ConfirmDialog
-                isOpen={confirmDialog.isOpen}
-                onClose={() => setConfirmDialog({ isOpen: false, activity: null })}
+                isOpen={confirmDialog}
+                onClose={() => { setConfirmDialog(false); activityToDeleteRef.current = null; }}
                 onConfirm={confirmDelete}
-                title={confirmDialog.activity?.eventType === 'opportunity' ? 'Eliminar oportunidad' : 'Eliminar actividad'}
-                message={`¿Estás seguro de eliminar ${confirmDialog.activity?.eventType === 'opportunity' ? 'esta oportunidad' : 'esta actividad'}? Esta acción no se puede deshacer.`}
+                title={activityToDeleteRef.current?.eventType === 'opportunity' ? 'Eliminar oportunidad' : 'Eliminar actividad'}
+                message={`¿Estás seguro de eliminar ${activityToDeleteRef.current?.eventType === 'opportunity' ? 'esta oportunidad' : 'esta actividad'}? Esta acción no se puede deshacer.`}
                 confirmText="Eliminar"
                 cancelText="Cancelar"
                 variant="danger"

@@ -61,8 +61,6 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
 
     // Pre-populate form when opportunity changes
     useEffect(() => {
-        console.log('🔍 EditOpportunityModal - Received opportunity:', opportunity);
-        console.log('🔍 EditOpportunityModal - Modal isOpen:', isOpen);
 
         if (opportunity && isOpen) {
             const linkedEntityType = opportunity.linkedEntity?.type || 'client';
@@ -91,7 +89,6 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                 destinationAddress: opportunity.destinationAddress || ''
             };
 
-            console.log('✅ EditOpportunityModal - Setting formData:', newFormData);
             setFormData(newFormData);
         }
     }, [opportunity, isOpen]);

@@ -117,7 +117,6 @@ export const useQuotations = () => {
                 comercial_id: quotationData.comercial_id || userData.comercial_id
             };
 
-            console.log('📝 Creating quotation:', newQuotation);
 
             // Insert quotation
             const { data: createdQuotation, error: quotationError } = await supabase
@@ -151,7 +150,6 @@ export const useQuotations = () => {
                 if (linesError) throw linesError;
             }
 
-            console.log('✅ Quotation created successfully:', createdQuotation);
 
             // Refresh quotations list
             await fetchQuotations();
@@ -180,7 +178,6 @@ export const useQuotations = () => {
 
             if (error) throw error;
 
-            console.log('✅ Quotation updated successfully:', data);
 
             // Refresh quotations list
             await fetchQuotations();
@@ -211,7 +208,6 @@ export const useQuotations = () => {
                 throw error;
             }
 
-            console.log('✅ Quotation deleted successfully');
 
             // Refresh quotations list
             await fetchQuotations();

@@ -80,7 +80,6 @@ const TeamManagement = () => {
 
     const handleAssignComercial = async (supervisorId, comercialId) => {
         try {
-            console.log('Attempting to assign:', { supervisorId, comercialId, userId: userProfile.id, isAdmin });
 
             const { error } = await supabase
                 .from('supervisor_comerciales')
