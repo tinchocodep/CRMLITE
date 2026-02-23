@@ -20,10 +20,10 @@ export const useOrders = () => {
                 return;
             }
 
-            // Fetch orders
+            // Fetch orders with company data (to get CUIT in real time)
             const { data: ordersData, error: ordersError } = await supabase
                 .from('orders')
-                .select('*')
+                .select('*, company:companies!company_id(id, trade_name, legal_name, cuit)')
                 .eq('tenant_id', tenantId)
                 .order('created_at', { ascending: false });
 

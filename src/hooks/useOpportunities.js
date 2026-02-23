@@ -342,7 +342,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                                 comercial_id: currentOpp.comercial_id || userData.comercial_id,
                                 client_name: currentOpp.company?.trade_name || currentOpp.company?.legal_name || 'Cliente',
                                 client_cuit: currentOpp.company?.cuit,
-                                sale_type: 'Venta Directa',
+                                sale_type: 'own',
                                 payment_condition: '30d',
                                 delivery_date: deliveryDate,
                                 origin_address: 'Depósito Central',

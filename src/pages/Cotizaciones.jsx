@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { FileText, Search, Edit2, CheckCircle, DollarSign, Calendar, Building2, ShoppingCart, XCircle, ChevronRight, Trash2 } from 'lucide-react';
+import { FileText, Search, Edit2, CheckCircle, DollarSign, Calendar, Building2, ShoppingCart, XCircle, ChevronRight, Trash2, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { orders as mockOrders } from '../data/orders';
 import { useToast } from '../contexts/ToastContext';
 import QuotationDetailsModal from '../components/QuotationDetailsModal';
 import EditQuotationModal from '../components/EditQuotationModal';
+import CreateQuotationModal from '../components/CreateQuotationModal';
 import { useQuotations } from '../hooks/useQuotations';
 import { useOrders } from '../hooks/useOrders';
 
@@ -29,9 +30,42 @@ const Cotizaciones = () => {
         quotations,
         loading,
         error,
+        createQuotation,
         updateQuotation,
         deleteQuotation
     } = useQuotations();
+
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+
+    const handleCreateQuotation = async (payload) => {
+        setIsCreating(true);
+        try {
+            const result = await createQuotation(payload);
+            if (result.success) {
+                setCreateModalOpen(false);
+                showToast({
+                    id: `created-${Date.now()}`,
+                    title: '✅ Cotización creada',
+                    description: `La cotización fue creada como borrador.`,
+                    priority: 'medium',
+                    icon: FileText,
+                    timeAgo: 'Ahora'
+                });
+            } else {
+                showToast({
+                    id: `error-create-${Date.now()}`,
+                    title: '❌ Error',
+                    description: result.error || 'No se pudo crear la cotización.',
+                    priority: 'high',
+                    icon: XCircle,
+                    timeAgo: 'Ahora'
+                });
+            }
+        } finally {
+            setIsCreating(false);
+        }
+    };
 
     // Usar hook de Supabase para pedidos
     const { createOrder } = useOrders();
@@ -86,6 +120,7 @@ const Cotizaciones = () => {
                 quotation_id: quotation.id,
                 company_id: quotation.company_id,
                 client_name: quotation.company?.trade_name || quotation.company?.legal_name || quotation.client_name || 'Cliente Desconocido',
+                client_cuit: quotation.company?.cuit || quotation.client_cuit || '',
                 delivery_date: quotation.delivery_date,
                 status: 'pending',
                 sale_type: quotation.sale_type,
@@ -319,14 +354,24 @@ const Cotizaciones = () => {
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
                     {/* Title */}
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                            <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-6">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">Cotizaciones</h1>
+                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 hidden sm:block">Gestión de cotizaciones y confirmación de pedidos</p>
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">Cotizaciones</h1>
-                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 hidden sm:block">Gestión de cotizaciones y confirmación de pedidos</p>
-                        </div>
+                        <button
+                            onClick={() => setCreateModalOpen(true)}
+                            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-semibold text-xs sm:text-sm hover:shadow-lg transition-all active:scale-95"
+                        >
+                            <Plus className="w-4 h-4" />
+                            <span className="hidden sm:inline">Nueva Cotización</span>
+                            <span className="sm:hidden">Nueva</span>
+                        </button>
                     </div>
 
                     {/* Stats Cards - Mobile Optimized */}
@@ -742,9 +787,18 @@ const Cotizaciones = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* ── Nueva Cotización Modal ─────────────────── */}
+            <CreateQuotationModal
+                isOpen={createModalOpen}
+                onClose={() => setCreateModalOpen(false)}
+                onSave={handleCreateQuotation}
+                isSaving={isCreating}
+            />
         </div>
 
     );
 };
 
 export default Cotizaciones;
+

@@ -16,14 +16,26 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
 
     useEffect(() => {
         if (quotation) {
+            // Supabase retorna snake_case; fallback a camelCase por retrocompatibilidad
+            const mapLine = (l) => ({
+                id: l.id || `line-${Date.now()}-${Math.random()}`,
+                productSapCode: l.product_sap_code ?? l.productSapCode ?? products[0]?.sapCode ?? '',
+                productName: l.product_name ?? l.productName ?? '',
+                quantity: l.quantity ?? 1,
+                unitPrice: l.unit_price ?? l.unitPrice ?? 0,
+                subtotal: l.subtotal ?? 0,
+                taxRate: l.tax_rate ?? l.taxRate ?? 21,
+                total: l.total ?? 0,
+            });
+
             setFormData({
-                clientName: quotation.clientName || '',
-                saleType: quotation.saleType || 'own',
-                paymentCondition: quotation.paymentCondition || '30d',
-                deliveryDate: quotation.deliveryDate || '',
-                originAddress: quotation.originAddress || '',
-                destinationAddress: quotation.destinationAddress || '',
-                lines: quotation.lines || []
+                clientName: quotation.client_name || quotation.company?.trade_name || quotation.company?.legal_name || quotation.clientName || '',
+                saleType: quotation.sale_type || quotation.saleType || 'own',
+                paymentCondition: quotation.payment_condition || quotation.paymentCondition || '30d',
+                deliveryDate: quotation.delivery_date || quotation.deliveryDate || '',
+                originAddress: quotation.origin_address || quotation.originAddress || '',
+                destinationAddress: quotation.destination_address || quotation.destinationAddress || '',
+                lines: (quotation.lines || []).map(mapLine),
             });
         }
     }, [quotation]);
