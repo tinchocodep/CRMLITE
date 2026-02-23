@@ -106,6 +106,8 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
             productName: line.productName || line.product_name || '',
             productSapCode: line.productSapCode || line.product_sap_code || '',
             unitPrice: line.unitPrice || line.unit_price || 0,
+            // Normalizar tax_rate (snake_case de Supabase → camelCase del componente)
+            taxRate: line.taxRate ?? line.tax_rate ?? 21,
         }))
     };
 
@@ -813,13 +815,26 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         {selectedAction !== 'REMITO' && (
                             <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-700">
                                 {(() => {
-                                    // Calculate totals
-                                    const subtotal = order.subtotal || (order.lines || order.products || []).reduce((sum, line) => {
-                                        return sum + ((line.quantity || 0) * (line.unitPrice || line.estimatedPrice || 0));
+                                    const orderLines = normalizedOrder.lines || order.products || [];
+
+                                    // Calcular subtotal sin IVA
+                                    const subtotal = order.subtotal || orderLines.reduce((sum, line) => {
+                                        return sum + ((line.quantity || 0) * (line.unitPrice || 0));
                                     }, 0);
 
-                                    const iva = order.tax || (subtotal * 0.21);
+                                    // Calcular IVA real leyendo el tax_rate de cada línea
+                                    const iva = order.tax || orderLines.reduce((sum, line) => {
+                                        const qty = line.quantity || 0;
+                                        const price = line.unitPrice || 0;
+                                        const rate = (line.taxRate ?? 21) / 100;
+                                        return sum + (qty * price * rate);
+                                    }, 0);
+
                                     const total = order.total || order.totalAmount || (subtotal + iva);
+
+                                    // Label dinámico: si todas las líneas tienen la misma alícuota mostrarla, si hay mix → "IVA"
+                                    const rates = [...new Set(orderLines.map(l => l.taxRate ?? 21))];
+                                    const ivaLabel = rates.length === 1 ? `IVA (${rates[0]}%)` : 'IVA';
 
                                     return (
                                         <>
@@ -830,7 +845,7 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                                 </span>
                                             </div>
                                             <div className="flex justify-between text-sm">
-                                                <span className="text-slate-600 dark:text-slate-400">IVA (21%):</span>
+                                                <span className="text-slate-600 dark:text-slate-400">{ivaLabel}:</span>
                                                 <span className="font-medium text-slate-800 dark:text-slate-100">
                                                     ${iva.toLocaleString('es-AR', { minimumFractionDigits: 2 })}
                                                 </span>

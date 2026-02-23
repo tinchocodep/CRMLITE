@@ -115,7 +115,13 @@ export const createInvoiceFromOrder = (order, options, selectedQuantities = null
             const qty = selectedQuantities[line.id] || 0;
             return sum + (qty * (line.unitPrice || line.estimatedPrice || 0));
         }, 0);
-        iva = subtotal * 0.21;
+        // Calcular IVA real por línea según su tax_rate individual (puede ser 21%, 10.5%, 0%, etc.)
+        iva = orderLines.reduce((sum, line) => {
+            const qty = selectedQuantities ? (selectedQuantities[line.id] || 0) : (line.quantity || 0);
+            const price = line.unitPrice || line.estimatedPrice || 0;
+            const rate = (line.taxRate ?? line.tax_rate ?? 21) / 100;
+            return sum + (qty * price * rate);
+        }, 0);
         total = subtotal + iva;
     } else {
         // Use order totals
