@@ -297,13 +297,10 @@ export const useOpportunities = (refreshKey = 'default') => {
 
                     if (!existingQuotations || existingQuotations.length === 0) {
 
-                        // Get user data for tenant_id
-                        const { data: { user: authUser } } = await supabase.auth.getUser();
-                        const { data: userData } = await supabase
-                            .from('users')
-                            .select('tenant_id, comercial_id')
-                            .eq('id', authUser.id)
-                            .single();
+                        // Use tenantId from hook context — avoids querying
+                        // the non-existent `users` table (correct table is user_profiles)
+                        const resolvedTenantId = tenantId;
+                        const resolvedComercialId = currentOpp.comercial_id;
 
                         // Generate quotation number
                         const currentYear = new Date().getFullYear();
@@ -311,7 +308,7 @@ export const useOpportunities = (refreshKey = 'default') => {
                         const { data: lastQuotation } = await supabase
                             .from('quotations')
                             .select('quotation_number')
-                            .eq('tenant_id', userData.tenant_id)
+                            .eq('tenant_id', resolvedTenantId)
                             .like('quotation_number', `${prefix}%`)
                             .order('quotation_number', { ascending: false })
                             .limit(1);
@@ -339,8 +336,8 @@ export const useOpportunities = (refreshKey = 'default') => {
                                 quotation_number: quotationNumber,
                                 opportunity_id: numericId,
                                 company_id: currentOpp.company_id,
-                                tenant_id: userData.tenant_id,
-                                comercial_id: currentOpp.comercial_id || userData.comercial_id,
+                                tenant_id: resolvedTenantId,
+                                comercial_id: resolvedComercialId,
                                 client_name: currentOpp.company?.trade_name || currentOpp.company?.legal_name || 'Cliente',
                                 client_cuit: currentOpp.company?.cuit,
                                 sale_type: 'own',
@@ -384,7 +381,8 @@ export const useOpportunities = (refreshKey = 'default') => {
                         data.existingQuotation = existingQuotations[0];
                     }
                 } catch (quotationError) {
-                    // Don't fail the opportunity update if quotation creation fails
+                    // Log but don't fail the opportunity update if quotation creation fails
+                    console.error('[Opp] Auto-quotation creation failed:', quotationError);
                 }
             }
 
