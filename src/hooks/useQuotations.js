@@ -95,14 +95,9 @@ export const useQuotations = () => {
                 throw new Error('Tenant ID is required');
             }
 
-            // Get user data for tenant_id and comercial_id
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('tenant_id, comercial_id')
-                .eq('id', user.id)
-                .single();
-
-            if (userError) throw userError;
+            // Use tenantId and comercialId directly from hooks/context
+            // (avoids querying the non-existent `users` table)
+            const resolvedComercialId = quotationData.comercial_id || comercialId;
 
             // Generate quotation number
             const quotationNumber = await generateQuotationNumber();
@@ -113,19 +108,42 @@ export const useQuotations = () => {
             const newQuotation = {
                 ...quotationFields,
                 quotation_number: quotationNumber,
-                tenant_id: userData.tenant_id,
-                comercial_id: quotationData.comercial_id || userData.comercial_id
+                tenant_id: tenantId,
+                comercial_id: resolvedComercialId
             };
 
 
-            // Insert quotation
-            const { data: createdQuotation, error: quotationError } = await supabase
-                .from('quotations')
-                .insert([newQuotation])
-                .select()
-                .single();
+            // Insert quotation (with retry on quotation_number conflict)
+            let createdQuotation;
+            let insertAttempt = 0;
+            let currentQuotation = { ...newQuotation };
 
-            if (quotationError) throw quotationError;
+            while (insertAttempt < 3) {
+                const { data, error: quotationError } = await supabase
+                    .from('quotations')
+                    .insert([currentQuotation])
+                    .select()
+                    .single();
+
+                if (!quotationError) {
+                    createdQuotation = data;
+                    break;
+                }
+
+                // 23505 = unique_violation (quotation_number already exists)
+                if (quotationError.code === '23505' && insertAttempt < 2) {
+                    insertAttempt++;
+                    // Generate a new unique number with timestamp suffix to avoid collision
+                    const fallbackNum = `${currentQuotation.quotation_number}-${insertAttempt}`;
+                    console.warn(`⚠️ quotation_number collision, retrying with: ${fallbackNum}`);
+                    currentQuotation = { ...currentQuotation, quotation_number: fallbackNum };
+                    continue;
+                }
+
+                throw quotationError;
+            }
+
+            if (!createdQuotation) throw new Error('No se pudo crear la cotización');
 
             // Insert quotation lines if provided
             if (lines && lines.length > 0) {
