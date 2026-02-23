@@ -128,24 +128,7 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
                                     <SortIcon columnKey="comercial_name" />
                                 </div>
                             </th>
-                            <th
-                                onClick={() => handleSort('payment_terms')}
-                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                            >
-                                <div className="flex items-center gap-1.5">
-                                    Pago
-                                    <SortIcon columnKey="payment_terms" />
-                                </div>
-                            </th>
-                            <th
-                                onClick={() => handleSort('credit_limit')}
-                                className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
-                            >
-                                <div className="flex items-center gap-1.5">
-                                    Crédito
-                                    <SortIcon columnKey="credit_limit" />
-                                </div>
-                            </th>
+
                             <th
                                 onClick={() => handleSort('client_since')}
                                 className="px-3 py-2.5 text-left text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-tight cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors whitespace-nowrap"
@@ -215,16 +198,7 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
                                             {client.comercial_name || '-'}
                                         </span>
                                     </td>
-                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                        <span className="truncate block">
-                                            {client.payment_terms || '-'}
-                                        </span>
-                                    </td>
-                                    <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                        <span className="truncate block">
-                                            {client.credit_limit ? `$${(client.credit_limit / 1000).toFixed(0)}k` : '-'}
-                                        </span>
-                                    </td>
+
                                     <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
                                         <span className="truncate block">
                                             {client.client_since ? new Date(client.client_since).toLocaleDateString('es-AR', { month: 'short', year: '2-digit' }) : '-'}
