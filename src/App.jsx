@@ -26,6 +26,7 @@ import Comprobantes from './pages/Comprobantes';
 import CuentaCorriente from './pages/CuentaCorriente';
 import Stock from './pages/Stock';
 import CotizadorIndex from './pages/CotizadorIndex';
+import ComercialIndex from './pages/ComercialIndex';
 
 // Componente para proteger rutas que requieren autenticación
 function ProtectedRoute({ children }) {
@@ -103,6 +104,7 @@ function AppRoutes() {
           <Route path="comprobantes" element={<Comprobantes />} />
           <Route path="cuenta-corriente" element={<CuentaCorriente />} />
           <Route path="stock" element={<Stock />} />
+          <Route path="comercial" element={<ComercialIndex />} />
           {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
             <Route
               key={name}

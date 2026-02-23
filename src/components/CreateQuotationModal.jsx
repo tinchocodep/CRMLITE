@@ -151,17 +151,17 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                     className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-5xl my-8"
                 >
                     {/* ── Header ───────────────────────────── */}
-                    <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-5 rounded-t-2xl flex items-center justify-between">
+                    <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-5 rounded-t-2xl flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                                <FileText className="w-5 h-5" />
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold">Nueva Cotización</h2>
-                                <p className="text-xs opacity-80">Se creará como Borrador</p>
+                                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Nueva Cotización</h2>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Se creará como Borrador</p>
                             </div>
                         </div>
-                        <button type="button" onClick={handleClose} className="p-2 hover:bg-white/20 rounded-xl transition-colors">
+                        <button type="button" onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-500 dark:text-slate-400">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -264,7 +264,7 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                                 <button
                                     type="button"
                                     onClick={addLine}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg text-xs font-bold hover:shadow-md transition-all flex items-center gap-1.5"
+                                    className="px-3 py-1.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white rounded-lg text-xs font-bold hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all flex items-center gap-1.5"
                                 >
                                     <Plus size={14} />
                                     Agregar Producto
@@ -367,17 +367,17 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
 
                         {/* ── Totales ──────────────────────── */}
                         {formData.lines.length > 0 && (
-                            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-5 text-white">
+                            <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-5 border border-slate-200 dark:border-slate-700">
                                 <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between opacity-80">
+                                    <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400">
                                         <span>Subtotal neto</span>
-                                        <span className="font-semibold">{formatCurrency(subtotal)}</span>
+                                        <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(subtotal)}</span>
                                     </div>
-                                    <div className="flex justify-between opacity-80">
+                                    <div className="flex justify-between text-sm text-slate-500 dark:text-slate-400">
                                         <span>IVA total</span>
-                                        <span className="font-semibold">{formatCurrency(tax)}</span>
+                                        <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(tax)}</span>
                                     </div>
-                                    <div className="flex justify-between text-lg font-bold pt-2 border-t border-white/30">
+                                    <div className="flex justify-between text-lg font-bold pt-2 border-t border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
                                         <span>TOTAL</span>
                                         <span>{formatCurrency(total)}</span>
                                     </div>
@@ -398,7 +398,7 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                             <button
                                 type="submit"
                                 disabled={isSaving}
-                                className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold hover:from-[#3a9120] hover:to-[#3d8a1f] shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {isSaving ? (
                                     <>

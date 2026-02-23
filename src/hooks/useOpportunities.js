@@ -279,12 +279,13 @@ export const useOpportunities = (refreshKey = 'default') => {
             const previousStatus = currentOpp?.status || '';
             const newStatus = updates.status !== undefined ? updates.status : previousStatus;
 
-            // Auto-create quotation if:
-            // 1. Probability reaches 60% (and was below before), OR
-            // 2. Status changes to 'won'
+            // Auto-create quotation if status changes to won/ganado (in any language),
+            // OR if probability jumps from below 60% to 60% or above for the first time.
+            const isNowWon = newStatus === 'won' || newStatus === 'ganado';
+            const wasWon = previousStatus === 'won' || previousStatus === 'ganado';
             const shouldCreateQuotation =
                 (newProbability >= 60 && previousProbability < 60) ||
-                (newStatus === 'won' && previousStatus !== 'won');
+                (isNowWon && !wasWon);
 
             if (shouldCreateQuotation) {
                 try {

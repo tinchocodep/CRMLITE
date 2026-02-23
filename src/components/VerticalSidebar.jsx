@@ -3,15 +3,16 @@ import { NavLink, useLocation } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package, TrendingUp,
     Megaphone, Truck, Leaf, DollarSign, Building2,
-    Plus, Settings, ShieldCheck, Lock
+    Plus, Settings, ShieldCheck, Lock, BarChart2
 } from 'lucide-react';
 
 const sidebarModules = [
     { id: 'home', name: 'Home', path: '/dashboard', icon: Home, locked: false },
     { id: 'portal-clientes', name: 'Portal Clientes', path: '/portal-clientes', icon: Users, locked: true },
     { id: 'crm', name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true, locked: false },
-    { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users },
     { id: 'administracion', name: 'Administración', path: '/cotizador', icon: Package, isCotizador: true, locked: false },
+    { id: 'comercial', name: 'Comercial', path: '/comercial', icon: BarChart2, isComercial: true, locked: false },
+    { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users },
     { id: 'mercado-granos', name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp, locked: true },
     { id: 'marketing', name: 'Marketing', path: '/marketing', icon: Megaphone, locked: true },
     { id: 'logistica', name: 'Logística (TMS)', path: '/logistica', icon: Truck, locked: true },
@@ -28,9 +29,13 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos'];
     const isInCRM = crmRoutes.some(route => location.pathname.startsWith(route));
 
-    // Define Cotizador routes
-    const cotizadorRoutes = ['/cotizador', '/cotizaciones', '/comprobantes', '/cuenta-corriente', '/stock'];
+    // Administración: oportunidades, cotizaciones, pedidos
+    const cotizadorRoutes = ['/cotizador', '/cotizaciones', '/pedidos'];
     const isInCotizador = cotizadorRoutes.some(route => location.pathname.startsWith(route));
+
+    // Comercial: stock, comprobantes, cuenta corriente
+    const comercialRoutes = ['/comercial', '/stock', '/comprobantes', '/cuenta-corriente'];
+    const isInComercial = comercialRoutes.some(route => location.pathname.startsWith(route));
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -104,7 +109,10 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                                 const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative text-slate-800';
                                 // For CRM module, check if we're in any CRM route
                                 // For Cotizador module, check if we're in any Cotizador route
-                                const shouldHighlight = module.isCRM ? isInCRM : module.isCotizador ? isInCotizador : isActive;
+                                const shouldHighlight = module.isCRM ? isInCRM
+                                    : module.isCotizador ? isInCotizador
+                                        : module.isComercial ? isInComercial
+                                            : isActive;
                                 if (shouldHighlight) {
                                     return `${baseClasses} shadow-lg`;
                                 }
@@ -113,7 +121,10 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             style={({ isActive }) => {
                                 // For CRM module, check if we're in any CRM route
                                 // For Cotizador module, check if we're in any Cotizador route
-                                const shouldHighlight = module.isCRM ? isInCRM : module.isCotizador ? isInCotizador : isActive;
+                                const shouldHighlight = module.isCRM ? isInCRM
+                                    : module.isCotizador ? isInCotizador
+                                        : module.isComercial ? isInComercial
+                                            : isActive;
                                 return {
                                     backgroundColor: shouldHighlight ? '#a1c349' : 'transparent'
                                 };

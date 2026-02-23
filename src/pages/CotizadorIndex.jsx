@@ -1,141 +1,50 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-    TrendingUp,
-    Package,
     FileText,
-    DollarSign,
     ShoppingCart,
-    AlertCircle,
     ArrowUpRight,
-    ArrowDownRight,
-    Calendar,
-    Users,
     CheckCircle,
     Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { opportunities } from '../data/opportunities';
-import { quotations } from '../data/quotations';
-import { orders } from '../data/orders';
-import { stockBalances } from '../data/stock';
-import { invoices, accountMovements } from '../data/invoices';
+import { useQuotations } from '../hooks/useQuotations';
+import { useOrders } from '../hooks/useOrders';
 
 const CotizadorIndex = () => {
     const navigate = useNavigate();
+    const { quotations, loading: loadingQuotations } = useQuotations();
+    const { orders, loading: loadingOrders } = useOrders();
 
-    // ==================== CÁLCULOS DE KPIs ====================
-
-    // 1. Volumen Cotizado vs Cerrado (Tasa de conversión)
-    const conversionMetrics = useMemo(() => {
-        const totalOpportunities = opportunities.length;
-        const wonOpportunities = opportunities.filter(o => o.status === 'won').length;
-        const totalQuoted = opportunities.reduce((sum, o) => sum + o.estimatedValue, 0);
-        const totalClosed = opportunities
-            .filter(o => o.status === 'won')
-            .reduce((sum, o) => sum + o.estimatedValue, 0);
-
-        const conversionRate = totalOpportunities > 0
-            ? ((wonOpportunities / totalOpportunities) * 100).toFixed(1)
-            : 0;
-
-        return {
-            totalQuoted,
-            totalClosed,
-            conversionRate,
-            totalOpportunities,
-            wonOpportunities
-        };
-    }, []);
-
-    // 2. Stock Valuado
-    const stockMetrics = useMemo(() => {
-        const totalValue = stockBalances.reduce((sum, item) => {
-            // Estimamos precio promedio de $1,400 por unidad
-            const estimatedPrice = 1400;
-            return sum + (item.balance * estimatedPrice);
-        }, 0);
-
-        const totalUnits = stockBalances.reduce((sum, item) => sum + item.balance, 0);
-        const productsInStock = stockBalances.filter(item => item.balance > 0).length;
-
-        return {
-            totalValue,
-            totalUnits,
-            productsInStock
-        };
-    }, []);
-
-    // 3. Cuentas por Cobrar (Antigüedad de Deuda)
-    const accountsReceivable = useMemo(() => {
-        const unpaidInvoices = invoices.filter(inv => inv.status === 'issued' || inv.status === 'partial');
-
-        const today = new Date();
-        const overdue = unpaidInvoices.filter(inv => {
-            const dueDate = new Date(inv.dueDate);
-            return dueDate < today;
-        });
-
-        const upcoming = unpaidInvoices.filter(inv => {
-            const dueDate = new Date(inv.dueDate);
-            return dueDate >= today;
-        });
-
-        const totalOverdue = overdue.reduce((sum, inv) => sum + inv.total, 0);
-        const totalUpcoming = upcoming.reduce((sum, inv) => sum + inv.total, 0);
-        const totalReceivable = totalOverdue + totalUpcoming;
-
-        return {
-            totalReceivable,
-            totalOverdue,
-            totalUpcoming,
-            overdueCount: overdue.length,
-            upcomingCount: upcoming.length
-        };
-    }, []);
-
-    // 4. Pedidos en Proceso
+    // KPIs de Pedidos
     const ordersMetrics = useMemo(() => {
         const pending = orders.filter(o => o.status === 'pending').length;
         const shipped = orders.filter(o => o.status === 'shipped').length;
         const invoiced = orders.filter(o => o.status === 'invoiced').length;
         const completed = orders.filter(o => o.status === 'completed' || o.status === 'paid').length;
-
         return { pending, shipped, invoiced, completed, total: orders.length };
-    }, []);
+    }, [orders]);
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('es-AR', {
-            style: 'currency',
-            currency: 'ARS',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(amount);
-    };
+    // KPIs de Cotizaciones
+    const quotationsMetrics = useMemo(() => {
+        const draft = quotations.filter(q => q.status === 'draft').length;
+        const sent = quotations.filter(q => q.status === 'sent').length;
+        const confirmed = quotations.filter(q => q.status === 'confirmed' || q.status === 'won').length;
+        return { draft, sent, confirmed, total: quotations.length };
+    }, [quotations]);
 
-    const formatPercentage = (value) => {
-        return `${value}%`;
-    };
+    const isLoading = loadingQuotations || loadingOrders;
 
     // Módulos disponibles
     const modules = [
-        {
-            title: 'Oportunidades',
-            description: 'Gestión de oportunidades de venta',
-            path: '/opportunities',
-            icon: TrendingUp,
-            color: 'from-blue-500 to-blue-600',
-            stats: `${opportunities.length} activas`,
-            badge: opportunities.filter(o => ['negotiation', 'proposal'].includes(o.status)).length
-        },
         {
             title: 'Cotizaciones',
             description: 'Cotizaciones y confirmación',
             path: '/cotizaciones',
             icon: FileText,
             color: 'from-purple-500 to-purple-600',
-            stats: `${quotations.length} cotizaciones`,
-            badge: quotations.filter(q => q.status === 'sent').length
+            stats: isLoading ? 'Cargando...' : `${quotationsMetrics.total} cotizaciones`,
+            badge: quotationsMetrics.draft + quotationsMetrics.sent
         },
         {
             title: 'Pedidos',
@@ -143,36 +52,9 @@ const CotizadorIndex = () => {
             path: '/pedidos',
             icon: ShoppingCart,
             color: 'from-indigo-500 to-indigo-600',
-            stats: `${orders.length} pedidos`,
-            badge: ordersMetrics.pending
+            stats: isLoading ? 'Cargando...' : `${ordersMetrics.total} pedidos`,
+            badge: ordersMetrics.pending + ordersMetrics.shipped + ordersMetrics.invoiced
         },
-        {
-            title: 'Stock',
-            description: 'Movimientos y balances',
-            path: '/stock',
-            icon: Package,
-            color: 'from-green-500 to-green-600',
-            stats: `${stockMetrics.productsInStock} productos`,
-            badge: null
-        },
-        {
-            title: 'Comprobantes',
-            description: 'Facturas y documentos',
-            path: '/comprobantes',
-            icon: FileText,
-            color: 'from-amber-500 to-amber-600',
-            stats: `${invoices.length} facturas`,
-            badge: null
-        },
-        {
-            title: 'Cuenta Corriente',
-            description: 'Estado de cuentas por cliente',
-            path: '/cuenta-corriente',
-            icon: DollarSign,
-            color: 'from-emerald-500 to-emerald-600',
-            stats: `${accountsReceivable.overdueCount + accountsReceivable.upcomingCount} pendientes`,
-            badge: accountsReceivable.overdueCount
-        }
     ];
 
     return (
@@ -182,52 +64,91 @@ const CotizadorIndex = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-                            Dashboard Administración
+                            Administración
                         </h1>
                         <p className="text-lg text-slate-600 dark:text-slate-400">
-                            Visión estratégica del negocio
+                            Pipeline de ventas: cotizaciones y pedidos
                         </p>
                     </div>
 
+                    {/* KPIs de Cotizaciones */}
+                    <div className="mb-4">
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                            Cotizaciones
+                        </p>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <FileText className="w-5 h-5 text-slate-400" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : quotationsMetrics.draft}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Borradores</p>
+                            </div>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <FileText className="w-5 h-5 text-amber-500" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : quotationsMetrics.sent}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Enviadas</p>
+                            </div>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : quotationsMetrics.confirmed}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Confirmadas</p>
+                            </div>
+                        </div>
+                    </div>
 
-
-                    {/* Estado de Pedidos */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-3 mb-2">
-                                <Clock className="w-5 h-5 text-amber-500" />
-                                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                                    {ordersMetrics.pending}
-                                </span>
+                    {/* KPIs de Pedidos */}
+                    <div>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                            Pedidos
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <Clock className="w-5 h-5 text-amber-500" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : ordersMetrics.pending}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Pendientes</p>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">Pendientes</p>
-                        </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-3 mb-2">
-                                <Package className="w-5 h-5 text-blue-500" />
-                                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                                    {ordersMetrics.shipped}
-                                </span>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <ShoppingCart className="w-5 h-5 text-blue-500" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : ordersMetrics.shipped}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Remitidos</p>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">Remitidos</p>
-                        </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-3 mb-2">
-                                <FileText className="w-5 h-5 text-purple-500" />
-                                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                                    {ordersMetrics.invoiced}
-                                </span>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <FileText className="w-5 h-5 text-purple-500" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : ordersMetrics.invoiced}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Facturados</p>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">Facturados</p>
-                        </div>
-                        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                            <div className="flex items-center gap-3 mb-2">
-                                <CheckCircle className="w-5 h-5 text-green-500" />
-                                <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                                    {ordersMetrics.completed}
-                                </span>
+                            <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                    <span className="text-2xl font-bold text-slate-900 dark:text-white">
+                                        {isLoading ? '—' : ordersMetrics.completed}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-600 dark:text-slate-400">Completados</p>
                             </div>
-                            <p className="text-xs text-slate-600 dark:text-slate-400">Completados</p>
                         </div>
                     </div>
                 </div>
@@ -238,7 +159,7 @@ const CotizadorIndex = () => {
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">
                     Módulos de Administración
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {modules.map((module, index) => (
                         <motion.div
                             key={module.path}

@@ -8,8 +8,9 @@ import PDFPreviewModal from '../components/PDFPreviewModal';
 const Comprobantes = () => {
     const { addNotification } = useNotifications();
     const [searchTerm, setSearchTerm] = useState('');
-    const [typeFilter, setTypeFilter] = useState('all'); // all, FACTURA, REMITO, NOTA_CREDITO
-    const [statusFilter, setStatusFilter] = useState('all'); // all, paid, pending, cancelled
+    const [typeFilter, setTypeFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [clientFilter, setClientFilter] = useState('all');
     const [vouchers, setVouchers] = useState([]);
     const [previewModal, setPreviewModal] = useState({ isOpen: false, comprobante: null });
 
@@ -108,14 +109,18 @@ const Comprobantes = () => {
         );
     };
 
+    // Clientes únicos para el selector de filtro
+    const clientesUnicos = [...new Set(vouchers.map(v => v.company).filter(Boolean))].sort();
+
     const filteredVouchers = vouchers.filter(voucher => {
         const matchesSearch = voucher.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             voucher.voucherNumber?.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesType = typeFilter === 'all' || voucher.type === typeFilter;
         const matchesStatus = statusFilter === 'all' || voucher.status === statusFilter;
+        const matchesClient = clientFilter === 'all' || voucher.company === clientFilter;
 
-        return matchesSearch && matchesType && matchesStatus;
+        return matchesSearch && matchesType && matchesStatus && matchesClient;
     });
 
     return (
@@ -153,17 +158,27 @@ const Comprobantes = () => {
                     </div>
 
                     {/* Search and Filters */}
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        <div className="flex-1 relative">
+                    <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+                        <div className="flex-1 min-w-[200px] relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                             <input
                                 type="text"
-                                placeholder="Buscar comprobante..."
+                                placeholder="Buscar por cliente o número..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-advanta-green focus:border-transparent"
                             />
                         </div>
+                        <select
+                            value={clientFilter}
+                            onChange={(e) => setClientFilter(e.target.value)}
+                            className="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-advanta-green focus:border-transparent"
+                        >
+                            <option value="all">Todos los clientes</option>
+                            {clientesUnicos.map(c => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
+                        </select>
                         <select
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
@@ -198,7 +213,7 @@ const Comprobantes = () => {
                             No hay comprobantes
                         </h3>
                         <p className="text-slate-600 dark:text-slate-400">
-                            {searchTerm || typeFilter !== 'all' || statusFilter !== 'all'
+                            {searchTerm || typeFilter !== 'all' || statusFilter !== 'all' || clientFilter !== 'all'
                                 ? 'No se encontraron comprobantes con los filtros aplicados'
                                 : 'Los comprobantes emitidos aparecerán aquí'}
                         </p>

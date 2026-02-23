@@ -126,15 +126,15 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                     className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-6xl my-8"
                 >
                     {/* Header */}
-                    <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-t-2xl">
+                    <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6 rounded-t-2xl">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h2 className="text-2xl font-bold">Editar Cotización</h2>
-                                <p className="text-sm opacity-90">{quotation.number}</p>
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Editar Cotización</h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">{quotation.number}</p>
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500"
                             >
                                 <X className="w-6 h-6" />
                             </button>
@@ -241,7 +241,7 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                                 <button
                                     type="button"
                                     onClick={addLine}
-                                    className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                                    className="px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white rounded-lg font-semibold hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all flex items-center gap-2"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Agregar Producto
@@ -321,17 +321,17 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                         </div>
 
                         {/* Totals */}
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 text-white">
+                        <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between text-sm opacity-90">
+                                <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                                     <span>Subtotal</span>
-                                    <span>{formatCurrency(subtotal)}</span>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(subtotal)}</span>
                                 </div>
-                                <div className="flex items-center justify-between text-sm opacity-90">
+                                <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                                     <span>IVA (21%)</span>
-                                    <span>{formatCurrency(tax)}</span>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(tax)}</span>
                                 </div>
-                                <div className="flex items-center justify-between text-2xl font-bold pt-2 border-t border-white/20">
+                                <div className="flex items-center justify-between text-2xl font-bold pt-2 border-t border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
                                     <span>TOTAL</span>
                                     <span>{formatCurrency(total)}</span>
                                 </div>
@@ -349,7 +349,7 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold hover:shadow-lg transition-all"
+                                className="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold hover:from-[#3a9120] hover:to-[#3d8a1f] shadow-lg transition-all"
                             >
                                 Guardar Cambios
                             </button>

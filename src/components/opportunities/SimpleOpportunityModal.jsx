@@ -98,11 +98,11 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-t-2xl flex justify-between items-center z-10">
-                    <h2 className="text-2xl font-bold">
+                <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6 rounded-t-2xl flex justify-between items-center z-10">
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                         {opportunity ? 'Editar Oportunidad' : 'Nueva Oportunidad'}
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500">
                         <X size={24} />
                     </button>
                 </div>
@@ -293,7 +293,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                         >
                             {opportunity ? 'Actualizar' : 'Crear'}
                         </button>

@@ -77,18 +77,18 @@ const QuotationDetailsModal = ({ isOpen, onClose, quotation, onUpdateStatus }) =
                     className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
                 >
                     {/* Header */}
-                    <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-6 rounded-t-2xl">
+                    <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-6 rounded-t-2xl">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                                    <FileText className="w-6 h-6" />
+                                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                    <FileText className="w-6 h-6 text-slate-600 dark:text-slate-300" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-bold">Cotización {quotationNumber}</h2>
-                                    <p className="text-sm opacity-90">{clientName}</p>
+                                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Cotización {quotationNumber}</h2>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">{clientName}</p>
                                 </div>
                             </div>
-                            <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                            <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500">
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
@@ -231,17 +231,17 @@ const QuotationDetailsModal = ({ isOpen, onClose, quotation, onUpdateStatus }) =
                         </div>
 
                         {/* Totales */}
-                        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 text-white">
+                        <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
                             <div className="space-y-2 text-sm">
-                                <div className="flex items-center justify-between opacity-90">
+                                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                                     <span>Subtotal neto</span>
-                                    <span className="font-semibold">{formatCurrency(quotation.subtotal)}</span>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(quotation.subtotal)}</span>
                                 </div>
-                                <div className="flex items-center justify-between opacity-90">
+                                <div className="flex items-center justify-between text-slate-500 dark:text-slate-400">
                                     <span>IVA</span>
-                                    <span className="font-semibold">{formatCurrency(quotation.tax)}</span>
+                                    <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(quotation.tax)}</span>
                                 </div>
-                                <div className="flex items-center justify-between text-2xl font-bold pt-2 border-t border-white/20">
+                                <div className="flex items-center justify-between text-2xl font-bold pt-2 border-t border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white">
                                     <span>TOTAL</span>
                                     <span>{formatCurrency(quotation.total)}</span>
                                 </div>

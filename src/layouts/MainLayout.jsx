@@ -94,12 +94,16 @@ const MainLayout = () => {
     const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/territorios', '/reclamos', '/ficha-360'];
     const isCRMActive = crmPaths.includes(location.pathname) || location.pathname === '/';
 
-    // Check if we're in Cotizador module (any Cotizador submodule)
-    const cotizadorPaths = ['/cotizador', '/cotizaciones', '/pedidos', '/comprobantes', '/cuenta-corriente', '/stock'];
+    // Check if we're in Cotizador module (Administración: oportunidades, cotizaciones, pedidos)
+    const cotizadorPaths = ['/cotizador', '/cotizaciones', '/pedidos'];
     const isCotizadorActive = cotizadorPaths.includes(location.pathname);
 
+    // Check if we're in Comercial module (stock, comprobantes, cuenta corriente)
+    const comercialPaths = ['/comercial', '/stock', '/comprobantes', '/cuenta-corriente'];
+    const isComercialActive = comercialPaths.includes(location.pathname);
+
     // Determine current context for mobile menu
-    const currentContext = isCotizadorActive ? 'cotizador' : 'crm';
+    const currentContext = (isCotizadorActive || isComercialActive) ? 'cotizador' : 'crm';
 
     // ========== MOBILE STATE (Separate) ==========
     const [mobileNavMenuOpen, setMobileNavMenuOpen] = useState(false);
@@ -469,7 +473,7 @@ const MainLayout = () => {
                 {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Cotizador Horizontal Navigation - Above Content */}
-                {isCotizadorActive && <HorizontalCotizadorNav isMainSidebarExpanded={mainSidebarExpanded} />}
+                {(isCotizadorActive || isComercialActive) && <HorizontalCotizadorNav isMainSidebarExpanded={mainSidebarExpanded} />}
 
                 {/* Right Sidebar Agenda */}
                 <RightSidebarAgenda isMainSidebarExpanded={mainSidebarExpanded} />

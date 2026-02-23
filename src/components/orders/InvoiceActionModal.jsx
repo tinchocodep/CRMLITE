@@ -830,7 +830,8 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                         return sum + (qty * price * rate);
                                     }, 0);
 
-                                    const total = order.total || order.totalAmount || (subtotal + iva);
+                                    // Siempre calcular el total como subtotal + iva para evitar datos desincronizados del DB
+                                    const total = subtotal + iva;
 
                                     // Label dinámico: si todas las líneas tienen la misma alícuota mostrarla, si hay mix → "IVA"
                                     const rates = [...new Set(orderLines.map(l => l.taxRate ?? 21))];

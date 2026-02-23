@@ -115,6 +115,39 @@ export const updateStockBalance = (sapCode, quantityChange) => {
 };
 
 /**
+ * Register a stock egress (exit) for an existing product
+ * @param {Object} egress
+ * @param {number} egress.productSapCode - SAP code of product to deduct
+ * @param {number} egress.quantity       - Units to remove (must be > 0)
+ * @param {string} egress.reason         - Egress reason key
+ * @param {string} [egress.notes]        - Optional notes
+ * @returns {Object} Updated product balance
+ */
+export const egressStockProduct = (egress) => {
+    try {
+        const balances = getStockBalances();
+        const product = balances.find(p => p.productSapCode === egress.productSapCode);
+
+        if (!product) {
+            throw new Error(`No se encontró el producto con código SAP ${egress.productSapCode}`);
+        }
+        if (egress.quantity <= 0) {
+            throw new Error('La cantidad del egreso debe ser mayor a 0');
+        }
+        if (egress.quantity > product.balance) {
+            throw new Error(
+                `Stock insuficiente. Disponible: ${product.balance.toLocaleString()} unidades`
+            );
+        }
+
+        return updateStockBalance(egress.productSapCode, -egress.quantity);
+    } catch (error) {
+        console.error('Error registering stock egress:', error);
+        throw error;
+    }
+};
+
+/**
  * Get product by SAP code
  * @param {number} sapCode - SAP code
  * @returns {Object|null} Product or null if not found

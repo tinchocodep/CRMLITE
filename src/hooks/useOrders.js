@@ -91,12 +91,13 @@ export const useOrders = () => {
             if (lines && lines.length > 0) {
                 const orderLines = lines.map((line, index) => {
                     // Ensure all numeric fields have valid values (not null/undefined)
-                    const unitPrice = line.unit_price || line.unitPrice || 0;
-                    const quantity = line.quantity || 0;
-                    const volume = line.volume || 0;
-                    const subtotal = line.subtotal || 0;
-                    const taxRate = line.tax_rate || line.taxRate || 21.00;
-                    const total = line.total || 0;
+                    // IMPORTANTE: usar ?? (nullish) en taxRate para que 0% IVA no caiga al fallback 21
+                    const unitPrice = line.unit_price ?? line.unitPrice ?? 0;
+                    const quantity = line.quantity ?? 0;
+                    const volume = line.volume ?? 0;
+                    const subtotal = line.subtotal ?? 0;
+                    const taxRate = line.tax_rate ?? line.taxRate ?? 21.00;
+                    const total = line.total ?? 0;
 
                     return {
                         order_id: newOrder.id,
@@ -109,6 +110,7 @@ export const useOrders = () => {
                         subtotal: subtotal,
                         tax_rate: taxRate,
                         total: total,
+                        product_source: line.product_source ?? 'own',
                         line_order: index
                     };
                 });

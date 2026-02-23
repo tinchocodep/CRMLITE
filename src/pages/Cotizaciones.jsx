@@ -135,7 +135,9 @@ const Cotizaciones = () => {
                     product_name: line.product_name,
                     quantity: line.quantity,
                     unit_price: line.unit_price,
-                    subtotal: line.subtotal
+                    subtotal: line.subtotal,
+                    // Usar el tax_rate guardado en la cotización; usar el de la línea si existe
+                    tax_rate: line.tax_rate ?? quotation.tax_rate ?? 21
                 }))
             };
 
@@ -323,11 +325,19 @@ const Cotizaciones = () => {
             });
 
             // Aprobar y crear pedido con los valores actualizados
+            // Calcular la tasa numérica del IVA seleccionado
+            const numericIvaRate = selectedIvaRate === 'none' ? 0 : parseFloat(selectedIvaRate);
             const updatedQuotation = {
                 ...quotationToConfirm,
                 tax: newTax,
                 total: newTotal,
                 subtotal: baseSubtotal,
+                // Propagar tax_rate a nivel de cotización y de cada línea
+                tax_rate: numericIvaRate,
+                lines: (quotationToConfirm.lines || []).map(line => ({
+                    ...line,
+                    tax_rate: numericIvaRate,
+                })),
             };
 
             setIvaModalOpen(false);
@@ -356,7 +366,7 @@ const Cotizaciones = () => {
                     {/* Title */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-6">
                         <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#44C12B] to-[#4BA323] flex items-center justify-center shadow-lg">
                                 <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
                             <div>
@@ -366,7 +376,7 @@ const Cotizaciones = () => {
                         </div>
                         <button
                             onClick={() => setCreateModalOpen(true)}
-                            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-semibold text-xs sm:text-sm hover:shadow-lg transition-all active:scale-95"
+                            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-semibold text-xs sm:text-sm hover:shadow-lg transition-all active:scale-95"
                         >
                             <Plus className="w-4 h-4" />
                             <span className="hidden sm:inline">Nueva Cotización</span>

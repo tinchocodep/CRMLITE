@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOpportunities } from '../hooks/useOpportunities';
@@ -23,6 +24,7 @@ const stageConfig = {
 };
 
 const Opportunities = () => {
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const { opportunities, loading, createOpportunity, updateOpportunity, deleteOpportunity } = useOpportunities();
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -118,7 +120,7 @@ const Opportunities = () => {
                     showToast({
                         id: `won-${opportunity.id}-${Date.now()}`,
                         title: '✅ Oportunidad marcada como GANADA!',
-                        description: `Se creó la cotización: ${result.data.autoCreatedQuotation.quotationNumber}\n💰 Total: $${result.data.autoCreatedQuotation.total.toLocaleString('es-AR')}\n\nPuedes verla en el módulo "Cotizaciones"`,
+                        description: `Se creó la cotización: ${result.data.autoCreatedQuotation.quotationNumber} · Total: $${result.data.autoCreatedQuotation.total.toLocaleString('es-AR')}`,
                         priority: 'high',
                         timeAgo: 'Ahora',
                     });
@@ -321,7 +323,7 @@ const Opportunities = () => {
                         const status = stageConfig[opportunity.status] || stageConfig.prospecting;
                         const isWon = opportunity.status === 'won' || opportunity.status === 'ganado';
                         const isLost = opportunity.status === 'lost' || opportunity.status === 'perdido';
-                        const canMarkAsWon = !isWon && !isLost && (opportunity.probability || 0) > 60;
+                        const canMarkAsWon = !isWon && !isLost && (opportunity.probability || 0) >= 60;
                         return (
                             <div
                                 key={opportunity.id}
@@ -471,7 +473,7 @@ const Opportunities = () => {
                                     const parsedDate = closeDate ? new Date(closeDate) : null;
                                     const isWon = opp.status === 'won' || opp.status === 'ganado';
                                     const isLost = opp.status === 'lost' || opp.status === 'perdido';
-                                    const canMarkAsWon = !isWon && !isLost && (opp.probability || 0) > 60;
+                                    const canMarkAsWon = !isWon && !isLost && (opp.probability || 0) >= 60;
 
                                     return (
                                         <tr

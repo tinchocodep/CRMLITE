@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, Filter, Plus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Package, Search, Filter, Plus, Minus, Edit2, AlertTriangle, TrendingDown, TrendingUp, Box, Layers, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { stockMovementsIn, stockMovementsOut } from '../data/stock';
 import { getStockBalances, initializeStockData } from '../services/stockService';
 import AddStockModal from '../components/stock/AddStockModal';
+import EgressStockModal from '../components/stock/EgressStockModal';
 
 const Stock = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -13,6 +14,7 @@ const Stock = () => {
     const [viewMode, setViewMode] = useState('balances'); // balances, movements
     const [stockBalances, setStockBalances] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showEgressModal, setShowEgressModal] = useState(false);
 
     // Load stock data from localStorage
     useEffect(() => {
@@ -118,7 +120,7 @@ const Stock = () => {
                             <h1 className="text-base sm:text-xl font-bold text-slate-900 dark:text-white">Stock</h1>
                         </div>
 
-                        {/* View Mode Tabs - Compact */}
+                        {/* Acciones */}
                         <div className="flex items-center gap-1 sm:gap-2">
                             <button
                                 onClick={() => setViewMode('balances')}
@@ -138,6 +140,16 @@ const Stock = () => {
                             >
                                 📊 Movimientos
                             </button>
+                            {/* Egresar */}
+                            <button
+                                onClick={() => setShowEgressModal(true)}
+                                className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all bg-gradient-to-r from-red-500 to-orange-500 text-white hover:shadow-lg flex items-center gap-1"
+                            >
+                                <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">Egresar Stock</span>
+                                <span className="sm:hidden">➖</span>
+                            </button>
+                            {/* Agregar */}
                             <button
                                 onClick={() => setShowAddModal(true)}
                                 className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all bg-gradient-to-r from-green-500 to-green-600 text-white hover:shadow-lg flex items-center gap-1"
@@ -393,6 +405,12 @@ const Stock = () => {
             <AddStockModal
                 isOpen={showAddModal}
                 onClose={() => setShowAddModal(false)}
+                onSuccess={loadStockData}
+            />
+            {/* Egress Stock Modal */}
+            <EgressStockModal
+                isOpen={showEgressModal}
+                onClose={() => setShowEgressModal(false)}
                 onSuccess={loadStockData}
             />
         </div >

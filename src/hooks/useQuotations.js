@@ -138,7 +138,7 @@ export const useQuotations = () => {
                     unit: line.unit || 'Unid.',
                     unit_price: line.unitPrice || line.estimatedPrice,
                     subtotal: line.subtotal,
-                    tax_rate: line.taxRate || 21,
+                    tax_rate: line.taxRate ?? 21,
                     total: line.total,
                     line_order: index
                 }));

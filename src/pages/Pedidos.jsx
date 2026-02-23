@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp, Trash2, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { stockMovementsOut as mockStockMovements } from '../data/stock';
 import { invoices as mockInvoices } from '../data/invoices';
@@ -7,16 +7,18 @@ import { useToast } from '../contexts/ToastContext';
 import PaymentModal from '../components/PaymentModal';
 import PreInvoiceModal from '../components/PreInvoiceModal';
 import InvoiceActionModal from '../components/orders/InvoiceActionModal';
+import CreateOrderModal from '../components/orders/CreateOrderModal';
 import ComprobantesList, { PDFPreviewModal } from '../components/orders/ComprobantesList';
 import { getComprobantesByOrder } from '../services/comprobantesService';
 import { useOrders } from '../hooks/useOrders';
+
 
 
 const Pedidos = () => {
     const { showToast } = useToast();
 
     // Usar hook de Supabase para pedidos
-    const { orders, loading, error, updateOrder, deleteOrder } = useOrders();
+    const { orders, loading, error, updateOrder, deleteOrder, createOrder } = useOrders();
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
@@ -34,6 +36,7 @@ const Pedidos = () => {
     const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false);
     const [selectedComprobante, setSelectedComprobante] = useState(null);
     const [comprobantesMap, setComprobantesMap] = useState({});
+    const [createOrderModalOpen, setCreateOrderModalOpen] = useState(false);
 
     const [localStockMovements, setLocalStockMovements] = useState(mockStockMovements);
     const [localInvoices, setLocalInvoices] = useState(mockInvoices);
@@ -387,8 +390,8 @@ const Pedidos = () => {
             label: 'Total Pedidos',
             value: orders.length,
             icon: Package,
-            color: 'from-indigo-500 to-indigo-600',
-            textColor: 'text-indigo-600'
+            color: 'from-[#44C12B] to-[#4BA323]',
+            textColor: 'text-advanta-green'
         },
         {
             label: 'Pendientes',
@@ -401,8 +404,8 @@ const Pedidos = () => {
             label: 'Remitidos',
             value: orders.filter(o => o.status === 'shipped').length,
             icon: Truck,
-            color: 'from-blue-500 to-blue-600',
-            textColor: 'text-blue-600'
+            color: 'from-[#44C12B] to-[#4BA323]',
+            textColor: 'text-advanta-green'
         },
         {
             label: 'Completados',
@@ -424,19 +427,26 @@ const Pedidos = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-24 xl:pb-8 xl:pt-14">
             {/* Header - Mobile Optimized */}
             <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 xl:static">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
                     {/* Title */}
                     <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#44C12B] to-[#4BA323] flex items-center justify-center shadow-lg">
                             <Package className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
-                        <div>
+                        <div className="flex-1">
                             <h1 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">Pedidos</h1>
                             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 hidden sm:block">Gestión de pedidos: Remitir, Facturar y Cobrar</p>
                         </div>
+                        <button
+                            onClick={() => setCreateOrderModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all"
+                        >
+                            <Plus size={16} />
+                            <span className="hidden sm:inline">Nuevo Pedido</span>
+                        </button>
                     </div>
 
                     {/* Stats Cards - Mobile Optimized */}
@@ -451,7 +461,7 @@ const Pedidos = () => {
                             >
                                 <div className="flex flex-col items-center gap-1 sm:gap-2">
                                     <stat.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${stat.textColor}`} />
-                                    <span className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</span>
+                                    <span className={`text-lg sm:text-2xl font-bold ${stat.textColor}`}>{stat.value}</span>
                                     <p className="text-[9px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium text-center leading-tight">{stat.label}</p>
                                 </div>
                             </motion.div>
@@ -530,7 +540,7 @@ const Pedidos = () => {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                                <div className="text-2xl font-bold text-[#44C12B]">
                                                     {formatCurrency(order.total)}
                                                 </div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400">
@@ -865,8 +875,27 @@ const Pedidos = () => {
                     </motion.div>
                 </motion.div>
             )}
-        </div>
 
+            {/* Create Order Modal */}
+            <CreateOrderModal
+                isOpen={createOrderModalOpen}
+                onClose={() => setCreateOrderModalOpen(false)}
+                onSuccess={async (orderData) => {
+                    const result = await createOrder(orderData);
+                    if (!result.success) {
+                        throw new Error(result.error || 'Error al crear el pedido');
+                    }
+                    showToast({
+                        id: `create-order-${Date.now()}`,
+                        title: '✅ Pedido Creado',
+                        description: `Pedido creado correctamente para ${orderData.client_name}`,
+                        priority: 'high',
+                        icon: CheckCircle,
+                        timeAgo: 'Ahora'
+                    });
+                }}
+            />
+        </div>
     );
 };
 
