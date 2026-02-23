@@ -57,13 +57,15 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 }`}
         >
             {/* Logo Section */}
-            <div className="h-20 flex items-center justify-center border-b border-slate-200">
+            <div className="h-20 flex items-center justify-center border-b border-slate-200 overflow-hidden px-2">
                 <img
                     src={branding.logoUrl || '/logo-potenza-color.png'}
                     alt={branding.companyName || 'CRM'}
                     style={{
-                        width: isHovered ? `${branding.logoWidth || 120}px` : '64px',
-                        height: isHovered ? `${branding.logoHeight || 40}px` : '64px',
+                        maxWidth: isHovered ? '120px' : '44px',
+                        maxHeight: isHovered ? '56px' : '44px',
+                        width: 'auto',
+                        height: 'auto',
                     }}
                     className="object-contain transition-all duration-300"
                 />
