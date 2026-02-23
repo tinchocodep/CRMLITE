@@ -1,0 +1,24 @@
+﻿C:\Users\ASUS Tuf\Desktop\content,metadata,NEURAWEB.csv
+C:\Users\ASUS Tuf\Desktop\content,metadata.csv
+C:\Users\ASUS Tuf\Desktop\nombre,email,telefono,empresa.csv
+C:\Users\ASUS Tuf\Desktop\SILO.csv
+C:\Users\ASUS Tuf\Desktop\Ventas Biofertil V2 BASE DE DATOS SAILO CLIENTE.csv
+C:\Users\ASUS Tuf\Desktop\Comerciales SOLDO HUE\SOLDO HUE - CLIENTE .csv
+C:\Users\ASUS Tuf\Desktop\Comerciales SOLDO HUE\SOLDO HUE - COMERCIAL.csv
+C:\Users\ASUS Tuf\Desktop\Comerciales SOLDO HUE\SOLDO HUE - Prospecto.csv
+C:\Users\ASUS Tuf\Desktop\NeuraStockCarpetas\bygger\STOCK DE MERCADERIA bygger.csv
+C:\Users\ASUS Tuf\Desktop\NeuraStockCarpetas\Grupo Marma\STOCK DE MERCADERIA Grupo Marma.csv
+C:\Users\ASUS Tuf\Desktop\NeuraStockCarpetas\Grupo Marma\STOCK DE MERCADERIA Limayen.csv
+C:\Users\ASUS Tuf\Desktop\NeuraStockCarpetas\Limayen\STOCK DE MERCADERIA Limayen.csv
+C:\Users\ASUS Tuf\Desktop\Potenza Clientes\POTENZA CLIENTES.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\activities_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\comerciales_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\companies_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\contacts_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\file_attachments_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\notifications_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\opportunities_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\opportunity_status_history_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\product_types_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\tenants_rows.csv
+C:\Users\ASUS Tuf\Desktop\TABLAS SUPABASE SAILO OG\users_rows.csv

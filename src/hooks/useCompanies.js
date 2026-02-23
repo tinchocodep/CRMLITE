@@ -43,6 +43,7 @@ export const useCompanies = (type = null) => {
 
             // OPTIMIZATION: Only fetch essential fields for list view
             // This significantly reduces payload size and query time
+            // Include JOIN with comerciales to get comercial name
             const essentialFields = [
                 'id',
                 'created_at',
@@ -57,7 +58,8 @@ export const useCompanies = (type = null) => {
                 'is_active',
                 'city',
                 'province',
-                'file_number'
+                'file_number',
+                'comerciales(name)'
             ].join(',');
 
             // Build query with tenant filter
@@ -82,7 +84,13 @@ export const useCompanies = (type = null) => {
 
             if (fetchError) throw fetchError;
 
-            setCompanies(data || []);
+            // Normalize: flatten comerciales join -> comercial_name
+            const normalized = (data || []).map(company => ({
+                ...company,
+                comercial_name: company.comerciales?.name || null,
+            }));
+
+            setCompanies(normalized);
             setError(null);
         } catch (err) {
             console.error('Error fetching companies:', err);
