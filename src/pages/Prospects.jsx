@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+﻿import React, { useState, useMemo, useCallback } from 'react';
 import { Search, Filter, Plus, UserPlus, CheckCircle2, X } from 'lucide-react';
 import ProspectCard from '../components/prospects/ProspectCard';
 import ProspectsTable from '../components/prospects/ProspectsTable';
@@ -288,7 +288,7 @@ const Prospects = () => {
                         </div>
                         <button
                             onClick={handleCreateClick}
-                            className="px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                            className="px-4 py-2 btn-brand text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                         >
                             <Plus size={18} />
                             <span className="hidden md:inline">Nuevo</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
 import { safeFormat } from '../../utils/dateUtils';
@@ -573,7 +573,7 @@ END:VCARD`;
                                                     </button>
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); handleCreateContact(); }}
-                                                        className="flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                                                        className="flex items-center justify-center gap-2 px-3 py-2.5 btn-brand text-white rounded-xl text-xs font-bold transition-all shadow-sm"
                                                     >
                                                         <UserPlus size={14} />
                                                         Crear nuevo contacto
@@ -629,7 +629,7 @@ END:VCARD`;
                                                                                 <button
                                                                                     onClick={(e) => { e.stopPropagation(); handleLinkExistingContact(); setContactMode(null); }}
                                                                                     disabled={isLinking || !linkRole.trim()}
-                                                                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                                                                                    className="flex-1 px-3 py-2 btn-brand text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
                                                                                 >
                                                                                     {isLinking ? 'Vinculando...' : 'Vincular'}
                                                                                 </button>
@@ -651,7 +651,7 @@ END:VCARD`;
                                                                                         setLinkRole('');
                                                                                     }}
                                                                                     disabled={!linkRole.trim()}
-                                                                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                                                                                    className="flex-1 px-3 py-2 btn-brand text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
                                                                                 >
                                                                                     Agregar (pendiente)
                                                                                 </button>
@@ -717,7 +717,7 @@ END:VCARD`;
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                        className="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-brand text-white font-bold shadow-lg shadow-advanta-green/30 hover:shadow-advanta-green/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         <Save size={18} />
                         Confirmar

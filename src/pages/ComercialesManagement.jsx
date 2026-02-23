@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Users, Plus, Mail, Phone, CheckCircle, XCircle, Edit2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useComerciales } from '../hooks/useComerciales';
@@ -81,7 +81,7 @@ const ComercialesManagement = () => {
                     </div>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-advanta-green to-green-700 hover:from-red-700 hover:to-green-800 text-white rounded-xl font-semibold transition shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r bg-brand hover:from-red-700 hover:to-green-800 text-white rounded-xl font-semibold transition shadow-lg"
                     >
                         <Plus size={20} />
                         <span className="hidden md:inline">Nuevo Comercial</span>

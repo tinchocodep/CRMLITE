@@ -1,8 +1,49 @@
 @import "tailwindcss";
 
+/**
+ * CSS Variables de Branding Dinámico
+ * Inicializadas con el color de SAILO como fallback.
+ * TenantBrandingContext las sobreescribe en runtime via applyBrandingToDom().
+ *
+ * Uso en Tailwind: bg-brand / text-brand / border-brand
+ * Uso en JSX inline: style={{ color: 'var(--color-brand-primary)' }}
+ */
+:root {
+  --color-brand-primary: hsl(12 76% 61%);
+  --color-brand-primary-hover: hsl(12 76% 50%);
+  --color-brand-accent: hsl(12 76% 45%);
+  --color-brand-text-on-primary: hsl(0 0% 100%);
+}
+
 @theme {
-  --color-brand-red: #E76E53;
-  --color-brand-red-hover: #CD5643;
+  /* ── Tokens de marca dinámica (responden al tenant) ─────────────────────────
+   * Conectamos advanta-green al CSS var para que TODOS los componentes
+   * que ya usan bg-advanta-green / text-advanta-green / etc.
+   * cambien de color automáticamente cuando el admin actualiza el branding.
+   */
+  --color-advanta-green: var(--color-brand-primary);
+  --color-advanta-green-hover: var(--color-brand-primary-hover);
+  --color-advanta-green-light: color-mix(in srgb, var(--color-brand-primary) 20%, white);
+  --color-advanta-green-dark: var(--color-brand-accent);
+
+  /* Alias directos para uso en componentes nuevos */
+  --color-brand: var(--color-brand-primary);
+  --color-brand-hover: var(--color-brand-primary-hover);
+  --color-brand-light: color-mix(in srgb, var(--color-brand-primary) 15%, white);
+  --color-brand-dark: var(--color-brand-accent);
+
+  /* Tokens legacy que se mantienen como están (no son de marca principal) */
+  --color-advanta-bronze-dark: #9c6615;
+  --color-advanta-orange: #eb5e28;
+  --color-advanta-orange-light: #f9a03f;
+  --color-advanta-yellow: #f3c053;
+
+  /* Status tokens — semánticos, no cambian con el tenant */
+  --color-status-urgente: #eb5e28;
+  --color-status-tibio: #f3c053;
+  --color-status-frio: #87a330;
+
+  /* Fuentes */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
@@ -25,4 +66,59 @@ body {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/**
+ * ── Clases utilitarias de marca dinámica ─────────────────────────────────────
+ * Usar estas clases en componentes nuevos y al refactorizar.
+ * Responden automáticamente al color del tenant configurado en Settings.
+ *
+ * btn-brand         → botón primario con gradiente de marca
+ * bg-brand          → fondo de color de marca
+ * text-brand        → texto de color de marca
+ * border-brand      → borde de color de marca
+ * ring-brand        → focus ring de color de marca
+ */
+
+.btn-brand {
+  background: linear-gradient(to right,
+      var(--color-brand-primary),
+      var(--color-brand-primary-hover));
+  color: var(--color-brand-text-on-primary);
+  transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.btn-brand:hover {
+  filter: brightness(0.9);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-brand-primary) 40%, transparent);
+}
+
+.btn-brand:active {
+  transform: scale(0.97);
+}
+
+.btn-brand:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.bg-brand {
+  background-color: var(--color-brand-primary);
+}
+
+.bg-brand-light {
+  background-color: color-mix(in srgb, var(--color-brand-primary) 15%, white);
+}
+
+.text-brand {
+  color: var(--color-brand-primary);
+}
+
+.border-brand {
+  border-color: var(--color-brand-primary);
+}
+
+.ring-brand:focus {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
 }

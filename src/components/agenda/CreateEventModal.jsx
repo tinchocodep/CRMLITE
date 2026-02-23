@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake, ChevronDown, UserPlus, AlertCircle } from 'lucide-react';
 import { format, addHours, addMinutes } from 'date-fns';
@@ -433,7 +433,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                                 disabled={isSubmitting}
                                 className={`px-8 py-2.5 rounded-xl font-bold shadow-lg transition-all transform ${isSubmitting
                                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                    : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] hover:-translate-y-0.5 active:translate-y-0'
+                                    : 'bg-brand text-white shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:-translate-y-0.5 active:translate-y-0'
                                     }`}
                             >
                                 {isSubmitting ? 'Creando...' : 'Crear Actividad'}

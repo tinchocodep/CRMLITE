@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useCompanies } from '../../hooks/useCompanies';
 import BusinessUnitPicker from '../shared/BusinessUnitPicker';
@@ -292,7 +292,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                            className="flex-1 px-4 py-2.5 btn-brand text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
                         >
                             {opportunity ? 'Actualizar' : 'Crear'}
                         </button>

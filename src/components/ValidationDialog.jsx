@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { createPortal } from 'react-dom';
 import { AlertCircle, X } from 'lucide-react';
 
@@ -52,7 +52,7 @@ export function ValidationDialog({
                 <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 flex gap-3 justify-end">
                     <button
                         onClick={onClose}
-                        className="px-6 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg transition-all font-bold shadow-lg shadow-red-500/30"
+                        className="px-6 py-2 btn-brand text-white rounded-lg transition-all font-bold shadow-lg shadow-red-500/30"
                     >
                         Aceptar
                     </button>

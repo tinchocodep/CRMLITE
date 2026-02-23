@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Briefcase, Package, Box, Menu, Plus, X, Users, UserCheck, FileText, User, UserPlus, Calendar, MapPin, Receipt, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -199,7 +199,7 @@ const MobileBottomNav = ({ onQuickAction, currentContext = 'crm' }) => {
                     <div className="absolute left-1/2 -translate-x-1/2 -top-6 z-20">
                         <button
                             onClick={() => setQuickActionsOpen(!quickActionsOpen)}
-                            className="relative w-16 h-16 rounded-full bg-gradient-to-br from-advanta-green to-green-700 shadow-2xl shadow-green-500/50 dark:shadow-green-900/50 flex items-center justify-center hover:scale-110 transition-all duration-300 border-4 border-white dark:border-slate-900"
+                            className="relative w-16 h-16 rounded-full bg-gradient-to-br bg-brand shadow-2xl dark:shadow-green-900/50 flex items-center justify-center hover:scale-110 transition-all duration-300 border-4 border-white dark:border-slate-900"
                         >
                             <AnimatePresence mode="wait">
                                 {quickActionsOpen ? (

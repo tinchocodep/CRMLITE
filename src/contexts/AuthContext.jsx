@@ -179,7 +179,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         isAuthenticated: !!user,
         role: userProfile?.role || null,
-        isAdmin: userProfile?.role === 'admin',
+        isSuperAdmin: userProfile?.role === 'super_admin',
+        isAdmin: userProfile?.role === 'admin' || userProfile?.role === 'super_admin',
         isSupervisor: userProfile?.role === 'supervisor',
         isUser: userProfile?.role === 'user'
     };

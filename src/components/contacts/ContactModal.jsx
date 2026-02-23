@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X, Building2, UserPlus, Plus, Trash2, Star, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCompanies } from '../../hooks/useCompanies';
@@ -569,7 +569,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                             <button
                                                 type="button"
                                                 onClick={handleAddCompany}
-                                                className="w-full px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
+                                                className="w-full px-4 py-2 btn-brand text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <Plus size={16} />
                                                 Vincular Empresa
@@ -610,7 +610,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                             disabled={isSubmitting}
                             className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${isSubmitting
                                 ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white'
+                                : 'btn-brand text-white'
                                 }`}
                         >
                             {isSubmitting ? 'Guardando...' : (contact ? 'Guardar' : 'Crear Contacto')}

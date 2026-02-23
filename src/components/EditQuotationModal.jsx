@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { products } from '../data/products';
@@ -241,7 +241,7 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                                 <button
                                     type="button"
                                     onClick={addLine}
-                                    className="px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white rounded-lg font-semibold hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all flex items-center gap-2"
+                                    className="px-4 py-2 bg-brand text-white rounded-lg font-semibold transition-all flex items-center gap-2"
                                 >
                                     <Plus className="w-4 h-4" />
                                     Agregar Producto
@@ -349,7 +349,7 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                             </button>
                             <button
                                 type="submit"
-                                className="flex-1 px-6 py-3 rounded-lg bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold hover:from-[#3a9120] hover:to-[#3d8a1f] shadow-lg transition-all"
+                                className="flex-1 px-6 py-3 rounded-lg bg-brand text-white font-bold shadow-lg transition-all"
                             >
                                 Guardar Cambios
                             </button>

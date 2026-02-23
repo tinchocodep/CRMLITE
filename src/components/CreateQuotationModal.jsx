@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, Plus, Trash2, Package, FileText, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { products } from '../data/products';
@@ -264,7 +264,7 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                                 <button
                                     type="button"
                                     onClick={addLine}
-                                    className="px-3 py-1.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white rounded-lg text-xs font-bold hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all flex items-center gap-1.5"
+                                    className="px-3 py-1.5 bg-brand text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
                                 >
                                     <Plus size={14} />
                                     Agregar Producto
@@ -398,7 +398,7 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                             <button
                                 type="submit"
                                 disabled={isSaving}
-                                className="flex-1 px-5 py-3 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold hover:from-[#3a9120] hover:to-[#3d8a1f] shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                className="flex-1 px-5 py-3 rounded-xl bg-brand text-white font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {isSaving ? (
                                     <>

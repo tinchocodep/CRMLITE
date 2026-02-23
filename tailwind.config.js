@@ -7,24 +7,26 @@ export default {
     ],
     theme: {
         extend: {
+            // Nota: los colores de marca (advanta-green, brand) están definidos
+            // en src/index.css via @theme para poder usar CSS variables dinámicas.
+            // Solo mantenemos aquí los tokens que NO son de marca principal.
             colors: {
                 'advanta': {
                     'bronze-dark': '#9c6615',
                     'orange': '#eb5e28',
                     'orange-light': '#f9a03f',
                     'yellow': '#f3c053',
-                    'green-light': '#a1c349',
-                    'green': '#87a330',
-                    'green-dark': '#6a8532',
+                    // advanta-green, advanta-green-light, advanta-green-dark
+                    // están en index.css y usan CSS vars dinámicas del tenant
                 },
-                // Status-specific semantic tokens
                 'status': {
-                    'urgente': '#eb5e28',  // Orange
-                    'tibio': '#f3c053',     // Yellow
-                    'frio': '#87a330',      // Green
+                    'urgente': '#eb5e28',
+                    'tibio': '#f3c053',
+                    'frio': '#87a330',
                 },
             },
         },
     },
     plugins: [],
 }
+

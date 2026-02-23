@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, Calendar, FileText, Map, Target, AlertCircle, Briefcase, UserCheck, Search, Plus, X, UserPlus, User, LogOut, Bell, Home, Menu, Settings, ShieldCheck, Receipt, Package, CreditCard, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -457,7 +457,7 @@ const MainLayout = () => {
                                             }}
                                             className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-br from-green-50 to-green-100 border border-red-200 hover:shadow-lg transition-all active:scale-95"
                                         >
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#44C12B] to-[#4BA323] flex items-center justify-center mb-2 shadow-md">
+                                            <div className="w-12 h-12 rounded-xl bg-brand flex items-center justify-center mb-2 shadow-md">
                                                 <action.icon className="w-6 h-6 text-white" />
                                             </div>
                                             <span className="text-xs font-bold text-slate-800 text-center">{action.label}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Package, Search, Truck, CheckCircle, Clock, DollarSign, Calendar, Building2, FileText, Receipt, Banknote, PackageCheck, AlertCircle, ChevronDown, ChevronUp, Trash2, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { stockMovementsOut as mockStockMovements } from '../data/stock';
@@ -390,7 +390,7 @@ const Pedidos = () => {
             label: 'Total Pedidos',
             value: orders.length,
             icon: Package,
-            color: 'from-[#44C12B] to-[#4BA323]',
+            color: 'bg-brand',
             textColor: 'text-advanta-green'
         },
         {
@@ -404,7 +404,7 @@ const Pedidos = () => {
             label: 'Remitidos',
             value: orders.filter(o => o.status === 'shipped').length,
             icon: Truck,
-            color: 'from-[#44C12B] to-[#4BA323]',
+            color: 'bg-brand',
             textColor: 'text-advanta-green'
         },
         {
@@ -433,7 +433,7 @@ const Pedidos = () => {
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
                     {/* Title */}
                     <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-6">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#44C12B] to-[#4BA323] flex items-center justify-center shadow-lg">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand flex items-center justify-center shadow-lg">
                             <Package className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div className="flex-1">
@@ -442,7 +442,7 @@ const Pedidos = () => {
                         </div>
                         <button
                             onClick={() => setCreateOrderModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all"
+                            className="flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 btn-brand text-white rounded-xl text-sm font-bold shadow-lg hover:shadow-xl transition-all"
                         >
                             <Plus size={16} />
                             <span className="hidden sm:inline">Nuevo Pedido</span>
@@ -540,7 +540,7 @@ const Pedidos = () => {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-2xl font-bold text-[#44C12B]">
+                                                <div className="text-2xl font-bold text-brand">
                                                     {formatCurrency(order.total)}
                                                 </div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400">

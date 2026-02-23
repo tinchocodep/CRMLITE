@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Users, UserCheck, Briefcase, Calendar, TrendingUp, Clock, MapPin, Phone, Mail, ChevronRight, Sparkles, Bell, LogOut, Map, X } from 'lucide-react';
@@ -378,10 +378,10 @@ const Dashboard = () => {
                     {/* Contactos */}
                     <motion.div
                         variants={itemVariants}
-                        className="bg-[#87a330]/10 dark:from-teal-900 dark:via-teal-800 dark:to-teal-900 border border-[#87a330]/30 dark:border-teal-700 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
+                        className="bg-brand-light dark:from-teal-900 dark:via-teal-800 dark:to-teal-900 border border-brand/30 dark:border-teal-700 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow"
                     >
-                        <div className="w-8 h-8 bg-[#87a330]/20 dark:bg-teal-600/40 rounded-lg flex items-center justify-center mb-2 mx-auto">
-                            <Users className="w-4 h-4 text-[#87a330] dark:text-teal-200" />
+                        <div className="w-8 h-8 bg-brand-light dark:bg-teal-600/40 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                            <Users className="w-4 h-4 text-brand dark:text-teal-200" />
                         </div>
                         <div className="text-2xl font-black text-[#333333] dark:text-teal-100 text-center">{stats.contacts}</div>
                         <div className="text-[10px] font-semibold text-[#666666] dark:text-teal-300 text-center mt-1">Contactos</div>

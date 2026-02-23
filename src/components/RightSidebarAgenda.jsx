@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+﻿import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Clock, MoreVertical, Check, CalendarClock, Trash2 } from 'lucide-react';
@@ -102,13 +102,13 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         switch (priority?.toLowerCase()) {
             case 'high':
             case 'alta':
-                return 'border-l-[#87a330]';
+                return 'border-l-[var(--color-brand-primary)]';
             case 'medium':
             case 'media':
-                return 'border-l-[#87a330]/60';
+                return 'border-l-[var(--color-brand-primary)]/60';
             case 'low':
             case 'baja':
-                return 'border-l-[#87a330]/30';
+                return 'border-l-[var(--color-brand-primary)]/30';
             default:
                 return 'border-l-slate-300';
         }
@@ -271,7 +271,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
         return (
             <aside className={`fixed top-0 h-screen w-64 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-xl transition-all duration-300 ${isMainSidebarExpanded ? 'right-[-256px]' : 'right-0 hidden lg:block'}`}>
                 <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#87a330]"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
                 </div>
             </aside>
         );
@@ -428,7 +428,7 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                                                 </button>
                                                                 <button
                                                                     onClick={(e) => handleDateChange(activity.id, e)}
-                                                                    className="flex-1 px-2 py-1 text-[10px] bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded transition-colors font-bold"
+                                                                    className="flex-1 px-2 py-1 text-[10px] btn-brand text-white rounded transition-colors font-bold"
                                                                 >
                                                                     Guardar
                                                                 </button>

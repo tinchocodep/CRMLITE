@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { format, addDays, startOfWeek, addMonths, subMonths, subWeeks, addWeeks, subDays, startOfMonth, endOfMonth, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
@@ -442,7 +442,7 @@ const Agenda = () => {
                     <select
                         value={selectedActivityType}
                         onChange={e => setSelectedActivityType(e.target.value)}
-                        className="bg-slate-100/80 dark:bg-slate-700/80 border-0 rounded-xl text-xs md:text-sm px-3 py-1.5 text-slate-600 dark:text-slate-200 focus:ring-2 focus:ring-[#44C12B]/20 outline-none cursor-pointer font-medium"
+                        className="bg-slate-100/80 dark:bg-slate-700/80 border-0 rounded-xl text-xs md:text-sm px-3 py-1.5 text-slate-600 dark:text-slate-200 focus:ring-2 focus:ring-[var(--color-brand-primary)]/20 outline-none cursor-pointer font-medium"
                     >
                         {ACTIVITY_TYPES.map(t => (
                             <option key={t.id} value={t.id}>{t.label}</option>
@@ -474,7 +474,7 @@ const Agenda = () => {
                     </button>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white text-sm font-bold rounded-xl shadow-lg shadow-advanta-green/20 hover:shadow-advanta-green/40 hover:from-[#3a9120] hover:to-[#3d8a1f] transition-all"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-brand text-white text-sm font-bold rounded-xl shadow-lg shadow-advanta-green/20 hover:shadow-advanta-green/40 transition-all"
                     >
                         <Plus size={18} strokeWidth={3} />
                         <span className="inline">Nuevo</span>

@@ -5,6 +5,7 @@ import {
     Megaphone, Truck, Leaf, DollarSign, Building2,
     Plus, Settings, ShieldCheck, Lock, BarChart2
 } from 'lucide-react';
+import { useTenantBranding } from '../contexts/TenantBrandingContext';
 
 const sidebarModules = [
     { id: 'home', name: 'Home', path: '/dashboard', icon: Home, locked: false },
@@ -24,6 +25,7 @@ const sidebarModules = [
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const [isHovered, setIsHovered] = useState(false);
     const location = useLocation();
+    const { branding } = useTenantBranding();
 
     // Define CRM routes
     const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos'];
@@ -56,12 +58,14 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
         >
             {/* Logo Section */}
             <div className="h-20 flex items-center justify-center border-b border-slate-200">
-                {/* [TODO: LOGO] Restaurar: src="/logo-advanta-zoom.svg" alt="Advanta" */}
                 <img
-                    src="/logo-potenza-color.png"
-                    alt="Potenza"
-                    className={`object-contain transition-all duration-300 ${isHovered ? 'w-28 h-28' : 'w-24 h-24'
-                        }`}
+                    src={branding.logoUrl || '/logo-potenza-color.png'}
+                    alt={branding.companyName || 'CRM'}
+                    style={{
+                        width: isHovered ? `${branding.logoWidth || 120}px` : '64px',
+                        height: isHovered ? `${branding.logoHeight || 40}px` : '64px',
+                    }}
+                    className="object-contain transition-all duration-300"
                 />
             </div>
 
@@ -106,28 +110,38 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             key={module.id}
                             to={module.path}
                             className={({ isActive }) => {
-                                const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative text-slate-800';
-                                // For CRM module, check if we're in any CRM route
-                                // For Cotizador module, check if we're in any Cotizador route
+                                const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
                                 const shouldHighlight = module.isCRM ? isInCRM
                                     : module.isCotizador ? isInCotizador
                                         : module.isComercial ? isInComercial
                                             : isActive;
                                 if (shouldHighlight) {
-                                    return `${baseClasses} shadow-lg`;
+                                    return `${baseClasses} text-white shadow-md`;
                                 }
-                                return `${baseClasses} hover:bg-slate-100`;
+                                return `${baseClasses} text-slate-700`;
                             }}
                             style={({ isActive }) => {
-                                // For CRM module, check if we're in any CRM route
-                                // For Cotizador module, check if we're in any Cotizador route
                                 const shouldHighlight = module.isCRM ? isInCRM
                                     : module.isCotizador ? isInCotizador
                                         : module.isComercial ? isInComercial
                                             : isActive;
-                                return {
-                                    backgroundColor: shouldHighlight ? '#a1c349' : 'transparent'
+                                return shouldHighlight ? {
+                                    background: 'linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent))',
+                                    boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-primary) 35%, transparent)',
+                                } : {
+                                    backgroundColor: 'transparent',
                                 };
+                            }}
+                            onMouseEnter={e => {
+                                // Solo aplica hover si el ítem NO está activo (si ya tiene gradient, lo respeta)
+                                if (!e.currentTarget.style.background) {
+                                    e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 10%, white)';
+                                }
+                            }}
+                            onMouseLeave={e => {
+                                if (!e.currentTarget.style.background) {
+                                    e.currentTarget.style.backgroundColor = 'transparent';
+                                }
                             }}
                         >
                             <module.icon
@@ -150,7 +164,10 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                 {/* Quick Actions Button */}
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:bg-[#a1c349] transition-all duration-200 mb-2 bg-slate-100"
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 transition-all duration-200 mb-2 bg-slate-100"
+                    style={{ '--hover-bg': 'color-mix(in srgb, var(--color-brand-primary) 15%, white)' }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 15%, white)'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = ''}
                 >
                     <Plus size={22} className="flex-shrink-0" />
                     <span

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X, UserPlus, Building2, User } from 'lucide-react';
 import ComercialSelector from '../shared/ComercialSelector';
 import { useAuth } from '../../contexts/AuthContext';
@@ -153,7 +153,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 {/* Footer Actions */}
                 <div className="shrink-0 p-4 border-t border-slate-100 bg-white flex justify-end gap-3 z-10 pb-20 md:pb-4">
                     <button type="button" onClick={onClose} className="px-5 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors text-sm">Cancelar</button>
-                    <button onClick={handleSubmit} type="submit" className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white font-bold shadow-lg shadow-advanta-green/30 hover:from-[#3a9120] hover:to-[#3d8a1f] hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm">
+                    <button onClick={handleSubmit} type="submit" className="px-6 py-3 rounded-xl bg-brand text-white font-bold shadow-lg shadow-advanta-green/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 text-sm">
                         <UserPlus size={18} />
                         Confirmar
                     </button>

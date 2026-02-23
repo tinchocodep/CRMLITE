@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Phone, UserCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useCurrentTenant } from '../../hooks/useCurrentTenant';
@@ -198,7 +198,7 @@ const CreateComercialModal = ({ isOpen, onClose, onCreateComercial }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-advanta-green to-green-700 hover:from-red-700 hover:to-green-800 text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-3 bg-gradient-to-r bg-brand hover:from-red-700 hover:to-green-800 text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Creando...' : 'Crear Comercial'}
                         </button>

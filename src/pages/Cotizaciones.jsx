@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { FileText, Search, Edit2, CheckCircle, DollarSign, Calendar, Building2, ShoppingCart, XCircle, ChevronRight, Trash2, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { orders as mockOrders } from '../data/orders';
@@ -366,7 +366,7 @@ const Cotizaciones = () => {
                     {/* Title */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-6">
                         <div className="flex items-center gap-2 sm:gap-3">
-                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#44C12B] to-[#4BA323] flex items-center justify-center shadow-lg">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-brand flex items-center justify-center shadow-lg">
                                 <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             </div>
                             <div>
@@ -376,7 +376,7 @@ const Cotizaciones = () => {
                         </div>
                         <button
                             onClick={() => setCreateModalOpen(true)}
-                            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-semibold text-xs sm:text-sm hover:shadow-lg transition-all active:scale-95"
+                            className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 btn-brand text-white rounded-xl font-semibold text-xs sm:text-sm hover:shadow-lg transition-all active:scale-95"
                         >
                             <Plus className="w-4 h-4" />
                             <span className="hidden sm:inline">Nueva Cotización</span>

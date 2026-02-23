@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Shield, Users, AlertCircle, UserCog, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -146,7 +146,7 @@ const UserManagement = () => {
                     {isAdmin && (
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white rounded-xl font-semibold hover:from-[#3a9120] hover:to-[#3d8a1f] transition shadow-lg"
+                            className="flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-xl font-semibold transition shadow-lg"
                         >
                             <UserPlus size={20} />
                             <span className="hidden sm:inline">Crear Usuario</span>

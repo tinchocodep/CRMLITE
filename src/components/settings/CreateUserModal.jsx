@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { X, User, Mail, Lock, Shield } from 'lucide-react';
 import { useNotifications } from '../../hooks/useNotifications';
 
@@ -212,7 +212,7 @@ const CreateUserModal = ({ isOpen, onClose, onCreateUser }) => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-3 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-3 btn-brand text-white font-semibold rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Creando...' : 'Crear Usuario'}
                         </button>

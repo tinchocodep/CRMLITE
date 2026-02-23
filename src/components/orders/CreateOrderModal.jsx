@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { X, Plus, Trash2, Package, Calendar, DollarSign, Warehouse, Handshake, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
@@ -230,7 +230,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                         {/* Header */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
                             <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 bg-gradient-to-br from-[#44C12B] to-[#4BA323] rounded-xl flex items-center justify-center shadow-md">
+                                <div className="w-9 h-9 bg-brand rounded-xl flex items-center justify-center shadow-md">
                                     <Package className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
@@ -275,7 +275,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                     <select
                                         value={paymentCondition}
                                         onChange={e => setPaymentCondition(e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-[#44C12B] focus:border-transparent"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-[var(--color-brand-primary)] focus:border-transparent"
                                     >
                                         {PAYMENT_CONDITIONS.map(p => (
                                             <option key={p.value} value={p.value}>{p.label}</option>
@@ -291,7 +291,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                         type="date"
                                         value={deliveryDate}
                                         onChange={e => setDeliveryDate(e.target.value)}
-                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-[#44C12B] focus:border-transparent"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-[var(--color-brand-primary)] focus:border-transparent"
                                     />
                                 </div>
                             </div>
@@ -305,7 +305,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                     <button
                                         type="button"
                                         onClick={addLine}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-[#4BA323] dark:text-green-400 rounded-lg text-xs font-semibold hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-brand dark:text-green-400 rounded-lg text-xs font-semibold hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors"
                                     >
                                         <Plus size={14} />
                                         Agregar línea
@@ -342,7 +342,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                                                 onFocus={() => updateLine(line.id, 'showProductDropdown', true)}
                                                                 onBlur={() => setTimeout(() => updateLine(line.id, 'showProductDropdown', false), 150)}
                                                                 className={`w-full pl-8 pr-3 py-2 rounded-lg border ${errors[`line_name_${idx}`] ? 'border-red-400 bg-red-50' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'
-                                                                    } text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-[#44C12B] focus:border-transparent`}
+                                                                    } text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--color-brand-primary)] focus:border-transparent`}
                                                             />
                                                         </div>
                                                         {/* Dropdown de productos del stock */}
@@ -463,8 +463,8 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                                                     type="button"
                                                                     onClick={() => updateLine(line.id, 'product_source', src.value)}
                                                                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${line.product_source === src.value
-                                                                        ? 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white border-[#4BA323] shadow-md'
-                                                                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-[#44C12B]'
+                                                                        ? 'bg-brand text-white border-brand shadow-md'
+                                                                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-brand'
                                                                         }`}
                                                                 >
                                                                     {src.label}
@@ -496,7 +496,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                     value={notes}
                                     onChange={e => setNotes(e.target.value)}
                                     placeholder="Observaciones, instrucciones de entrega..."
-                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-[#44C12B] focus:border-transparent resize-none"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-[var(--color-brand-primary)] focus:border-transparent resize-none"
                                 />
                             </div>
 
@@ -522,7 +522,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                     </div>
                                     <div className="text-base">
                                         <span className="text-slate-500 dark:text-slate-400">Total: </span>
-                                        <span className="font-bold text-[#44C12B]">{formatCurrency(summary.total)}</span>
+                                        <span className="font-bold text-brand">{formatCurrency(summary.total)}</span>
                                     </div>
                                 </div>
 
@@ -540,7 +540,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                                         type="button"
                                         onClick={handleSubmit}
                                         disabled={submitting}
-                                        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white text-sm font-bold shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
+                                        className="px-6 py-2.5 rounded-xl btn-brand text-white text-sm font-bold shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
                                     >
                                         {submitting ? (
                                             <>

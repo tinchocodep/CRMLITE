@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings as SettingsIcon, Moon, Sun, Clock, Palette, LogOut } from 'lucide-react';
 import ThemeToggle from '../components/ThemeToggle';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import BrandingSettings from '../components/settings/BrandingSettings';
 
 const Settings = () => {
     const { theme, themeMode } = useTheme();
-    const { logout, user } = useAuth();
+    const { logout, user, isAdmin } = useAuth();
     const navigate = useNavigate();
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -78,6 +79,13 @@ const Settings = () => {
                             )}
                         </div>
                     </div>
+
+                    {/* Branding del tenant — solo admins */}
+                    {isAdmin && (
+                        <div className="mt-6">
+                            <BrandingSettings />
+                        </div>
+                    )}
                 </div>
 
                 {/* Account Section */}
@@ -93,7 +101,7 @@ const Settings = () => {
 
                     <button
                         onClick={handleLogout}
-                        className="w-full bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white font-bold py-3.5 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group touch-manipulation"
+                        className="w-full btn-brand font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 group touch-manipulation"
                     >
                         <LogOut size={20} className="group-hover:rotate-12 transition-transform" />
                         Cerrar Sesión

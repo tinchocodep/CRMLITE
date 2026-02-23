@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, AlertCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCurrentTenant } from '../../hooks/useCurrentTenant';
 
 /**
  * Componente para seleccionar un comercial
@@ -16,6 +17,7 @@ const ComercialSelector = ({
     className = ""
 }) => {
     const { isAdmin, isSupervisor, comercialId } = useAuth();
+    const { tenantId } = useCurrentTenant();
     const [comerciales, setComerciales] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -32,16 +34,19 @@ const ComercialSelector = ({
 
         // Si es Admin, cargar lista de comerciales
         fetchComerciales();
-    }, [isAdmin, comercialId]);
+    }, [isAdmin, comercialId, tenantId]);
 
     const fetchComerciales = async () => {
         try {
             setLoading(true);
             setError(null);
 
+            if (!tenantId) return;
+
             const { data, error: fetchError } = await supabase
                 .from('comerciales')
                 .select('id, name, email')
+                .eq('tenant_id', tenantId)
                 .eq('is_active', true)
                 .order('name');
 

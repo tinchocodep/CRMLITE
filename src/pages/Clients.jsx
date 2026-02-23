@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { Search, Plus } from 'lucide-react';
 import ClientCard from '../components/clients/ClientCard';
 import ClientsTable from '../components/clients/ClientsTable';
@@ -195,7 +195,7 @@ const Clients = () => {
                         </div>
                         <button
                             onClick={openCreateModal}
-                            className="px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                            className="px-4 py-2 btn-brand text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                         >
                             <Plus size={18} />
                             <span className="hidden md:inline">Nuevo</span>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { Search, Plus, UserPlus } from 'lucide-react';
 import ContactCard from '../components/contacts/ContactCard';
 import ContactsTable from '../components/contacts/ContactsTable';
@@ -148,7 +148,7 @@ const Contacts = () => {
                                     ? 'text-white'
                                     : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
                                     }`}
-                                style={selectedSegment === seg.id ? { backgroundColor: '#44C12B' } : {}}
+                                style={selectedSegment === seg.id ? { backgroundColor: 'var(--color-brand-primary)' } : {}}
                             >
                                 {seg.label}
                             </button>
@@ -169,7 +169,7 @@ const Contacts = () => {
                         </div>
                         <button
                             onClick={handleCreateContact}
-                            className="px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
+                            className="px-4 py-2 btn-brand text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-sm hover:shadow-md active:scale-95"
                         >
                             <Plus size={18} />
                             <span className="hidden md:inline">Nuevo</span>
