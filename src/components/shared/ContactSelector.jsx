@@ -20,23 +20,10 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     const availableContacts = useMemo(() => {
         if (!comercialId) return [];
 
-            comercialId,
-            totalContacts: contacts.length,
-            contactsWithComercialId: contacts.filter(c => c.comercialId).length
-        });
-
         return contacts.filter(contact => {
             // Access comercialId directly from the contact object (mapped from comercial_id in useContacts)
             const contactComercialId = contact.comercialId;
             const matches = contactComercialId === comercialId;
-
-            if (matches) {
-                    contactId: contact.id,
-                    contactName: `${contact.firstName} ${contact.lastName}`,
-                    contactComercialId,
-                    filterComercialId: comercialId
-                });
-            }
 
             return matches;
         });
@@ -53,18 +40,10 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
     }, [availableContacts, selectedContactIds]);
 
     const handleAddContact = (contactId) => {
-            contactId,
-            currentSelection: selectedContactIds,
-            newSelection: [...selectedContactIds, contactId]
-        });
         onChange([...selectedContactIds, contactId]);
     };
 
     const handleRemoveContact = (contactId) => {
-            contactId,
-            currentSelection: selectedContactIds,
-            newSelection: selectedContactIds.filter(id => id !== contactId)
-        });
         onChange(selectedContactIds.filter(id => id !== contactId));
     };
 
@@ -133,11 +112,6 @@ const ContactSelector = ({ comercialId, selectedContactIds = [], onChange, label
                 <select
                     onChange={(e) => {
                         const selectedId = e.target.value;
-                            selectedId,
-                            type: typeof selectedId,
-                            availableContacts: unselectedContacts.map(c => ({ id: c.id, name: `${c.firstName} ${c.lastName}` }))
-                        });
-
                         if (selectedId) {
                             // Convert string ID to number to match contact.id type
                             const contactId = parseInt(selectedId, 10);

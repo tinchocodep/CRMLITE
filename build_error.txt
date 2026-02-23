@@ -1,0 +1,47 @@
+﻿[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 3083 modules transformed.
+rendering chunks...
+node.exe : [33m[plugin 
+vite:reporter] 
+En línea: 1 Carácter: 1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: ([3  
+  3m[plugin vite:reporte   
+ r] :String) [], Remote    
+Exception
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+(!) C:/Users/ASUS Tuf/Docum
+ents/GitHub/CRMLITE/src/ser
+vices/stockService.js is 
+dynamically imported by 
+C:/Users/ASUS Tuf/Documents
+/GitHub/CRMLITE/src/service
+s/invoiceService.js but 
+also statically imported 
+by C:/Users/ASUS Tuf/Docume
+nts/GitHub/CRMLITE/src/comp
+onents/stock/AddStockModal.
+jsx, C:/Users/ASUS Tuf/Docu
+ments/GitHub/CRMLITE/src/pa
+ges/Stock.jsx, dynamic 
+import will not move 
+module into another chunk.
+[39m
+computing gzip size...
+[2mdist/[22m[32mindex.html                       [39m[1m[2m    0.86 kB[22m[1m[22m[2m Γöé gzip:   0.44 kB[22m
+[2mdist/[22m[35massets/index-re_6BYRP.css        [39m[1m[2m  130.93 kB[22m[1m[22m[2m Γöé gzip:  17.04 kB[22m
+[2mdist/[22m[36massets/vendor-icons-DCyUA0-v.js  [39m[1m[2m   22.67 kB[22m[1m[22m[2m Γöé gzip:   7.64 kB[22m
+[2mdist/[22m[36massets/vendor-utils-CbteQbfM.js  [39m[1m[2m   23.89 kB[22m[1m[22m[2m Γöé gzip:   7.11 kB[22m
+[2mdist/[22m[36massets/vendor-react-93QwDNGJ.js  [39m[1m[2m   46.80 kB[22m[1m[22m[2m Γöé gzip:  16.58 kB[22m
+[2mdist/[22m[36massets/index-CK6Ht_77.js         [39m[1m[2m1,115.49 kB[22m[1m[22m[2m Γöé gzip: 275.91 kB[22m
+[32mΓ£ô built in 4.45s[39m

@@ -267,15 +267,6 @@ export const useContacts = () => {
             // Get current user ID for comparison
             const { data: { user } } = await supabase.auth.getUser();
 
-                exists: !!existingContact,
-                contactComercialId: existingContact?.comercial_id,
-                currentUserId: user?.id,
-                idsMatch: existingContact?.comercial_id === user?.id,
-                contactTenantId: existingContact?.tenant_id,
-                currentTenantId: tenantId,
-                fetchError
-            });
-
             if (fetchError || !existingContact) {
                 throw new Error('El contacto no existe o no tienes permisos para verlo');
             }
@@ -287,10 +278,6 @@ export const useContacts = () => {
                 .delete()
                 .eq('contact_id', id)
                 .select();
-
-                deletedRelations: relData?.length || 0,
-                relError
-            });
 
             // Don't fail if no relationships - contact might not have companies
             if (relError) {
@@ -304,10 +291,6 @@ export const useContacts = () => {
                 .delete()
                 .eq('id', id)
                 .select();
-
-                deletedContact: contactData?.[0],
-                deleteError
-            });
 
             if (deleteError) {
                 console.error('❌ Error deleting contact:', deleteError);

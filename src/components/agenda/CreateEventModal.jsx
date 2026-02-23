@@ -129,12 +129,6 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
         // Prevent double submission
         if (isSubmitting) return;
 
-            title: newEvent.title,
-            company_id: newEvent.company_id,
-            company_id_type: typeof newEvent.company_id,
-            fullEvent: newEvent
-        });
-
         if (!newEvent.title || !newEvent.company_id) {
             setValidationDialog({ isOpen: true, message: 'Por favor completa el título y selecciona una empresa.' });
             return;
@@ -438,8 +432,8 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
                                 className={`px-8 py-2.5 rounded-xl font-bold shadow-lg transition-all transform ${isSubmitting
-                                        ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] hover:-translate-y-0.5 active:translate-y-0'
+                                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] text-white shadow-advanta-green/30 hover:shadow-advanta-green/50 hover:from-[#3a9120] hover:to-[#3d8a1f] hover:-translate-y-0.5 active:translate-y-0'
                                     }`}
                             >
                                 {isSubmitting ? 'Creando...' : 'Crear Actividad'}

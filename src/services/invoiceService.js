@@ -72,17 +72,6 @@ const formatDate = (date) => {
 export const createInvoiceFromOrder = (order, options, selectedQuantities = null) => {
     const { tipo_cbte, letra, fecha_pago } = options;
 
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        clientName: order.clientName,
-        clientCuit: order.clientCuit,
-        linesCount: (order.lines || order.products || []).length,
-        tipo_cbte,
-        letra,
-        fecha_pago,
-        selectedQuantities
-    });
-
     // Calculate due date (based on payment condition or default 10 days)
     const emissionDate = new Date();
     const dueDate = new Date(emissionDate);
