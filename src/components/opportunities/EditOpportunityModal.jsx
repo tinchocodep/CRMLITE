@@ -208,22 +208,6 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                             />
                         </div>
 
-                        {/* Business Unit Picker */}
-                        <BusinessUnitPicker
-                            value={formData.linkedEntityId}
-                            entityType={formData.linkedEntityType}
-                            onChange={(entityId, entityType, entity) => {
-                                setFormData(prev => ({
-                                    ...prev,
-                                    linkedEntityId: entityId,
-                                    linkedEntityType: entityType
-                                }));
-                            }}
-                            clients={clients}
-                            prospects={prospects}
-                            required={true}
-                            label="Unidad de Negocio"
-                        />
 
                         {/* Opportunity Name */}
                         <div>
@@ -240,6 +224,23 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
                             />
                         </div>
+
+                        {/* Business Unit Picker */}
+                        <BusinessUnitPicker
+                            value={formData.linkedEntityId}
+                            entityType={formData.linkedEntityType}
+                            onChange={(entityId, entityType, entity) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    linkedEntityId: entityId,
+                                    linkedEntityType: entityType
+                                }));
+                            }}
+                            clients={clients}
+                            prospects={prospects}
+                            required={true}
+                            label="Cliente / Prospecto"
+                        />
 
                         {/* Contact */}
                         {availableContacts.length > 0 && (

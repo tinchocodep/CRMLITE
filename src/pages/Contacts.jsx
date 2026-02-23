@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Plus, UserPlus } from 'lucide-react';
 import ContactCard from '../components/contacts/ContactCard';
 import ContactsTable from '../components/contacts/ContactsTable';
@@ -18,6 +18,7 @@ const Contacts = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, contactId: null });
+    const [selectedSegment, setSelectedSegment] = useState('all'); // 'all' | 'prospect' | 'client'
     const { showSuccess, showError } = useSystemToast();
 
     // Role-based filtering
@@ -34,22 +35,30 @@ const Contacts = () => {
     // Apply role-based filter to contacts
     const filteredByRole = filterDataByRole(contacts);
 
-    // Filter contacts based on debounced search
-    const filteredContacts = filteredByRole.filter(contact => {
-        const searchLower = debouncedSearch.toLowerCase();
-        const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
-        const email = (contact.email || '').toLowerCase();
-        const phone = (contact.phone || '').toLowerCase();
-        // Get company name from first company
-        const companyName = (contact.companies?.[0]?.companyName || '').toLowerCase();
+    // Filter contacts based on debounced search + segment
+    const filteredContacts = useMemo(() => {
+        return filteredByRole.filter(contact => {
+            // Segment filter
+            if (selectedSegment === 'prospect') {
+                if (!contact.companies?.some(c => c.companyType === 'prospect')) return false;
+            } else if (selectedSegment === 'client') {
+                if (!contact.companies?.some(c => c.companyType === 'client')) return false;
+            }
 
-        return fullName.includes(searchLower) ||
-            email.includes(searchLower) ||
-            phone.includes(searchLower) ||
-            companyName.includes(searchLower);
-    });
+            // Search filter
+            if (!debouncedSearch) return true;
+            const searchLower = debouncedSearch.toLowerCase();
+            const fullName = `${contact.firstName || ''} ${contact.lastName || ''}`.toLowerCase();
+            const email = (contact.email || '').toLowerCase();
+            const phone = (contact.phone || '').toLowerCase();
+            const companyName = (contact.companies?.[0]?.companyName || '').toLowerCase();
 
-
+            return fullName.includes(searchLower) ||
+                email.includes(searchLower) ||
+                phone.includes(searchLower) ||
+                companyName.includes(searchLower);
+        });
+    }, [filteredByRole, debouncedSearch, selectedSegment]);
 
     const handleToggleExpand = (contactId) => {
         setExpandedContactId(expandedContactId === contactId ? null : contactId);
@@ -124,6 +133,28 @@ const Contacts = () => {
                         />
                     )}
 
+
+                    {/* Segment Filter Pills */}
+                    <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 shadow-sm flex-shrink-0">
+                        {[
+                            { id: 'all', label: 'Todos' },
+                            { id: 'prospect', label: 'Prospectos' },
+                            { id: 'client', label: 'Clientes' },
+                        ].map(seg => (
+                            <button
+                                key={seg.id}
+                                onClick={() => setSelectedSegment(seg.id)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${selectedSegment === seg.id
+                                    ? 'text-white'
+                                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                                    }`}
+                                style={selectedSegment === seg.id ? { backgroundColor: '#44C12B' } : {}}
+                            >
+                                {seg.label}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* Search and Create Button */}
                     <div className="flex items-center gap-3 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm w-full md:w-auto">
                         <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 rounded-xl flex-1 md:w-80 border border-slate-100 focus-within:ring-2 ring-advanta-green/10 transition-all">
@@ -146,6 +177,7 @@ const Contacts = () => {
                     </div>
                 </div>
             </div>
+
 
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">

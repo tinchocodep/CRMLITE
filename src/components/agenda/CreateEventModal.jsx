@@ -284,7 +284,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
 
                     {/* 5. Client/Company - FIFTH */}
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Empresa / Prospecto</label>
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Prospecto</label>
                         <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                             <select
@@ -303,18 +303,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                         </div>
                     </div>
 
-                    {/* Description */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Detalle / Notas</label>
-                        <textarea
-                            placeholder="Describe brevemente el objetivo de la reunión o detalles importantes..."
-                            value={newEvent.description}
-                            onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-advanta-green focus:ring-1 focus:ring-advanta-green/50 outline-none text-sm min-h-[100px] resize-none"
-                        />
-                    </div>
-
-                    {/* Asignar a: Multi-user selector */}
+                    {/* 6. Asignar a - SIXTH */}
                     <div className="space-y-2">
                         <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Asignar a:</label>
 
@@ -413,6 +402,17 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                                 </div>
                             )}
                         </div>
+                    </div>
+
+                    {/* 7. Observaciones - SEVENTH */}
+                    <div className="space-y-2">
+                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Otro</label>
+                        <textarea
+                            placeholder="Describe brevemente el objetivo de la reunión o detalles importantes..."
+                            value={newEvent.description}
+                            onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-advanta-green focus:ring-1 focus:ring-advanta-green/50 outline-none text-sm min-h-[100px] resize-none"
+                        />
                     </div>
 
                     {/* Footer buttons */}

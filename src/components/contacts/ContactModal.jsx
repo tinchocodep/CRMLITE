@@ -483,7 +483,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                 <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 space-y-3">
                                     <div className="flex items-center gap-2 text-slate-600 text-xs font-bold uppercase">
                                         <Plus size={14} />
-                                        Agregar Empresa
+                                        Vincular Empresa
                                     </div>
 
                                     {/* Company Search/Select */}
@@ -572,7 +572,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                                                 className="w-full px-4 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
                                             >
                                                 <Plus size={16} />
-                                                Agregar Empresa
+                                                Vincular Empresa
                                             </button>
                                         </>
                                     )}
@@ -609,8 +609,8 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                             onClick={handleSubmit}
                             disabled={isSubmitting}
                             className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${isSubmitting
-                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                    : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white'
+                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                : 'bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white'
                                 }`}
                         >
                             {isSubmitting ? 'Guardando...' : (contact ? 'Guardar' : 'Crear Contacto')}

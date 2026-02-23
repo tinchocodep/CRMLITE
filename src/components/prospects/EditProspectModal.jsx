@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Check, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
+import { X, Calendar, Building2, User, Phone, Mail, FileDigit, Link, Save, Star, Trash2, UserPlus, Plus, MessageSquare } from 'lucide-react';
 import { safeFormat } from '../../utils/dateUtils';
 import { useContacts } from '../../hooks/useContacts';
 import { useToast } from '../../contexts/ToastContext';
@@ -42,6 +42,8 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
     const [selectedContactToLink, setSelectedContactToLink] = useState(null);
     const [linkRole, setLinkRole] = useState('');
     const [isLinking, setIsLinking] = useState(false);
+    const [contactMode, setContactMode] = useState(null); // null | 'cartera' | 'nuevo'
+    const [newContactForm, setNewContactForm] = useState({ first_name: '', last_name: '', email: '', phone: '', role: '' });
 
     useEffect(() => {
         setFormData({ ...prospect });
@@ -321,38 +323,6 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                 />
                             </div>
                         </div>
-
-                        {/* Estado Actual - Status Selector */}
-                        <div className="space-y-3 pt-2">
-                            <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Estado Actual</label>
-                            <div className="grid grid-cols-3 gap-3">
-                                {statusOptions.map(option => (
-                                    <button
-                                        key={option.id}
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setFormData(prev => ({ ...prev, status: option.id }));
-                                        }}
-                                        className={`
-                                            relative cursor-pointer rounded-xl p-3 border-2 transition-all duration-200 flex items-center gap-2 justify-center
-                                            ${formData.status === option.id
-                                                ? `${option.color} ring-2 ring-offset-1 ring-advanta-green/30`
-                                                : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'
-                                            }
-                                        `}
-                                    >
-                                        <span className={`text-xs font-bold ${formData.status === option.id ? '' : 'text-slate-600'}`}>
-                                            {option.label}
-                                        </span>
-                                        {formData.status === option.id && (
-                                            <Check size={14} strokeWidth={3} className="text-advanta-green absolute top-2 right-2" />
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
                     </div>
 
                     {/* Contactos Vinculados */}
@@ -563,119 +533,146 @@ END:VCARD`;
                                             </div>
                                         )}
 
-                                        {/* Add contact section */}
-                                        <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 space-y-3">
-                                            <div className="flex items-center gap-2 text-slate-600 text-xs font-bold uppercase">
-                                                <Plus size={14} />
-                                                Agregar Contacto
+                                        {/* ── Nueva sección: agregar contacto ── */}
+                                        <div className="border-2 border-dashed border-slate-200 rounded-xl overflow-hidden">
+                                            {/* Header */}
+                                            <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
+                                                <div className="flex items-center gap-2 text-slate-700 text-xs font-bold uppercase tracking-wide">
+                                                    <Plus size={14} className="text-advanta-green" />
+                                                    Contacto
+                                                </div>
+                                                {contactMode && (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); setContactMode(null); setNewContactForm({ first_name: '', last_name: '', email: '', phone: '', role: '' }); setContactSearchTerm(''); setSelectedContactToLink(null); setLinkRole(''); }}
+                                                        className="text-slate-400 hover:text-slate-600 transition-colors"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                )}
                                             </div>
 
-                                            {/* Only show search for existing prospects (not new ones with temp IDs) */}
-                                            {prospect.id && prospect.id < 1000000 ? (
-                                                <>
-                                                    {/* Search existing contacts */}
-                                                    <div className="space-y-2">
-                                                        <label className="text-xs font-bold text-slate-500">Buscar contacto existente</label>
-                                                        <div className="relative">
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Buscar por nombre o CUIT..."
-                                                                value={contactSearchTerm}
-                                                                onChange={(e) => setContactSearchTerm(e.target.value)}
-                                                                className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:border-advanta-green outline-none"
-                                                            />
-                                                            {contactSearchTerm && filteredContacts.length > 0 && !selectedContactToLink && (
-                                                                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-300 rounded-lg shadow-lg max-h-48 overflow-y-auto z-10">
-                                                                    {filteredContacts.map(contact => (
+                                            {/* Tip */}
+                                            {!contactMode && (
+                                                <div className="px-4 pt-3 pb-1">
+                                                    <p className="text-[11px] text-slate-400 flex items-center gap-1.5">
+                                                        <span className="text-amber-400">💡</span>
+                                                        Elegir comercial para ver la cartera de contactos
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            {/* Action buttons */}
+                                            {!contactMode && (
+                                                <div className="px-4 pb-4 pt-2 grid grid-cols-2 gap-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); setContactMode('cartera'); }}
+                                                        className="flex items-center justify-center gap-2 px-3 py-2.5 bg-white border-2 border-slate-200 hover:border-advanta-green hover:bg-advanta-green/5 text-slate-600 hover:text-advanta-green rounded-xl text-xs font-bold transition-all"
+                                                    >
+                                                        <User size={14} />
+                                                        Contacto del comercial
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleCreateContact(); }}
+                                                        className="flex items-center justify-center gap-2 px-3 py-2.5 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-xs font-bold transition-all shadow-sm"
+                                                    >
+                                                        <UserPlus size={14} />
+                                                        Crear nuevo contacto
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {/* ── Modo: Cartera del comercial ── */}
+                                            {contactMode === 'cartera' && (() => {
+                                                const comercialContacts = formData.comercial_id
+                                                    ? availableContacts.filter(c => c.comercialId === formData.comercial_id)
+                                                    : [];
+                                                return (
+                                                    <div className="px-4 pb-4 pt-2 space-y-2">
+                                                        {!formData.comercial_id ? (
+                                                            <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700 font-medium">
+                                                                Asigná un comercial al prospecto para ver su cartera de contactos.
+                                                            </div>
+                                                        ) : comercialContacts.length === 0 ? (
+                                                            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-500 text-center">
+                                                                Este comercial no tiene contactos disponibles para vincular.
+                                                            </div>
+                                                        ) : (
+                                                            <>
+                                                                <p className="text-[11px] text-slate-400 font-medium pb-1">{comercialContacts.length} contacto{comercialContacts.length !== 1 ? 's' : ''} disponible{comercialContacts.length !== 1 ? 's' : ''}</p>
+                                                                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                                                                    {comercialContacts.map(contact => (
                                                                         <button
                                                                             key={contact.id}
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 setSelectedContactToLink(contact);
-                                                                                setContactSearchTerm(`${contact.firstName} ${contact.lastName}`);
                                                                             }}
-                                                                            className="w-full p-3 hover:bg-slate-50 text-left border-b border-slate-100 last:border-0"
+                                                                            className={`w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all ${selectedContactToLink?.id === contact.id ? 'border-advanta-green bg-advanta-green/5' : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'}`}
                                                                         >
-                                                                            <div className="font-semibold text-sm text-slate-800">
-                                                                                {contact.firstName} {contact.lastName}
-                                                                            </div>
-                                                                            {contact._original?.cuit && (
-                                                                                <div className="text-xs text-slate-500">CUIT: {contact._original.cuit}</div>
-                                                                            )}
-                                                                            {contact.email && (
-                                                                                <div className="text-xs text-slate-400">{contact.email}</div>
-                                                                            )}
+                                                                            <div className="font-semibold text-slate-800">{contact.firstName} {contact.lastName}</div>
+                                                                            {contact.email && <div className="text-xs text-slate-500">{contact.email}</div>}
                                                                         </button>
                                                                     ))}
                                                                 </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Role input when contact selected */}
-                                                        {selectedContactToLink && (
-                                                            <div className="space-y-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                                                <div className="text-xs font-bold text-blue-700">
-                                                                    Vincular: {selectedContactToLink.firstName} {selectedContactToLink.lastName}
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="Rol (ej: Gerente, Encargado de Compras...)"
-                                                                    value={linkRole}
-                                                                    onChange={(e) => setLinkRole(e.target.value)}
-                                                                    className="w-full p-2 bg-white border border-blue-300 rounded-lg text-sm focus:border-advanta-green outline-none"
-                                                                />
-                                                                <div className="flex gap-2">
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            handleLinkExistingContact();
-                                                                        }}
-                                                                        disabled={isLinking || !linkRole.trim()}
-                                                                        className="flex-1 px-3 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                                    >
-                                                                        {isLinking ? 'Vinculando...' : 'Vincular'}
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setSelectedContactToLink(null);
-                                                                            setContactSearchTerm('');
-                                                                            setLinkRole('');
-                                                                        }}
-                                                                        className="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-bold transition-colors"
-                                                                    >
-                                                                        Cancelar
-                                                                    </button>
-                                                                </div>
-                                                            </div>
+                                                                {selectedContactToLink && (
+                                                                    <div className="pt-2 space-y-2 border-t border-slate-200 mt-2">
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Rol (ej: Gerente, Encargado de compras...)"
+                                                                            value={linkRole}
+                                                                            onChange={(e) => setLinkRole(e.target.value)}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:border-advanta-green outline-none"
+                                                                        />
+                                                                        <div className="flex gap-2">
+                                                                            {prospect.id && prospect.id < 1000000 ? (
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); handleLinkExistingContact(); setContactMode(null); }}
+                                                                                    disabled={isLinking || !linkRole.trim()}
+                                                                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                                                                                >
+                                                                                    {isLinking ? 'Vinculando...' : 'Vincular'}
+                                                                                </button>
+                                                                            ) : (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        if (!linkRole.trim()) return;
+                                                                                        setPendingContacts(prev => [...prev, {
+                                                                                            first_name: selectedContactToLink.firstName,
+                                                                                            last_name: selectedContactToLink.lastName,
+                                                                                            email: selectedContactToLink.email,
+                                                                                            phone: selectedContactToLink.phone,
+                                                                                            role: linkRole,
+                                                                                            _existingId: selectedContactToLink.id,
+                                                                                        }]);
+                                                                                        setContactMode(null);
+                                                                                        setSelectedContactToLink(null);
+                                                                                        setLinkRole('');
+                                                                                    }}
+                                                                                    disabled={!linkRole.trim()}
+                                                                                    className="flex-1 px-3 py-2 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                                                                                >
+                                                                                    Agregar (pendiente)
+                                                                                </button>
+                                                                            )}
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); setSelectedContactToLink(null); setLinkRole(''); }}
+                                                                                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors"
+                                                                            >
+                                                                                Cancelar
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </>
                                                         )}
                                                     </div>
+                                                );
+                                            })()}
 
-                                                    <div className="relative">
-                                                        <div className="absolute inset-0 flex items-center">
-                                                            <div className="w-full border-t border-slate-300"></div>
-                                                        </div>
-                                                        <div className="relative flex justify-center text-xs">
-                                                            <span className="bg-white px-2 text-slate-500">o</span>
-                                                        </div>
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
-                                                    💡 <strong>Tip:</strong> Guarda el prospecto primero para poder vincular contactos existentes
-                                                </div>
-                                            )}
-
-                                            {/* Create new contact button */}
-                                            <button
-                                                onClick={handleCreateContact}
-                                                className="w-full px-4 py-3 bg-gradient-to-r from-[#44C12B] to-[#4BA323] hover:from-[#3a9120] hover:to-[#3d8a1f] text-white rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2"
-                                                title="Crear nuevo contacto"
-                                            >
-                                                <UserPlus size={16} />
-                                                Crear Nuevo Contacto
-                                            </button>
                                         </div>
+
                                     </>
                                 );
                             })()}

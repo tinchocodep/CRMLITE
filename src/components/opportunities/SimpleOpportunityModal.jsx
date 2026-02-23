@@ -126,36 +126,35 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <BusinessUnitPicker
-                                value={formData.linkedEntityId}
-                                entityType={formData.linkedEntityType}
-                                onChange={(entityId, entityType, entity) => {
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        linkedEntityId: entityId,
-                                        linkedEntityType: entityType
-                                    }));
-                                }}
-                                clients={clients}
-                                prospects={prospects}
-                                required={true}
-                                label="Cliente / Prospecto"
-                            />
+                        {/* Cliente / Prospecto — fila completa */}
+                        <BusinessUnitPicker
+                            value={formData.linkedEntityId}
+                            entityType={formData.linkedEntityType}
+                            onChange={(entityId, entityType, entity) => {
+                                setFormData(prev => ({
+                                    ...prev,
+                                    linkedEntityId: entityId,
+                                    linkedEntityType: entityType
+                                }));
+                            }}
+                            clients={clients}
+                            prospects={prospects}
+                            required={true}
+                            label="Cliente / Prospecto"
+                        />
 
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                    Producto
-                                </label>
-                                <input
-                                    type="text"
-                                    name="product"
-                                    value={formData.product}
-                                    onChange={handleChange}
-                                    placeholder="Ej: Fertilizante NPK"
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
-                            </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                                Producto
+                            </label>
+                            <input
+                                type="text"
+                                name="product"
+                                value={formData.product}
+                                onChange={handleChange}
+                                placeholder="Ej: Fertilizante NPK"
+                                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

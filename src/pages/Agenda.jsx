@@ -12,6 +12,7 @@ import { useOpportunities } from '../hooks/useOpportunities';
 import { useCompanies } from '../hooks/useCompanies';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useUsers } from '../hooks/useUsers';
+import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
@@ -24,7 +25,19 @@ const Agenda = () => {
     const { users } = useUsers(); // Get all users for CreateEventModal
     const { showToast } = useToast();
     const { showError } = useSystemToast();
+    const { userProfile } = useAuth();
     const hasShownInitialToast = useRef(false);
+    const [selectedActivityType, setSelectedActivityType] = useState('all');
+
+    // Activity types for filter
+    const ACTIVITY_TYPES = [
+        { id: 'all', label: 'Todos' },
+        { id: 'Llamada', label: 'Llamada' },
+        { id: 'Reunión', label: 'Reunión' },
+        { id: 'Email', label: 'Email' },
+        { id: 'Visita', label: 'Visita' },
+        { id: 'Seguimiento', label: 'Seguimiento' },
+    ];
 
     // Unified delete handler: routes to deleteOpportunity or deleteActivity based on event type
     const handleDeleteEvent = React.useCallback(async (eventId) => {
@@ -55,10 +68,12 @@ const Agenda = () => {
         return combineEventsAndOpportunities(rawEvents, opportunities);
     }, [rawEvents, opportunities]);
 
-    // Apply role-based filter to normalized events
+    // Apply role-based filter + activity type filter to normalized events
     const events = React.useMemo(() => {
-        return filterDataByRole(normalizedEvents);
-    }, [normalizedEvents, selectedComercialId, filterDataByRole]);
+        const byRole = filterDataByRole(normalizedEvents);
+        if (selectedActivityType === 'all') return byRole;
+        return byRole.filter(e => e.activity_type === selectedActivityType || e.type === selectedActivityType);
+    }, [normalizedEvents, selectedComercialId, filterDataByRole, selectedActivityType]);
 
     const nextDate = () => {
         if (view === 'month') setCurrentDate(addMonths(currentDate, 1));
@@ -418,9 +433,23 @@ const Agenda = () => {
                     <button onClick={() => setView('list')} className={`flex-1 md:flex-none px-3 md:px-4 py-1.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap text-center ${view === 'list' ? 'bg-white dark:bg-slate-600 shadow text-advanta-green dark:text-red-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>Lista</button>
                 </div>
 
-                {/* Comercial Filter (Admin & Supervisor only) */}
-                {canFilter && (
-                    <div className="w-full md:w-auto order-4 md:order-none">
+                {/* Filters: Activity Type + Comercial */}
+                <div className="flex flex-wrap items-center gap-2 w-full md:w-auto order-4 md:order-none">
+                    <div className="flex items-center gap-1.5 text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
+                        <span className="text-xs font-bold uppercase tracking-wider whitespace-nowrap">Filtros:</span>
+                    </div>
+                    <select
+                        value={selectedActivityType}
+                        onChange={e => setSelectedActivityType(e.target.value)}
+                        className="bg-slate-100/80 dark:bg-slate-700/80 border-0 rounded-xl text-xs md:text-sm px-3 py-1.5 text-slate-600 dark:text-slate-200 focus:ring-2 focus:ring-[#44C12B]/20 outline-none cursor-pointer font-medium"
+                    >
+                        {ACTIVITY_TYPES.map(t => (
+                            <option key={t.id} value={t.id}>{t.label}</option>
+                        ))}
+                    </select>
+
+                    {canFilter ? (
                         <ComercialFilter
                             comerciales={comerciales}
                             selectedComercialId={selectedComercialId}
@@ -428,8 +457,15 @@ const Agenda = () => {
                             showAllOption={showAllOption}
                             loading={filterLoading}
                         />
-                    </div>
-                )}
+                    ) : (
+                        userProfile && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100/80 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 rounded-xl text-xs md:text-sm font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                                {userProfile.name || userProfile.email}
+                            </span>
+                        )
+                    )}
+                </div>
 
                 {/* Actions */}
                 <div className="flex gap-2 w-full md:w-auto order-2 md:order-none">
@@ -446,7 +482,8 @@ const Agenda = () => {
                 </div>
             </div>
 
-            {/* Calendar Content */}
+
+
             <div className="flex-1 overflow-auto h-full min-h-0 bg-white dark:bg-slate-900 rounded-none md:rounded-xl border-0 md:border border-slate-200 md:dark:border-slate-700 shadow-none md:shadow-sm p-0 md:p-2 relative">
                 {view === 'month' && (
                     <div className="h-full overflow-auto p-0 md:p-2">

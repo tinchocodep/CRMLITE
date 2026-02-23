@@ -46,11 +46,6 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     // Update available contacts when entity is selected
     useEffect(() => {
         if (formData.linkedEntityId) {
-                linkedEntityId: formData.linkedEntityId,
-                linkedEntityType: formData.linkedEntityType,
-                totalContacts: contacts.length
-            });
-
             // Get contacts for the selected entity
             const entityContacts = contacts.filter(contact => {
                 const hasCompany = contact.companies && contact.companies.some(c => {
@@ -66,6 +61,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             setAvailableContacts([]);
         }
     }, [formData.linkedEntityId, formData.linkedEntityType, contacts]);
+
 
     // Update probability based on status
     useEffect(() => {
@@ -152,6 +148,23 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             />
                         </div>
 
+
+                        {/* Opportunity Name */}
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                <FileText size={14} className="inline mr-1.5" />
+                                Nombre de Oportunidad *
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                value={formData.opportunityName}
+                                onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
+                                placeholder="Ej: Venta de fertilizantes Q1 2024"
+                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
+                            />
+                        </div>
+
                         {/* Business Unit Picker */}
                         <BusinessUnitPicker
                             value={formData.linkedEntityId}
@@ -171,22 +184,6 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             required={true}
                             label="Cliente / Prospecto"
                         />
-
-                        {/* Opportunity Name */}
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <FileText size={14} className="inline mr-1.5" />
-                                Nombre de Oportunidad *
-                            </label>
-                            <input
-                                type="text"
-                                required
-                                value={formData.opportunityName}
-                                onChange={(e) => setFormData({ ...formData, opportunityName: e.target.value })}
-                                placeholder="Ej: Venta de fertilizantes Q1 2024"
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
-                            />
-                        </div>
 
                         {/* Contact */}
                         {availableContacts.length > 0 && (
@@ -347,8 +344,8 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                             type="submit"
                             disabled={isSubmitting}
                             className={`flex-1 px-4 py-2.5 text-sm rounded-xl font-semibold transition-all ${isSubmitting
-                                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                    : 'bg-gradient-to-r from-advanta-green to-green-600 text-white hover:shadow-lg'
+                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                : 'bg-gradient-to-r from-advanta-green to-green-600 text-white hover:shadow-lg'
                                 }`}
                         >
                             {isSubmitting ? 'Guardando...' : 'Crear Oportunidad'}

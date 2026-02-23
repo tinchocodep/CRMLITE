@@ -67,6 +67,11 @@ const Prospects = () => {
         setIsEditModalOpen(true);
     }, []);
 
+    const handleAddContactClick = useCallback((prospect) => {
+        setSelectedProspect(prospect);
+        setIsEditModalOpen(true);
+    }, []);
+
     const handleCreateClick = useCallback(() => {
         setSelectedProspect({
             id: Date.now(), // Temporary ID
@@ -83,6 +88,18 @@ const Prospects = () => {
         });
         setIsEditModalOpen(true);
     }, [comercialId]);
+
+    const handleStatusChange = async (prospectId, newStatus) => {
+        try {
+            const result = await updateCompany(prospectId, { status: newStatus });
+            if (!result.success) {
+                showError('Error al actualizar el estado del prospecto');
+            }
+        } catch (error) {
+            console.error('Error updating prospect status:', error);
+            showError('Error al actualizar el estado del prospecto');
+        }
+    };
 
     const handleSaveProspect = async (updatedProspect, pendingContacts = []) => {
         try {
@@ -124,7 +141,7 @@ const Prospects = () => {
                                     companyId: result.data.id,
                                     companyName: result.data.trade_name || result.data.legal_name,
                                     companyType: 'prospect',
-                                    role: contactData.companies?.[0]?.role || '',
+                                    role: contactData.role || contactData.companies?.[0]?.role || '',
                                     isPrimary: true
                                 }]
                             };
@@ -297,6 +314,7 @@ const Prospects = () => {
                             prospect={prospect}
                             onPromote={handlePromoteClick}
                             onEdit={handleEditClick}
+                            onAddContact={handleAddContactClick}
                             allContacts={allContacts}
                         />
                     ))
@@ -315,7 +333,9 @@ const Prospects = () => {
                         onEdit={handleEditClick}
                         onPromote={handlePromoteClick}
                         onDelete={deleteCompany}
+                        onAddContact={handleAddContactClick}
                         allContacts={allContacts}
+                        onStatusChange={handleStatusChange}
                     />
                 )}
             </div>
