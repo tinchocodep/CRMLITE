@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
-// [TODO: LOGO] Restaurar: import sailoLogo from '/logo-advanta.svg';
-import sailoLogo from '/logo-potenza.png';
+import { useTenantBranding } from '../contexts/TenantBrandingContext';
 import { ArrowRight, Lock, Mail, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -11,6 +10,7 @@ const Login = () => {
     const navigate = useNavigate();
     const { login, isAuthenticated } = useAuth();
     const { addNotification } = useNotifications();
+    const { branding } = useTenantBranding();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -121,11 +121,10 @@ const Login = () => {
                     className="w-full lg:w-1/2 h-[200px] md:h-[300px] lg:h-[600px] flex items-center justify-center relative px-8"
                 >
                     <img
-                        src={sailoLogo}
-                        alt="Lartirigoyen CRM"
+                        src={branding.logoUrl || '/logo-potenza.png'}
+                        alt={`${branding.companyName || 'CRM'} Logo`}
                         className="w-full max-w-[480px] md:max-w-[600px] lg:max-w-[700px] h-auto object-contain drop-shadow-2xl"
                     />
-                    {/* [TODO: LOGO] Logo anterior: logo-advanta.svg con alt="Advanta CRM" */}
                 </motion.div>
 
                 {/* Right Side: Login Form */}
@@ -262,7 +261,7 @@ const Login = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-advanta-green to-green-600 dark:from-advanta-green dark:to-green-500 hover:from-green-600 hover:to-green-700 dark:hover:from-green-500 dark:hover:to-green-600 text-white font-bold py-4 md:py-4.5 rounded-xl shadow-lg shadow-advanta-green/30 dark:shadow-advanta-green/30 hover:shadow-advanta-green/50 dark:hover:shadow-advanta-green/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
+                                className="w-full btn-brand font-bold py-4 rounded-xl flex items-center justify-center gap-2 group touch-manipulation"
                                 style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)' }}
                             >
                                 {isLoading ? (

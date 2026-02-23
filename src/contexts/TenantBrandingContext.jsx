@@ -44,11 +44,28 @@ export const useTenantBranding = () => {
  * Permite que Tailwind y cualquier CSS las consuma sin re-renderizar.
  */
 const applyBrandingToDom = (branding) => {
+  // ── CSS variables de color ────────────────────────────────────────────────
   const root = document.documentElement;
   root.style.setProperty('--color-brand-primary', `hsl(${branding.primaryColor})`);
   root.style.setProperty('--color-brand-primary-hover', `hsl(${branding.primaryHover})`);
   root.style.setProperty('--color-brand-accent', `hsl(${branding.accentColor})`);
   root.style.setProperty('--color-brand-text-on-primary', `hsl(${branding.textOnPrimary})`);
+
+  // ── Title de la pestaña ───────────────────────────────────────────────────
+  if (branding.companyName && branding.companyName !== 'CRM') {
+    document.title = `${branding.companyName} | CRM`;
+  }
+
+  // ── Favicon dinámico ──────────────────────────────────────────────────────
+  if (branding.logoUrl) {
+    let favicon = document.querySelector("link[rel~='icon']");
+    if (!favicon) {
+      favicon = document.createElement('link');
+      favicon.rel = 'icon';
+      document.head.appendChild(favicon);
+    }
+    favicon.href = branding.logoUrl;
+  }
 };
 
 /**
