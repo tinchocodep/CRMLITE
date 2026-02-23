@@ -314,6 +314,27 @@ const EditProspectModal = ({ isOpen, onClose, prospect, onSave, onContactsUpdate
                                 />
                             </div>
                             <div className="space-y-1">
+                                <label className="text-xs font-bold uppercase text-slate-400 tracking-wider flex items-center gap-1"><Phone size={11} /> Teléfono</label>
+                                <input
+                                    name="phone"
+                                    value={formData.phone || ''}
+                                    onChange={handleChange}
+                                    placeholder="Ej: +54 9 11 1234-5678"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-advanta-green outline-none"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs font-bold uppercase text-slate-400 tracking-wider flex items-center gap-1"><Mail size={11} /> Email</label>
+                                <input
+                                    name="email"
+                                    type="email"
+                                    value={formData.email || ''}
+                                    onChange={handleChange}
+                                    placeholder="empresa@ejemplo.com"
+                                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-advanta-green outline-none"
+                                />
+                            </div>
+                            <div className="space-y-1">
                                 <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Fecha Creación</label>
                                 <input
                                     type="date"

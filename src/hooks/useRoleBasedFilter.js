@@ -75,7 +75,7 @@ export const useRoleBasedFilter = () => {
         };
 
         fetchComerciales();
-    }, [userProfile, isAdmin, isSupervisor]);
+    }, [userProfile, isAdmin, isSupervisor, comercialId]);
 
     /**
      * Aplica el filtro basado en rol a una consulta de Supabase
@@ -121,30 +121,34 @@ export const useRoleBasedFilter = () => {
     const filterDataByRole = (data) => {
         if (!data || !Array.isArray(data)) return [];
 
-        // Helper function to get comercial_id from item (handles both camelCase and snake_case)
-        const getComercialId = (item) => item.comercialId || item.comercial_id || item._original?.comercial_id;
+        // Normalize both sides to string to avoid string vs number type mismatch
+        // (HTML select always returns strings, Supabase returns numbers)
+        const getComercialId = (item) => {
+            const raw = item.comercialId ?? item.comercial_id ?? item._original?.comercial_id;
+            return raw != null ? String(raw) : null;
+        };
 
         if (isAdmin) {
             // Admin: Si seleccionó un comercial específico, filtrar por él
             if (selectedComercialId !== 'all') {
-                return data.filter(item => getComercialId(item) === parseInt(selectedComercialId));
+                return data.filter(item => getComercialId(item) === String(selectedComercialId));
             }
             // Si es 'all', devolver todo
             return data;
         } else if (isSupervisor) {
             // Supervisor: Ve lo suyo + lo de sus comerciales
             if (selectedComercialId !== 'all') {
-                return data.filter(item => getComercialId(item) === parseInt(selectedComercialId));
+                return data.filter(item => getComercialId(item) === String(selectedComercialId));
             } else {
-                const comercialIds = comerciales.map(c => c.id);
+                const comercialIds = comerciales.map(c => String(c.id));
                 if (comercialId) {
-                    comercialIds.push(comercialId);
+                    comercialIds.push(String(comercialId));
                 }
                 return data.filter(item => comercialIds.includes(getComercialId(item)));
             }
         } else {
             // Comercial/User: Solo ve lo suyo
-            return data.filter(item => getComercialId(item) === comercialId);
+            return data.filter(item => getComercialId(item) === String(comercialId));
         }
     };
 

@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Building2, User } from 'lucide-react';
+import { X, UserPlus, Building2, User, Phone, Mail } from 'lucide-react';
 import ComercialSelector from '../shared/ComercialSelector';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
@@ -10,6 +10,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
         legalName: '',
         tradeName: '',
         cuit: '',
+        email: '',
+        phone: '',
         city: '',
         province: '',
         address: '',
@@ -24,6 +26,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                 legalName: prospect.legal_name || prospect.legalName || prospect.companyName || '',
                 tradeName: prospect.trade_name || prospect.tradeName || '',
                 cuit: prospect.cuit || '',
+                email: prospect.email || '',
+                phone: prospect.phone || '',
                 city: prospect.city || '',
                 province: prospect.province || '',
                 address: prospect.address || '',
@@ -32,8 +36,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             }));
         } else {
             setFormData({
-                legalName: '', tradeName: '', cuit: '', city: '', province: '', address: '',
-                comercialId: null
+                legalName: '', tradeName: '', cuit: '', email: '', phone: '',
+                city: '', province: '', address: '', comercialId: null
             });
         }
     }, [prospect]);
@@ -63,6 +67,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
             trade_name: formData.tradeName,
             legal_name: formData.legalName,
             cuit: formData.cuit,
+            email: formData.email || null,
+            phone: formData.phone || null,
             city: formData.city,
             province: formData.province,
             address: formData.address,
@@ -130,6 +136,17 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                             <div className="space-y-1.5">
                                 <label className="text-xs font-bold text-slate-500 ml-1">Provincia</label>
                                 <input name="province" value={formData.province} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-advanta-green focus:bg-white focus:ring-4 ring-advanta-green/5 transition-all outline-none" />
+                            </div>
+                        </div>
+                        {/* Phone & Email row */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4">
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 ml-1 flex items-center gap-1"><Phone size={12} /> Teléfono</label>
+                                <input name="phone" value={formData.phone} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-advanta-green focus:bg-white focus:ring-4 ring-advanta-green/5 transition-all outline-none" placeholder="Ej: +54 9 11 1234-5678" />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-xs font-bold text-slate-500 ml-1 flex items-center gap-1"><Mail size={12} /> Email</label>
+                                <input name="email" type="email" value={formData.email} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:border-advanta-green focus:bg-white focus:ring-4 ring-advanta-green/5 transition-all outline-none" placeholder="empresa@ejemplo.com" />
                             </div>
                         </div>
                     </section>
