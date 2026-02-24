@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo, useCallback } from 'react';
 import { Search, Plus } from 'lucide-react';
 import ClientCard from '../components/clients/ClientCard';
 import ClientsTable from '../components/clients/ClientsTable';
@@ -46,9 +46,9 @@ const Clients = () => {
         (c.legal_name || '').toLowerCase().includes(debouncedSearch.toLowerCase())
     );
 
-    const handleToggleExpand = (id) => {
+    const handleToggleExpand = useCallback((id) => {
         setExpandedClientId(prevId => prevId === id ? null : id);
-    };
+    }, []);
 
     const handleSaveClient = async (clientData) => {
         try {
@@ -141,9 +141,9 @@ const Clients = () => {
         setEditingClient(null);
     };
 
-    const handleDeleteClient = (id) => {
+    const handleDeleteClient = useCallback((id) => {
         setConfirmDelete({ isOpen: true, clientId: id });
-    };
+    }, []);
 
     const confirmDeleteClient = async () => {
         const result = await deleteCompany(confirmDelete.clientId);
@@ -152,15 +152,15 @@ const Clients = () => {
         }
     };
 
-    const handleEditClient = (client) => {
+    const handleEditClient = useCallback((client) => {
         setEditingClient(client);
         setIsCreateModalOpen(true);
-    };
+    }, []);
 
-    const openCreateModal = () => {
+    const openCreateModal = useCallback(() => {
         setEditingClient(null);
         setIsCreateModalOpen(true);
-    };
+    }, []);
 
     return (
         <div className="h-full flex flex-col gap-6 p-4 md:p-6 xl:px-6 xl:pt-6">

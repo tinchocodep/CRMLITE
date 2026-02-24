@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Building2, MapPin, Briefcase, FileText, ChevronDown, ChevronUp, Tractor, Leaf, Map, User, Pencil, Trash2, Mail, Phone, FileDigit, FileCheck, FolderOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
@@ -226,4 +226,4 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
     );
 };
 
-export default ClientCard;
+export default memo(ClientCard);
