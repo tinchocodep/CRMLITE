@@ -59,6 +59,8 @@ export const useCompanies = (type = null) => {
                 'city',
                 'province',
                 'file_number',
+                'phone',
+                'email',
                 'comerciales(name)'
             ].join(',');
 
