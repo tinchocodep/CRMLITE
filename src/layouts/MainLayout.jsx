@@ -15,6 +15,7 @@ import { CRMSubmoduleSidebar } from '../components/CRMSubmoduleSidebar';
 import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
 import { HorizontalCotizadorNav } from '../components/cotizador/HorizontalCotizadorNav';
 import { RightSidebarAgenda } from '../components/RightSidebarAgenda';
+import SuperAdminBanner from '../components/shared/SuperAdminBanner';
 import { useCompanies } from '../hooks/useCompanies';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -223,6 +224,7 @@ const MainLayout = () => {
 
             {/* ========== MOBILE VERSION ========== */}
             <div className="xl:hidden flex flex-col h-screen">
+                <SuperAdminBanner />
                 {/* Mobile Header - Simple Top Bar (Hidden on Dashboard) */}
                 {!isDashboard && (
                     <header className="sticky top-0 z-[60] bg-gradient-to-r from-white via-red-50 to-green-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-red-200 dark:border-slate-700 shadow-md">
@@ -423,6 +425,7 @@ const MainLayout = () => {
 
             {/* ========== DESKTOP VERSION ========== */}
             <div className="hidden xl:block">
+                <SuperAdminBanner />
                 {/* Vertical Sidebar */}
                 <VerticalSidebar
                     onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)}

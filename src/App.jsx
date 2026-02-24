@@ -29,12 +29,15 @@ import CotizadorIndex from './pages/CotizadorIndex';
 import ComercialIndex from './pages/ComercialIndex';
 import Visitas from './pages/Visitas';
 import Campos from './pages/Campos';
+import TenantManagerPage from './pages/admin/TenantManagerPage';
 import { ConfirmProvider } from './contexts/ConfirmContext';
+import { SuperAdminProvider } from './contexts/SuperAdminContext';
 
 // Componente para proteger rutas que requieren autenticación
 function ProtectedRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -51,6 +54,13 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  return children;
+}
+
+/** Only renders children if user is super_admin. Otherwise redirects to /dashboard */
+function SuperAdminRoute({ children }) {
+  const { user } = useAuth();
+  if (user?.role !== 'super_admin') return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -112,6 +122,7 @@ function AppRoutes() {
           <Route path="campos" element={<Campos />} />
           <Route path="territorios" element={<Navigate to="/campos" replace />} />
           <Route path="territorios/*" element={<Navigate to="/campos" replace />} />
+          <Route path="admin/tenants" element={<SuperAdminRoute><TenantManagerPage /></SuperAdminRoute>} />
           {modules.map((name) => (
             <Route
               key={name}
@@ -130,16 +141,18 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-          <TenantBrandingProvider>
-            <ToastProvider>
-              <ConfirmProvider>
-                <BrowserRouter>
-                  <AppRoutes />
-                  <ToastContainer />
-                </BrowserRouter>
-              </ConfirmProvider>
-            </ToastProvider>
-          </TenantBrandingProvider>
+          <SuperAdminProvider>
+            <TenantBrandingProvider>
+              <ToastProvider>
+                <ConfirmProvider>
+                  <BrowserRouter>
+                    <AppRoutes />
+                    <ToastContainer />
+                  </BrowserRouter>
+                </ConfirmProvider>
+              </ToastProvider>
+            </TenantBrandingProvider>
+          </SuperAdminProvider>
         </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

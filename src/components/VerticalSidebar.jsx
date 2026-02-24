@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package,
-    Plus, Settings, BarChart2
+    Plus, Settings, BarChart2, ShieldCheck
 } from 'lucide-react';
 import { useTenantBranding } from '../contexts/TenantBrandingContext';
 import { useTenantModules } from '../hooks/useTenantModules';
+import { useAuth } from '../contexts/AuthContext';
 
 // moduleKey must match the `module_key` column in `tenant_modules`.
 // Items without a moduleKey are always visible (e.g. Settings).
@@ -15,6 +16,7 @@ const sidebarModules = [
     { id: 'cotizador', name: 'Cotizador', path: '/cotizador', icon: Package, moduleKey: 'cotizador', isCotizador: true },
     { id: 'comercial', name: 'Administración', path: '/comercial', icon: BarChart2, moduleKey: 'comercial', isComercial: true },
     { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users, moduleKey: 'usuarios' },
+    { id: 'admin', name: 'Admin', path: '/admin/tenants', icon: ShieldCheck, moduleKey: 'tenant-manager' },
 ];
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {

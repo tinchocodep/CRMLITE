@@ -9,6 +9,8 @@
  *  3 = Soldo Hue
  *  4 = Advanta (Misuri)
  *  5 = Zanellato
+ *  6 = Sailo (sistema — super admin)
+ *  Domain: crmlite-sailohub.vercel.app
  */
 
 /** @typedef {Object} TenantBranding
