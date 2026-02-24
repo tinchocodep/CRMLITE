@@ -1,6 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+// Leaflet base CSS — MUST be imported before any Leaflet component mounts.
+// Without this, tiles have no defined size and appear fragmented/offset.
+import 'leaflet/dist/leaflet.css'
 import App from './App.jsx'
 
 // Suppress Supabase internal AbortErrors from appearing in console

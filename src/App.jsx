@@ -27,6 +27,9 @@ import CuentaCorriente from './pages/CuentaCorriente';
 import Stock from './pages/Stock';
 import CotizadorIndex from './pages/CotizadorIndex';
 import ComercialIndex from './pages/ComercialIndex';
+import Visitas from './pages/Visitas';
+import Campos from './pages/Campos';
+import { ConfirmProvider } from './contexts/ConfirmContext';
 
 // Componente para proteger rutas que requieren autenticación
 function ProtectedRoute({ children }) {
@@ -70,9 +73,9 @@ function MobileRedirect({ children }) {
 }
 
 function AppRoutes() {
+  // Solo módulos sin ruta dedicada → se renderizan como ModulePlaceholder
   const modules = [
-    'Ficha 360°', 'Agenda', 'Prospectores', 'Clientes', 'Legajo',
-    'Visitas', 'Oportunidades', 'Objetivos', 'Territorios', 'Reclamos'
+    'Ficha 360°', 'Objetivos', 'Reclamos'
   ];
 
   const slugify = (text) => (text || '').toLowerCase().replace(/°/g, '').replace(/\s+/g, '-');
@@ -105,7 +108,11 @@ function AppRoutes() {
           <Route path="cuenta-corriente" element={<CuentaCorriente />} />
           <Route path="stock" element={<Stock />} />
           <Route path="comercial" element={<ComercialIndex />} />
-          {modules.filter(m => m !== 'Agenda' && m !== 'Prospectos' && m !== 'Clientes' && m !== 'Legajo').map((name) => (
+          <Route path="visitas" element={<Visitas />} />
+          <Route path="campos" element={<Campos />} />
+          <Route path="territorios" element={<Navigate to="/campos" replace />} />
+          <Route path="territorios/*" element={<Navigate to="/campos" replace />} />
+          {modules.map((name) => (
             <Route
               key={name}
               path={slugify(name)}
@@ -125,10 +132,12 @@ function App() {
         <AuthProvider>
           <TenantBrandingProvider>
             <ToastProvider>
-              <BrowserRouter>
-                <AppRoutes />
-                <ToastContainer />
-              </BrowserRouter>
+              <ConfirmProvider>
+                <BrowserRouter>
+                  <AppRoutes />
+                  <ToastContainer />
+                </BrowserRouter>
+              </ConfirmProvider>
             </ToastProvider>
           </TenantBrandingProvider>
         </AuthProvider>

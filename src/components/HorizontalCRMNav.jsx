@@ -13,7 +13,7 @@ const crmModules = [
     { name: 'Agenda', path: '/agenda', icon: Calendar },
     { name: 'Oportunidades', path: '/oportunidades', icon: Briefcase },
     { name: 'Visitas', path: '/visitas', icon: Map },
-    { name: 'Territorios', path: '/territorios', icon: Target },
+    { name: 'Campos', path: '/campos', icon: Target },
     { name: 'Reclamos', path: '/reclamos', icon: AlertCircle }
 ];
 
@@ -21,7 +21,7 @@ export function HorizontalCRMNav({ isMainSidebarExpanded }) {
     const location = useLocation();
 
     return (
-        <nav className={`bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 ${isMainSidebarExpanded ? 'ml-72' : 'ml-20'}`}>
+        <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300">
             <div className="w-full px-4 pr-6">
                 <div className="flex items-center gap-2 overflow-x-auto py-3" style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--color-brand-primary) transparent' }}>
                     {crmModules.map((module, index) => {

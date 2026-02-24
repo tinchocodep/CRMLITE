@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Building2 } from 'lucide-react';
+import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Building2, Landmark } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Pagination } from '../shared/Pagination';
 
-const ClientsTable = ({ clients, onEdit, onDelete, allContacts, page, totalCount, pageSize, onPageChange }) => {
+const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstablishments = new Set(), page, totalCount, pageSize, onPageChange }) => {
+    const navigate = useNavigate();
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
     // Sorting logic
@@ -219,21 +221,32 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts, page, totalCount
                                             {client.client_since ? new Date(client.client_since).toLocaleDateString('es-AR', { month: 'short', year: '2-digit' }) : '-'}
                                         </span>
                                     </td>
-                                    <td className="px-3 py-2.5 text-center">
-                                        <button
-                                            onClick={() => onEdit(client)}
-                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-advanta-green dark:hover:text-advanta-green hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
-                                            title="Editar"
-                                        >
-                                            <Edit2 size={15} />
-                                        </button>
-                                        <button
-                                            onClick={() => onDelete(client.id)}
-                                            className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all ml-1"
-                                            title="Eliminar"
-                                        >
-                                            <Trash2 size={15} />
-                                        </button>
+                                    <td className="px-3 py-2.5">
+                                        <div className="flex items-center justify-center gap-1">
+                                            <button
+                                                onClick={() => onEdit(client)}
+                                                className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-advanta-green dark:hover:text-advanta-green hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"
+                                                title="Editar"
+                                            >
+                                                <Edit2 size={15} />
+                                            </button>
+                                            {clientsWithEstablishments.has(String(client.id)) && (
+                                                <button
+                                                    onClick={() => navigate(`/campos?client=${client.id}`)}
+                                                    className="p-1.5 text-green-600 hover:text-white hover:bg-green-600 rounded-lg transition-all"
+                                                    title="Ver en Campos"
+                                                >
+                                                    <Landmark size={15} />
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => onDelete(client.id)}
+                                                className="p-1.5 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                                title="Eliminar"
+                                            >
+                                                <Trash2 size={15} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             );

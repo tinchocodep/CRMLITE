@@ -97,8 +97,8 @@ const MainLayout = () => {
     const isDashboard = location.pathname === '/dashboard' || location.pathname === '/';
 
     // Check if we're in CRM module (any CRM submodule)
-    const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/territorios', '/reclamos', '/ficha-360'];
-    const isCRMActive = crmPaths.includes(location.pathname) || location.pathname === '/';
+    const crmPaths = ['/dashboard', '/prospectos', '/clientes', '/contactos', '/agenda', '/oportunidades', '/visitas', '/campos', '/territorios', '/reclamos', '/ficha-360'];
+    const isCRMActive = crmPaths.some(p => location.pathname.startsWith(p)) || location.pathname === '/';
 
     // Check if we're in Cotizador module (Administración: oportunidades, cotizaciones, pedidos)
     const cotizadorPaths = ['/cotizador', '/cotizaciones', '/pedidos'];
@@ -475,19 +475,31 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
-                {/* CRM Horizontal Navigation - Above Content */}
-                {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={mainSidebarExpanded} />}
+                {/* Wrapper: nav + main share the full viewport height */}
+                <div className={`flex flex-col h-screen ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'} transition-all duration-300`}>
 
-                {/* Cotizador Horizontal Navigation - Above Content */}
-                {(isCotizadorActive || isComercialActive) && <HorizontalCotizadorNav isMainSidebarExpanded={mainSidebarExpanded} />}
+                    {/* CRM Horizontal Navigation - Above Content */}
+                    {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={false} />}
 
-                {/* Right Sidebar Agenda */}
-                <RightSidebarAgenda isMainSidebarExpanded={mainSidebarExpanded} />
+                    {/* Cotizador Horizontal Navigation - Above Content */}
+                    {(isCotizadorActive || isComercialActive) && <HorizontalCotizadorNav isMainSidebarExpanded={false} />}
 
-                {/* Desktop Main Content */}
-                <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'}`}>
-                    <MemoizedContent />
-                </main>
+                    {/* Right Sidebar Agenda */}
+                    <RightSidebarAgenda isMainSidebarExpanded={mainSidebarExpanded} />
+
+                    {/* Desktop Main Content */}
+                    {/* In /campos: flex-1 overflow-hidden so Leaflet gets exact remaining pixels */}
+                    {/* Other pages: flex-1 overflow-y-auto for normal scrolling */}
+                    <main className={`
+                        transition-all duration-300
+                        ${location.pathname === '/campos'
+                            ? 'flex-1 overflow-hidden relative'
+                            : 'flex-1 overflow-y-auto'
+                        }
+                    `}>
+                        <MemoizedContent />
+                    </main>
+                </div>
             </div>
 
             {/* ========== GLOBAL MODALS (Shared) ========== */}

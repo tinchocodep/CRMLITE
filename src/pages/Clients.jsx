@@ -8,6 +8,7 @@ import { useCompanies } from '../hooks/useCompanies';
 import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
+import { useEstablishments } from '../hooks/useEstablishments';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 
 
@@ -48,6 +49,12 @@ const Clients = () => {
 
     // Apply role-based filter on top of the server-side paginated results
     const filteredClients = useMemo(() => filterDataByRole(clients), [clients, selectedComercialId, filterDataByRole]);
+
+    // Build a Set of company_ids that have at least one establishment (campo)
+    const { establishments } = useEstablishments();
+    const clientsWithEstablishments = useMemo(() => {
+        return new Set(establishments.map(est => String(est.company_id)));
+    }, [establishments]);
 
     const handleToggleExpand = useCallback((id) => {
         setExpandedClientId(prevId => prevId === id ? null : id);
@@ -238,6 +245,7 @@ const Clients = () => {
                         onEdit={handleEditClient}
                         onDelete={deleteCompany}
                         allContacts={allContacts}
+                        clientsWithEstablishments={clientsWithEstablishments}
                         page={page}
                         totalCount={totalCount}
                         pageSize={pageSize}

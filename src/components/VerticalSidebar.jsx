@@ -28,7 +28,7 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const { branding } = useTenantBranding();
 
     // Define CRM routes
-    const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos'];
+    const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos', '/visitas', '/campos'];
     const isInCRM = crmRoutes.some(route => location.pathname.startsWith(route));
 
     // Administración: oportunidades, cotizaciones, pedidos
