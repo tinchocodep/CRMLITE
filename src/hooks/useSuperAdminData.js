@@ -71,12 +71,11 @@ export function useSuperAdminData() {
     return { tenants, tenantModules, loading, error, toggleModule, getEnabledModules, refetch: fetchAll };
 }
 
-/** Known CRM modules available to toggle per tenant */
+/** Modules that appear in VerticalSidebar — exactly these, in this order */
 export const AVAILABLE_MODULES = [
     { key: 'crm', label: 'CRM', description: 'Prospectos, Clientes, Contactos' },
-    { key: 'visitas', label: 'Visitas', description: 'Registro de visitas a campo' },
-    { key: 'campos', label: 'Campos', description: 'Territorios y establecimientos' },
     { key: 'cotizador', label: 'Cotizador', description: 'Cotizaciones y pedidos' },
     { key: 'comercial', label: 'Administración', description: 'Stock y comprobantes' },
     { key: 'usuarios', label: 'Usuarios', description: 'Gestión de usuarios' },
 ];
+
