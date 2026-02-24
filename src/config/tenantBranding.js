@@ -4,10 +4,10 @@
  * poder usarlos con opacidad en Tailwind v4.
  *
  * Tenant IDs (Supabase CRM-Demo):
- *  1 = Advanta
+ *  1 = Advanta General - Sin Uso
  *  2 = Potenza
  *  3 = Soldo Hue
- *  4 = Advanta (Misuri)
+ *  4 = Misuri
  *  5 = Zanellato
  *  6 = Sailo (sistema — super admin)
  *  Domain: crmlite-sailohub.vercel.app
@@ -56,8 +56,8 @@ export const TENANT_BRANDING = {
     loginLogoUrl: '/logo.png',
   },
   4: {
-    // Advanta (Misuri)
-    companyName: 'Advanta',
+    // Misuri
+    companyName: 'Misuri',
     primaryColor: '110 28% 52%',
     primaryHover: '110 28% 41%',
     accentColor: '110 28% 41%',
@@ -69,11 +69,21 @@ export const TENANT_BRANDING = {
     // Zanellato — verde oscuro #026454 / acento naranja #ff6c35
     companyName: 'Zanellato',
     primaryColor: '170 96% 20%',     // #026454
-    primaryHover: '170 96% 14%',     // más oscuro para hover
+    primaryHover: '170 96% 14%',
     accentColor: '16 100% 60%',      // #ff6c35
-    textOnPrimary: '0 0% 100%',      // blanco
+    textOnPrimary: '0 0% 100%',
     sidebarLogoUrl: 'https://zydrtycqvhqleiuovfnu.supabase.co/storage/v1/object/public/tenant-logos/Render%203d%20Zanellato.png',
     loginLogoUrl: 'https://zydrtycqvhqleiuovfnu.supabase.co/storage/v1/object/public/tenant-logos/Render%203d%20Zanellato.png',
+  },
+  6: {
+    // Sailo — sistema super admin
+    companyName: 'Sailo',
+    primaryColor: '221 83% 53%',
+    primaryHover: '221 83% 42%',
+    accentColor: '221 83% 42%',
+    textOnPrimary: '0 0% 100%',
+    sidebarLogoUrl: 'https://zydrtycqvhqleiuovfnu.supabase.co/storage/v1/object/public/tenant-logos/sailo-logo.png.png',
+    loginLogoUrl: 'https://zydrtycqvhqleiuovfnu.supabase.co/storage/v1/object/public/tenant-logos/sailo-logo.png.png',
   },
 };
 
