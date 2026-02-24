@@ -59,8 +59,8 @@ function ProtectedRoute({ children }) {
 
 /** Only renders children if user is super_admin. Otherwise redirects to /dashboard */
 function SuperAdminRoute({ children }) {
-  const { user } = useAuth();
-  if (user?.role !== 'super_admin') return <Navigate to="/dashboard" replace />;
+  const { userProfile } = useAuth();
+  if (userProfile?.role !== 'super_admin') return <Navigate to="/dashboard" replace />;
   return children;
 }
 
