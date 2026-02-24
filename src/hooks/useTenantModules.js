@@ -1,26 +1,25 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
+import { useCurrentTenant } from './useCurrentTenant';
 
 /**
  * useTenantModules
  *
- * Fetches the enabled module keys for the current user's tenant.
+ * Fetches the enabled module keys for the effective tenant.
+ * Respects super_admin impersonation via useCurrentTenant.
  * Returns a Set<string> for O(1) lookups.
  *
  * Policy: Whitelist — a module is only visible if it has an
  * entry in `tenant_modules` with `is_enabled = true`.
  */
 export function useTenantModules() {
-    const { userProfile, isLoading: authLoading } = useAuth();
+    const { tenantId, loading: tenantLoading } = useCurrentTenant();
     const [enabledModules, setEnabledModules] = useState(new Set());
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Wait for auth to fully resolve before querying
-        if (authLoading) return;
-
-        const tenantId = userProfile?.tenant_id;
+        // Wait for tenant to fully resolve
+        if (tenantLoading) return;
 
         if (!tenantId) {
             setEnabledModules(new Set());
@@ -59,7 +58,7 @@ export function useTenantModules() {
         fetchModules();
 
         return () => { cancelled = true; };
-    }, [userProfile?.tenant_id, authLoading]);
+    }, [tenantId, tenantLoading]);
 
     return { enabledModules, isLoading };
 }
