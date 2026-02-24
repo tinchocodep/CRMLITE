@@ -70,8 +70,8 @@ export const TENANT_BRANDING = {
     primaryHover: '170 96% 14%',     // más oscuro para hover
     accentColor: '16 100% 60%',      // #ff6c35
     textOnPrimary: '0 0% 100%',      // blanco
-    sidebarLogoUrl: '/logo.png',
-    loginLogoUrl: '/logo.png',
+    sidebarLogoUrl: 'https://zydrtycqvhqleiuovfnu.supabase.co/storage/v1/object/public/tenant-logos/Render%203d%20Zanellato.png',
+    loginLogoUrl: 'https://zydrtycqvhqleiuovfnu.supabase.co/storage/v1/object/public/tenant-logos/Render%203d%20Zanellato.png',
   },
 };
 
