@@ -29,10 +29,9 @@ const Login = () => {
     // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated) {
-            const dest = userProfile?.role === 'super_admin' ? '/admin/tenants' : '/dashboard';
-            navigate(dest, { replace: true });
+            navigate('/dashboard', { replace: true });
         }
-    }, [isAuthenticated, userProfile, navigate]);
+    }, [isAuthenticated, navigate]);
 
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,11 +71,8 @@ const Login = () => {
             const result = await login(formData.email, formData.password, formData.rememberMe);
 
             if (result.success) {
-                // After login, loadUserProfile runs and sets userProfile.
-                // We read the profile directly to get role for redirect.
                 setTimeout(() => {
-                    // userProfile may not be set yet in this closure — navigate is handled
-                    // by the isAuthenticated useEffect above which will fire after profile loads.
+                    navigate('/dashboard', { replace: true });
                 }, 100);
             } else {
                 setAuthError(result.error || 'Error al iniciar sesión');
