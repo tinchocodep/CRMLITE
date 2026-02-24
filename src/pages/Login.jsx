@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login, isAuthenticated } = useAuth();
+    const { login, isAuthenticated, user, userProfile } = useAuth();
     const { addNotification } = useNotifications();
     const { branding } = useTenantBranding();
 
@@ -29,9 +29,10 @@ const Login = () => {
     // Redirect if already authenticated
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/dashboard', { replace: true });
+            const dest = userProfile?.role === 'super_admin' ? '/admin/tenants' : '/dashboard';
+            navigate(dest, { replace: true });
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, userProfile, navigate]);
 
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,9 +72,11 @@ const Login = () => {
             const result = await login(formData.email, formData.password, formData.rememberMe);
 
             if (result.success) {
-                // Redirect to dashboard after successful login
+                // After login, loadUserProfile runs and sets userProfile.
+                // We read the profile directly to get role for redirect.
                 setTimeout(() => {
-                    navigate('/dashboard', { replace: true });
+                    // userProfile may not be set yet in this closure — navigate is handled
+                    // by the isAuthenticated useEffect above which will fire after profile loads.
                 }, 100);
             } else {
                 setAuthError(result.error || 'Error al iniciar sesión');
