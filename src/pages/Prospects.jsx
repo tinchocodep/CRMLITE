@@ -10,12 +10,26 @@ import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { useAuth } from '../contexts/AuthContext';
-import { useDebounce } from '../hooks/useDebounce';
+
 import { supabase } from '../lib/supabase';
 
 const Prospects = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const { companies: prospects, loading, createCompany, updateCompany, deleteCompany, convertToClient, generateNextFileNumber } = useCompanies('prospect');
+    const {
+        companies: prospects,
+        loading,
+        createCompany,
+        updateCompany,
+        deleteCompany,
+        convertToClient,
+        generateNextFileNumber,
+        // Search & Pagination (server-side)
+        searchTerm,
+        setSearchTerm,
+        page,
+        setPage,
+        totalCount,
+        pageSize,
+    } = useCompanies('prospect');
     const { contacts: allContacts, createContact } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
     const { comercialId } = useAuth();
@@ -35,26 +49,8 @@ const Prospects = () => {
     const [selectedProspect, setSelectedProspect] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-
-    // Debounce search term to avoid excessive filtering while typing
-    const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
-    // Apply role-based filter first
-    const roleFilteredProspects = useMemo(() => {
-        return filterDataByRole(prospects);
-    }, [prospects, selectedComercialId, filterDataByRole]);
-
-    // Then apply search filter (memoized with debounced search)
-    const filteredProspects = useMemo(() => {
-        if (!debouncedSearchTerm) return roleFilteredProspects;
-
-        const searchLower = debouncedSearchTerm.toLowerCase();
-        return roleFilteredProspects.filter(p =>
-            (p.trade_name || '').toLowerCase().includes(searchLower) ||
-            (p.legal_name || '').toLowerCase().includes(searchLower) ||
-            (p.cuit?.includes(debouncedSearchTerm))
-        );
-    }, [roleFilteredProspects, debouncedSearchTerm]);
+    // Apply role-based filter on top of the server-side paginated results
+    const filteredProspects = useMemo(() => filterDataByRole(prospects), [prospects, selectedComercialId, filterDataByRole]);
 
 
     const handlePromoteClick = useCallback((prospect) => {
@@ -336,6 +332,10 @@ const Prospects = () => {
                         onAddContact={handleAddContactClick}
                         allContacts={allContacts}
                         onStatusChange={handleStatusChange}
+                        page={page}
+                        totalCount={totalCount}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
                     />
                 )}
             </div>

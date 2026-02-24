@@ -2,8 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Building2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Pagination } from '../shared/Pagination';
 
-const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
+const ClientsTable = ({ clients, onEdit, onDelete, allContacts, page, totalCount, pageSize, onPageChange }) => {
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
     // Sorting logic
@@ -62,7 +63,21 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="overflow-x-auto">
-                <table className="w-full min-w-[1400px]">
+                <table className="table-fixed min-w-[1400px]">
+                    {/* Fixed column widths prevent layout reflow when sidebar opens/closes */}
+                    <colgroup>
+                        <col style={{ width: '15%' }} />{/* Comercial */}
+                        <col style={{ width: '14%' }} />{/* Razón Social */}
+                        <col style={{ width: '9%' }} />{/* CUIT */}
+                        <col style={{ width: '12%' }} />{/* Dirección */}
+                        <col style={{ width: '8%' }} />{/* Ciudad */}
+                        <col style={{ width: '8%' }} />{/* Provincia */}
+                        <col style={{ width: '13%' }} />{/* Email */}
+                        <col style={{ width: '9%' }} />{/* Teléfono */}
+                        <col style={{ width: '8%' }} />{/* Vendedor */}
+                        <col style={{ width: '6%' }} />{/* Desde */}
+                        <col style={{ width: '5%' }} />{/* Acciones */}
+                    </colgroup>
                     <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
                         <tr>
                             <th
@@ -233,6 +248,16 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts }) => {
                     </div>
                 )}
             </div>
+
+            {/* Pagination */}
+            {onPageChange && (
+                <Pagination
+                    page={page ?? 0}
+                    totalCount={totalCount ?? 0}
+                    pageSize={pageSize ?? 50}
+                    onPageChange={onPageChange}
+                />
+            )}
         </div>
     );
 };

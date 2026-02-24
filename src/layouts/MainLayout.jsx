@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect, memo } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Users, Calendar, FileText, Map, Target, AlertCircle, Briefcase, UserCheck, Search, Plus, X, UserPlus, User, LogOut, Bell, Home, Menu, Settings, ShieldCheck, Receipt, Package, CreditCard, Box } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,6 +46,12 @@ const actions = [
     { label: 'Registrar Visita', icon: Map, color: 'text-amber-600 bg-amber-50' },
     { label: 'Nueva Oportunidad', icon: Briefcase, color: 'text-advanta-bronze bg-orange-50' },
 ];
+
+// Stable wrapper: never re-renders when MainLayout state changes (e.g. sidebar toggle)
+// This prevents Clients/Prospects from re-rendering on every sidebar hover
+const MemoizedContent = memo(function MemoizedContent() {
+    return <Outlet />;
+});
 
 const MainLayout = () => {
     const navigate = useNavigate();
@@ -374,7 +380,7 @@ const MainLayout = () => {
 
                 {/* Mobile Main Content */}
                 <main className="flex-1 w-full overflow-y-auto pb-16">
-                    <Outlet />
+                    <MemoizedContent />
                 </main>
 
                 {/* Mobile Bottom Navigation */}
@@ -480,7 +486,7 @@ const MainLayout = () => {
 
                 {/* Desktop Main Content */}
                 <main className={`min-h-screen transition-all duration-300 ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'}`}>
-                    <Outlet />
+                    <MemoizedContent />
                 </main>
             </div>
 

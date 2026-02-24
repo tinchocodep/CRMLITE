@@ -9,13 +9,24 @@ import { useContacts } from '../hooks/useContacts';
 import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { useDebounce } from '../hooks/useDebounce';
+
 
 
 const Clients = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const debouncedSearch = useDebounce(searchTerm, 300); // Debounce search
-    const { companies: clients, loading, createCompany, updateCompany, deleteCompany } = useCompanies('client');
+    const {
+        companies: clients,
+        loading,
+        createCompany,
+        updateCompany,
+        deleteCompany,
+        // Search & Pagination (server-side)
+        searchTerm,
+        setSearchTerm,
+        page,
+        setPage,
+        totalCount,
+        pageSize,
+    } = useCompanies('client');
     const { contacts: allContacts, linkToCompany, unlinkFromCompany } = useContacts();
     const { showSuccess, showError, showWarning } = useSystemToast();
 
@@ -35,16 +46,8 @@ const Clients = () => {
     const [expandedClientId, setExpandedClientId] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, clientId: null });
 
-    // Apply role-based filter first
-    const roleFilteredClients = useMemo(() => {
-        return filterDataByRole(clients);
-    }, [clients, selectedComercialId, filterDataByRole]);
-
-    // Then apply search filter with debounced value
-    const filteredClients = roleFilteredClients.filter(c =>
-        (c.trade_name || '').toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        (c.legal_name || '').toLowerCase().includes(debouncedSearch.toLowerCase())
-    );
+    // Apply role-based filter on top of the server-side paginated results
+    const filteredClients = useMemo(() => filterDataByRole(clients), [clients, selectedComercialId, filterDataByRole]);
 
     const handleToggleExpand = useCallback((id) => {
         setExpandedClientId(prevId => prevId === id ? null : id);
@@ -235,6 +238,10 @@ const Clients = () => {
                         onEdit={handleEditClient}
                         onDelete={deleteCompany}
                         allContacts={allContacts}
+                        page={page}
+                        totalCount={totalCount}
+                        pageSize={pageSize}
+                        onPageChange={setPage}
                     />
                 )}
             </div>

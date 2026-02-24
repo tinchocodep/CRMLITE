@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCurrentTenant } from './useCurrentTenant';
 import { useRoleBasedFilter } from './useRoleBasedFilter';
 
+const PAGE_SIZE = 50;
+
 export const useCompanies = (type = null) => {
     const { user, isLoading: authLoading, comercialId, comercialIdLoaded, isAdmin } = useAuth();
     const { tenantId, loading: tenantLoading } = useCurrentTenant();
@@ -11,6 +13,16 @@ export const useCompanies = (type = null) => {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [totalCount, setTotalCount] = useState(0);
+    const [searchTerm, setSearchTermInternal] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState(''); // 350ms debounce
+
+    // Debounce: delay the actual query until user stops typing
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedSearch(searchTerm), 350);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
 
     // Helper: Map qualification score to status (memoized)
     const mapQualificationToStatus = useCallback((score) => {
@@ -30,9 +42,14 @@ export const useCompanies = (type = null) => {
         return mapping[status] || 1;
     }, []);
 
-    const fetchCompanies = async () => {
+    // Public setter: resets to page 0 whenever search changes
+    const setSearchTerm = useCallback((term) => {
+        setSearchTermInternal(term);
+        setPage(0);
+    }, []);
+
+    const fetchCompanies = useCallback(async (currentPage, currentSearch) => {
         try {
-            // Don't fetch if tenant_id is not available yet
             if (!tenantId) {
                 setCompanies([]);
                 setLoading(false);
@@ -41,9 +58,6 @@ export const useCompanies = (type = null) => {
 
             setLoading(true);
 
-            // OPTIMIZATION: Only fetch essential fields for list view
-            // This significantly reduces payload size and query time
-            // Include JOIN with comerciales to get comercial name
             const essentialFields = [
                 'id',
                 'created_at',
@@ -64,35 +78,50 @@ export const useCompanies = (type = null) => {
                 'comerciales(name)'
             ].join(',');
 
-            // Build query with tenant filter
+            const isSearching = currentSearch && currentSearch.trim().length > 0;
+
+            // Always request exact count
             let query = supabase
                 .from('companies')
-                .select(essentialFields)
+                .select(essentialFields, { count: 'exact' })
                 .eq('is_active', true)
                 .eq('tenant_id', tenantId);
 
-            // Filter by type if specified
-            if (type) {
-                query = query.eq('company_type', type);
-            }
-
-            // Apply role-based filter (admin sees all, comercial sees only theirs)
+            if (type) query = query.eq('company_type', type);
             query = applyRoleFilter(query);
-
-            // Execute query with ordering
             query = query.order('created_at', { ascending: false });
 
-            const { data, error: fetchError } = await query;
+            if (isSearching) {
+                // Global search: bypass pagination, filter server-side with ilike
+                const term = `%${currentSearch.trim()}%`;
+                query = query.or(`trade_name.ilike.${term},legal_name.ilike.${term},cuit.ilike.${term}`);
+                // No .range() — return all matches
+            } else {
+                // Paginated browse: only fetch current page
+                const from = currentPage * PAGE_SIZE;
+                const to = from + PAGE_SIZE - 1;
+                query = query.range(from, to);
+            }
 
-            if (fetchError) throw fetchError;
+            const { data, count, error: fetchError } = await query;
 
-            // Normalize: flatten comerciales join -> comercial_name
+            if (fetchError) {
+                // PGRST303 = "Requested range not satisfiable" (page beyond total records)
+                // Reset to page 0 instead of crashing
+                if (fetchError.code === 'PGRST303') {
+                    setPage(0);
+                    return;
+                }
+                throw fetchError;
+            }
+
             const normalized = (data || []).map(company => ({
                 ...company,
                 comercial_name: company.comerciales?.name || null,
             }));
 
             setCompanies(normalized);
+            setTotalCount(count ?? 0);
             setError(null);
         } catch (err) {
             console.error('Error fetching companies:', err);
@@ -100,7 +129,7 @@ export const useCompanies = (type = null) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [tenantId, type, applyRoleFilter]);
 
     useEffect(() => {
         // Wait for auth to finish loading before fetching
@@ -124,7 +153,7 @@ export const useCompanies = (type = null) => {
         // OPTIMIZATION: Admin users don't need to wait for comercialId
         // They can see all data regardless of comercial_id
         if (isAdmin) {
-            fetchCompanies();
+            fetchCompanies(page, searchTerm);
             return;
         }
 
@@ -134,8 +163,12 @@ export const useCompanies = (type = null) => {
             return;
         }
 
-        fetchCompanies();
-    }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin]);
+        fetchCompanies(page, debouncedSearch);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // fetchCompanies is intentionally excluded: it's a useCallback that depends on
+        // applyRoleFilter (which changes reference every render), including it would
+        // cause an infinite loop. The remaining deps already cover all re-fetch triggers.
+    }, [type, user, tenantId, tenantLoading, selectedComercialId, authLoading, comercialIdLoaded, isAdmin, page, debouncedSearch]);
 
     const createCompany = async (companyData) => {
         try {
@@ -286,7 +319,7 @@ export const useCompanies = (type = null) => {
 
             if (updateError) throw updateError;
 
-            await fetchCompanies();
+            await fetchCompanies(page, searchTerm);
             return { success: true, data };
         } catch (err) {
             console.error('Error converting to client:', err);
@@ -298,12 +331,21 @@ export const useCompanies = (type = null) => {
         companies,
         loading: loading || tenantLoading,
         error,
-        refetch: fetchCompanies,
+        // Pagination
+        page,
+        setPage,
+        totalCount,
+        pageSize: PAGE_SIZE,
+        // Search (server-side)
+        searchTerm,
+        setSearchTerm,
+        // Actions
+        refetch: () => fetchCompanies(page, searchTerm),
         createCompany,
         updateCompany,
         deleteCompany,
         convertToClient,
-        generateNextFileNumber, // Export for manual file_number generation
+        generateNextFileNumber,
         mapQualificationToStatus,
         mapStatusToQualification
     };

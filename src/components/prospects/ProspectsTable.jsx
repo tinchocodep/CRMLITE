@@ -2,8 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { Edit2, UserPlus, UserCheck, Trash2, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Pagination } from '../shared/Pagination';
 
-const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, allContacts, onStatusChange }) => {
+const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, allContacts, onStatusChange, page, totalCount, pageSize, onPageChange }) => {
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
 
     // Sorting logic
@@ -64,7 +65,19 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
             <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="table-fixed w-full min-w-[1100px]">
+                    {/* Fixed column widths prevent layout reflow when sidebar opens/closes */}
+                    <colgroup>
+                        <col style={{ width: '18%' }} />{/* Nombre Comercial */}
+                        <col style={{ width: '16%' }} />{/* Razón Social */}
+                        <col style={{ width: '11%' }} />{/* CUIT */}
+                        <col style={{ width: '10%' }} />{/* Ciudad */}
+                        <col style={{ width: '10%' }} />{/* Provincia */}
+                        <col style={{ width: '12%' }} />{/* Comercial */}
+                        <col style={{ width: '11%' }} />{/* Estado */}
+                        <col style={{ width: '11%' }} />{/* Fecha Creación */}
+                        <col style={{ width: '11%' }} />{/* Acciones */}
+                    </colgroup>
                     <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
                         <tr>
                             <th onClick={() => handleSort('trade_name')} className={thClass}>
@@ -199,6 +212,16 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, 
                 <div className="text-center py-12 text-slate-400 dark:text-slate-500">
                     No se encontraron prospectos
                 </div>
+            )}
+
+            {/* Pagination */}
+            {onPageChange && (
+                <Pagination
+                    page={page ?? 0}
+                    totalCount={totalCount ?? 0}
+                    pageSize={pageSize ?? 50}
+                    onPageChange={onPageChange}
+                />
             )}
         </div>
     );
