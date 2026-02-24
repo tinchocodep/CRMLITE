@@ -47,17 +47,19 @@ const ClientCard = ({ client, onEdit, onDelete, isExpanded, onToggleExpand, allC
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                     <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 leading-tight truncate">
-                                        {client.trade_name || client.legal_name || 'Sin nombre'}
+                                        {client.legal_name || client.trade_name || 'Sin nombre'}
                                     </h3>
                                     {/* Importance Badge */}
                                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase border ${importance.color} whitespace-nowrap`}>
                                         {importance.label}
                                     </span>
                                 </div>
-                                <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
-                                    <Building2 size={12} />
-                                    <span className="truncate">{client.legal_name || client.trade_name || '---'}</span>
-                                </p>
+                                {client.trade_name && client.trade_name !== client.legal_name && (
+                                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                        <Building2 size={12} />
+                                        <span className="truncate">{client.trade_name}</span>
+                                    </p>
+                                )}
 
                                 {/* Inline Info: CUIT, Email, Phone */}
                                 <div className="mt-2 space-y-1">

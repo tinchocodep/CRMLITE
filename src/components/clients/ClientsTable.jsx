@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Building2, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -8,6 +8,25 @@ import { Pagination } from '../shared/Pagination';
 const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstablishments = new Set(), page, totalCount, pageSize, onPageChange }) => {
     const navigate = useNavigate();
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
+    const topScrollRef = useRef(null);
+    const tableScrollRef = useRef(null);
+
+    // Sync scroll position between top mirror bar and table container
+    useEffect(() => {
+        const top = topScrollRef.current;
+        const table = tableScrollRef.current;
+        if (!top || !table) return;
+
+        const syncFromTop = () => { table.scrollLeft = top.scrollLeft; };
+        const syncFromTable = () => { top.scrollLeft = table.scrollLeft; };
+
+        top.addEventListener('scroll', syncFromTop);
+        table.addEventListener('scroll', syncFromTable);
+        return () => {
+            top.removeEventListener('scroll', syncFromTop);
+            table.removeEventListener('scroll', syncFromTable);
+        };
+    }, []);
 
     // Sorting logic
     const sortedClients = useMemo(() => {
@@ -64,7 +83,11 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstab
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Top mirror scrollbar */}
+            <div ref={topScrollRef} className="overflow-x-auto" style={{ overflowY: 'hidden', height: '12px' }}>
+                <div style={{ minWidth: '1400px', height: '1px' }} />
+            </div>
+            <div ref={tableScrollRef} className="overflow-x-auto">
                 <table className="table-fixed min-w-[1400px]">
                     {/* Fixed column widths prevent layout reflow when sidebar opens/closes */}
                     <colgroup>

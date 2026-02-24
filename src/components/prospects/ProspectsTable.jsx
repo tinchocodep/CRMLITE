@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Edit2, UserPlus, UserCheck, Trash2, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -6,6 +6,25 @@ import { Pagination } from '../shared/Pagination';
 
 const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, allContacts, onStatusChange, page, totalCount, pageSize, onPageChange }) => {
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
+    const topScrollRef = useRef(null);
+    const tableScrollRef = useRef(null);
+
+    // Sync scroll position between top mirror bar and table container
+    useEffect(() => {
+        const top = topScrollRef.current;
+        const table = tableScrollRef.current;
+        if (!top || !table) return;
+
+        const syncFromTop = () => { table.scrollLeft = top.scrollLeft; };
+        const syncFromTable = () => { top.scrollLeft = table.scrollLeft; };
+
+        top.addEventListener('scroll', syncFromTop);
+        table.addEventListener('scroll', syncFromTable);
+        return () => {
+            top.removeEventListener('scroll', syncFromTop);
+            table.removeEventListener('scroll', syncFromTable);
+        };
+    }, []);
 
     // Sorting logic
     const sortedProspects = useMemo(() => {
@@ -64,19 +83,23 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, 
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="table-fixed w-full min-w-[1100px]">
+            {/* Top mirror scrollbar */}
+            <div ref={topScrollRef} className="overflow-x-auto" style={{ overflowY: 'hidden', height: '12px' }}>
+                <div style={{ minWidth: '1200px', height: '1px' }} />
+            </div>
+            <div ref={tableScrollRef} className="overflow-x-auto">
+                <table className="table-fixed w-full min-w-[1200px]">
                     {/* Fixed column widths prevent layout reflow when sidebar opens/closes */}
                     <colgroup>
-                        <col style={{ width: '18%' }} />{/* Nombre Comercial */}
-                        <col style={{ width: '16%' }} />{/* Razón Social */}
-                        <col style={{ width: '11%' }} />{/* CUIT */}
-                        <col style={{ width: '10%' }} />{/* Ciudad */}
-                        <col style={{ width: '10%' }} />{/* Provincia */}
-                        <col style={{ width: '12%' }} />{/* Comercial */}
-                        <col style={{ width: '11%' }} />{/* Estado */}
-                        <col style={{ width: '11%' }} />{/* Fecha Creación */}
-                        <col style={{ width: '11%' }} />{/* Acciones */}
+                        <col style={{ width: '16%' }} />{/* Nombre Comercial */}
+                        <col style={{ width: '14%' }} />{/* Razón Social */}
+                        <col style={{ width: '10%' }} />{/* CUIT */}
+                        <col style={{ width: '9%' }} />{/* Ciudad */}
+                        <col style={{ width: '9%' }} />{/* Provincia */}
+                        <col style={{ width: '11%' }} />{/* Comercial */}
+                        <col style={{ width: '12%' }} />{/* Estado */}
+                        <col style={{ width: '10%' }} />{/* Fecha Creación */}
+                        <col style={{ width: '9%' }} />{/* Acciones - 4 icon buttons */}
                     </colgroup>
                     <thead className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
                         <tr>
@@ -115,22 +138,22 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, 
                                 key={prospect.id}
                                 className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                             >
-                                <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-slate-100">
+                                <td className="px-3 py-3 text-xs font-semibold text-slate-900 dark:text-slate-100">
                                     {prospect.trade_name || '-'}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400">
                                     {prospect.legal_name || '-'}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 font-mono">
+                                <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400 font-mono">
                                     {prospect.cuit || '-'}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400">
                                     {prospect.city || '-'}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400">
                                     {prospect.province || '-'}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400">
                                     {prospect.comercial_name || '-'}
                                 </td>
                                 <td className="px-4 py-3">
@@ -164,11 +187,11 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, 
                                         );
                                     })()}
                                 </td>
-                                <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400">
                                     {formatDate(prospect.created_at)}
                                 </td>
-                                <td className="px-4 py-3 text-right">
-                                    <div className="flex items-center justify-end gap-2">
+                                <td className="px-2 py-3 text-right">
+                                    <div className="flex items-center justify-end gap-1">
                                         <button
                                             onClick={() => onEdit(prospect)}
                                             className="p-2 text-slate-600 dark:text-slate-400 hover:text-advanta-green dark:hover:text-advanta-green hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all"

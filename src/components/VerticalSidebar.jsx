@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-    Home, Users, Briefcase, Package, TrendingUp,
-    Megaphone, Truck, Leaf, DollarSign, Building2,
-    Plus, Settings, ShieldCheck, Lock, BarChart2
+    Home, Users, Briefcase, Package,
+    Plus, Settings, BarChart2
 } from 'lucide-react';
 import { useTenantBranding } from '../contexts/TenantBrandingContext';
+import { useTenantModules } from '../hooks/useTenantModules';
 
+// moduleKey must match the `module_key` column in `tenant_modules`.
+// Items without a moduleKey are always visible (e.g. Settings).
 const sidebarModules = [
-    { id: 'home', name: 'Home', path: '/dashboard', icon: Home, locked: false },
-    { id: 'portal-clientes', name: 'Portal Clientes', path: '/portal-clientes', icon: Users, locked: true },
-    { id: 'crm', name: 'CRM', path: '/dashboard', icon: Briefcase, isCRM: true, locked: false },
-    { id: 'administracion', name: 'Cotizador', path: '/cotizador', icon: Package, isCotizador: true, locked: false },
-    { id: 'comercial', name: 'Administración', path: '/comercial', icon: BarChart2, isComercial: true, locked: false },
-    { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users },
-    { id: 'mercado-granos', name: 'Mercado de Granos', path: '/mercado-granos', icon: TrendingUp, locked: true },
-    { id: 'marketing', name: 'Marketing', path: '/marketing', icon: Megaphone, locked: true },
-    { id: 'logistica', name: 'Logística (TMS)', path: '/logistica', icon: Truck, locked: true },
-    { id: 'sustentabilidad', name: 'Sustentabilidad', path: '/sustentabilidad', icon: Leaf, locked: true },
-    { id: 'finanzas', name: 'Soluciones Financieras', path: '/finanzas', icon: DollarSign, locked: true },
-    { id: 'proveedores', name: 'Portal Proveedores', path: '/proveedores', icon: Building2, locked: true }
+    { id: 'home', name: 'Home', path: '/dashboard', icon: Home, moduleKey: 'home' },
+    { id: 'crm', name: 'CRM', path: '/dashboard', icon: Briefcase, moduleKey: 'crm', isCRM: true },
+    { id: 'cotizador', name: 'Cotizador', path: '/cotizador', icon: Package, moduleKey: 'cotizador', isCotizador: true },
+    { id: 'comercial', name: 'Administración', path: '/comercial', icon: BarChart2, moduleKey: 'comercial', isComercial: true },
+    { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users, moduleKey: 'usuarios' },
 ];
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const [isHovered, setIsHovered] = useState(false);
     const location = useLocation();
     const { branding } = useTenantBranding();
+    const { enabledModules, isLoading: modulesLoading } = useTenantModules();
+
+    // Filter modules: show only those present in the tenant's enabledModules Set.
+    // Items without a moduleKey are always visible.
+    const visibleModules = sidebarModules.filter(
+        (m) => !m.moduleKey || enabledModules.has(m.moduleKey)
+    );
 
     // Define CRM routes
     const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos', '/visitas', '/campos'];
@@ -73,92 +75,48 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
 
             {/* Navigation Items */}
             <nav className="flex-1 py-2 overflow-y-auto">
-                {sidebarModules.map((module) => {
-                    if (module.locked) {
-                        // Render locked modules as divs
-                        return (
-                            <div
-                                key={module.id}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                                style={{ backgroundColor: '#f5f5f5' }}
-                                className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative opacity-50 cursor-not-allowed text-slate-400"
-                            >
-                                <module.icon
-                                    size={22}
-                                    className="flex-shrink-0"
-                                />
-                                <span
-                                    className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                                        }`}
-                                >
-                                    {module.name}
-                                </span>
-                                {isHovered && (
-                                    <Lock
-                                        size={16}
-                                        className="ml-auto flex-shrink-0 text-slate-400"
-                                    />
-                                )}
-                            </div>
-                        );
-                    }
-
-                    // Render unlocked modules as NavLinks
-                    return (
-                        <NavLink
-                            key={module.id}
-                            to={module.path}
-                            className={({ isActive }) => {
-                                const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
-                                const shouldHighlight = module.isCRM ? isInCRM
-                                    : module.isCotizador ? isInCotizador
-                                        : module.isComercial ? isInComercial
-                                            : isActive;
-                                if (shouldHighlight) {
-                                    return `${baseClasses} text-white shadow-md`;
-                                }
-                                return `${baseClasses} text-slate-700`;
-                            }}
-                            style={({ isActive }) => {
-                                const shouldHighlight = module.isCRM ? isInCRM
-                                    : module.isCotizador ? isInCotizador
-                                        : module.isComercial ? isInComercial
-                                            : isActive;
-                                return shouldHighlight ? {
-                                    background: 'linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent))',
-                                    boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-primary) 35%, transparent)',
-                                } : {
-                                    backgroundColor: 'transparent',
-                                };
-                            }}
-                            onMouseEnter={e => {
-                                // Solo aplica hover si el ítem NO está activo (si ya tiene gradient, lo respeta)
-                                if (!e.currentTarget.style.background) {
-                                    e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 10%, white)';
-                                }
-                            }}
-                            onMouseLeave={e => {
-                                if (!e.currentTarget.style.background) {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                }
-                            }}
-                        >
-                            <module.icon
-                                size={22}
-                                className="flex-shrink-0"
-                            />
-                            <span
-                                className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                                    }`}
-                            >
-                                {module.name}
-                            </span>
-                        </NavLink>
-                    );
-                })}
+                {modulesLoading ? null : visibleModules.map((module) => (
+                    <NavLink
+                        key={module.id}
+                        to={module.path}
+                        className={({ isActive }) => {
+                            const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
+                            const shouldHighlight = module.isCRM ? isInCRM
+                                : module.isCotizador ? isInCotizador
+                                    : module.isComercial ? isInComercial
+                                        : isActive;
+                            return shouldHighlight
+                                ? `${baseClasses} text-white shadow-md`
+                                : `${baseClasses} text-slate-700`;
+                        }}
+                        style={({ isActive }) => {
+                            const shouldHighlight = module.isCRM ? isInCRM
+                                : module.isCotizador ? isInCotizador
+                                    : module.isComercial ? isInComercial
+                                        : isActive;
+                            return shouldHighlight ? {
+                                background: 'linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent))',
+                                boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-primary) 35%, transparent)',
+                            } : { backgroundColor: 'transparent' };
+                        }}
+                        onMouseEnter={e => {
+                            if (!e.currentTarget.style.background) {
+                                e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 10%, white)';
+                            }
+                        }}
+                        onMouseLeave={e => {
+                            if (!e.currentTarget.style.background) {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                            }
+                        }}
+                    >
+                        <module.icon size={22} className="flex-shrink-0" />
+                        <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
+                            }`}>
+                            {module.name}
+                        </span>
+                    </NavLink>
+                ))}
             </nav>
 
             {/* Bottom Actions */}
