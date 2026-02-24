@@ -3,10 +3,12 @@
  * Los colores se expresan como valores HSL sin la función hsl() para
  * poder usarlos con opacidad en Tailwind v4.
  *
- * Tenant IDs (Supabase CRM-GR):
- *  1 = SAILO
- *  2 = OG / GR
- *  3 = Lartirigoyen
+ * Tenant IDs (Supabase CRM-Demo):
+ *  1 = Advanta
+ *  2 = Potenza
+ *  3 = Soldo Hue
+ *  4 = Advanta (Misuri)
+ *  5 = Zanellato
  */
 
 /** @typedef {Object} TenantBranding
@@ -22,8 +24,8 @@
 /** @type {Record<number, TenantBranding>} */
 export const TENANT_BRANDING = {
   1: {
-    // SAILO — brand rojo/coral original
-    companyName: 'SAILO',
+    // Advanta — brand rojo/coral
+    companyName: 'Advanta',
     primaryColor: '12 76% 61%',      // #E76E53
     primaryHover: '12 76% 50%',
     accentColor: '12 76% 45%',
@@ -32,28 +34,48 @@ export const TENANT_BRANDING = {
     loginLogoUrl: '/logo.png',
   },
   2: {
-    // OG / GR — mismo branding que SAILO (main)
-    companyName: 'GR',
-    primaryColor: '12 76% 61%',
-    primaryHover: '12 76% 50%',
-    accentColor: '12 76% 45%',
+    // Potenza
+    companyName: 'Potenza',
+    primaryColor: '110 28% 52%',
+    primaryHover: '110 28% 41%',
+    accentColor: '110 28% 41%',
     textOnPrimary: '0 0% 100%',
     sidebarLogoUrl: '/logo.png',
     loginLogoUrl: '/logo.png',
   },
   3: {
-    // Lartirigoyen — verde corporativo #006F54 / #73BD78
-    companyName: 'Lartirigoyen',
-    primaryColor: '160 100% 22%',    // #006F54
-    primaryHover: '160 100% 17%',   // más oscuro para hover
-    accentColor: '123 33% 59%',     // #73BD78
-    textOnPrimary: '0 0% 100%',     // blanco
-    sidebarLogoUrl: '/logo.png',            // logo cuadrado (ya existe)
-    loginLogoUrl: '/logo_lartirigoyen_login.png',  // logo horizontal (pendiente)
+    // Soldo Hue — naranja dorado
+    companyName: 'Soldo Hue',
+    primaryColor: '38 92% 53%',
+    primaryHover: '38 92% 42%',
+    accentColor: '38 92% 42%',
+    textOnPrimary: '0 0% 100%',
+    sidebarLogoUrl: '/logo.png',
+    loginLogoUrl: '/logo.png',
+  },
+  4: {
+    // Advanta (Misuri)
+    companyName: 'Advanta',
+    primaryColor: '110 28% 52%',
+    primaryHover: '110 28% 41%',
+    accentColor: '110 28% 41%',
+    textOnPrimary: '0 0% 100%',
+    sidebarLogoUrl: '/logo.png',
+    loginLogoUrl: '/logo.png',
+  },
+  5: {
+    // Zanellato — verde oscuro #026454 / acento naranja #ff6c35
+    companyName: 'Zanellato',
+    primaryColor: '170 96% 20%',     // #026454
+    primaryHover: '170 96% 14%',     // más oscuro para hover
+    accentColor: '16 100% 60%',      // #ff6c35
+    textOnPrimary: '0 0% 100%',      // blanco
+    sidebarLogoUrl: '/logo.png',
+    loginLogoUrl: '/logo.png',
   },
 };
 
 /**
- * Branding por defecto — en branch lartirigoyen el default es tenant 3.
+ * Branding por defecto — fallback al tenant 1 si el dominio no coincide.
  */
-export const DEFAULT_BRANDING = TENANT_BRANDING[3];
+export const DEFAULT_BRANDING = TENANT_BRANDING[1];
