@@ -71,7 +71,11 @@ export function useSuperAdminData() {
     return { tenants, tenantModules, loading, error, toggleModule, getEnabledModules, refetch: fetchAll };
 }
 
-/** All modules toggleable per tenant. Active = ON, inactive = OFF. locked = coming soon */
+/**
+ * All toggleable modules per tenant.
+ * These map 1:1 with sidebarModules in VerticalSidebar.jsx.
+ * Inactive modules simply don't appear in the sidebar.
+ */
 export const AVAILABLE_MODULES = [
     { key: 'crm', label: 'CRM', description: 'Prospectos, Clientes, Contactos' },
     { key: 'cotizador', label: 'Cotizador', description: 'Cotizaciones y pedidos' },
@@ -79,8 +83,7 @@ export const AVAILABLE_MODULES = [
     { key: 'usuarios', label: 'Usuarios', description: 'Gestion de usuarios' },
     { key: 'visitas', label: 'Visitas', description: 'Registro de visitas a campo' },
     { key: 'campos', label: 'Campos', description: 'Territorios y establecimientos' },
-    // Proximamente - no implementados aun
-    { key: 'logistica', label: 'Logistica', description: 'Gestion logistica', locked: true },
-    { key: 'rrhh', label: 'RRHH', description: 'Recursos Humanos', locked: true },
-    { key: 'reportes', label: 'Reportes', description: 'Reportes y analitica avanzada', locked: true },
+    { key: 'logistica', label: 'Logistica', description: 'Gestion logistica' },
+    { key: 'rrhh', label: 'RRHH', description: 'Recursos Humanos' },
+    { key: 'reportes', label: 'Reportes', description: 'Reportes y analitica avanzada' },
 ];

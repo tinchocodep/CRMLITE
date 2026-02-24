@@ -85,7 +85,7 @@ function MobileRedirect({ children }) {
 function AppRoutes() {
   // Solo módulos sin ruta dedicada → se renderizan como ModulePlaceholder
   const modules = [
-    'Ficha 360°', 'Objetivos', 'Reclamos'
+    'Ficha 360°', 'Objetivos', 'Reclamos', 'Logistica', 'RRHH', 'Reportes'
   ];
 
   const slugify = (text) => (text || '').toLowerCase().replace(/°/g, '').replace(/\s+/g, '-');
