@@ -1,20 +1,25 @@
-/**
- * TenantManagerPage — Sailo Super Admin view.
- *
- * Shows all tenants in a card grid. Each card can be expanded to toggle
- * modules via switches. The super_admin can also "enter" any tenant to
- * browse their CRM as if they were that tenant.
- */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronUp, LogIn, Building2, ShieldCheck, ToggleLeft, ToggleRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, LogIn, Building2, ShieldCheck, ToggleLeft, ToggleRight, RefreshCw, AlertCircle, Lock } from 'lucide-react';
 import { useSuperAdminData, AVAILABLE_MODULES } from '../../hooks/useSuperAdminData';
 import { useSuperAdmin } from '../../contexts/SuperAdminContext';
 
 // ─────────────────────────────────────────────
 // Module toggle row
 // ─────────────────────────────────────────────
-function ModuleToggle({ label, description, enabled, onToggle, loading }) {
+function ModuleToggle({ label, description, enabled, onToggle, loading, locked }) {
+    if (locked) {
+        return (
+            <div className="flex items-center justify-between py-2 px-3 rounded-lg opacity-40 cursor-not-allowed">
+                <div>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500">{description}</p>
+                </div>
+                <Lock size={16} className="flex-shrink-0 ml-4 text-slate-400" />
+            </div>
+        );
+    }
+
     return (
         <div className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors">
             <div>
@@ -112,6 +117,7 @@ function TenantCard({ tenant, enabledModules, onToggleModule, onEnter }) {
                             description={mod.description}
                             enabled={enabledModules.has(mod.key)}
                             loading={togglingKey === mod.key}
+                            locked={!!mod.locked}
                             onToggle={() => handleToggle(mod.key, enabledModules.has(mod.key))}
                         />
                     ))}

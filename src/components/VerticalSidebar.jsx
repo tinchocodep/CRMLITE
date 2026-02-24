@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package,
-    Plus, Settings, BarChart2, ShieldCheck
+    Plus, Settings, BarChart2, ShieldCheck, Lock, Truck, UserSquare2, BarChart3
 } from 'lucide-react';
 import { useTenantBranding } from '../contexts/TenantBrandingContext';
 import { useTenantModules } from '../hooks/useTenantModules';
@@ -17,6 +17,13 @@ const sidebarModules = [
     { id: 'comercial', name: 'Administración', path: '/comercial', icon: BarChart2, moduleKey: 'comercial', isComercial: true },
     { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users, moduleKey: 'usuarios' },
     { id: 'admin', name: 'Admin', path: '/admin/tenants', icon: ShieldCheck, moduleKey: 'tenant-manager' },
+];
+
+/** Modules not yet implemented — shown as locked in the sidebar */
+const lockedModules = [
+    { id: 'logistica', name: 'Logística', icon: Truck },
+    { id: 'rrhh', name: 'RRHH', icon: UserSquare2 },
+    { id: 'reportes', name: 'Reportes', icon: BarChart3 },
 ];
 
 export function VerticalSidebar({ onQuickActions, onHoverChange }) {
@@ -118,6 +125,23 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
                             {module.name}
                         </span>
                     </NavLink>
+                ))}
+
+                {/* Locked / Coming Soon modules */}
+                {lockedModules.map((mod) => (
+                    <div
+                        key={mod.id}
+                        className="flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl opacity-40 cursor-not-allowed select-none relative"
+                        title={`${mod.name} — Próximamente`}
+                    >
+                        <mod.icon size={22} className="flex-shrink-0 text-slate-400" />
+                        <span className={`font-semibold text-sm whitespace-nowrap text-slate-400 transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+                            {mod.name}
+                        </span>
+                        {isHovered && (
+                            <Lock size={11} className="absolute right-3 text-slate-400" />
+                        )}
+                    </div>
                 ))}
             </nav>
 
