@@ -34,7 +34,8 @@ export const useUsers = () => {
         fetchCurrentUserRole();
     }, [user]);
 
-    const isAdmin = currentUserRole === 'admin';
+    const isAdmin = currentUserRole === 'admin' || currentUserRole === 'super_admin';
+    const isGerenteZona = currentUserRole === 'gerente_zona';
     const isSupervisor = currentUserRole === 'supervisor';
     const isUser = currentUserRole === 'user';
 
@@ -95,8 +96,8 @@ export const useUsers = () => {
         // Fetch users once we know the current user's role and tenant
         if (currentUserRole !== null && user && tenantId) {
             fetchUsers();
-        } else if (!tenantLoading) {
-            // If tenant loading is done but we don't have all required data, stop loading
+        } else if (!tenantLoading && (!user || !currentUserRole)) {
+            // Tenant loaded but missing user/role data — stop loading
             setLoading(false);
         }
     }, [currentUserRole, user, tenantId, tenantLoading]);
@@ -126,9 +127,8 @@ export const useUsers = () => {
 
             if (updateError) throw updateError;
 
-            // Handle comercial creation/deletion based on role change
-            // If changing TO supervisor or user, create comercial if doesn't exist
-            if ((newRole === 'supervisor' || newRole === 'user') && !currentUser.comercial_id) {
+            // Todos los roles deben tener un perfil comercial propio (pueden tener clientes asignados)
+            if (!currentUser.comercial_id) {
                 const { data: comercialData, error: comercialError } = await supabase
                     .from('comerciales')
                     .insert([{
@@ -347,6 +347,7 @@ export const useUsers = () => {
         loading,
         error,
         isAdmin,
+        isGerenteZona,
         isSupervisor,
         isUser,
         currentUserRole,

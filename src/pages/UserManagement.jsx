@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, UserPlus, Shield, Users, AlertCircle, UserCog, Eye } from 'lucide-react';
+import { Search, UserPlus, Shield, Users, AlertCircle, UserCog, Eye, Briefcase } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useUsers } from '../hooks/useUsers';
 import { useNotifications } from '../hooks/useNotifications';
@@ -240,14 +240,17 @@ const UserManagement = () => {
 
                                         <div className="flex items-center gap-2 flex-wrap">
                                             {/* Role Badge */}
-                                            <span className={`px-2 py-1 text-xs rounded-lg font-medium ${userItem.role === 'admin'
+                                            <span className={`px-2 py-1 text-xs rounded-lg font-medium ${userItem.role === 'admin' || userItem.role === 'super_admin'
                                                 ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
-                                                : userItem.role === 'supervisor'
-                                                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                                                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                                                : userItem.role === 'gerente_zona'
+                                                    ? 'bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300'
+                                                    : userItem.role === 'supervisor'
+                                                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                                                        : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                                                 }`}>
-                                                {userItem.role === 'admin' ? 'Administrador' :
-                                                    userItem.role === 'supervisor' ? 'Supervisor' : 'Usuario'}
+                                                {userItem.role === 'admin' || userItem.role === 'super_admin' ? 'Administrador' :
+                                                    userItem.role === 'gerente_zona' ? '🗺️ Gerente de Zona' :
+                                                        userItem.role === 'supervisor' ? 'Supervisor' : 'Usuario'}
                                             </span>
 
                                             {/* Status Badge */}
@@ -258,12 +261,7 @@ const UserManagement = () => {
                                                 {userItem.is_active ? 'Activo' : 'Inactivo'}
                                             </span>
 
-                                            {/* Comercial Info */}
-                                            {userItem.comercial_name && (
-                                                <span className="px-2 py-1 text-xs rounded-lg font-medium bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
-                                                    Comercial: {userItem.comercial_name}
-                                                </span>
-                                            )}
+
                                         </div>
                                     </div>
 
@@ -279,6 +277,7 @@ const UserManagement = () => {
                                                 >
                                                     <option value="user">Usuario</option>
                                                     <option value="supervisor">Supervisor</option>
+                                                    <option value="gerente_zona">Gerente de Zona</option>
                                                     <option value="admin">Admin</option>
                                                 </select>
                                                 <button

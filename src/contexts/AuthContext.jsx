@@ -181,8 +181,14 @@ export const AuthProvider = ({ children }) => {
         role: userProfile?.role || null,
         isSuperAdmin: userProfile?.role === 'super_admin',
         isAdmin: userProfile?.role === 'admin' || userProfile?.role === 'super_admin',
+        isGerenteZona: userProfile?.role === 'gerente_zona',
         isSupervisor: userProfile?.role === 'supervisor',
-        isUser: userProfile?.role === 'user'
+        isUser: userProfile?.role === 'user',
+        // Admin y Gerente de Zona pueden asignar comerciales a supervisores
+        canManageTeam:
+            userProfile?.role === 'admin' ||
+            userProfile?.role === 'super_admin' ||
+            userProfile?.role === 'gerente_zona',
     };
 
     return (

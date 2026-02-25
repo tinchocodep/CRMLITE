@@ -14,6 +14,7 @@ const CROP_TYPES = [
 const LotForm = ({
     lot,
     establishments = [],
+    defaultEstablishmentId = null, // ID del establecimiento recién creado (para pre-selección)
     geometry,
     hectares,
     onSave,
@@ -46,10 +47,10 @@ const LotForm = ({
                 hectares: lot.hectares || ''
             });
         } else {
-            // Reset for new lot
+            // Reset for new lot. Prioridad: último creado > primero de la lista.
             setFormData({
                 name: '',
-                establishment_id: establishments[0]?.id || '',
+                establishment_id: defaultEstablishmentId || establishments[0]?.id || '',
                 crop_type: 'soy',
                 campaign: '',
                 sowing_date: '',
@@ -57,7 +58,7 @@ const LotForm = ({
                 hectares: hectares?.toFixed(2) || ''
             });
         }
-    }, [lot, establishments, hectares]);
+    }, [lot, establishments, hectares, defaultEstablishmentId]);
 
     const handleSubmit = (e) => {
         e?.preventDefault();

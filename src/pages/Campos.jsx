@@ -65,6 +65,8 @@ const Campos = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isEstablishmentModalOpen, setIsEstablishmentModalOpen] = useState(false);
     const [editingEstablishment, setEditingEstablishment] = useState(null);
+    // ID del último establecimiento creado: se pasa a LotForm para pre-seleccionarlo
+    const [lastCreatedEstablishmentId, setLastCreatedEstablishmentId] = useState(null);
     const [drawnGeometry, setDrawnGeometry] = useState(null);
     const [drawnHectares, setDrawnHectares] = useState(null);
     const [showDrawingControls, setShowDrawingControls] = useState(false);
@@ -232,6 +234,8 @@ const Campos = () => {
     const handleCloseEstablishmentModal = useCallback(() => {
         setIsEstablishmentModalOpen(false);
         setEditingEstablishment(null);
+        // No limpiamos lastCreatedEstablishmentId aquí —
+        // debe persistir hasta que el usuario abra/cierre el LotForm.
     }, []);
 
     const handleOpenCreateEstablishment = useCallback(() => {
@@ -246,7 +250,12 @@ const Campos = () => {
             if (establishment) {
                 return await updateEstablishment(establishment.id, formData);
             }
-            return await createEstablishment(formData);
+            const result = await createEstablishment(formData);
+            // Guardamos el ID del nuevo establecimiento para pre-seleccionarlo en LotForm
+            if (result?.success && result?.data?.id) {
+                setLastCreatedEstablishmentId(result.data.id);
+            }
+            return result;
         } catch (err) {
             console.error('Error saving establishment:', err);
             return { success: false, error: err.message };
@@ -305,6 +314,7 @@ const Campos = () => {
             <LotForm
                 lot={selectedLot}
                 establishments={establishments}
+                defaultEstablishmentId={lastCreatedEstablishmentId}
                 geometry={drawnGeometry}
                 hectares={drawnHectares}
                 onSave={handleSaveLot}
