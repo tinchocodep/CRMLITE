@@ -210,7 +210,7 @@ export const useCompanies = (type = null) => {
                 throw insertError;
             }
 
-            await fetchCompanies();
+            await fetchCompanies(page, debouncedSearch);
             return { success: true, data };
         } catch (err) {
             console.error('❌ [createCompany] Error creating company:', err);
@@ -273,7 +273,7 @@ export const useCompanies = (type = null) => {
 
             if (updateError) throw updateError;
 
-            await fetchCompanies();
+            await fetchCompanies(page, debouncedSearch);
             return { success: true, data };
         } catch (err) {
             console.error('Error updating company:', err);
@@ -295,7 +295,7 @@ export const useCompanies = (type = null) => {
 
             if (deleteError) throw deleteError;
 
-            await fetchCompanies();
+            await fetchCompanies(page, debouncedSearch);
             return { success: true };
         } catch (err) {
             console.error('Error deleting company:', err);
