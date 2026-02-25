@@ -10,8 +10,7 @@ import { useRoleBasedFilter } from '../hooks/useRoleBasedFilter';
 import { useSystemToast } from '../hooks/useSystemToast';
 import { useEstablishments } from '../hooks/useEstablishments';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-
-
+import { supabase } from '../lib/supabase';
 
 const Clients = () => {
     const {
@@ -77,28 +76,50 @@ const Clients = () => {
 
             // Check if this is a new client (no id) or updating existing
             if (clientData.id) {
-                // Update existing client
-                // Before updating, check if CUIT already exists (excluding current client)
-                if (clientData.cuit && clients && clients.length > 0) {
-                    const existingCompany = clients.find(c =>
-                        c.cuit === clientData.cuit && c.id !== clientData.id
-                    );
-                    if (existingCompany) {
-                        showWarning(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                // ── Editar cliente existente ───────────────────────────────────────────
+
+                // Validar CUIT duplicado contra Supabase, excluyendo el registro actual
+                if (clientData.cuit && clientData.cuit.trim()) {
+                    const { data: existing } = await supabase
+                        .from('companies')
+                        .select('id, trade_name, legal_name, company_type')
+                        .eq('cuit', clientData.cuit.trim())
+                        .eq('is_active', true)
+                        .neq('id', clientData.id)  // excluir el propio registro
+                        .limit(1);
+
+                    if (existing && existing.length > 0) {
+                        const dup = existing[0];
+                        const dupType = dup.company_type === 'client' ? 'Cliente' : 'Prospecto';
+                        const dupName = dup.trade_name || dup.legal_name || 'sin nombre';
+                        showWarning(`Ya existe un ${dupType} con el CUIT ${clientData.cuit.trim()}: "${dupName}". Usá un CUIT diferente.`);
                         return;
                     }
                 }
+
                 result = await updateCompany(clientData.id, dataToSave);
                 savedClientId = clientData.id;
             } else {
-                // Before creating, check if CUIT already exists
-                if (clientData.cuit && clients && clients.length > 0) {
-                    const existingCompany = clients.find(c => c.cuit === clientData.cuit);
-                    if (existingCompany) {
-                        showWarning(`Ya existe una empresa con el CUIT ${clientData.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                // ── Crear nuevo cliente ────────────────────────────────────────────────
+
+                // Validar CUIT duplicado contra Supabase (cubre toda la DB)
+                if (clientData.cuit && clientData.cuit.trim()) {
+                    const { data: existing } = await supabase
+                        .from('companies')
+                        .select('id, trade_name, legal_name, company_type')
+                        .eq('cuit', clientData.cuit.trim())
+                        .eq('is_active', true)
+                        .limit(1);
+
+                    if (existing && existing.length > 0) {
+                        const dup = existing[0];
+                        const dupType = dup.company_type === 'client' ? 'Cliente' : 'Prospecto';
+                        const dupName = dup.trade_name || dup.legal_name || 'sin nombre';
+                        showWarning(`Ya existe un ${dupType} con el CUIT ${clientData.cuit.trim()}: "${dupName}". Usá un CUIT diferente.`);
                         return;
                     }
                 }
+
                 // Create new client
                 result = await createCompany(dataToSave);
                 savedClientId = result.data?.id;
