@@ -53,6 +53,23 @@ export const useSystemToast = () => {
         });
     };
 
+    // Versión de advertencia con mayor duración (6 seg) para mensajes críticos como duplicados
+    const showWarningLong = (message, description = '') => {
+        showToast({
+            id: `warning-long-${Date.now()}`,
+            type: 'system_warning_long',
+            priority: 'medium',
+            duration: 6000,
+            title: message,
+            description,
+            timestamp: new Date(),
+            timeAgo: 'Ahora',
+            icon: AlertTriangle,
+            color: 'bg-yellow-100 text-yellow-600',
+            action: null
+        });
+    };
+
     const showInfo = (message) => {
         showToast({
             id: `info-${Date.now()}`,
@@ -72,6 +89,7 @@ export const useSystemToast = () => {
         showSuccess,
         showError,
         showWarning,
+        showWarningLong,
         showInfo
     };
 };

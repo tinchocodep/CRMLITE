@@ -6,26 +6,29 @@ const ToastNotification = ({ notification, onDismiss }) => {
     const navigate = useNavigate();
     const [isExiting, setIsExiting] = useState(false);
 
-    // Auto-dismiss logic based on priority
+    // Auto-dismiss logic based on priority (or custom duration if provided)
     useEffect(() => {
         if (notification.priority === 'critical') {
             // Critical notifications don't auto-dismiss
             return;
         }
 
-        const dismissTime = {
-            high: 2000,      // 2 segundos
-            medium: 2000,    // 2 segundos
-            low: 2000,       // 2 segundos
-            info: 2000       // 2 segundos
+        const defaultDismissTime = {
+            high: 2000,
+            medium: 2000,
+            low: 2000,
+            info: 2000
         }[notification.priority] || 2000;
+
+        // Custom duration overrides the priority-based default
+        const dismissTime = notification.duration ?? defaultDismissTime;
 
         const timer = setTimeout(() => {
             handleDismiss();
         }, dismissTime);
 
         return () => clearTimeout(timer);
-    }, [notification.priority]);
+    }, [notification.priority, notification.duration]);
 
     const handleDismiss = () => {
         setIsExiting(true);

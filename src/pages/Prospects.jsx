@@ -31,7 +31,7 @@ const Prospects = () => {
         pageSize,
     } = useCompanies('prospect');
     const { contacts: allContacts, createContact } = useContacts();
-    const { showSuccess, showError, showWarning } = useSystemToast();
+    const { showSuccess, showError, showWarning, showWarningLong } = useSystemToast();
     const { comercialId } = useAuth();
 
     // Role-based filtering
@@ -100,14 +100,34 @@ const Prospects = () => {
     const handleSaveProspect = async (updatedProspect, pendingContacts = []) => {
         try {
             if (updatedProspect.id && typeof updatedProspect.id === 'number' && updatedProspect.id > 1000000) {
-                // New prospect (temporary ID)
-                // Before creating, check if CUIT already exists
-                if (updatedProspect.cuit && prospects && prospects.length > 0) {
-                    const existingCompany = prospects.find(c => c.cuit === updatedProspect.cuit);
-                    if (existingCompany) {
-                        showWarning(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
-                        return;
-                    }
+                // ── Nuevo prospecto ──────────────────────────────────────────────────────
+
+                // 1) CUIT vacío → avisar y no guardar
+                if (!updatedProspect.cuit || !updatedProspect.cuit.trim()) {
+                    showWarningLong(
+                        '⚠️ CUIT requerido',
+                        'El prospecto no fue guardado. Por favor ingresá el número de CUIT antes de continuar.'
+                    );
+                    return;
+                }
+
+                // 2) Verificar duplicado contra Supabase (cubre toda la DB, no solo la página)
+                const { data: existing } = await supabase
+                    .from('companies')
+                    .select('id, trade_name, legal_name, company_type')
+                    .eq('cuit', updatedProspect.cuit.trim())
+                    .eq('is_active', true)
+                    .limit(1);
+
+                if (existing && existing.length > 0) {
+                    const dup = existing[0];
+                    const dupType = dup.company_type === 'client' ? 'Cliente' : 'Prospecto';
+                    const dupName = dup.trade_name || dup.legal_name || 'sin nombre';
+                    showWarningLong(
+                        `⚠️ CUIT duplicado — no se guardó`,
+                        `Ya existe un ${dupType} con el CUIT ${updatedProspect.cuit.trim()}: "${dupName}". Revisá los datos antes de continuar.`
+                    );
+                    return;
                 }
 
                 const result = await createCompany({
@@ -153,14 +173,26 @@ const Prospects = () => {
                     showError('Error al crear prospecto: ' + result.error);
                 }
             } else {
-                // Update existing prospect
-                // Before updating, check if CUIT already exists (excluding current prospect)
-                if (updatedProspect.cuit && prospects && prospects.length > 0) {
-                    const existingCompany = prospects.find(c =>
-                        c.cuit === updatedProspect.cuit && c.id !== updatedProspect.id
-                    );
-                    if (existingCompany) {
-                        showWarning(`Ya existe una empresa con el CUIT ${updatedProspect.cuit}: ${existingCompany.trade_name || existingCompany.legal_name}. Por favor, edite la empresa existente o use un CUIT diferente.`);
+                // ── Edición de prospecto existente ───────────────────────────────────────
+
+                // Verificar duplicado contra Supabase excluyendo el registro actual
+                if (updatedProspect.cuit && updatedProspect.cuit.trim()) {
+                    const { data: existing } = await supabase
+                        .from('companies')
+                        .select('id, trade_name, legal_name, company_type')
+                        .eq('cuit', updatedProspect.cuit.trim())
+                        .eq('is_active', true)
+                        .neq('id', updatedProspect.id)
+                        .limit(1);
+
+                    if (existing && existing.length > 0) {
+                        const dup = existing[0];
+                        const dupType = dup.company_type === 'client' ? 'Cliente' : 'Prospecto';
+                        const dupName = dup.trade_name || dup.legal_name || 'sin nombre';
+                        showWarningLong(
+                            `⚠️ CUIT duplicado — no se guardó`,
+                            `Ya existe un ${dupType} con el CUIT ${updatedProspect.cuit.trim()}: "${dupName}". Revisá los datos antes de continuar.`
+                        );
                         return;
                     }
                 }
