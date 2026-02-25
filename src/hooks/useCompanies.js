@@ -201,8 +201,11 @@ export const useCompanies = (type = null) => {
 
                 // Provide user-friendly error messages
                 if (insertError.code === '23505') {
-                    if (insertError.message.includes('companies_cuit_key')) {
-                        throw new Error('Ya existe una empresa con este CUIT');
+                    if (
+                        insertError.message.includes('companies_cuit_key') ||
+                        insertError.message.includes('companies_cuit_active_per_tenant_idx')
+                    ) {
+                        throw new Error('Ya existe una empresa activa con este CUIT');
                     }
                     throw new Error('Ya existe una empresa con estos datos');
                 }
