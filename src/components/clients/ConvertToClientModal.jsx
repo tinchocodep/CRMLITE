@@ -43,6 +43,18 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
         }
     }, [prospect]);
 
+    // Reset adicional: limpiar cuando el modal se abre en modo "Nuevo" (sin prospect)
+    // Cubre el caso donde prospect era null antes y sigue siendo null, por lo que
+    // el efecto anterior no se re-dispara y los datos del último formulario persisten.
+    useEffect(() => {
+        if (isOpen && !prospect) {
+            setFormData({
+                legalName: '', tradeName: '', cuit: '', email: '', phone: '',
+                city: '', province: '', address: '', comercialId: null
+            });
+        }
+    }, [isOpen]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
