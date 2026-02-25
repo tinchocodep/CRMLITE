@@ -3,6 +3,11 @@ import { X, Plus, Trash2, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { products } from '../data/products';
 
+const PRODUCT_SOURCES = [
+    { value: 'own', label: '🏢 Nuestro depósito' },
+    { value: 'third_party', label: '🤝 Tercero' },
+];
+
 const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
     const [formData, setFormData] = useState({
         clientName: '',
@@ -26,6 +31,8 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                 subtotal: l.subtotal ?? 0,
                 taxRate: l.tax_rate ?? l.taxRate ?? 21,
                 total: l.total ?? 0,
+                // Preservar el origen guardado; compatibilidad snake_case y camelCase
+                productSource: l.product_source || l.productSource || 'own',
             });
 
             setFormData({
@@ -68,7 +75,8 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
             unitPrice: products[0].precio,
             subtotal: products[0].precio,
             taxRate: 21,
-            total: products[0].precio * 1.21
+            total: products[0].precio * 1.21,
+            productSource: 'own',
         };
         setFormData({ ...formData, lines: [...formData.lines, newLine] });
     };
@@ -313,6 +321,28 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                                                 >
                                                     <Trash2 className="w-4 h-4 text-red-600" />
                                                 </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Origen del producto */}
+                                        <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3">
+                                            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex-shrink-0">
+                                                Origen:
+                                            </span>
+                                            <div className="flex gap-2">
+                                                {PRODUCT_SOURCES.map(src => (
+                                                    <button
+                                                        key={src.value}
+                                                        type="button"
+                                                        onClick={() => updateLine(index, 'productSource', src.value)}
+                                                        className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all border ${line.productSource === src.value
+                                                                ? 'bg-brand text-white border-brand shadow-sm'
+                                                                : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-brand'
+                                                            }`}
+                                                    >
+                                                        {src.label}
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>

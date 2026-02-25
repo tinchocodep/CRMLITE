@@ -137,7 +137,9 @@ const Cotizaciones = () => {
                     unit_price: line.unit_price,
                     subtotal: line.subtotal,
                     // Usar el tax_rate guardado en la cotización; usar el de la línea si existe
-                    tax_rate: line.tax_rate ?? quotation.tax_rate ?? 21
+                    tax_rate: line.tax_rate ?? quotation.tax_rate ?? 21,
+                    // Propagar el origen del producto (elegido al crear/editar la cotización)
+                    product_source: line.product_source || line.productSource || 'own',
                 }))
             };
 

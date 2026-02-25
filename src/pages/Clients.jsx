@@ -260,6 +260,7 @@ const Clients = () => {
                 onConvert={handleSaveClient}
                 prospect={editingClient} // Reusing prospect prop for editing existing client
                 title={editingClient ? 'Editar Cliente' : 'Alta de Cliente'}
+                allContacts={allContacts}
             />
 
             {/* Delete Confirmation Dialog */}

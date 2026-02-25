@@ -10,6 +10,11 @@ const FIELD_CLASS =
 
 const LABEL_CLASS = 'block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1.5';
 
+const PRODUCT_SOURCES = [
+    { value: 'own', label: '🏢 Nuestro depósito' },
+    { value: 'third_party', label: '🤝 Tercero' },
+];
+
 const buildEmptyLine = () => ({
     _uid: `line-${Date.now()}-${Math.random()}`,
     productSapCode: products[0]?.sapCode ?? '',
@@ -19,6 +24,7 @@ const buildEmptyLine = () => ({
     subtotal: products[0]?.precio ?? 0,
     taxRate: 21,
     total: (products[0]?.precio ?? 0) * 1.21,
+    productSource: 'own',
 });
 
 const INITIAL_FORM = {
@@ -125,6 +131,7 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                 subtotal: l.subtotal,
                 taxRate: l.taxRate,
                 total: l.total,
+                productSource: l.productSource || 'own',
                 line_order: index,
             })),
         });
@@ -283,7 +290,7 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                                             key={line._uid}
                                             className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 border border-slate-200 dark:border-slate-700"
                                         >
-                                            {/* Row: Producto (span 3) | Cantidad | IVA | Precio | Subtotal+delete */}
+                                            {/* Row: Producto | Cantidad | Precio | IVA | Subtotal+delete */}
                                             <div className="grid grid-cols-2 md:grid-cols-6 gap-2 items-end">
 
                                                 {/* Producto */}
@@ -357,6 +364,28 @@ const CreateQuotationModal = ({ isOpen, onClose, onSave, isSaving = false }) => 
                                                     >
                                                         <Trash2 size={16} className="text-red-500" />
                                                     </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Origen del producto */}
+                                            <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center gap-3">
+                                                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex-shrink-0">
+                                                    Origen:
+                                                </span>
+                                                <div className="flex gap-2">
+                                                    {PRODUCT_SOURCES.map(src => (
+                                                        <button
+                                                            key={src.value}
+                                                            type="button"
+                                                            onClick={() => updateLine(line._uid, 'productSource', src.value)}
+                                                            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all border ${line.productSource === src.value
+                                                                    ? 'bg-brand text-white border-brand shadow-sm'
+                                                                    : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-brand'
+                                                                }`}
+                                                        >
+                                                            {src.label}
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>

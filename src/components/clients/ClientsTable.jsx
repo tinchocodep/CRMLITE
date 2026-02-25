@@ -10,12 +10,24 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstab
     const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
     const topScrollRef = useRef(null);
     const tableScrollRef = useRef(null);
+    const spacerRef = useRef(null);
 
-    // Sync scroll position between top mirror bar and table container
+    // Sync scroll between top mirror bar and actual table container
     useEffect(() => {
         const top = topScrollRef.current;
         const table = tableScrollRef.current;
+        const spacer = spacerRef.current;
         if (!top || !table) return;
+
+        // Keep spacer width in sync with real scroll width of the table
+        const updateSpacerWidth = () => {
+            if (spacer) spacer.style.width = table.scrollWidth + 'px';
+        };
+        updateSpacerWidth();
+
+        // Watch for table width changes (resize, data changes)
+        const ro = new ResizeObserver(updateSpacerWidth);
+        ro.observe(table);
 
         const syncFromTop = () => { table.scrollLeft = top.scrollLeft; };
         const syncFromTable = () => { top.scrollLeft = table.scrollLeft; };
@@ -25,6 +37,7 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstab
         return () => {
             top.removeEventListener('scroll', syncFromTop);
             table.removeEventListener('scroll', syncFromTable);
+            ro.disconnect();
         };
     }, []);
 
@@ -83,9 +96,9 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstab
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            {/* Top mirror scrollbar */}
+            {/* Top mirror scrollbar — spacer width is set dynamically by ResizeObserver */}
             <div ref={topScrollRef} className="overflow-x-auto" style={{ overflowY: 'hidden', height: '12px' }}>
-                <div style={{ minWidth: '1400px', height: '1px' }} />
+                <div ref={spacerRef} style={{ height: '1px' }} />
             </div>
             <div ref={tableScrollRef} className="overflow-x-auto">
                 <table className="table-fixed min-w-[1400px]">

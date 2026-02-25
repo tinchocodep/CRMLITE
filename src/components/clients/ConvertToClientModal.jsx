@@ -1,9 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Building2, User, Phone, Mail } from 'lucide-react';
+import { X, UserPlus, Building2, User, Phone, Mail, UserCheck } from 'lucide-react';
 import ComercialSelector from '../shared/ComercialSelector';
+import CompanyContactsSection from '../shared/CompanyContactsSection';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
-const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) => {
+const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, allContacts = [] }) => {
     const { comercialId } = useAuth();
     const { addNotification } = useNotifications();
     const [formData, setFormData] = useState({
@@ -163,6 +164,21 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title }) =
                         />
                     </section>
 
+                    {/* Contactos Vinculados - solo visible al editar un cliente existente */}
+                    {prospect?.id && (
+                        <section className="pt-4 border-t border-slate-100">
+                            <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <UserCheck size={16} /> Contactos Vinculados
+                            </h4>
+                            <CompanyContactsSection
+                                contacts={allContacts}
+                                companyId={prospect.id}
+                                companyName={prospect.trade_name || prospect.legal_name}
+                                companyType="client"
+                                isCompact={false}
+                            />
+                        </section>
+                    )}
 
 
                 </form>

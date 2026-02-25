@@ -549,9 +549,25 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                                 <div key={line.id} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-medium text-slate-800 dark:text-slate-100 text-sm truncate">
-                                                                {line.productName}
-                                                            </p>
+                                                            <div className="flex items-center gap-2 flex-wrap">
+                                                                <p className="font-medium text-slate-800 dark:text-slate-100 text-sm truncate">
+                                                                    {line.productName}
+                                                                </p>
+                                                                {/* Badge de origen del producto */}
+                                                                {(() => {
+                                                                    const src = line.product_source || line.productSource;
+                                                                    if (!src) return null;
+                                                                    const isOwn = src === 'own';
+                                                                    return (
+                                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ${isOwn
+                                                                                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                                                                                : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
+                                                                            }`}>
+                                                                            {isOwn ? '🏢 Nuestro depósito' : '🤝 Tercero'}
+                                                                        </span>
+                                                                    );
+                                                                })()}
+                                                            </div>
                                                             <div className="flex items-center gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400">
                                                                 <span>Total: <strong>{line.quantity}</strong></span>
                                                                 {alreadyShipped > 0 && (

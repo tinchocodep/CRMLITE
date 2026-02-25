@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Minus, AlertCircle, Search, Package, TrendingDown, ChevronDown } from 'lucide-react';
+import { X, Minus, AlertCircle, Search, Package, TrendingDown, ChevronDown, ArrowRight, Warehouse, Plus, Save, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getStockBalances, egressStockProduct } from '../../services/stockService';
+import { useWarehouses } from '../../hooks/useWarehouses';
 
 // ─── Motivos de egreso ─────────────────────────────────────────────────────────
 const EGRESS_REASONS = [
@@ -13,7 +14,112 @@ const EGRESS_REASONS = [
     { value: 'other', label: '📝 Otro' },
 ];
 
-// ─── Componente ────────────────────────────────────────────────────────────────
+// ─── Sub-componente: selector de depósito con autocomplete + guardar ───────────
+const WarehouseInput = ({ label, value, onChange, savedWarehouses, placeholder, error, onSave }) => {
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [saveStatus, setSaveStatus] = useState(null); // null | 'saving' | 'saved' | 'error'
+    const inputRef = useRef(null);
+
+    const filtered = savedWarehouses.filter(w =>
+        w.name.toLowerCase().includes(value.toLowerCase()) && w.name.toLowerCase() !== value.toLowerCase()
+    );
+
+    const handleSave = async () => {
+        if (!value.trim()) return;
+        setSaveStatus('saving');
+        const result = await onSave(value);
+        setSaveStatus(result.success ? 'saved' : 'error');
+        setTimeout(() => setSaveStatus(null), 2500);
+    };
+
+    // ¿Ya está guardado exactamente?
+    const alreadySaved = savedWarehouses.some(w => w.name.toLowerCase() === value.trim().toLowerCase());
+
+    return (
+        <div className="relative">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                {label} *
+            </label>
+            <div className="flex gap-2">
+                <div className="relative flex-1">
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        value={value}
+                        onChange={e => { onChange(e.target.value); setShowSuggestions(true); }}
+                        onFocus={() => setShowSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                        placeholder={placeholder}
+                        className={`w-full px-3 py-2 rounded-lg border ${error
+                                ? 'border-red-300 focus:ring-red-400'
+                                : 'border-blue-200 dark:border-blue-700 focus:ring-blue-400'
+                            } bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:border-transparent outline-none`}
+                    />
+
+                    {/* Dropdown de sugerencias */}
+                    <AnimatePresence>
+                        {showSuggestions && filtered.length > 0 && (
+                            <motion.ul
+                                initial={{ opacity: 0, y: -4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -4 }}
+                                className="absolute top-full left-0 right-0 z-30 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl max-h-40 overflow-y-auto"
+                            >
+                                {filtered.map(w => (
+                                    <li
+                                        key={w.id}
+                                        onMouseDown={() => { onChange(w.name); setShowSuggestions(false); }}
+                                        className="px-3 py-2 text-sm text-slate-800 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer flex items-center gap-2"
+                                    >
+                                        <Warehouse className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                                        {w.name}
+                                    </li>
+                                ))}
+                            </motion.ul>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Botón guardar */}
+                {value.trim() && !alreadySaved && (
+                    <button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={saveStatus === 'saving'}
+                        title="Guardar este depósito para usarlo en el futuro"
+                        className={`flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 border ${saveStatus === 'saved'
+                                ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                                : saveStatus === 'error'
+                                    ? 'bg-red-50 border-red-300 text-red-600'
+                                    : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
+                            } disabled:opacity-60`}
+                    >
+                        {saveStatus === 'saved' ? (
+                            <><Check className="w-3.5 h-3.5" /> Guardado</>
+                        ) : saveStatus === 'error' ? (
+                            <><AlertCircle className="w-3.5 h-3.5" /> Error</>
+                        ) : (
+                            <><Save className="w-3.5 h-3.5" /> Guardar</>
+                        )}
+                    </button>
+                )}
+                {alreadySaved && value.trim() && (
+                    <span className="flex-shrink-0 px-2.5 py-2 rounded-lg text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> Guardado
+                    </span>
+                )}
+            </div>
+
+            {error && (
+                <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" /> {error}
+                </p>
+            )}
+        </div>
+    );
+};
+
+// ─── Componente principal ──────────────────────────────────────────────────────
 const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
     const [stockBalances, setStockBalances] = useState([]);
 
@@ -27,9 +133,16 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
     const [reason, setReason] = useState('sale');
     const [notes, setNotes] = useState('');
 
+    // Campos de transferencia (solo si reason === 'transfer')
+    const [transferOrigin, setTransferOrigin] = useState('');
+    const [transferDestination, setTransferDestination] = useState('');
+
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const searchRef = useRef(null);
+
+    // Hook de depósitos persistidos
+    const { warehouses, createWarehouse } = useWarehouses();
 
     // Cargar balances al abrir
     useEffect(() => {
@@ -46,6 +159,8 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
             setQuantity('');
             setReason('sale');
             setNotes('');
+            setTransferOrigin('');
+            setTransferDestination('');
             setErrors({});
             setIsSubmitting(false);
             setShowProductDropdown(false);
@@ -98,6 +213,11 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
         } else if (selectedProduct && Number(quantity) > selectedProduct.balance) {
             newErrors.quantity = `Stock insuficiente. Disponible: ${selectedProduct.balance.toLocaleString()} unidades`;
         }
+        // Validación extra para transferencias
+        if (reason === 'transfer') {
+            if (!transferOrigin.trim()) newErrors.transferOrigin = 'Indicá el depósito de origen';
+            if (!transferDestination.trim()) newErrors.transferDestination = 'Indicá el depósito de destino';
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -113,6 +233,11 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
                 quantity: Number(quantity),
                 reason,
                 notes: notes || null,
+                // Solo se incluyen si es una transferencia
+                ...(reason === 'transfer' && {
+                    transferOrigin: transferOrigin.trim(),
+                    transferDestination: transferDestination.trim(),
+                }),
             });
             if (onSuccess) onSuccess();
             onClose();
@@ -180,7 +305,6 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
                                 Producto *
                             </label>
 
-                            {/* Input de búsqueda o chip de seleccionado */}
                             {selectedProduct ? (
                                 <div className="flex items-center gap-3 p-3 rounded-xl border border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20 dark:border-emerald-700">
                                     <div className="w-9 h-9 rounded-lg bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -222,7 +346,6 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
                                         />
                                     </div>
 
-                                    {/* Dropdown de productos */}
                                     <AnimatePresence>
                                         {showProductDropdown && (
                                             <motion.div
@@ -299,7 +422,6 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
                                     {errors.quantity}
                                 </p>
                             )}
-                            {/* Balance proyectado */}
                             {projectedBalance !== null && !errors.quantity && (
                                 <p className={`mt-1 text-xs font-medium flex items-center gap-1 ${projectedBalance >= 0 ? 'text-slate-500' : 'text-red-500'}`}>
                                     {projectedBalance >= 0
@@ -317,7 +439,14 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
                             <div className="relative">
                                 <select
                                     value={reason}
-                                    onChange={(e) => setReason(e.target.value)}
+                                    onChange={(e) => {
+                                        setReason(e.target.value);
+                                        if (e.target.value !== 'transfer') {
+                                            setTransferOrigin('');
+                                            setTransferDestination('');
+                                            setErrors(prev => ({ ...prev, transferOrigin: undefined, transferDestination: undefined }));
+                                        }
+                                    }}
                                     className="w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm appearance-none"
                                 >
                                     {EGRESS_REASONS.map(r => (
@@ -327,6 +456,65 @@ const EgressStockModal = ({ isOpen, onClose, onSuccess }) => {
                                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                             </div>
                         </div>
+
+                        {/* Mini-formulario de transferencia */}
+                        <AnimatePresence>
+                            {reason === 'transfer' && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -8 }}
+                                    className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 space-y-3"
+                                >
+                                    <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-2">
+                                            <Warehouse className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                            <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                                                Datos de la transferencia
+                                            </span>
+                                        </div>
+                                        {warehouses.length > 0 && (
+                                            <span className="text-[10px] text-blue-500 dark:text-blue-400">
+                                                {warehouses.length} depósito{warehouses.length !== 1 ? 's' : ''} guardado{warehouses.length !== 1 ? 's' : ''}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Depósito de Origen */}
+                                    <WarehouseInput
+                                        label="Depósito de origen"
+                                        value={transferOrigin}
+                                        onChange={(val) => {
+                                            setTransferOrigin(val);
+                                            if (errors.transferOrigin) setErrors(prev => ({ ...prev, transferOrigin: undefined }));
+                                        }}
+                                        savedWarehouses={warehouses}
+                                        placeholder="Ej: Depósito Central, Planta Norte..."
+                                        error={errors.transferOrigin}
+                                        onSave={createWarehouse}
+                                    />
+
+                                    {/* Flecha visual */}
+                                    <div className="flex justify-center">
+                                        <ArrowRight className="w-4 h-4 text-blue-400" />
+                                    </div>
+
+                                    {/* Depósito de Destino */}
+                                    <WarehouseInput
+                                        label="Depósito de destino"
+                                        value={transferDestination}
+                                        onChange={(val) => {
+                                            setTransferDestination(val);
+                                            if (errors.transferDestination) setErrors(prev => ({ ...prev, transferDestination: undefined }));
+                                        }}
+                                        savedWarehouses={warehouses}
+                                        placeholder="Ej: Sucursal Rosario, Almacén Sur..."
+                                        error={errors.transferDestination}
+                                        onSave={createWarehouse}
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
                         {/* Notas */}
                         <div>
