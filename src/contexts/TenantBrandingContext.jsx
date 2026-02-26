@@ -29,6 +29,52 @@ const FALLBACK_BRANDING = {
   logoHeight: 40,
 };
 
+// ── Branding cache via localStorage ──────────────────────────────────────────
+// Clave versionada para invalidar caches viejos en deploys futuros.
+const CACHE_KEY_PREFIX = 'crm_branding_v2_';
+
+const readBrandingCache = (tenantId) => {
+  try {
+    const raw = localStorage.getItem(`${CACHE_KEY_PREFIX}${tenantId}`);
+    if (raw) return JSON.parse(raw);
+  } catch { }
+  return null;
+};
+
+const writeBrandingCache = (tenantId, branding) => {
+  try {
+    localStorage.setItem(`${CACHE_KEY_PREFIX}${tenantId}`, JSON.stringify(branding));
+  } catch { }
+};
+
+const clearBrandingCache = (tenantId) => {
+  try {
+    localStorage.removeItem(`${CACHE_KEY_PREFIX}${tenantId}`);
+  } catch { }
+};
+
+/**
+ * Retorna el mejor branding disponible ANTES del primer render:
+ *  1. Cache de localStorage del tenant actual (si existe)
+ *  2. Cualquier cache reciente (primer valor encontrado)
+ *  3. FALLBACK
+ */
+const getInitialBranding = () => {
+  try {
+    // Buscar cualquier cache existente (se usa antes de conocer el tenantId)
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith(CACHE_KEY_PREFIX)) {
+        const cached = JSON.parse(localStorage.getItem(key));
+        if (cached) {
+          // Aplicar inmediatamente al DOM para el primer frame
+          return cached;
+        }
+      }
+    }
+  } catch { }
+  return FALLBACK_BRANDING;
+};
+
 const TenantBrandingContext = createContext(null);
 
 export const useTenantBranding = () => {
@@ -85,7 +131,12 @@ const normalizeTenantRow = (row) => ({
 
 export const TenantBrandingProvider = ({ children }) => {
   const { tenantId, loading: tenantLoading } = useCurrentTenant();
-  const [branding, setBranding] = useState(FALLBACK_BRANDING);
+  // Usa el cache de localStorage como estado inicial → no hay flash en el primer render
+  const [branding, setBranding] = useState(() => {
+    const cached = getInitialBranding();
+    applyBrandingToDom(cached); // aplica CSS vars SINCRÓNICAMENTE antes del primer paint
+    return cached;
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   // ─── PASO 1: Detección por dominio (pre-login) ────────────────────────────
@@ -119,8 +170,9 @@ export const TenantBrandingProvider = ({ children }) => {
       }
     };
 
-    // Aplicar fallback inmediatamente para evitar flash
-    applyBrandingToDom(FALLBACK_BRANDING);
+    // Aplica el cache inmediatamente (ya ocurrió en useState, aquí es no-op si ya existe)
+    const initial = getInitialBranding();
+    applyBrandingToDom(initial);
     detectBrandingByDomain();
   }, []);
 
@@ -140,6 +192,8 @@ export const TenantBrandingProvider = ({ children }) => {
           const resolved = normalizeTenantRow(data);
           setBranding(resolved);
           applyBrandingToDom(resolved);
+          // Guardar en cache para el próximo render (elimina flash)
+          writeBrandingCache(resolved.tenantId, resolved);
         }
       } catch (err) {
         console.error('[TenantBranding] Error fetching branding by tenant_id:', err);
@@ -166,7 +220,6 @@ export const TenantBrandingProvider = ({ children }) => {
 
       if (error) throw error;
 
-      // Actualizar estado local sin refetch
       const updatedBranding = {
         ...branding,
         companyName: updates.name ?? branding.companyName,
@@ -180,7 +233,8 @@ export const TenantBrandingProvider = ({ children }) => {
 
       setBranding(updatedBranding);
       applyBrandingToDom(updatedBranding);
-
+      // Actualizar cache para que el próximo render ya tenga el nuevo branding
+      writeBrandingCache(tenantId, updatedBranding);
       return { success: true };
     } catch (err) {
       console.error('[TenantBranding] Error updating branding:', err);
