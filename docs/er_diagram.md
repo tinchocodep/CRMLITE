@@ -1,42 +1,67 @@
 # Diagrama Entidad-Relación — CRM
 
-> Schema real extraído de Supabase · CRM-Demo · Febrero 2026
+> Schema real · Supabase CRM-Demo · Febrero 2026
 
 ---
 
-## Mapa General por Dominio
+## Vista General de Dominios
+
+```mermaid
+graph TD
+    A["🏢 PLATAFORMA\n─────────────\ntenants\ntenant_modules"]
+    B["👥 EQUIPO COMERCIAL\n─────────────\nusers\ncomercialesrcialeserciales"]
+    C["🤝 CRM CORE\n─────────────\ncompanies\ncontacts\nopportunities\nactivities · events"]
+    D["💰 PIPELINE DE VENTAS\n─────────────\nquotations\norders\ncomprobantes"]
+    E["🌾 TERRITORIO\n─────────────\nestablishments\nlots · segments"]
+    F["🔔 SISTEMA\n─────────────\nnotifications\nfile_attachments"]
+
+    A -->|"multitenancy"| B
+    A -->|"multitenancy"| C
+    A -->|"multitenancy"| D
+    A -->|"multitenancy"| E
+    B -->|"gestiona"| C
+    B -->|"emite"| D
+    C -->|"convierte"| D
+    C -->|"tiene"| E
+    C --- F
+```
+
+---
+
+## 1 · Plataforma Multi-Tenant
 
 ```mermaid
 erDiagram
-    %% ═══════════════════════════════════════════
-    %% DOMINIO 1 — PLATAFORMA MULTI-TENANT
-    %% ═══════════════════════════════════════════
-
     TENANTS {
         bigint id PK
         text name
         text domain UK
         boolean is_active
+        boolean is_system
         text logo_url
         text primary_color
         text primary_hover
         text accent_color
-        boolean is_system
     }
-
     TENANT_MODULES {
         bigint id PK
         bigint tenant_id FK
         text module_key
         boolean is_enabled
     }
+    TENANTS ||--o{ TENANT_MODULES : "habilita módulos"
+```
 
-    TENANTS ||--o{ TENANT_MODULES : "habilita"
+---
 
-    %% ═══════════════════════════════════════════
-    %% DOMINIO 2 — EQUIPO COMERCIAL
-    %% ═══════════════════════════════════════════
+## 2 · Equipo Comercial
 
+```mermaid
+erDiagram
+    TENANTS {
+        bigint id PK
+        text name
+    }
     USERS {
         uuid id PK
         text email
@@ -45,53 +70,47 @@ erDiagram
         bigint tenant_id FK
         uuid comercial_id FK
         uuid supervisor_id FK
-        boolean is_active
     }
-
     COMERCIALES {
         uuid id PK
         text name
-        text email
+        text ROL
+        text region
         uuid user_id FK
         bigint tenant_id FK
-        text ROL
         uuid supervisor_id FK
         uuid gerente_zona_id FK
-        text region
-        boolean is_active
     }
 
     TENANTS ||--o{ USERS : "pertenece a"
     TENANTS ||--o{ COMERCIALES : "pertenece a"
-    USERS ||--o| COMERCIALES : "es"
+    USERS ||--o| COMERCIALES : "vinculado a"
     COMERCIALES ||--o{ COMERCIALES : "supervisa"
-    USERS ||--o{ USERS : "reporta a"
+```
 
-    %% ═══════════════════════════════════════════
-    %% DOMINIO 3 — CRM CORE
-    %% ═══════════════════════════════════════════
+> **Jerarquía de roles:** `super_admin` → `admin` → `gerente_zona` → `supervisor` → `user`
 
+---
+
+## 3 · CRM Core
+
+```mermaid
+erDiagram
     COMPANIES {
         bigint id PK
         text company_type
         text legal_name
-        text trade_name
         text cuit UK
-        text email
-        text phone
-        text address
         text city
         text province
-        uuid comercial_id FK
-        bigint tenant_id FK
-        text status
         integer qualification_score
         text importance
+        text status
         date client_since
         numeric credit_limit
-        varchar file_number UK
+        uuid comercial_id FK
+        bigint tenant_id FK
     }
-
     CONTACTS {
         bigint id PK
         text first_name
@@ -101,32 +120,25 @@ erDiagram
         text mobile
         uuid comercial_id FK
         bigint tenant_id FK
-        text notes
     }
-
     CONTACT_COMPANIES {
         bigint id PK
         bigint contact_id FK
         bigint company_id FK
         boolean is_primary
         text role
-        bigint tenant_id FK
     }
-
     OPPORTUNITIES {
         bigint id PK
         text opportunity_name
         numeric amount
         text status
         integer probability
-        text product_type
         date close_date
         bigint company_id FK
         bigint contact_id FK
         uuid comercial_id FK
-        bigint tenant_id FK
     }
-
     ACTIVITIES {
         bigint id PK
         text title
@@ -137,11 +149,7 @@ erDiagram
         bigint company_id FK
         bigint contact_id FK
         bigint opportunity_id FK
-        uuid comercial_id FK
-        bigint tenant_id FK
-        boolean auto_generated
     }
-
     EVENTS {
         bigint id PK
         text title
@@ -149,79 +157,43 @@ erDiagram
         text location
         bigint company_id FK
         bigint contact_id FK
-        uuid comercial_id FK
-        bigint tenant_id FK
     }
 
-    SEGMENTS {
-        bigint id PK
-        bigint company_id FK
-        text name
-        numeric hectares
-        text crops
-        text machinery
-        bigint tenant_id FK
-    }
-
-    NOTIFICATIONS {
-        uuid id PK
-        bigint tenant_id FK
-        uuid user_id FK
-        uuid comercial_id FK
-        text type
-        text priority
-        text title
-        boolean is_read
-        boolean is_dismissed
-    }
-
-    FILE_ATTACHMENTS {
-        bigint id PK
-        text entity_type
-        bigint entity_id
-        text file_name
-        text document_type
-        text status
-        uuid uploaded_by FK
-        bigint tenant_id FK
-    }
-
-    TENANTS ||--o{ COMPANIES : "tiene"
-    TENANTS ||--o{ CONTACTS : "tiene"
-    COMERCIALES ||--o{ COMPANIES : "gestiona"
-    COMERCIALES ||--o{ CONTACTS : "gestiona"
     COMPANIES ||--o{ CONTACT_COMPANIES : "tiene contactos"
-    CONTACTS ||--o{ CONTACT_COMPANIES : "es contacto de"
+    CONTACTS ||--o{ CONTACT_COMPANIES : "vinculado a"
     COMPANIES ||--o{ OPPORTUNITIES : "genera"
-    CONTACTS ||--o{ OPPORTUNITIES : "participa en"
-    COMERCIALES ||--o{ OPPORTUNITIES : "gestiona"
+    CONTACTS ||--o{ OPPORTUNITIES : "participa"
     OPPORTUNITIES ||--o{ ACTIVITIES : "tiene"
     COMPANIES ||--o{ ACTIVITIES : "tiene"
-    CONTACTS ||--o{ ACTIVITIES : "tiene"
     COMPANIES ||--o{ EVENTS : "tiene"
-    COMPANIES ||--o{ SEGMENTS : "tiene campos"
-    TENANTS ||--o{ NOTIFICATIONS : "recibe"
-    USERS ||--o{ NOTIFICATIONS : "recibe"
+```
 
-    %% ═══════════════════════════════════════════
-    %% DOMINIO 4 — PIPELINE DE VENTAS
-    %% ═══════════════════════════════════════════
+> `company_type` = **'prospect'** o **'client'** — misma tabla, mismo registro, solo cambia el campo al convertir.
 
+---
+
+## 4 · Pipeline de Ventas
+
+```mermaid
+erDiagram
+    OPPORTUNITIES {
+        bigint id PK
+        text opportunity_name
+        text status
+    }
     QUOTATIONS {
         bigint id PK
         varchar quotation_number
-        bigint opportunity_id FK
-        bigint company_id FK
-        uuid comercial_id FK
-        bigint tenant_id FK
-        varchar status
+        text status
         numeric subtotal
         numeric tax
         numeric total
         numeric tax_rate
         date delivery_date
+        bigint opportunity_id FK
+        bigint company_id FK
+        uuid comercial_id FK
     }
-
     QUOTATION_LINES {
         bigint id PK
         bigint quotation_id FK
@@ -229,41 +201,29 @@ erDiagram
         varchar product_sap_code
         numeric quantity
         numeric unit_price
-        numeric subtotal
         numeric total
-        numeric tax_rate
     }
-
     ORDERS {
         bigint id PK
         varchar order_number UK
+        text status
+        numeric total
+        date delivery_date
         bigint quotation_id FK
         bigint company_id FK
         uuid comercial_id FK
-        bigint tenant_id FK
-        varchar status
-        numeric subtotal
-        numeric tax
-        numeric total
-        date delivery_date
     }
-
     ORDER_LINES {
         bigint id PK
         bigint order_id FK
         varchar product_name
-        varchar product_sap_code
         numeric quantity
         numeric unit_price
-        numeric subtotal
         numeric total
         text product_source
     }
-
     COMPROBANTES {
         uuid id PK
-        bigint order_id FK
-        integer tenant_id FK
         text tipo
         text letra
         integer punto_venta
@@ -273,38 +233,43 @@ erDiagram
         boolean is_partial_payment
         numeric remaining_balance
         date fecha_emision
-    }
-
-    WAREHOUSES {
-        uuid id PK
-        bigint tenant_id FK
-        text name
-        text address
-        boolean is_active
+        bigint order_id FK
     }
 
     OPPORTUNITIES ||--o{ QUOTATIONS : "genera"
-    COMPANIES ||--o{ QUOTATIONS : "recibe"
-    COMERCIALES ||--o{ QUOTATIONS : "emite"
-    QUOTATIONS ||--o{ QUOTATION_LINES : "contiene"
-    QUOTATIONS ||--o{ ORDERS : "se convierte en"
-    COMPANIES ||--o{ ORDERS : "genera"
-    ORDERS ||--o{ ORDER_LINES : "contiene"
+    QUOTATIONS ||--o{ QUOTATION_LINES : "ítems"
+    QUOTATIONS ||--o| ORDERS : "se convierte en"
+    ORDERS ||--o{ ORDER_LINES : "ítems"
     ORDERS ||--o{ COMPROBANTES : "genera"
-    TENANTS ||--o{ WAREHOUSES : "tiene"
+```
 
-    %% ═══════════════════════════════════════════
-    %% DOMINIO 5 — TERRITORIO AGRÍCOLA
-    %% ═══════════════════════════════════════════
+> **Flujo:** Oportunidad → `Cotización` → `Pedido` → `Comprobante` (FACTURA / REMITO / COBRO)
 
+---
+
+## 5 · Territorio Agrícola
+
+```mermaid
+erDiagram
+    COMPANIES {
+        bigint id PK
+        text legal_name
+        text company_type
+    }
+    SEGMENTS {
+        bigint id PK
+        bigint company_id FK
+        text name
+        numeric hectares
+        text crops
+        text machinery
+    }
     ESTABLISHMENTS {
         uuid id PK
         text name
-        bigint company_id FK
         text location
-        bigint tenant_id FK
+        bigint company_id FK
     }
-
     LOTS {
         uuid id PK
         text name
@@ -316,53 +281,33 @@ erDiagram
         text crop_type
         text campaign
         date sowing_date
-        bigint tenant_id FK
     }
 
-    COMPANIES ||--o{ ESTABLISHMENTS : "tiene"
-    ESTABLISHMENTS ||--o{ LOTS : "contiene"
-    COMPANIES ||--o{ LOTS : "prospecto en"
+    COMPANIES ||--o{ SEGMENTS : "tiene segmentos"
+    COMPANIES ||--o{ ESTABLISHMENTS : "tiene campos"
+    ESTABLISHMENTS ||--o{ LOTS : "contiene lotes"
+    COMPANIES ||--o{ LOTS : "lotes asociados"
 ```
+
+> `geometry` en `lots` almacena polígonos **GeoJSON** para visualización en mapa.
 
 ---
 
-## Resumen por Dominio
+## Tabla de Referencia Rápida
 
-| Dominio | Tablas | Descripción |
+| Tabla | Filas aprox. | Descripción |
 |---|---|---|
-| **Multi-Tenant** | `tenants`, `tenant_modules` | Aislamiento por empresa. Cada tenant tiene módulos habilitados |
-| **Equipo Comercial** | `users`, `comerciales` | Jerarquía: Gerente Zona → Supervisor → Comercial |
-| **CRM Core** | `companies`, `contacts`, `opportunities`, `activities`, `events` | Prospects + Clientes + Contactos + Pipeline CRM |
-| **Pipeline de Ventas** | `quotations`, `orders`, `comprobantes`, `warehouses` | Cotización → Pedido → Factura/Remito |
-| **Territorio Agrícola** | `establishments`, `lots`, `segments` | Campos, lotes GeoJSON, segmentación |
-
----
-
-## Flujo Principal del Negocio
-
-```
-PROSPECT (company_type='prospect')
-    │
-    ├── Actividades, Visitas, Eventos
-    │
-    ├── Oportunidad → Cotización → Pedido
-    │                               │
-    │                               └── Factura / Remito / Cobro
-    │
-    └── Conversión a CLIENT (company_type='client')
-            │
-            └── Legajo Digital (file_attachments)
-```
-
----
-
-## Claves de Diseño
-
-> [!NOTE]
-> **Multi-tenancy**: Cada tabla tiene `tenant_id` como columna de aislamiento. Las políticas RLS de Supabase garantizan que cada empresa solo vea sus propios datos.
-
-> [!IMPORTANT]
-> **companies** es una tabla unificada para Prospects y Clientes — se distinguen por el campo `company_type` ('prospect' | 'client'). La conversión solo cambia ese campo.
-
-> [!TIP]
-> **Jerarquía comercial**: `comerciales` es autorreferencial — un Comercial reporta a un `supervisor_id`, que a su vez reporta a un `gerente_zona_id`.
+| `tenants` | 6 | Empresas cliente del CRM |
+| `tenant_modules` | 44 | Módulos habilitados por tenant |
+| `comerciales` | 19 | Representantes comerciales |
+| `users` | 12 | Usuarios del sistema |
+| `companies` | 1.205 | Prospects y Clientes |
+| `contacts` | 13 | Personas de contacto |
+| `contact_companies` | 6 | Relación Contacto ↔ Empresa |
+| `opportunities` | 6 | Oportunidades de venta |
+| `activities` | 9 | Llamadas, reuniones, tareas |
+| `quotations` | 5 | Cotizaciones |
+| `orders` | 7 | Pedidos confirmados |
+| `comprobantes` | 6 | Facturas, remitos, cobros |
+| `establishments` | 4 | Campos agrícolas |
+| `lots` | 4 | Lotes con GeoJSON |
