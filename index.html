@@ -11,13 +11,41 @@
   <!-- Google Fonts: Plus Jakarta Sans (top bar branding) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+    rel="stylesheet" />
 
   <!-- Open Graph (WhatsApp / redes sociales) -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="CRM Lite" />
   <meta property="og:description" content="Plataforma CRM para gestión comercial." />
   <meta property="og:image" content="/og-image.png" />
+
+  <!-- 
+    Branding init: aplica CSS vars del branding ANTES de que React cargue.
+    Tecnica identica a next-themes para modo oscuro. Sin esto hay un flash de 1 frame.
+    La clave debe coincidir con CACHE_KEY_PREFIX en TenantBrandingContext.jsx.
+  -->
+  <script>
+    (function () {
+      try {
+        var PREFIX = 'crm_branding_v2_';
+        var keys = Object.keys(localStorage);
+        for (var i = 0; i < keys.length; i++) {
+          if (keys[i].indexOf(PREFIX) === 0) {
+            var b = JSON.parse(localStorage.getItem(keys[i]));
+            if (b) {
+              var r = document.documentElement.style;
+              if (b.primaryColor) r.setProperty('--color-brand-primary', 'hsl(' + b.primaryColor + ')');
+              if (b.primaryHover) r.setProperty('--color-brand-primary-hover', 'hsl(' + b.primaryHover + ')');
+              if (b.accentColor) r.setProperty('--color-brand-accent', 'hsl(' + b.accentColor + ')');
+              r.setProperty('--color-brand-text-on-primary', 'hsl(' + (b.textOnPrimary || '0 0% 100%') + ')');
+              break;
+            }
+          }
+        }
+      } catch (e) { }
+    })();
+  </script>
 </head>
 
 <body>
