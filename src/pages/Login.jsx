@@ -119,11 +119,17 @@ const Login = () => {
                     transition={{ duration: 0.6, delay: 0.2 }}
                     className="w-full lg:w-1/2 h-[200px] md:h-[300px] lg:h-[600px] flex items-center justify-center relative px-8"
                 >
-                    <img
-                        src={branding.logoUrl || '/logo-potenza.png'}
-                        alt={`${branding.companyName || 'CRM'} Logo`}
-                        className="w-full max-w-[480px] md:max-w-[600px] lg:max-w-[700px] h-auto object-contain drop-shadow-2xl"
-                    />
+                    {branding.logoUrl ? (
+                        <img
+                            src={branding.logoUrl}
+                            alt={`${branding.companyName || 'CRM'} Logo`}
+                            className="w-full max-w-[480px] md:max-w-[600px] lg:max-w-[700px] h-auto object-contain drop-shadow-2xl"
+                        />
+                    ) : (
+                        <span className="text-6xl font-black text-slate-300 dark:text-slate-700 select-none">
+                            {branding.companyName || 'CRM'}
+                        </span>
+                    )}
                 </motion.div>
 
                 {/* Right Side: Login Form */}

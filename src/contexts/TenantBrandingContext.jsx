@@ -135,6 +135,7 @@ export const TenantBrandingProvider = ({ children }) => {
   const [branding, setBranding] = useState(() => {
     const cached = getInitialBranding();
     applyBrandingToDom(cached); // aplica CSS vars SINCRÓNICAMENTE antes del primer paint
+    console.log('[Branding] 🟡 INIT estado inicial:', cached.companyName, '| logo:', cached.logoUrl, '| t:', performance.now().toFixed(0) + 'ms');
     return cached;
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -147,6 +148,7 @@ export const TenantBrandingProvider = ({ children }) => {
 
       // En desarrollo local, skip la detección por dominio
       if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        console.log('[Branding] ⏭️ PASO 1 skipped (localhost)');
         setIsLoading(false);
         return;
       }
@@ -160,6 +162,7 @@ export const TenantBrandingProvider = ({ children }) => {
 
         if (!error && data) {
           const resolved = normalizeTenantRow(data);
+          console.log('[Branding] 🔵 PASO 1 dominio resuelto:', resolved.companyName, '| t:', performance.now().toFixed(0) + 'ms');
           setBranding(resolved);
           applyBrandingToDom(resolved);
         }
@@ -178,6 +181,7 @@ export const TenantBrandingProvider = ({ children }) => {
 
   // ─── PASO 2: Actualizar con tenant del usuario autenticado (post-login) ───
   useEffect(() => {
+    console.log('[Branding] PASO 2 tenantId:', tenantId, '| loading:', tenantLoading, '| t:', performance.now().toFixed(0) + 'ms');
     if (tenantLoading || !tenantId) return;
 
     const fetchBrandingByTenantId = async () => {
@@ -190,6 +194,7 @@ export const TenantBrandingProvider = ({ children }) => {
 
         if (!error && data) {
           const resolved = normalizeTenantRow(data);
+          console.log('[Branding] 🟢 PASO 2 tenantId fetch OK:', resolved.companyName, '| logo:', resolved.logoUrl, '| t:', performance.now().toFixed(0) + 'ms');
           setBranding(resolved);
           applyBrandingToDom(resolved);
           // Guardar en cache para el próximo render (elimina flash)

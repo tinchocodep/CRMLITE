@@ -76,6 +76,19 @@ const TopBarBrand = memo(function TopBarBrand() {
     );
 });
 
+// Logo para el header mobile — usa el branding context.
+const MobileBrandLogo = memo(function MobileBrandLogo() {
+    const { branding } = useTenantBranding();
+    if (!branding.logoUrl) return null;
+    return (
+        <img
+            src={branding.logoUrl}
+            alt={branding.companyName || 'CRM'}
+            className="w-14 h-14 object-contain drop-shadow-sm"
+        />
+    );
+});
+
 const MainLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -257,7 +270,7 @@ const MainLayout = () => {
                                 className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                             >
                                 {/* [TODO: LOGO] Restaurar: <img src="/logo-advanta.png" alt="Advanta" className="w-9 h-9 object-contain drop-shadow-sm" /> */}
-                                <img src="/logo-potenza.png" alt="Potenza" className="w-14 h-14 object-contain drop-shadow-sm" />
+                                <MobileBrandLogo />
                             </button>
 
                             {/* Right Actions */}
