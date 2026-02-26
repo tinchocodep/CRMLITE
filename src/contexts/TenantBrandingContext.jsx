@@ -169,6 +169,7 @@ export const TenantBrandingProvider = ({ children }) => {
       // Actualizar estado local sin refetch
       const updatedBranding = {
         ...branding,
+        companyName: updates.name ?? branding.companyName,
         primaryColor: updates.primary_color ?? branding.primaryColor,
         primaryHover: updates.primary_hover ?? branding.primaryHover,
         accentColor: updates.accent_color ?? branding.accentColor,

@@ -16,6 +16,7 @@ import { HorizontalCRMNav } from '../components/HorizontalCRMNav';
 import { HorizontalCotizadorNav } from '../components/cotizador/HorizontalCotizadorNav';
 import { RightSidebarAgenda } from '../components/RightSidebarAgenda';
 import SuperAdminBanner from '../components/shared/SuperAdminBanner';
+import { useTenantBranding } from '../contexts/TenantBrandingContext';
 import { useCompanies } from '../hooks/useCompanies';
 import { ConfirmModal } from '../components/ConfirmModal';
 import { useAuth } from '../contexts/AuthContext';
@@ -52,6 +53,27 @@ const actions = [
 // This prevents Clients/Prospects from re-rendering on every sidebar hover
 const MemoizedContent = memo(function MemoizedContent() {
     return <Outlet />;
+});
+
+// Muestra logo + nombre de empresa en el top bar. Memo para evitar re-renders por estado del sidebar.
+const TopBarBrand = memo(function TopBarBrand() {
+    const { branding } = useTenantBranding();
+    return (
+        <div className="flex items-center gap-2.5 flex-shrink-0">
+            {branding.logoUrl && (
+                <img
+                    src={branding.logoUrl}
+                    alt={branding.companyName}
+                    className="h-8 w-auto max-w-[40px] object-contain"
+                />
+            )}
+            {branding.companyName && (
+                <span className="text-sm font-bold text-white tracking-wide" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {branding.companyName}
+                </span>
+            )}
+        </div>
+    );
 });
 
 const MainLayout = () => {
@@ -426,10 +448,25 @@ const MainLayout = () => {
             {/* ========== DESKTOP VERSION ========== */}
             <div className="hidden xl:block">
                 <SuperAdminBanner />
+                {/* Black Top Bar - Full Width */}
+                <div className="fixed top-0 left-0 right-0 h-14 z-40 flex items-center px-4 gap-4" style={{ backgroundColor: 'rgb(26, 26, 26)' }}>
+                    {/* Hamburger */}
+                    <button
+                        onClick={() => setMainSidebarExpanded(prev => !prev)}
+                        className="w-11 h-11 flex items-center justify-center rounded-xl text-white hover:bg-white/10 transition-all duration-200 flex-shrink-0"
+                        title={mainSidebarExpanded ? 'Cerrar menú' : 'Abrir menú'}
+                    >
+                        {mainSidebarExpanded ? <X size={22} /> : <Menu size={22} />}
+                    </button>
+
+                    {/* Logo + Nombre de empresa */}
+                    <TopBarBrand />
+                </div>
+
                 {/* Vertical Sidebar */}
                 <VerticalSidebar
                     onQuickActions={() => setDesktopActionMenuOpen(!desktopActionMenuOpen)}
-                    onHoverChange={setMainSidebarExpanded}
+                    isExpanded={mainSidebarExpanded}
                 />
 
                 {/* Quick Actions Modal - Desktop */}
@@ -478,8 +515,9 @@ const MainLayout = () => {
                     )}
                 </AnimatePresence>
 
-                {/* Wrapper: nav + main share the full viewport height */}
-                <div className={`flex flex-col h-screen ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'} transition-all duration-300`}>
+                {/* Wrapper: nav + main share the full viewport height, offset por top bar */}
+                <div className={`flex flex-col h-screen pt-14 ${mainSidebarExpanded ? 'ml-72' : 'ml-20 xl:mr-70'
+                    } transition-all duration-300`}>
 
                     {/* CRM Horizontal Navigation - Above Content */}
                     {isCRMActive && <HorizontalCRMNav isMainSidebarExpanded={false} />}

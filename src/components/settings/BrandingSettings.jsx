@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Upload, Check, AlertCircle, Loader2, Image, Palette, RefreshCw } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Upload, Check, AlertCircle, Loader2, Image, Palette, RefreshCw, Building2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenantBranding } from '../../contexts/TenantBrandingContext';
 import { useCurrentTenant } from '../../hooks/useCurrentTenant';
@@ -77,6 +77,8 @@ const BrandingSettings = () => {
     const [hexColor, setHexColor] = useState(hslToHex(branding.primaryColor));
     const [uploading, setUploading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [savingName, setSavingName] = useState(false);
+    const [companyName, setCompanyName] = useState(branding.companyName || '');
     const [feedback, setFeedback] = useState(null); // { type: 'success'|'error', message }
     const [previewLogo, setPreviewLogo] = useState(branding.logoUrl);
     const fileInputRef = useRef(null);
@@ -84,6 +86,27 @@ const BrandingSettings = () => {
     const showFeedback = (type, message) => {
         setFeedback({ type, message });
         setTimeout(() => setFeedback(null), 3500);
+    };
+
+    // Sincroniza con el contexto cuando branding llega del fetch async (post-login)
+    useEffect(() => {
+        setCompanyName(branding.companyName || '');
+        setHexColor(hslToHex(branding.primaryColor));
+        setPreviewLogo(branding.logoUrl);
+    }, [branding.companyName, branding.primaryColor, branding.logoUrl]);
+
+    // ── Guardar nombre de empresa ─────────────────────────────────────────────
+    const saveCompanyName = async () => {
+        const trimmed = companyName.trim();
+        if (!trimmed) { showFeedback('error', 'El nombre no puede estar vacío'); return; }
+        setSavingName(true);
+        const result = await updateBranding({ name: trimmed });
+        setSavingName(false);
+        if (result.success) {
+            showFeedback('success', 'Nombre de empresa actualizado');
+        } else {
+            showFeedback('error', result.error || 'Error al guardar el nombre');
+        }
     };
 
     // ── Color picker ─────────────────────────────────────────────────────────
@@ -189,8 +212,8 @@ const BrandingSettings = () => {
             {/* Feedback banner */}
             {feedback && (
                 <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium ${feedback.type === 'success'
-                        ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
-                        : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
+                    ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800'
+                    : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'
                     }`}>
                     {feedback.type === 'success'
                         ? <Check className="w-4 h-4 flex-shrink-0" />
@@ -199,6 +222,38 @@ const BrandingSettings = () => {
                     {feedback.message}
                 </div>
             )}
+
+            {/* ── Sección Nombre de empresa ── */}
+            <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-[var(--color-brand-primary)]" />
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        Nombre de la empresa
+                    </label>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Se mostrará en la barra superior del CRM.
+                </p>
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={companyName}
+                        onChange={e => setCompanyName(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && saveCompanyName()}
+                        placeholder="Ej: OG CRM"
+                        className="flex-1 px-4 py-3 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-brand-primary)] text-slate-800 dark:text-white"
+                    />
+                    <button
+                        onClick={saveCompanyName}
+                        disabled={savingName}
+                        className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--color-brand-primary)] hover:bg-[var(--color-brand-primary-hover)] text-white font-bold text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed shadow-md"
+                    >
+                        {savingName ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    </button>
+                </div>
+            </div>
+
+            <hr className="border-slate-200 dark:border-slate-700" />
 
             {/* ── Sección Logo ── */}
             <div className="space-y-3">

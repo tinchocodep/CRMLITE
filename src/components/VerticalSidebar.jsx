@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
     Home, Users, Briefcase, Package,
-    Plus, Settings, BarChart2, ShieldCheck, Truck, UserSquare2, BarChart3
+    Plus, Settings, BarChart2, ShieldCheck, Truck, UserSquare2, BarChart3,
 } from 'lucide-react';
 import { useTenantBranding } from '../contexts/TenantBrandingContext';
 import { useTenantModules } from '../hooks/useTenantModules';
 
-// moduleKey must match the `module_key` column in `tenant_modules`.
-// Items without a moduleKey are always visible (e.g. Settings).
 const sidebarModules = [
     { id: 'home', name: 'Home', path: '/dashboard', icon: Home, moduleKey: 'home' },
     { id: 'crm', name: 'CRM', path: '/dashboard', icon: Briefcase, moduleKey: 'crm', isCRM: true },
@@ -16,25 +14,21 @@ const sidebarModules = [
     { id: 'comercial', name: 'Administración', path: '/comercial', icon: BarChart2, moduleKey: 'comercial', isComercial: true },
     { id: 'usuarios', name: 'Usuarios', path: '/usuarios', icon: Users, moduleKey: 'usuarios' },
     { id: 'admin', name: 'Admin', path: '/admin/tenants', icon: ShieldCheck, moduleKey: 'tenant-manager' },
-    // Módulos próximamente — activables por admin, muestran pantalla de WIP
     { id: 'logistica', name: 'Logística', path: '/logistica', icon: Truck, moduleKey: 'logistica' },
     { id: 'rrhh', name: 'RRHH', path: '/rrhh', icon: UserSquare2, moduleKey: 'rrhh' },
     { id: 'reportes', name: 'Reportes', path: '/reportes', icon: BarChart3, moduleKey: 'reportes' },
 ];
 
-export function VerticalSidebar({ onQuickActions, onHoverChange }) {
-    const [isHovered, setIsHovered] = useState(false);
+// Sidebar arranca en top-14 (debajo del black top bar full-width de MainLayout).
+export function VerticalSidebar({ onQuickActions, isExpanded }) {
     const location = useLocation();
     const { branding } = useTenantBranding();
     const { enabledModules, isLoading: modulesLoading } = useTenantModules();
 
-    // Filter modules: show only those present in the tenant's enabledModules Set.
-    // Items without a moduleKey are always visible.
     const visibleModules = sidebarModules.filter(
         (m) => !m.moduleKey || enabledModules.has(m.moduleKey)
     );
 
-    // Define CRM routes
     const crmRoutes = ['/dashboard', '/prospectos', '/contactos', '/empresas', '/oportunidades', '/pedidos', '/legajos', '/visitas', '/campos'];
     const isInCRM = crmRoutes.some(route => location.pathname.startsWith(route));
 
@@ -44,117 +38,74 @@ export function VerticalSidebar({ onQuickActions, onHoverChange }) {
     const comercialRoutes = ['/comercial', '/stock', '/comprobantes', '/cuenta-corriente'];
     const isInComercial = comercialRoutes.some(route => location.pathname.startsWith(route));
 
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-        onHoverChange?.(true);
-    };
+    const getModuleStyle = (isActive) => isActive
+        ? {
+            background: 'linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent))',
+            boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-primary) 35%, transparent)',
+        }
+        : { backgroundColor: 'transparent' };
 
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-        onHoverChange?.(false);
-    };
+    const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200';
 
     return (
-        <aside
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            className={`fixed left-0 top-0 h-screen bg-white border-r border-slate-200 shadow-xl z-30 transition-all duration-300 ease-in-out ${isHovered ? 'w-72' : 'w-20'
-                }`}
-        >
-            {/* Logo Section */}
-            <div className="h-20 flex items-center justify-center border-b border-slate-200 overflow-hidden px-2">
-                <img
-                    src={branding.logoUrl || '/logo-potenza-color.png'}
-                    alt={branding.companyName || 'CRM'}
-                    style={{
-                        maxWidth: isHovered ? '120px' : '44px',
-                        maxHeight: isHovered ? '56px' : '44px',
-                        width: 'auto',
-                        height: 'auto',
-                    }}
-                    className="object-contain transition-all duration-300"
-                />
-            </div>
+        <aside className={`fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-white border-r border-slate-200 shadow-xl z-30 transition-all duration-300 ease-in-out flex flex-col ${isExpanded ? 'w-72' : 'w-20'}`}>
 
-            {/* Navigation Items */}
-            <nav className="flex-1 py-2 overflow-y-auto">
-                {modulesLoading ? null : visibleModules.map((module) => (
-                    <NavLink
-                        key={module.id}
-                        to={module.path}
-                        className={({ isActive }) => {
-                            const baseClasses = 'flex items-center gap-4 px-4 py-2.5 mx-2 rounded-xl transition-all duration-200 relative';
-                            const shouldHighlight = module.isCRM ? isInCRM
-                                : module.isCotizador ? isInCotizador
-                                    : module.isComercial ? isInComercial
-                                        : isActive;
-                            return shouldHighlight
-                                ? `${baseClasses} text-white shadow-md`
-                                : `${baseClasses} text-slate-700`;
-                        }}
-                        style={({ isActive }) => {
-                            const shouldHighlight = module.isCRM ? isInCRM
-                                : module.isCotizador ? isInCotizador
-                                    : module.isComercial ? isInComercial
-                                        : isActive;
-                            return shouldHighlight ? {
-                                background: 'linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent))',
-                                boxShadow: '0 4px 12px color-mix(in srgb, var(--color-brand-primary) 35%, transparent)',
-                            } : { backgroundColor: 'transparent' };
-                        }}
-                        onMouseEnter={e => {
-                            if (!e.currentTarget.style.background) {
-                                e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 10%, white)';
-                            }
-                        }}
-                        onMouseLeave={e => {
-                            if (!e.currentTarget.style.background) {
-                                e.currentTarget.style.backgroundColor = 'transparent';
-                            }
-                        }}
-                    >
-                        <module.icon size={22} className="flex-shrink-0" />
-                        <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                            }`}>
-                            {module.name}
-                        </span>
-                    </NavLink>
-                ))}
-            </nav>
-
-            {/* Bottom Actions */}
-            <div className="border-t border-slate-200 p-2">
-                {/* Quick Actions Button */}
+            {/* Botón Acciones Rápidas */}
+            <div className="px-2 pt-3 pb-3 border-b border-slate-200 flex-shrink-0">
                 <button
                     onClick={onQuickActions}
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 transition-all duration-200 mb-2 bg-slate-100"
-                    style={{ '--hover-bg': 'color-mix(in srgb, var(--color-brand-primary) 15%, white)' }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 15%, white)'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = ''}
+                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-white transition-all duration-200"
+                    style={{ background: 'linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-accent))' }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                 >
                     <Plus size={22} className="flex-shrink-0" />
-                    <span
-                        className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                            }`}
-                    >
+                    <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
                         Acciones Rápidas
                     </span>
                 </button>
+            </div>
 
-                {/* Settings Button */}
+            {/* Navigation Items */}
+            <nav className="py-2 overflow-y-auto flex flex-col">
+                {modulesLoading ? null : visibleModules.map((module) => {
+                    const shouldHighlight = module.isCRM ? isInCRM
+                        : module.isCotizador ? isInCotizador
+                            : module.isComercial ? isInComercial
+                                : location.pathname === module.path;
+
+                    return (
+                        <NavLink
+                            key={module.id}
+                            to={module.path}
+                            className={`${baseClasses} ${shouldHighlight ? 'text-white shadow-md' : 'text-slate-700'}`}
+                            style={() => getModuleStyle(shouldHighlight)}
+                            onMouseEnter={e => { if (!shouldHighlight) e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 10%, white)'; }}
+                            onMouseLeave={e => { if (!shouldHighlight) e.currentTarget.style.backgroundColor = 'transparent'; }}
+                        >
+                            <module.icon size={22} className="flex-shrink-0" />
+                            <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+                                {module.name}
+                            </span>
+                        </NavLink>
+                    );
+                })}
+
+                {/* Separador + Configuración (pegado a los módulos, no al fondo) */}
+                <div className="mx-4 my-2 border-t border-slate-200" />
                 <NavLink
                     to="/configuracion"
-                    className="w-full flex items-center gap-4 px-4 py-2.5 rounded-xl text-slate-800 hover:bg-slate-100 transition-all duration-200"
+                    className={({ isActive }) => `${baseClasses} ${isActive ? 'text-white shadow-md' : 'text-slate-700'}`}
+                    style={({ isActive }) => getModuleStyle(isActive)}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-brand-primary) 10%, white)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                 >
                     <Settings size={22} className="flex-shrink-0" />
-                    <span
-                        className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                            }`}
-                    >
+                    <span className={`font-semibold text-sm whitespace-nowrap transition-all duration-300 ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
                         Configuración
                     </span>
                 </NavLink>
-            </div>
+            </nav>
         </aside>
     );
 }
