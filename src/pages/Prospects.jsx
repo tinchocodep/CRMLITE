@@ -102,39 +102,35 @@ const Prospects = () => {
             if (updatedProspect.id && typeof updatedProspect.id === 'number' && updatedProspect.id > 1000000) {
                 // ── Nuevo prospecto ──────────────────────────────────────────────────────
 
-                // 1) CUIT vacío → avisar y no guardar
-                if (!updatedProspect.cuit || !updatedProspect.cuit.trim()) {
-                    showWarningLong(
-                        '⚠️ CUIT requerido',
-                        'El prospecto no fue guardado. Por favor ingresá el número de CUIT antes de continuar.'
-                    );
-                    return;
-                }
+                // CUIT es opcional para prospectos — si lo ingresó, validamos duplicados
+                const cuitValue = updatedProspect.cuit?.trim() || null;
 
-                // 2) Verificar duplicado contra Supabase (cubre toda la DB, no solo la página)
-                const { data: existing } = await supabase
-                    .from('companies')
-                    .select('id, trade_name, legal_name, company_type')
-                    .eq('cuit', updatedProspect.cuit.trim())
-                    .eq('is_active', true)
-                    .limit(1);
+                if (cuitValue) {
+                    // Verificar duplicado contra Supabase (cubre toda la DB, no solo la página)
+                    const { data: existing } = await supabase
+                        .from('companies')
+                        .select('id, trade_name, legal_name, company_type')
+                        .eq('cuit', cuitValue)
+                        .eq('is_active', true)
+                        .limit(1);
 
-                if (existing && existing.length > 0) {
-                    const dup = existing[0];
-                    const dupType = dup.company_type === 'client' ? 'Cliente' : 'Prospecto';
-                    const dupName = dup.trade_name || dup.legal_name || 'sin nombre';
-                    showWarningLong(
-                        `⚠️ CUIT duplicado — no se guardó`,
-                        `Ya existe un ${dupType} con el CUIT ${updatedProspect.cuit.trim()}: "${dupName}". Revisá los datos antes de continuar.`
-                    );
-                    return;
+                    if (existing && existing.length > 0) {
+                        const dup = existing[0];
+                        const dupType = dup.company_type === 'client' ? 'Cliente' : 'Prospecto';
+                        const dupName = dup.trade_name || dup.legal_name || 'sin nombre';
+                        showWarningLong(
+                            `⚠️ CUIT duplicado — no se guardó`,
+                            `Ya existe un ${dupType} con el CUIT ${cuitValue}: "${dupName}". Revisá los datos antes de continuar.`
+                        );
+                        return;
+                    }
                 }
 
                 const result = await createCompany({
                     company_type: 'prospect',
                     trade_name: updatedProspect.tradeName || updatedProspect.trade_name,
                     legal_name: updatedProspect.companyName || updatedProspect.legal_name,
-                    cuit: updatedProspect.cuit,
+                    cuit: cuitValue,
                     email: updatedProspect.email,
                     phone: updatedProspect.phone,
                     city: updatedProspect.city,
@@ -168,6 +164,16 @@ const Prospects = () => {
                         showSuccess(`Prospecto creado con ${pendingContacts.length} contacto(s) vinculado(s)!`);
                     } else {
                         showSuccess('Nuevo Prospecto creado exitosamente!');
+                    }
+
+                    // Avisar si se creó sin CUIT
+                    if (!cuitValue) {
+                        setTimeout(() => {
+                            showWarningLong(
+                                'ℹ️ Prospecto sin CUIT',
+                                'Se creó sin número de CUIT. Recordá que para convertirlo a cliente será necesario asignarle uno.'
+                            );
+                        }, 800);
                     }
                 } else {
                     showError('Error al crear prospecto: ' + result.error);

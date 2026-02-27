@@ -81,7 +81,7 @@ export const AVAILABLE_MODULES = [
     { key: 'cotizador', label: 'Cotizador', description: 'Cotizaciones y pedidos' },
     { key: 'comercial', label: 'Administracion', description: 'Stock y comprobantes' },
     { key: 'usuarios', label: 'Usuarios', description: 'Gestion de usuarios' },
-    { key: 'visitas', label: 'Visitas', description: 'Registro de visitas a campo' },
+    { key: 'visitas', label: 'Actividades', description: 'Registro de actividades' },
     { key: 'campos', label: 'Campos', description: 'Territorios y establecimientos' },
     { key: 'logistica', label: 'Logistica', description: 'Gestion logistica' },
     { key: 'rrhh', label: 'RRHH', description: 'Recursos Humanos' },

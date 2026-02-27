@@ -32,7 +32,7 @@ const modules = [
     { name: 'Clientes', path: '/clientes', icon: Users },
     { name: 'Contactos', path: '/contactos', icon: UserCheck },
     { name: 'Legajo', path: '/legajo', icon: FileText },
-    { name: 'Visitas', path: '/visitas', icon: Map },
+    { name: 'Actividades', path: '/visitas', icon: Map },
     { name: 'Oportunidades', path: '/oportunidades', icon: Briefcase },
     { name: 'Objetivos', path: '/objetivos', icon: Target },
     { name: 'Territorios', path: '/territorios', icon: Map },
@@ -45,7 +45,7 @@ const actions = [
     { label: 'Convertir Prospecto', icon: UserPlus, color: 'text-pink-600 bg-pink-50' },
     { label: 'Nuevo Cliente', icon: Users, color: 'text-emerald-600 bg-emerald-50' },
     { label: 'Nuevo Contacto', icon: UserCheck, color: 'text-teal-600 bg-teal-50' },
-    { label: 'Registrar Visita', icon: Map, color: 'text-amber-600 bg-amber-50' },
+    { label: 'Nueva Actividad', icon: Map, color: 'text-amber-600 bg-amber-50' },
     { label: 'Nueva Oportunidad', icon: Briefcase, color: 'text-advanta-bronze bg-orange-50' },
 ];
 
@@ -510,7 +510,7 @@ const MainLayout = () => {
                                                 else if (action.label === 'Convertir Prospecto') handleGlobalPromoteProspect();
                                                 else if (action.label === 'Nuevo Cliente') handleGlobalCreateClient();
                                                 else if (action.label === 'Nuevo Contacto') handleGlobalCreateContact();
-                                                else if (action.label === 'Registrar Visita') navigate('/visitas');
+                                                else if (action.label === 'Nueva Actividad') navigate('/visitas');
                                                 else if (action.label === 'Nueva Oportunidad') handleGlobalCreateOpportunity();
                                                 setDesktopActionMenuOpen(false);
                                             }}

@@ -12,7 +12,7 @@ const crmModules = [
     { name: 'Contactos', path: '/contactos', icon: User },
     { name: 'Agenda', path: '/agenda', icon: Calendar },
     { name: 'Oportunidades', path: '/oportunidades', icon: Briefcase },
-    { name: 'Visitas', path: '/visitas', icon: Map },
+    { name: 'Actividades', path: '/visitas', icon: Map },
     { name: 'Campos', path: '/campos', icon: Target },
     { name: 'Reclamos', path: '/reclamos', icon: AlertCircle }
 ];

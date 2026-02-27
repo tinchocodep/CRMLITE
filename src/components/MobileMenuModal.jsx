@@ -26,7 +26,7 @@ const MobileMenuModal = ({ isOpen, onClose, currentContext }) => {
                 { name: 'Oportunidades', path: '/oportunidades', icon: '💼' },
                 { name: 'Ficha 360', path: '/ficha-360', icon: '🔍' },
                 { name: 'Legajo', path: '/legajo', icon: '📄' },
-                { name: 'Visitas', path: '/visitas', icon: '🗺️' },
+                { name: 'Actividades', path: '/visitas', icon: '📋' },
                 { name: 'Territorio', path: '/territorios', icon: '🗺️' },
                 { name: 'Objetivos', path: '/objetivos', icon: '🎯' },
                 { name: 'Reclamos', path: '/reclamos', icon: '⚠️' }

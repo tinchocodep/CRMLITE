@@ -4,9 +4,11 @@ import ComercialSelector from '../shared/ComercialSelector';
 import CompanyContactsSection from '../shared/CompanyContactsSection';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
+import { useSystemToast } from '../../hooks/useSystemToast';
 const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, allContacts = [] }) => {
     const { comercialId } = useAuth();
     const { addNotification } = useNotifications();
+    const { showWarningLong } = useSystemToast();
     const [formData, setFormData] = useState({
         legalName: '',
         tradeName: '',
@@ -64,6 +66,15 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // CUIT es obligatorio para convertir a cliente
+        if (!formData.cuit || !formData.cuit.trim()) {
+            showWarningLong(
+                '⚠️ CUIT requerido',
+                'Para convertir un prospecto a cliente es necesario cargar el número de CUIT. Completá el campo antes de confirmar.'
+            );
+            return;
+        }
+
         const finalComercialId = formData.comercialId || comercialId;
         if (!finalComercialId) {
             addNotification({
@@ -79,7 +90,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
         const dataToSubmit = {
             trade_name: formData.tradeName,
             legal_name: formData.legalName,
-            cuit: formData.cuit,
+            cuit: formData.cuit.trim(),
             email: formData.email || null,
             phone: formData.phone || null,
             city: formData.city,
@@ -135,7 +146,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
                                 <input name="tradeName" value={formData.tradeName} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:border-advanta-green focus:bg-white focus:ring-4 ring-advanta-green/5 transition-all outline-none" placeholder="Marca Comercial" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-500 ml-1">CUIT</label>
+                                <label className="text-xs font-bold text-slate-500 ml-1">CUIT <span className="text-red-500">*</span></label>
                                 <input name="cuit" value={formData.cuit} onChange={handleChange} className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold font-mono text-slate-700 focus:border-advanta-green focus:bg-white focus:ring-4 ring-advanta-green/5 transition-all outline-none" placeholder="XX-XXXXXXXX-X" />
                             </div>
                             <div className="space-y-1.5">
