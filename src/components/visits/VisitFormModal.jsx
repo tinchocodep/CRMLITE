@@ -3,6 +3,8 @@ import { X, MapPin, Calendar, Clock, User, AlignLeft, Flag, Loader2 } from 'luci
 import { supabase } from '../../lib/supabase';
 import { useCurrentTenant } from '../../hooks/useCurrentTenant';
 import { useAuth } from '../../contexts/AuthContext';
+import { useCompanies } from '../../hooks/useCompanies';
+import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const PRIORITY_OPTIONS = [
@@ -52,7 +54,9 @@ const VisitFormModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
     const { comercialId, isAdmin, isSupervisor } = useAuth();
 
     const [form, setForm] = useState(INITIAL_FORM);
-    const [companies, setCompanies] = useState([]);
+    const { companies: allCompanies } = useCompanies();
+    const clients = allCompanies.filter(c => c.company_type === 'client');
+    const prospects = allCompanies.filter(c => c.company_type === 'prospect');
     const [comerciales, setComerciales] = useState([]);
     const [establishments, setEstablishments] = useState([]);
     const [submitting, setSubmitting] = useState(false);
@@ -81,12 +85,10 @@ const VisitFormModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
     // ── Load dropdowns ─────────────────────────────────────────────────────
     const loadDropdowns = useCallback(async () => {
         if (!tenantId) return;
-        const [{ data: comp }, { data: com }, { data: est }] = await Promise.all([
-            supabase.from('companies').select('id, trade_name, legal_name').eq('tenant_id', tenantId).order('trade_name'),
+        const [{ data: com }, { data: est }] = await Promise.all([
             supabase.from('comerciales').select('id, name').eq('tenant_id', tenantId).eq('is_active', true).order('name'),
             supabase.from('establishments').select('id, name, company_id').eq('tenant_id', tenantId).order('name'),
         ]);
-        setCompanies(comp || []);
         setComerciales(com || []);
         setEstablishments(est || []);
     }, [tenantId]);
@@ -226,22 +228,21 @@ const VisitFormModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
                         {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
                     </FieldWrapper>
 
-                    {/* Client */}
-                    <FieldWrapper label="Cliente / Prospecto" icon={User} required>
-                        <select
+                    {/* Client / Prospect — BusinessUnitPicker */}
+                    <div className="flex flex-col gap-1.5">
+                        <BusinessUnitPicker
                             value={form.company_id}
-                            onChange={e => handleChange('company_id', e.target.value)}
-                            className={`${inputCls} ${errors.company_id ? 'border-red-400 bg-red-50' : ''}`}
-                        >
-                            <option value="">Seleccionar cliente...</option>
-                            {companies.map(c => (
-                                <option key={c.id} value={c.id}>
-                                    {c.trade_name || c.legal_name}
-                                </option>
-                            ))}
-                        </select>
+                            entityType={allCompanies.find(c => c.id === form.company_id)?.company_type || ''}
+                            onChange={(entityId) => {
+                                handleChange('company_id', entityId);
+                            }}
+                            clients={clients}
+                            prospects={prospects}
+                            required={true}
+                            label="Cliente / Prospecto"
+                        />
                         {errors.company_id && <p className="text-xs text-red-500">{errors.company_id}</p>}
-                    </FieldWrapper>
+                    </div>
 
                     {/* Date + Time */}
                     <div className="grid grid-cols-2 gap-3">

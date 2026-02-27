@@ -1,36 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { X, User, Briefcase, DollarSign, Calendar, TrendingUp, FileText, Clock, Truck, MapPin } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { mockClients } from '../../data/mockClients';
-import { mockContacts } from '../../data/mockContacts';
+import { supabase } from '../../lib/supabase';
+import { useCompanies } from '../../hooks/useCompanies';
+import { useComerciales } from '../../hooks/useComerciales';
 import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 import ProductSelector from '../shared/ProductSelector';
-
-// Mock comerciales data (replace with your actual mock data source)
-const mockComerciales = [
-    { id: 1, name: 'Juan Pérez', email: 'juan@example.com' },
-    { id: 2, name: 'María García', email: 'maria@example.com' },
-    { id: 3, name: 'Carlos López', email: 'carlos@example.com' }
-];
 
 export default function EditOpportunityModal({ isOpen, opportunity, onClose, onSave }) {
     const location = useLocation();
 
-    // Use mock data instead of Supabase
-    const companies = mockClients || [];
-    const contacts = mockContacts || [];
-    const comerciales = mockComerciales;
+    const { companies } = useCompanies();
+    const { comerciales } = useComerciales();
 
     // Filter companies by type
     const clients = companies.filter(c => c.company_type === 'client');
     const prospects = companies.filter(c => c.company_type === 'prospect');
-
-    // REMOVED: Auto-close modal when route changes - this was causing issues
-    // useEffect(() => {
-    //     if (isOpen) {
-    //         onClose();
-    //     }
-    // }, [location.pathname]);
 
     // Initialize form data from opportunity
     const [formData, setFormData] = useState({
@@ -58,6 +43,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
     });
 
     const [availableContacts, setAvailableContacts] = useState([]);
+    const [loadingContacts, setLoadingContacts] = useState(false);
 
     // Pre-populate form when opportunity changes
     useEffect(() => {
@@ -93,18 +79,44 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
         }
     }, [opportunity, isOpen]);
 
-    // Update available contacts when entity is selected
+    // Fetch contacts for the selected company from Supabase
     useEffect(() => {
-        if (formData.linkedEntityId) {
-            const entityContacts = contacts.filter(contact => {
-                // Mock contacts don't have companies array, so we'll show all for now
-                return true;
-            });
-            setAvailableContacts(entityContacts);
-        } else {
-            setAvailableContacts([]);
-        }
-    }, [formData.linkedEntityId, formData.linkedEntityType, contacts]);
+        const fetchContactsForCompany = async () => {
+            if (!formData.linkedEntityId) {
+                setAvailableContacts([]);
+                return;
+            }
+
+            setLoadingContacts(true);
+            try {
+                const { data, error } = await supabase
+                    .from('contact_companies')
+                    .select(`
+                        contact:contacts!contact_id(
+                            id, first_name, last_name, email, phone
+                        )
+                    `)
+                    .eq('company_id', parseInt(formData.linkedEntityId));
+
+                if (error) throw error;
+
+                // Extract unique contacts from the join result
+                const contacts = (data || [])
+                    .map(row => row.contact)
+                    .filter(Boolean)
+                    .filter((c, i, arr) => arr.findIndex(x => x.id === c.id) === i);
+
+                setAvailableContacts(contacts);
+            } catch (err) {
+                console.error('[EditOppModal] Error fetching contacts:', err);
+                setAvailableContacts([]);
+            } finally {
+                setLoadingContacts(false);
+            }
+        };
+
+        fetchContactsForCompany();
+    }, [formData.linkedEntityId]);
 
     // Update probability based on status
     useEffect(() => {
@@ -132,7 +144,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
             company_id: parseInt(formData.linkedEntityId),
             contact_id: formData.contactId ? parseInt(formData.contactId) : null,
             product_type: formData.productType,
-            amount: parseFloat(formData.amount),
+            amount: formData.amount ? parseFloat(formData.amount) : null,
             close_date: formData.closeDate,
             status: formData.status,
             probability: parseInt(formData.probability),
@@ -233,7 +245,8 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 setFormData(prev => ({
                                     ...prev,
                                     linkedEntityId: entityId,
-                                    linkedEntityType: entityType
+                                    linkedEntityType: entityType,
+                                    contactId: '' // Reset contact when company changes
                                 }));
                             }}
                             clients={clients}
@@ -242,8 +255,8 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                             label="Cliente / Prospecto"
                         />
 
-                        {/* Contact */}
-                        {availableContacts.length > 0 && (
+                        {/* Contact — only shows contacts linked to the selected company */}
+                        {(availableContacts.length > 0 || loadingContacts) && (
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                                     <User size={14} className="inline mr-1.5" />
@@ -252,14 +265,16 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                 <select
                                     value={formData.contactId}
                                     onChange={(e) => setFormData({ ...formData, contactId: e.target.value })}
-                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
+                                    disabled={loadingContacts}
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none disabled:opacity-50"
                                 >
-                                    <option value="">Seleccionar contacto</option>
+                                    <option value="">{loadingContacts ? 'Cargando contactos...' : 'Seleccionar contacto'}</option>
                                     {availableContacts.map(contact => {
-                                        const displayText = contact.email || 'Sin email';
+                                        const fullName = `${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Sin nombre';
+                                        const emailInfo = contact.email ? ` (${contact.email})` : '';
                                         return (
                                             <option key={contact.id} value={contact.id}>
-                                                {displayText}
+                                                {fullName}{emailInfo}
                                             </option>
                                         );
                                     })}
@@ -378,13 +393,10 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                                     <DollarSign size={14} className="inline mr-1.5" />
-                                    Monto (ARS) *
+                                    Monto (ARS)
                                 </label>
                                 <input
                                     type="number"
-                                    required
-                                    min="0"
-                                    step="1000"
                                     value={formData.amount}
                                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                                     placeholder="0"
@@ -443,23 +455,21 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                             </div>
                         </div>
 
-                        {/* Next Action */}
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <FileText size={14} className="inline mr-1.5" />
-                                Próxima Acción
-                            </label>
-                            <textarea
-                                value={formData.nextAction}
-                                onChange={(e) => setFormData({ ...formData, nextAction: e.target.value })}
-                                placeholder="Describe la próxima acción..."
-                                rows="2"
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none resize-none"
-                            />
-                        </div>
-
-                        {/* Next Action Date */}
-                        {formData.nextAction && (
+                        {/* Next Action + Date */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <FileText size={14} className="inline mr-1.5" />
+                                    Próxima Acción
+                                </label>
+                                <textarea
+                                    value={formData.nextAction}
+                                    onChange={(e) => setFormData({ ...formData, nextAction: e.target.value })}
+                                    placeholder="Describe la próxima acción..."
+                                    rows="2"
+                                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none resize-none"
+                                />
+                            </div>
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                                     <Clock size={14} className="inline mr-1.5" />
@@ -472,7 +482,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
                                 />
                             </div>
-                        )}
+                        </div>
 
                         {/* Notes */}
                         <div>

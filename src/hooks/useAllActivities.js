@@ -35,7 +35,8 @@ export const useAllActivities = () => {
                     *,
                     company:companies!activities_company_id_fkey(id, legal_name, trade_name),
                     contact:contacts!activities_contact_id_fkey(id, first_name, last_name),
-                    comercial:comerciales!activities_comercial_id_fkey(id, name)
+                    comercial:comerciales!activities_comercial_id_fkey(id, name),
+                    opportunity:opportunities!activities_opportunity_id_fkey(id, opportunity_name, amount)
                 `)
                 .eq('tenant_id', tenantId);
 
@@ -57,6 +58,8 @@ export const useAllActivities = () => {
                     ? `${activity.contact.first_name} ${activity.contact.last_name}`
                     : null,
                 comercialName: activity.comercial?.name || 'Sin asignar',
+                opportunityName: activity.opportunity?.opportunity_name || null,
+                opportunityAmount: activity.opportunity?.amount || null,
             }));
 
             setActivities(formatted);

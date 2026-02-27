@@ -172,23 +172,10 @@ const Contacts = () => {
     };
 
     const handleSaveContact = async (contactData) => {
-        try {
-            let result;
-            if (editingContact) {
-                result = await updateContact(editingContact.id, contactData);
-            } else {
-                result = await createContact(contactData);
-            }
-
-            if (result.success) {
-                showSuccess(editingContact ? 'Contacto actualizado exitosamente!' : 'Contacto creado exitosamente!');
-                handleCloseModal();
-            } else {
-                showError('Error: ' + result.error);
-            }
-        } catch (error) {
-            showError('Error al guardar contacto');
-        }
+        // ContactModal already handles createContact/updateContact internally.
+        // This callback receives the result data after successful persistence.
+        showSuccess(editingContact ? 'Contacto actualizado exitosamente!' : 'Contacto creado exitosamente!');
+        handleCloseModal();
     };
 
     const handleCloseModal = () => {

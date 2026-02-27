@@ -4,7 +4,6 @@ import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
-import EditOpportunityModal from '../components/opportunities/EditOpportunityModal';
 import { useToast } from '../contexts/ToastContext';
 
 const stageConfig = {
@@ -603,7 +602,7 @@ const Opportunities = () => {
                 onSave={handleSaveOpportunity}
             />
 
-            <EditOpportunityModal
+            <SimpleOpportunityModal
                 isOpen={isEditModalOpen}
                 onClose={() => {
                     setIsEditModalOpen(false);
