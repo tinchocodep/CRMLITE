@@ -157,7 +157,8 @@ export const TenantBrandingProvider = ({ children }) => {
         const { data, error } = await supabase
           .from('tenants')
           .select('id, name, primary_color, primary_hover, accent_color, logo_url, logo_width, logo_height')
-          .eq('domain', hostname)
+          .ilike('domain', `%${hostname}%`)
+          .limit(1)
           .maybeSingle();
 
         if (!error && data) {
