@@ -1,10 +1,11 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Calendar, Clock, User, MapPin, Check, Cloud, Flame, Snowflake, ChevronDown, UserPlus, AlertCircle } from 'lucide-react';
 import { format, addHours, addMinutes } from 'date-fns';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { ValidationDialog } from '../ValidationDialog'; // Assuming ValidationDialog is in a components folder
+import { ValidationDialog } from '../ValidationDialog';
+import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 const priorityConfig = {
     high: {
@@ -46,6 +47,9 @@ const durationOptions = [
 ];
 
 const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comerciales = [] }) => {
+    // Split companies into clients and prospects for BusinessUnitPicker
+    const clients = useMemo(() => companies.filter(c => c.company_type === 'client'), [companies]);
+    const prospects = useMemo(() => companies.filter(c => c.company_type === 'prospect'), [companies]);
     const { user } = useAuth();
     const [teamMembers, setTeamMembers] = useState([]);
     const [validationDialog, setValidationDialog] = useState({ isOpen: false, message: '' });
@@ -56,6 +60,7 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
         start: format(new Date(), "yyyy-MM-dd'T'HH:00"),
         duration: 60, // minutes
         company_id: '',
+        entity_type: '',
         description: '',
         assignedTo: [] // Will be set after users load
     });
@@ -283,25 +288,17 @@ const CreateEventModal = ({ isOpen, onClose, onCreate, companies = [], comercial
                     </div>
 
                     {/* 5. Client/Company - FIFTH */}
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-slate-400 tracking-wider">Cliente / Prospecto</label>
-                        <div className="relative">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                            <select
-                                value={newEvent.company_id}
-                                onChange={(e) => setNewEvent({ ...newEvent, company_id: e.target.value })}
-                                className="w-full pl-10 p-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-advanta-green/20 outline-none font-medium appearance-none"
-                            >
-                                <option value="">Seleccionar Empresa...</option>
-                                {companies.map(company => (
-                                    <option key={company.id} value={company.id}>
-                                        {company.trade_name || company.legal_name || 'Sin Nombre'} ({company.company_type === 'client' ? 'Cliente' : 'Prospecto'})
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-                        </div>
-                    </div>
+                    <BusinessUnitPicker
+                        value={newEvent.company_id}
+                        entityType={newEvent.entity_type}
+                        onChange={(entityId, entityType) => {
+                            setNewEvent(prev => ({ ...prev, company_id: entityId, entity_type: entityType }));
+                        }}
+                        clients={clients}
+                        prospects={prospects}
+                        required
+                        label="Cliente / Prospecto"
+                    />
 
                     {/* 6. Asignar a - SIXTH */}
                     <div className="space-y-2">
