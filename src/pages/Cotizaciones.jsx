@@ -507,7 +507,7 @@ const Cotizaciones = () => {
                                             <div>
                                                 <div className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-0.5 sm:mb-1">Tipo</div>
                                                 <div className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {(quotation.sale_type || quotation.saleType) === 'own' ? '🏢 Propia' : '🤝 Partner'}
+                                                    {{ own: '🏢 Propia', consigned: '📦 Consignado', partner: '🤝 Partner' }[quotation.sale_type || quotation.saleType] || '🏢 Propia'}
                                                 </div>
                                             </div>
                                             <div>

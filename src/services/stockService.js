@@ -3,24 +3,35 @@
  * Manages stock balances and movements in localStorage
  */
 
-import { stockBalances } from '../data/stock';
+import { stockBalances, stockMovementsIn, stockMovementsOut } from '../data/stock';
 
-// Local storage key
+// Local storage keys
 const STOCK_BALANCES_KEY = 'crm_stock_balances';
+const STOCK_MOVEMENTS_KEY = 'crm_stock_movements';
+
+// ─── Initialization ──────────────────────────────────────────────────────────
 
 /**
  * Initialize stock data from mock data if localStorage is empty
  */
 export const initializeStockData = () => {
     try {
-        const existing = localStorage.getItem(STOCK_BALANCES_KEY);
-        if (!existing) {
+        const existingBalances = localStorage.getItem(STOCK_BALANCES_KEY);
+        if (!existingBalances) {
             localStorage.setItem(STOCK_BALANCES_KEY, JSON.stringify(stockBalances));
+        }
+
+        const existingMovements = localStorage.getItem(STOCK_MOVEMENTS_KEY);
+        if (!existingMovements) {
+            const mockMovements = [...stockMovementsIn, ...stockMovementsOut];
+            localStorage.setItem(STOCK_MOVEMENTS_KEY, JSON.stringify(mockMovements));
         }
     } catch (error) {
         console.error('Error initializing stock data:', error);
     }
 };
+
+// ─── Balances ─────────────────────────────────────────────────────────────────
 
 /**
  * Get all stock balances from localStorage
@@ -36,15 +47,43 @@ export const getStockBalances = () => {
     }
 };
 
+// ─── Movements ────────────────────────────────────────────────────────────────
+
+/**
+ * Get all stock movements from localStorage, sorted by date descending
+ * @returns {Array} Array of movement objects
+ */
+export const getStockMovements = () => {
+    try {
+        const stored = localStorage.getItem(STOCK_MOVEMENTS_KEY);
+        const movements = stored ? JSON.parse(stored) : [];
+        return movements.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } catch (error) {
+        console.error('Error loading stock movements:', error);
+        return [];
+    }
+};
+
+/**
+ * Save a new movement record to localStorage (private helper)
+ * @param {Object} movement - Movement data
+ */
+const saveMovement = (movement) => {
+    try {
+        const movements = getStockMovements();
+        movements.push(movement);
+        localStorage.setItem(STOCK_MOVEMENTS_KEY, JSON.stringify(movements));
+    } catch (error) {
+        console.error('Error saving stock movement:', error);
+    }
+};
+
+// ─── Product Operations ───────────────────────────────────────────────────────
+
 /**
  * Add new product to stock
+ * Also registers an ingress movement automatically
  * @param {Object} product - Product data
- * @param {number} product.productSapCode - SAP code
- * @param {string} product.productName - Product name
- * @param {string} product.cropDescription - Crop/category
- * @param {string} product.stockType - 'own' or 'consigned'
- * @param {string} product.warehouse - Warehouse location
- * @param {number} product.initialQuantity - Initial quantity
  * @returns {Object} Added product
  */
 export const addStockProduct = (product) => {
@@ -66,11 +105,29 @@ export const addStockProduct = (product) => {
             warehouse: product.warehouse,
             entries: product.initialQuantity,
             exits: 0,
-            balance: product.initialQuantity
+            balance: product.initialQuantity,
+            unitPrice: product.unitPrice ?? null
         };
 
         balances.push(newProduct);
         localStorage.setItem(STOCK_BALANCES_KEY, JSON.stringify(balances));
+
+        // Register ingress movement
+        saveMovement({
+            id: `stock-in-${Date.now()}`,
+            type: 'in',
+            stockType: product.stockType,
+            origin: 'Ingreso inicial',
+            destination: product.warehouse,
+            movementDate: new Date().toISOString().split('T')[0],
+            lines: [{
+                id: 'line-1',
+                productSapCode: product.productSapCode,
+                productName: product.productName,
+                quantity: product.initialQuantity,
+            }],
+            createdAt: new Date().toISOString()
+        });
 
         return newProduct;
     } catch (error) {
@@ -116,11 +173,8 @@ export const updateStockBalance = (sapCode, quantityChange) => {
 
 /**
  * Register a stock egress (exit) for an existing product
+ * Also registers an egress movement automatically
  * @param {Object} egress
- * @param {number} egress.productSapCode - SAP code of product to deduct
- * @param {number} egress.quantity       - Units to remove (must be > 0)
- * @param {string} egress.reason         - Egress reason key
- * @param {string} [egress.notes]        - Optional notes
  * @returns {Object} Updated product balance
  */
 export const egressStockProduct = (egress) => {
@@ -140,7 +194,47 @@ export const egressStockProduct = (egress) => {
             );
         }
 
-        return updateStockBalance(egress.productSapCode, -egress.quantity);
+        const updatedProduct = updateStockBalance(egress.productSapCode, -egress.quantity);
+
+        // Determine destination label
+        let destination = 'Egreso';
+        if (egress.destination) {
+            destination = egress.destination;
+        } else if (egress.reason === 'transfer' && egress.transferDestination) {
+            destination = egress.transferDestination;
+        } else if (egress.reason === 'sale') {
+            destination = 'Venta';
+        } else if (egress.reason === 'adjustment') {
+            destination = 'Ajuste de inventario';
+        } else if (egress.reason === 'loss') {
+            destination = 'Merma / Pérdida';
+        } else if (egress.reason === 'devolution') {
+            destination = 'Devolución a proveedor';
+        }
+
+        // Determine origin label
+        const origin = egress.origin || product.warehouse;
+
+        // Register egress movement
+        saveMovement({
+            id: `stock-out-${Date.now()}`,
+            type: 'out',
+            stockType: product.stockType,
+            origin,
+            destination,
+            movementDate: new Date().toISOString().split('T')[0],
+            reason: egress.reason,
+            notes: egress.notes || null,
+            lines: [{
+                id: 'line-1',
+                productSapCode: product.productSapCode,
+                productName: product.productName,
+                quantity: egress.quantity,
+            }],
+            createdAt: new Date().toISOString()
+        });
+
+        return updatedProduct;
     } catch (error) {
         console.error('Error registering stock egress:', error);
         throw error;
@@ -155,6 +249,32 @@ export const egressStockProduct = (egress) => {
 export const getProductBySapCode = (sapCode) => {
     const balances = getStockBalances();
     return balances.find(p => p.productSapCode === sapCode) || null;
+};
+
+/**
+ * Update an existing stock product fields (e.g. unitPrice, name, warehouse)
+ * @param {number|string} sapCode - SAP code of product to update
+ * @param {Object} updates - Partial object with fields to merge
+ * @returns {Object} Updated product
+ */
+export const updateStockProduct = (sapCode, updates) => {
+    try {
+        const balances = getStockBalances();
+        const productIndex = balances.findIndex(p => String(p.productSapCode) === String(sapCode));
+
+        if (productIndex === -1) {
+            throw new Error(`Producto con SAP ${sapCode} no encontrado`);
+        }
+
+        // Merge updates into existing product (immutable pattern)
+        balances[productIndex] = { ...balances[productIndex], ...updates };
+        localStorage.setItem(STOCK_BALANCES_KEY, JSON.stringify(balances));
+
+        return balances[productIndex];
+    } catch (error) {
+        console.error('Error updating stock product:', error);
+        throw error;
+    }
 };
 
 /**

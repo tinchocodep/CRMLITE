@@ -305,6 +305,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                                     className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
                                 >
                                     <option value="own">Propia</option>
+                                    <option value="consigned">Consignado</option>
                                     <option value="advanta">Advanta</option>
                                 </select>
                             </div>

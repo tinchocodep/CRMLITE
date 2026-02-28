@@ -10,13 +10,18 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
         cropDescription: '',
         stockType: 'own',
         warehouse: '',
-        initialQuantity: ''
+        initialQuantity: '',
+        unitPrice: ''
     });
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [categories, setCategories] = useState([]);
     const [warehouses, setWarehouses] = useState([]);
+    const [isNewCategory, setIsNewCategory] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [isNewWarehouse, setIsNewWarehouse] = useState(false);
+    const [newWarehouseName, setNewWarehouseName] = useState('');
 
     // Load categories and warehouses
     useEffect(() => {
@@ -74,13 +79,15 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
         setIsSubmitting(true);
 
         try {
+            const parsedPrice = formData.unitPrice !== '' ? parseFloat(formData.unitPrice) : null;
             const product = {
                 productSapCode: Number(formData.productSapCode),
                 productName: formData.productName,
                 cropDescription: formData.cropDescription,
                 stockType: formData.stockType,
                 warehouse: formData.warehouse,
-                initialQuantity: Number(formData.initialQuantity)
+                initialQuantity: Number(formData.initialQuantity),
+                unitPrice: parsedPrice
             };
 
             await addStockProduct(product);
@@ -92,8 +99,13 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                 cropDescription: '',
                 stockType: 'own',
                 warehouse: '',
-                initialQuantity: ''
+                initialQuantity: '',
+                unitPrice: ''
             });
+            setIsNewCategory(false);
+            setNewCategoryName('');
+            setIsNewWarehouse(false);
+            setNewWarehouseName('');
             setErrors({});
 
             // Notify parent and close
@@ -170,8 +182,8 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                     value={formData.productSapCode}
                                     onChange={(e) => handleChange('productSapCode', e.target.value)}
                                     className={`w-full px-4 py-2.5 rounded-lg border ${errors.productSapCode
-                                            ? 'border-red-300 focus:ring-red-500'
-                                            : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
+                                        ? 'border-red-300 focus:ring-red-500'
+                                        : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
                                         } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
                                     placeholder="Ej: 198000053"
                                 />
@@ -193,8 +205,8 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                     value={formData.productName}
                                     onChange={(e) => handleChange('productName', e.target.value)}
                                     className={`w-full px-4 py-2.5 rounded-lg border ${errors.productName
-                                            ? 'border-red-300 focus:ring-red-500'
-                                            : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
+                                        ? 'border-red-300 focus:ring-red-500'
+                                        : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
                                         } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
                                     placeholder="Ej: MAIZ HIBRIDO 80-63TRE"
                                 />
@@ -211,27 +223,58 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                     Categoría / Cultivo *
                                 </label>
-                                <select
-                                    value={formData.cropDescription}
-                                    onChange={(e) => handleChange('cropDescription', e.target.value)}
-                                    className={`w-full px-4 py-2.5 rounded-lg border ${errors.cropDescription
+                                {!isNewCategory ? (
+                                    <select
+                                        value={formData.cropDescription}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__new__') {
+                                                setIsNewCategory(true);
+                                                setNewCategoryName('');
+                                                handleChange('cropDescription', '');
+                                            } else {
+                                                handleChange('cropDescription', e.target.value);
+                                            }
+                                        }}
+                                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.cropDescription
                                             ? 'border-red-300 focus:ring-red-500'
                                             : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
-                                        } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
-                                >
-                                    <option value="">Seleccionar categoría...</option>
-                                    {categories.map(cat => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
-                                    <option value="__new__">➕ Agregar nueva categoría...</option>
-                                </select>
-                                {formData.cropDescription === '__new__' && (
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre de la nueva categoría"
-                                        onChange={(e) => handleChange('cropDescription', e.target.value)}
-                                        className="mt-2 w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
+                                            } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
+                                    >
+                                        <option value="">Seleccionar categoría...</option>
+                                        {categories.map(cat => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                        <option value="__new__">➕ Agregar nueva categoría...</option>
+                                    </select>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newCategoryName}
+                                            onChange={(e) => {
+                                                setNewCategoryName(e.target.value);
+                                                handleChange('cropDescription', e.target.value);
+                                            }}
+                                            placeholder="Nombre de la nueva categoría"
+                                            autoFocus
+                                            className={`flex-1 px-4 py-2.5 rounded-lg border ${errors.cropDescription
+                                                ? 'border-red-300 focus:ring-red-500'
+                                                : 'border-green-300 dark:border-green-700 focus:ring-green-500'
+                                                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsNewCategory(false);
+                                                setNewCategoryName('');
+                                                handleChange('cropDescription', '');
+                                            }}
+                                            className="px-3 py-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                            title="Volver a seleccionar categoría existente"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
                                 )}
                                 {errors.cropDescription && (
                                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -267,7 +310,18 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                             onChange={(e) => handleChange('stockType', e.target.value)}
                                             className="w-4 h-4 text-purple-600 focus:ring-purple-500"
                                         />
-                                        <span className="text-sm text-slate-700 dark:text-slate-300">🤝 Consignado</span>
+                                        <span className="text-sm text-slate-700 dark:text-slate-300">📦 Consignado</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="stockType"
+                                            value="third_party"
+                                            checked={formData.stockType === 'third_party'}
+                                            onChange={(e) => handleChange('stockType', e.target.value)}
+                                            className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                                        />
+                                        <span className="text-sm text-slate-700 dark:text-slate-300">🤝 Tercero</span>
                                     </label>
                                 </div>
                             </div>
@@ -277,27 +331,58 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                     Depósito *
                                 </label>
-                                <select
-                                    value={formData.warehouse}
-                                    onChange={(e) => handleChange('warehouse', e.target.value)}
-                                    className={`w-full px-4 py-2.5 rounded-lg border ${errors.warehouse
+                                {!isNewWarehouse ? (
+                                    <select
+                                        value={formData.warehouse}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__new__') {
+                                                setIsNewWarehouse(true);
+                                                setNewWarehouseName('');
+                                                handleChange('warehouse', '');
+                                            } else {
+                                                handleChange('warehouse', e.target.value);
+                                            }
+                                        }}
+                                        className={`w-full px-4 py-2.5 rounded-lg border ${errors.warehouse
                                             ? 'border-red-300 focus:ring-red-500'
                                             : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
-                                        } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
-                                >
-                                    <option value="">Seleccionar depósito...</option>
-                                    {warehouses.map(wh => (
-                                        <option key={wh} value={wh}>{wh}</option>
-                                    ))}
-                                    <option value="__new__">➕ Agregar nuevo depósito...</option>
-                                </select>
-                                {formData.warehouse === '__new__' && (
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre del nuevo depósito"
-                                        onChange={(e) => handleChange('warehouse', e.target.value)}
-                                        className="mt-2 w-full px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    />
+                                            } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
+                                    >
+                                        <option value="">Seleccionar depósito...</option>
+                                        {warehouses.map(wh => (
+                                            <option key={wh} value={wh}>{wh}</option>
+                                        ))}
+                                        <option value="__new__">➕ Agregar nuevo depósito...</option>
+                                    </select>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newWarehouseName}
+                                            onChange={(e) => {
+                                                setNewWarehouseName(e.target.value);
+                                                handleChange('warehouse', e.target.value);
+                                            }}
+                                            placeholder="Nombre del nuevo depósito"
+                                            autoFocus
+                                            className={`flex-1 px-4 py-2.5 rounded-lg border ${errors.warehouse
+                                                ? 'border-red-300 focus:ring-red-500'
+                                                : 'border-green-300 dark:border-green-700 focus:ring-green-500'
+                                                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsNewWarehouse(false);
+                                                setNewWarehouseName('');
+                                                handleChange('warehouse', '');
+                                            }}
+                                            className="px-3 py-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                                            title="Volver a seleccionar depósito existente"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
                                 )}
                                 {errors.warehouse && (
                                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -317,8 +402,8 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                     value={formData.initialQuantity}
                                     onChange={(e) => handleChange('initialQuantity', e.target.value)}
                                     className={`w-full px-4 py-2.5 rounded-lg border ${errors.initialQuantity
-                                            ? 'border-red-300 focus:ring-red-500'
-                                            : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
+                                        ? 'border-red-300 focus:ring-red-500'
+                                        : 'border-slate-200 dark:border-slate-700 focus:ring-green-500'
                                         } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent`}
                                     placeholder="Ej: 500"
                                     min="1"
@@ -327,6 +412,27 @@ const AddStockModal = ({ isOpen, onClose, onSuccess }) => {
                                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                                         <AlertCircle className="w-4 h-4" />
                                         {errors.initialQuantity}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Unit Price */}
+                            <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                                <label className="block text-sm font-bold text-green-700 dark:text-green-400 mb-2">
+                                    💲 Precio Unitario (ARS)
+                                </label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    value={formData.unitPrice}
+                                    onChange={(e) => handleChange('unitPrice', e.target.value)}
+                                    className="w-full px-4 py-2.5 rounded-lg border border-green-300 dark:border-green-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-bold"
+                                    placeholder="0.00"
+                                />
+                                {formData.unitPrice && !isNaN(parseFloat(formData.unitPrice)) && formData.initialQuantity && !isNaN(Number(formData.initialQuantity)) && (
+                                    <p className="text-xs text-green-600 dark:text-green-400 mt-2 font-medium">
+                                        Valor total estimado: {new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(parseFloat(formData.unitPrice) * Number(formData.initialQuantity))}
                                     </p>
                                 )}
                             </div>

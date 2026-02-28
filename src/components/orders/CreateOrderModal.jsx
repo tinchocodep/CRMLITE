@@ -23,6 +23,7 @@ const PAYMENT_CONDITIONS = [
 
 const PRODUCT_SOURCES = [
     { value: 'own', label: '🏢 Nuestro depósito' },
+    { value: 'consigned', label: '📦 Consignado' },
     { value: 'third_party', label: '🤝 Tercero' },
 ];
 
@@ -175,9 +176,14 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess }) => {
                 delivery_date: deliveryDate || null,
                 notes: notes || null,
                 status: 'pending',
-                sale_type: lines.some(l => l.product_source === 'third_party') && lines.some(l => l.product_source === 'own')
-                    ? 'mixed'
-                    : lines[0]?.product_source === 'third_party' ? 'partner' : 'own',
+                sale_type: (() => {
+                    const sources = new Set(lines.map(l => l.product_source));
+                    if (sources.size > 1) return 'mixed';
+                    const src = lines[0]?.product_source;
+                    if (src === 'third_party') return 'partner';
+                    if (src === 'consigned') return 'consigned';
+                    return 'own';
+                })(),
                 lines: lines.map(l => ({
                     product_sap_code: l.product_sap_code || null,
                     product_name: l.product_name,

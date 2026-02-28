@@ -432,8 +432,17 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
                             Procesar Pedido
                         </h2>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            Pedido #{order.id} - {normalizedOrder.clientName}
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2 flex-wrap">
+                            <span>Pedido #{order.order_number || order.id} - {normalizedOrder.clientName}</span>
+                            {order.quotation_id ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400 border border-sky-200 dark:border-sky-800">
+                                    📋 Desde Cotización
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                    ⚡ Pedido Directo
+                                </span>
+                            )}
                         </p>
                     </div>
                     <button
@@ -557,13 +566,15 @@ export default function InvoiceActionModal({ isOpen, order, onClose, onSuccess }
                                                                 {(() => {
                                                                     const src = line.product_source || line.productSource;
                                                                     if (!src) return null;
-                                                                    const isOwn = src === 'own';
+                                                                    const SOURCE_BADGE = {
+                                                                        own: { label: '🏢 Nuestro depósito', cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+                                                                        consigned: { label: '📦 Consignado', cls: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' },
+                                                                        third_party: { label: '🤝 Tercero', cls: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' },
+                                                                    };
+                                                                    const badge = SOURCE_BADGE[src] || SOURCE_BADGE.own;
                                                                     return (
-                                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ${isOwn
-                                                                                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                                                                                : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'
-                                                                            }`}>
-                                                                            {isOwn ? '🏢 Nuestro depósito' : '🤝 Tercero'}
+                                                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 ${badge.cls}`}>
+                                                                            {badge.label}
                                                                         </span>
                                                                     );
                                                                 })()}

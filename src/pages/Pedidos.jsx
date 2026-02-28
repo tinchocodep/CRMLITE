@@ -528,11 +528,20 @@ const Pedidos = () => {
                                         {/* Header Row */}
                                         <div className="flex items-start justify-between mb-4">
                                             <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
+                                                <div className="flex items-center gap-3 mb-2 flex-wrap">
                                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                                                         {order.order_number}
                                                     </h3>
                                                     {getStatusBadge(order.status)}
+                                                    {order.quotation_id ? (
+                                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400 border border-sky-200 dark:border-sky-800 flex items-center gap-1">
+                                                            📋 Desde Cotización
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center gap-1">
+                                                            ⚡ Pedido Directo
+                                                        </span>
+                                                    )}
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                                                     <Building2 size={16} />
@@ -554,7 +563,7 @@ const Pedidos = () => {
                                             <div>
                                                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Tipo de Venta</div>
                                                 <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                                                    {order.sale_type === 'own' ? '🏢 Propia' : '🤝 Partner'}
+                                                    {{ own: '🏢 Propia', consigned: '📦 Consignado', partner: '🤝 Partner' }[order.sale_type] || '🏢 Propia'}
                                                 </div>
                                             </div>
                                             <div>

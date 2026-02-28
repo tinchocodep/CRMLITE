@@ -5,6 +5,7 @@ import { products } from '../data/products';
 
 const PRODUCT_SOURCES = [
     { value: 'own', label: '🏢 Nuestro depósito' },
+    { value: 'consigned', label: '📦 Consignado' },
     { value: 'third_party', label: '🤝 Tercero' },
 ];
 
@@ -189,6 +190,7 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                                     className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                                 >
                                     <option value="own">Venta Propia</option>
+                                    <option value="consigned">Consignado</option>
                                     <option value="partner">Venta Socio</option>
                                 </select>
                             </div>
@@ -336,8 +338,8 @@ const EditQuotationModal = ({ isOpen, onClose, quotation, onSave }) => {
                                                         type="button"
                                                         onClick={() => updateLine(index, 'productSource', src.value)}
                                                         className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all border ${line.productSource === src.value
-                                                                ? 'bg-brand text-white border-brand shadow-sm'
-                                                                : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-brand'
+                                                            ? 'bg-brand text-white border-brand shadow-sm'
+                                                            : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-brand'
                                                             }`}
                                                     >
                                                         {src.label}
