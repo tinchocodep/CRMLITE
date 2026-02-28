@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Edit2, UserPlus, UserCheck, Trash2, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from 'lucide-react';
+import { Edit2, UserPlus, UserCheck, Trash2, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, Users } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Pagination } from '../shared/Pagination';
@@ -154,7 +154,13 @@ const ProspectsTable = ({ prospects, onEdit, onPromote, onDelete, onAddContact, 
                                     {prospect.province || '-'}
                                 </td>
                                 <td className="px-3 py-3 text-xs text-slate-600 dark:text-slate-400">
-                                    {prospect.comercial_name || '-'}
+                                    {prospect.business_unit_name ? (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-lg font-semibold truncate" title={`Unidad de Negocio: ${prospect.business_unit_name}`}>
+                                            <Users size={11} /> {prospect.business_unit_name}
+                                        </span>
+                                    ) : (
+                                        prospect.comercial_name || '-'
+                                    )}
                                 </td>
                                 <td className="px-4 py-3">
                                     {(() => {

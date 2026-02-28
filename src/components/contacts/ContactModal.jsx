@@ -373,7 +373,7 @@ const ContactModal = ({ isOpen, onClose, onSave, contact = null, preselectedComp
                             <div>
                                 <ComercialSelector
                                     value={formData.comercialId}
-                                    onChange={(value) => setFormData(prev => ({ ...prev, comercialId: value }))}
+                                    onChange={(cId) => setFormData(prev => ({ ...prev, comercialId: cId }))}
                                     label="Asignar a Comercial *"
                                     required={true}
                                 />

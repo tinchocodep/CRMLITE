@@ -1,6 +1,6 @@
 ﻿import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, TrendingUp, DollarSign, CheckCircle, Clock, Edit2, Trash2, ChevronDown, X, Trophy, XCircle, User, Filter } from 'lucide-react';
+import { Search, Filter, Plus, ChevronRight, ChevronDown, TrendingUp, DollarSign, Calendar, X, Trash2, User, Users, BarChart3, Eye, ArrowUpDown, ArrowUp, ArrowDown, CheckCircle, Clock, Edit2, Trophy, XCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useOpportunities } from '../hooks/useOpportunities';
 import { SimpleOpportunityModal } from '../components/opportunities/SimpleOpportunityModal';
@@ -404,10 +404,14 @@ const Opportunities = () => {
 
                                 <div className="space-y-2 mb-3">
                                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                                        <span className="font-medium">Comercial:</span> {opportunity.comercial?.name || 'Sin asignar'}
-                                    </p>
-                                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                                        <span className="font-medium">Unidad de Negocio:</span> {opportunity.business_unit || 'N/A'}
+                                        <span className="font-medium">Comercial:</span>{' '}
+                                        {opportunity.business_unit_name ? (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-lg font-semibold text-xs">
+                                                <Users size={11} /> {opportunity.business_unit_name}
+                                            </span>
+                                        ) : (
+                                            opportunity.comercial?.name || 'Sin asignar'
+                                        )}
                                     </p>
                                     <p className="text-sm text-slate-600 dark:text-slate-400">
                                         <span className="font-medium">Producto:</span> {opportunity.product || 'N/A'}
@@ -543,12 +547,20 @@ const Opportunities = () => {
                                             </td>
                                             <td className="py-3 px-4">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
-                                                        <User size={12} className="text-indigo-600 dark:text-indigo-400" />
-                                                    </div>
-                                                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
-                                                        {opp.comercial?.name || 'Sin asignar'}
-                                                    </p>
+                                                    {opp.business_unit_name ? (
+                                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-lg font-semibold text-xs truncate">
+                                                            <Users size={11} /> {opp.business_unit_name}
+                                                        </span>
+                                                    ) : (
+                                                        <>
+                                                            <div className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
+                                                                <User size={12} className="text-indigo-600 dark:text-indigo-400" />
+                                                            </div>
+                                                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
+                                                                {opp.comercial?.name || 'Sin asignar'}
+                                                            </p>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="py-3 px-4">

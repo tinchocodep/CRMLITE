@@ -2,8 +2,8 @@
 import { X } from 'lucide-react';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useAuth } from '../../contexts/AuthContext';
-import { useComerciales } from '../../hooks/useComerciales';
 import { useSubmitGuard } from '../../hooks/useSubmitGuard';
+import ComercialSelector from '../shared/ComercialSelector';
 import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 // Porcentajes de referencia por status (sugerencias, no obligatorios)
@@ -18,7 +18,6 @@ const statusProbabilityReference = {
 export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = null }) => {
     const { companies } = useCompanies();
     const { isAdmin } = useAuth();
-    const { comerciales } = useComerciales();
     const { isSubmitting, withGuard } = useSubmitGuard();
 
     // Filter companies by type
@@ -37,7 +36,8 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
         notes: '',
         next_action: '',
         next_action_date: '',
-        comercial_id: ''
+        comercial_id: '',
+        business_unit_id: null
     };
 
     const [formData, setFormData] = useState(() => {
@@ -54,7 +54,8 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 notes: opportunity.notes || '',
                 next_action: opportunity.next_action || '',
                 next_action_date: opportunity.next_action_date || '',
-                comercial_id: opportunity.comercial_id || ''
+                comercial_id: opportunity.comercial_id || '',
+                business_unit_id: opportunity.business_unit_id || null
             };
         }
         return INITIAL_FORM_STATE;
@@ -76,7 +77,8 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 notes: opportunity.notes || '',
                 next_action: opportunity.next_action || '',
                 next_action_date: opportunity.next_action_date || '',
-                comercial_id: opportunity.comercial_id || ''
+                comercial_id: opportunity.comercial_id || '',
+                business_unit_id: opportunity.business_unit_id || null
             });
             setHasDraft(false);
         }
@@ -115,7 +117,10 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
             status: formData.status,
             next_action: formData.next_action || null,
             next_action_date: formData.next_action_date || null,
-            ...(isAdmin && formData.comercial_id ? { comercial_id: formData.comercial_id } : {})
+            ...(formData.business_unit_id
+                ? { comercial_id: null, business_unit_id: formData.business_unit_id }
+                : (isAdmin && formData.comercial_id ? { comercial_id: formData.comercial_id, business_unit_id: null } : { business_unit_id: null })
+            )
         };
 
         withGuard(async () => {
@@ -208,25 +213,18 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                             />
                         </div>
 
-                        {/* Comercial — solo visible para Admin */}
-                        {isAdmin && (
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                                    Comercial Asignado
-                                </label>
-                                <select
-                                    name="comercial_id"
-                                    value={formData.comercial_id}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                >
-                                    <option value="">Seleccionar comercial</option>
-                                    {(comerciales || []).filter(c => c.is_active !== false).map(c => (
-                                        <option key={c.id} value={c.id}>{c.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
+                        {/* Comercial — ComercialSelector handles admin visibility */}
+                        <ComercialSelector
+                            value={formData.comercial_id}
+                            businessUnitValue={formData.business_unit_id}
+                            onChange={(cId, buId) => setFormData(prev => ({
+                                ...prev,
+                                comercial_id: cId,
+                                business_unit_id: buId
+                            }))}
+                            label="Comercial Asignado"
+                            required={false}
+                        />
 
                         {/* Cliente / Prospecto — fila completa */}
                         <BusinessUnitPicker

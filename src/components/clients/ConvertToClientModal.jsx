@@ -18,7 +18,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
         city: '',
         province: '',
         address: '',
-        comercialId: null
+        comercialId: null,
+        businessUnitId: null
     });
 
 
@@ -35,12 +36,13 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
                 province: prospect.province || '',
                 address: prospect.address || '',
                 id: prospect.id,
-                comercialId: prospect.comercial_id || null
+                comercialId: prospect.comercial_id || null,
+                businessUnitId: prospect.business_unit_id || null
             }));
         } else {
             setFormData({
                 legalName: '', tradeName: '', cuit: '', email: '', phone: '',
-                city: '', province: '', address: '', comercialId: null
+                city: '', province: '', address: '', comercialId: null, businessUnitId: null
             });
         }
     }, [prospect]);
@@ -52,7 +54,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
         if (isOpen && !prospect) {
             setFormData({
                 legalName: '', tradeName: '', cuit: '', email: '', phone: '',
-                city: '', province: '', address: '', comercialId: null
+                city: '', province: '', address: '', comercialId: null, businessUnitId: null
             });
         }
     }, [isOpen]);
@@ -76,11 +78,14 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
         }
 
         const finalComercialId = formData.comercialId || comercialId;
-        if (!finalComercialId) {
+        const finalBusinessUnitId = formData.businessUnitId || null;
+
+        // Require at least one: comercial or business unit
+        if (!finalComercialId && !finalBusinessUnitId) {
             addNotification({
                 id: `validation-commercial-${Date.now()}`,
                 title: '⚠️ Asignar comercial',
-                description: 'Debe asignar un comercial antes de guardar',
+                description: 'Debe asignar un comercial o unidad de negocio antes de guardar',
                 priority: 'medium',
                 timeAgo: 'Ahora'
             });
@@ -88,6 +93,7 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
         }
 
         const dataToSubmit = {
+            id: formData.id || null,
             trade_name: formData.tradeName,
             legal_name: formData.legalName,
             cuit: formData.cuit.trim(),
@@ -100,7 +106,8 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
                 const now = new Date();
                 return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             })(),
-            comercial_id: finalComercialId,
+            comercial_id: finalBusinessUnitId ? null : finalComercialId,
+            business_unit_id: finalBusinessUnitId,
         };
 
         onConvert(dataToSubmit);
@@ -182,7 +189,12 @@ const ConvertToClientModal = ({ isOpen, onClose, prospect, onConvert, title, all
                         </h4>
                         <ComercialSelector
                             value={formData.comercialId}
-                            onChange={(value) => setFormData(prev => ({ ...prev, comercialId: value }))}
+                            businessUnitValue={formData.businessUnitId}
+                            onChange={(cId, buId) => setFormData(prev => ({
+                                ...prev,
+                                comercialId: cId,
+                                businessUnitId: buId
+                            }))}
                             label="Asignar a Comercial"
                         />
                     </section>

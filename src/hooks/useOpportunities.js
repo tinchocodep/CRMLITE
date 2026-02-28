@@ -29,7 +29,8 @@ export const useOpportunities = (refreshKey = 'default') => {
                     *,
                     comercial:comerciales!comercial_id(id, name, email),
                     company:companies!company_id(id, trade_name, legal_name, company_type, cuit),
-                    contact:contacts!contact_id(id, first_name, last_name, email, phone)
+                    contact:contacts!contact_id(id, first_name, last_name, email, phone),
+                    business_unit:business_units!business_unit_id(id, name)
                 `)
                 .eq('tenant_id', tenantId)
                 .order('close_date', { ascending: true });
@@ -37,31 +38,36 @@ export const useOpportunities = (refreshKey = 'default') => {
             if (fetchError) throw fetchError;
 
             // Transform data to match OpportunityCard expectations
-            const transformedData = (data || []).map(opp => ({
-                ...opp,
-                opportunityName: opp.opportunity_name,
-                productType: opp.product_type,
-                closeDate: opp.close_date,
-                nextAction: opp.next_action,
-                nextActionDate: opp.next_action_date,
-                comercial: opp.comercial ? {
-                    id: opp.comercial.id,
-                    name: opp.comercial.name,
-                    email: opp.comercial.email
-                } : null,
-                linkedEntity: opp.company ? {
-                    type: opp.company.company_type,
-                    id: opp.company.id,
-                    name: opp.company.trade_name || opp.company.legal_name,
-                    cuit: opp.company.cuit
-                } : null,
-                contact: opp.contact ? {
-                    id: opp.contact.id,
-                    name: `${opp.contact.first_name || ''} ${opp.contact.last_name || ''}`.trim() || 'Sin nombre',
-                    email: opp.contact.email,
-                    phone: opp.contact.phone
-                } : null
-            }));
+            const transformedData = (data || []).map(opp => {
+                // Destructure join objects to avoid passing raw objects as React children
+                const { business_unit, comercial, company, contact, ...rest } = opp;
+                return {
+                    ...rest,
+                    opportunityName: opp.opportunity_name,
+                    productType: opp.product_type,
+                    closeDate: opp.close_date,
+                    nextAction: opp.next_action,
+                    nextActionDate: opp.next_action_date,
+                    comercial: comercial ? {
+                        id: comercial.id,
+                        name: comercial.name,
+                        email: comercial.email
+                    } : null,
+                    linkedEntity: company ? {
+                        type: company.company_type,
+                        id: company.id,
+                        name: company.trade_name || company.legal_name,
+                        cuit: company.cuit
+                    } : null,
+                    contact: contact ? {
+                        id: contact.id,
+                        name: `${contact.first_name || ''} ${contact.last_name || ''}`.trim() || 'Sin nombre',
+                        email: contact.email,
+                        phone: contact.phone
+                    } : null,
+                    business_unit_name: business_unit?.name || null
+                };
+            });
 
             setOpportunities(transformedData);
             setError(null);

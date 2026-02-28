@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Building2, Landmark } from 'lucide-react';
+import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown, Building2, Landmark, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -247,9 +247,15 @@ const ClientsTable = ({ clients, onEdit, onDelete, allContacts, clientsWithEstab
                                         </span>
                                     </td>
                                     <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">
-                                        <span className="truncate block">
-                                            {client.comercial_name || '-'}
-                                        </span>
+                                        {client.business_unit_name ? (
+                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-lg font-semibold truncate" title={`Unidad de Negocio: ${client.business_unit_name}`}>
+                                                <Users size={11} /> {client.business_unit_name}
+                                            </span>
+                                        ) : (
+                                            <span className="truncate block">
+                                                {client.comercial_name || '-'}
+                                            </span>
+                                        )}
                                     </td>
 
                                     <td className="px-2 py-2 text-xs text-slate-600 dark:text-slate-400">

@@ -27,6 +27,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
     const INITIAL_FORM_STATE = {
         comercialId: '',
+        businessUnitId: null,
         opportunityName: '',
         linkedEntityType: '',
         linkedEntityId: '',
@@ -112,7 +113,8 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
 
             const newOpportunity = {
                 opportunity_name: formData.opportunityName,
-                comercial_id: formData.comercialId,
+                comercial_id: formData.businessUnitId ? null : formData.comercialId,
+                business_unit_id: formData.businessUnitId || null,
                 company_id: parseInt(formData.linkedEntityId),
                 contact_id: formData.contactId ? parseInt(formData.contactId) : null,
                 product_type: formData.productType,
@@ -186,7 +188,8 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                         {/* Comercial */}
                         <ComercialSelector
                             value={formData.comercialId}
-                            onChange={(value) => setFormData({ ...formData, comercialId: value })}
+                            businessUnitValue={formData.businessUnitId}
+                            onChange={(cId, buId) => setFormData({ ...formData, comercialId: cId, businessUnitId: buId })}
                             required={true}
                             label="Asignar a Comercial"
                         />

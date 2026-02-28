@@ -68,6 +68,7 @@ export const useCompanies = (type = null) => {
                 'status',
                 'qualification_score',
                 'comercial_id',
+                'business_unit_id',
                 'tenant_id',
                 'is_active',
                 'city',
@@ -75,7 +76,8 @@ export const useCompanies = (type = null) => {
                 'file_number',
                 'phone',
                 'email',
-                'comerciales(name)'
+                'comerciales(name)',
+                'business_units(name)'
             ].join(',');
 
             const isSearching = currentSearch && currentSearch.trim().length > 0;
@@ -118,6 +120,7 @@ export const useCompanies = (type = null) => {
             const normalized = (data || []).map(company => ({
                 ...company,
                 comercial_name: company.comerciales?.name || null,
+                business_unit_name: company.business_units?.name || null,
             }));
 
             setCompanies(normalized);

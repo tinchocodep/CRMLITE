@@ -139,7 +139,8 @@ const Prospects = () => {
                     status: updatedProspect.status || 'contacted',
                     prospect_source: updatedProspect.source,
                     qualification_score: updatedProspect.qualification_score || 0,
-                    comercial_id: updatedProspect.comercial_id
+                    comercial_id: updatedProspect.business_unit_id ? null : updatedProspect.comercial_id,
+                    business_unit_id: updatedProspect.business_unit_id || null
                 });
 
                 if (result.success) {
@@ -213,7 +214,8 @@ const Prospects = () => {
                     province: updatedProspect.province,
                     notes: updatedProspect.notes,
                     status: updatedProspect.status,
-                    comercial_id: updatedProspect.comercial_id
+                    comercial_id: updatedProspect.business_unit_id ? null : updatedProspect.comercial_id,
+                    business_unit_id: updatedProspect.business_unit_id || null
                 });
 
                 if (result.success) {

@@ -704,7 +704,12 @@ END:VCARD`;
                     <div className="space-y-3 pt-4">
                         <ComercialSelector
                             value={formData.comercial_id}
-                            onChange={(value) => setFormData(prev => ({ ...prev, comercial_id: value }))}
+                            businessUnitValue={formData.business_unit_id}
+                            onChange={(cId, buId) => setFormData(prev => ({
+                                ...prev,
+                                comercial_id: cId,
+                                business_unit_id: buId
+                            }))}
                             label="Asignar a Comercial"
                         />
                     </div>

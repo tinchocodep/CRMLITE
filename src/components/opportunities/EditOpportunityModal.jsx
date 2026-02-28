@@ -3,15 +3,13 @@ import { X, User, Briefcase, DollarSign, Calendar, TrendingUp, FileText, Clock, 
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useCompanies } from '../../hooks/useCompanies';
-import { useComerciales } from '../../hooks/useComerciales';
-import BusinessUnitPicker from '../shared/BusinessUnitPicker';
+import ComercialSelector from '../shared/ComercialSelector';
 import ProductSelector from '../shared/ProductSelector';
 
 export default function EditOpportunityModal({ isOpen, opportunity, onClose, onSave }) {
     const location = useLocation();
 
     const { companies } = useCompanies();
-    const { comerciales } = useComerciales();
 
     // Filter companies by type
     const clients = companies.filter(c => c.company_type === 'client');
@@ -20,6 +18,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
     // Initialize form data from opportunity
     const [formData, setFormData] = useState({
         comercialId: '',
+        businessUnitId: null,
         opportunityName: '',
         linkedEntityType: '',
         linkedEntityId: '',
@@ -53,6 +52,7 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
 
             const newFormData = {
                 comercialId: opportunity.comercial?.id || '',
+                businessUnitId: opportunity.business_unit_id || null,
                 opportunityName: opportunity.opportunityName || '',
                 linkedEntityType: linkedEntityType,
                 linkedEntityId: opportunity.linkedEntity?.id?.toString() || '',
@@ -140,7 +140,8 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
         // Transform to database schema
         const updates = {
             opportunity_name: formData.opportunityName,
-            comercial_id: formData.comercialId,
+            comercial_id: formData.businessUnitId ? null : formData.comercialId,
+            business_unit_id: formData.businessUnitId || null,
             company_id: parseInt(formData.linkedEntityId),
             contact_id: formData.contactId ? parseInt(formData.contactId) : null,
             product_type: formData.productType,
@@ -184,25 +185,13 @@ export default function EditOpportunityModal({ isOpen, opportunity, onClose, onS
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
                     <div className="p-4 space-y-4 overflow-y-auto flex-1">
                         {/* Comercial */}
-                        <div>
-                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                                <User size={14} className="inline mr-1.5" />
-                                Comercial *
-                            </label>
-                            <select
-                                required
-                                value={formData.comercialId}
-                                onChange={(e) => setFormData({ ...formData, comercialId: e.target.value })}
-                                className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-green-100 outline-none"
-                            >
-                                <option value="">Seleccionar comercial</option>
-                                {comerciales.map(comercial => (
-                                    <option key={comercial.id} value={comercial.id}>
-                                        {comercial.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                        <ComercialSelector
+                            value={formData.comercialId}
+                            businessUnitValue={formData.businessUnitId}
+                            onChange={(cId, buId) => setFormData({ ...formData, comercialId: cId, businessUnitId: buId })}
+                            required={true}
+                            label="Comercial *"
+                        />
 
                         {/* Product Type */}
                         <div>
