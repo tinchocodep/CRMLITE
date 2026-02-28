@@ -6,6 +6,7 @@ import EventCard from '../components/agenda/EventCard';
 import WeekView from '../components/agenda/WeekView';
 import DayView from '../components/agenda/DayView';
 import CreateEventModal from '../components/agenda/CreateEventModal';
+import EditActivityModal from '../components/agenda/EditActivityModal';
 import { ComercialFilter } from '../components/shared/ComercialFilter';
 import { useActivities } from '../hooks/useActivities';
 import { useOpportunities } from '../hooks/useOpportunities';
@@ -317,8 +318,9 @@ const Agenda = () => {
         );
     };
 
-    // Create Event Logic
+    // Create & Edit Event Logic
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [editingActivity, setEditingActivity] = useState(null);
 
     const handleCreateEvent = async (newEvent) => {
         const result = await createActivity(newEvent);
@@ -504,9 +506,37 @@ const Agenda = () => {
                 onCreate={handleCreateEvent}
                 companies={companies}
                 comerciales={users
-                    .filter(u => u.is_active && u.comercial) // Only active users with comercial assigned
-                    .map(u => u.comercial) // Extract comercial object
-                    .filter((c, index, self) => c && self.findIndex(t => t.id === c.id) === index) // Remove duplicates
+                    .filter(u => u.is_active && u.comercial)
+                    .map(u => u.comercial)
+                    .filter((c, index, self) => c && self.findIndex(t => t.id === c.id) === index)
+                }
+            />
+
+            {/* Edit Activity Modal */}
+            <EditActivityModal
+                activity={editingActivity}
+                isOpen={!!editingActivity}
+                onClose={() => setEditingActivity(null)}
+                onSave={async (id, updates) => {
+                    const result = await updateActivity(id, updates);
+                    if (result?.success === false) {
+                        showError(result.error || 'No se pudo guardar los cambios');
+                        throw new Error(result.error);
+                    } else {
+                        showToast({
+                            id: `activity-edited-${id}`,
+                            title: '✅ Actividad actualizada',
+                            description: 'Los cambios se guardaron correctamente',
+                            priority: 'medium',
+                            timeAgo: 'Ahora'
+                        });
+                    }
+                }}
+                companies={companies || []}
+                comerciales={users
+                    .filter(u => u.is_active && u.comercial)
+                    .map(u => u.comercial)
+                    .filter((c, index, self) => c && self.findIndex(t => t.id === c.id) === index)
                 }
             />
         </div>

@@ -4,13 +4,18 @@ import { es } from 'date-fns/locale';
 import { Clock, MoreVertical, Check, CalendarClock, Trash2 } from 'lucide-react';
 import { useActivities } from '../hooks/useActivities';
 import { useOpportunities } from '../hooks/useOpportunities';
+import { useCompanies } from '../hooks/useCompanies';
+import { useComerciales } from '../hooks/useComerciales';
 import { useToast } from '../contexts/ToastContext';
 import { ConfirmDialog } from './ConfirmDialog';
+import EditActivityModal from './agenda/EditActivityModal';
 import { combineEventsAndOpportunities } from '../utils/agendaHelpers';
 
 export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const { activities: rawActivities, loading, updateActivity, deleteActivity } = useActivities(60);
     const { opportunities, loading: opportunitiesLoading, deleteOpportunity } = useOpportunities();
+    const { companies } = useCompanies();
+    const { comerciales } = useComerciales();
     const { showToast } = useToast();
     const [openMenuId, setOpenMenuId] = useState(null);
     const [showDatePickerId, setShowDatePickerId] = useState(null);
@@ -20,6 +25,8 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
     const menuRef = useRef(null);
     // Local tracking of deleted IDs for instant UI feedback (independent of hook/Realtime)
     const [localDeletedIds, setLocalDeletedIds] = useState(new Set());
+    // Edit modal state
+    const [editingActivity, setEditingActivity] = useState(null);
 
     // Combine activities and opportunities, filtering out locally deleted items
     const combinedEvents = useMemo(() => {
@@ -321,12 +328,19 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                                         return (
                                             <div
                                                 key={activity.id}
+                                                onClick={() => {
+                                                    // Only open edit for real activities, not opportunities
+                                                    if (activity.eventType !== 'opportunity') {
+                                                        setEditingActivity(activity);
+                                                    }
+                                                }}
                                                 className={`
                                                     group relative bg-white dark:bg-slate-800 rounded-lg border-l-3 
                                                     ${getPriorityColor(activity.priority)}
                                                     shadow-sm hover:shadow-md transition-all duration-200
                                                     border border-slate-100 dark:border-slate-700
                                                     overflow-hidden
+                                                    ${activity.eventType !== 'opportunity' ? 'cursor-pointer' : ''}
                                                 `}
                                             >
                                                 {/* Card Content */}
@@ -459,6 +473,36 @@ export function RightSidebarAgenda({ isMainSidebarExpanded }) {
                 confirmText="Eliminar"
                 cancelText="Cancelar"
                 variant="danger"
+            />
+
+            {/* Edit Activity Modal */}
+            <EditActivityModal
+                activity={editingActivity}
+                isOpen={!!editingActivity}
+                onClose={() => setEditingActivity(null)}
+                onSave={async (id, updates) => {
+                    const result = await updateActivity(id, updates);
+                    if (result?.success === false) {
+                        showToast({
+                            id: `error-edit-${id}`,
+                            title: '❌ Error',
+                            description: result.error || 'No se pudo guardar los cambios',
+                            priority: 'high',
+                            timeAgo: 'Ahora'
+                        });
+                        throw new Error(result.error);
+                    } else {
+                        showToast({
+                            id: `activity-edited-${id}`,
+                            title: '✅ Actividad actualizada',
+                            description: 'Los cambios se guardaron correctamente',
+                            priority: 'medium',
+                            timeAgo: 'Ahora'
+                        });
+                    }
+                }}
+                companies={companies || []}
+                comerciales={comerciales || []}
             />
         </>
     );

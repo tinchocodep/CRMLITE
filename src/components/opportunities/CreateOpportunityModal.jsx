@@ -25,7 +25,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
         }
     }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const [formData, setFormData] = useState({
+    const INITIAL_FORM_STATE = {
         comercialId: '',
         opportunityName: '',
         linkedEntityType: '',
@@ -35,11 +35,14 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
         amount: '',
         closeDate: '',
         status: 'iniciado',
-        probability: 20,
+        probability: 10,
         nextAction: '',
         nextActionDate: '',
         notes: ''
-    });
+    };
+
+    const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+    const [hasDraft, setHasDraft] = useState(false);
 
     const [availableContacts, setAvailableContacts] = useState([]);
 
@@ -63,20 +66,41 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
     }, [formData.linkedEntityId, formData.linkedEntityType, contacts]);
 
 
-    // Update probability based on status
-    useEffect(() => {
-        const probabilityDefaults = {
-            iniciado: 20,
-            presupuestado: 40,
-            negociado: 70,
-            ganado: 100,
-            perdido: 0
-        };
+    // Bidirectional sync: status → probability
+    const statusToProbability = {
+        iniciado: 10,
+        presupuestado: 30,
+        negociado: 60,
+        ganado: 100,
+        perdido: 0
+    };
+
+    // Reverse map: probability → status
+    const probabilityToStatus = (prob) => {
+        if (prob === 0) return 'perdido';
+        if (prob <= 10) return 'iniciado';
+        if (prob <= 30) return 'presupuestado';
+        if (prob <= 60) return 'negociado';
+        if (prob < 100) return 'negociado';
+        return 'ganado';
+    };
+
+    const handleStatusChange = (newStatus) => {
         setFormData(prev => ({
             ...prev,
-            probability: probabilityDefaults[prev.status] || 20
+            status: newStatus,
+            probability: statusToProbability[newStatus] || 10
         }));
-    }, [formData.status]);
+    };
+
+    const handleProbabilityChange = (newProbability) => {
+        const derivedStatus = probabilityToStatus(newProbability);
+        setFormData(prev => ({
+            ...prev,
+            probability: newProbability,
+            status: derivedStatus
+        }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -102,8 +126,26 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
             };
 
             onSave(newOpportunity);
+            // Reset form after successful creation
+            setFormData(INITIAL_FORM_STATE);
+            setHasDraft(false);
             onClose();
         });
+    };
+
+    // Check if form has meaningful data (to detect drafts)
+    const formHasData = formData.opportunityName || formData.linkedEntityId || formData.amount || formData.productType;
+
+    const handleClose = () => {
+        if (formHasData) {
+            setHasDraft(true);
+        }
+        onClose();
+    };
+
+    const handleDiscardDraft = () => {
+        setFormData(INITIAL_FORM_STATE);
+        setHasDraft(false);
     };
 
     if (!isOpen) return null;
@@ -116,10 +158,27 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                     <div>
                         <h2 className="text-lg font-bold text-slate-800">Nueva Oportunidad</h2>
                     </div>
-                    <button onClick={onClose} className="w-9 h-9 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-all">
+                    <button onClick={handleClose} className="w-9 h-9 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center transition-all">
                         <X size={18} className="text-slate-600" />
                     </button>
                 </div>
+
+                {/* Draft Banner */}
+                {hasDraft && formHasData && (
+                    <div className="mx-4 mt-3 flex items-center justify-between gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                        <div className="flex items-center gap-2">
+                            <span className="text-amber-600 text-sm">⚠️</span>
+                            <span className="text-xs font-semibold text-amber-700">Borrador pendiente de confirmar</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleDiscardDraft}
+                            className="text-xs font-bold text-amber-600 hover:text-amber-800 underline transition-colors"
+                        >
+                            Descartar
+                        </button>
+                    </div>
+                )}
 
                 {/* Form - Scrollable Content */}
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
@@ -258,14 +317,14 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                 <select
                                     required
                                     value={formData.status}
-                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                    onChange={(e) => handleStatusChange(e.target.value)}
                                     className="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-300 focus:border-advanta-green focus:ring-2 focus:ring-red-100 outline-none"
                                 >
-                                    <option value="iniciado">🚀 Iniciado</option>
-                                    <option value="presupuestado">📋 Presupuestado</option>
-                                    <option value="negociado">🤝 Negociado</option>
-                                    <option value="ganado">✅ Ganado</option>
-                                    <option value="perdido">❌ Perdido</option>
+                                    <option value="iniciado">🚀 Iniciado (1-10%)</option>
+                                    <option value="presupuestado">📋 Presupuestado (11-30%)</option>
+                                    <option value="negociado">🤝 Negociado (31-99%)</option>
+                                    <option value="ganado">✅ Ganado (100%)</option>
+                                    <option value="perdido">❌ Perdido (0%)</option>
                                 </select>
                             </div>
                             <div>
@@ -277,9 +336,9 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                                     type="range"
                                     min="0"
                                     max="100"
-                                    step="5"
+                                    step="1"
                                     value={formData.probability}
-                                    onChange={(e) => setFormData({ ...formData, probability: parseInt(e.target.value) })}
+                                    onChange={(e) => handleProbabilityChange(parseInt(e.target.value))}
                                     className="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-advanta-green mt-1"
                                 />
                             </div>
@@ -335,7 +394,7 @@ export default function CreateOpportunityModal({ isOpen, onClose, onSave }) {
                     <div className="flex gap-3 p-4 border-t border-slate-200 bg-white flex-shrink-0">
                         <button
                             type="button"
-                            onClick={onClose}
+                            onClick={handleClose}
                             className="flex-1 px-4 py-2.5 text-sm rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 transition-all"
                         >
                             Cancelar

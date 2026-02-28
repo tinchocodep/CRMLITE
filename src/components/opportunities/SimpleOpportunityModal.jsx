@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useCompanies } from '../../hooks/useCompanies';
 import { useAuth } from '../../contexts/AuthContext';
 import { useComerciales } from '../../hooks/useComerciales';
+import { useSubmitGuard } from '../../hooks/useSubmitGuard';
 import BusinessUnitPicker from '../shared/BusinessUnitPicker';
 
 // Porcentajes de referencia por status (sugerencias, no obligatorios)
@@ -18,25 +19,47 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
     const { companies } = useCompanies();
     const { isAdmin } = useAuth();
     const { comerciales } = useComerciales();
+    const { isSubmitting, withGuard } = useSubmitGuard();
 
     // Filter companies by type
     const clients = companies.filter(c => c.company_type === 'client');
     const prospects = companies.filter(c => c.company_type === 'prospect');
 
-    const [formData, setFormData] = useState({
-        opportunity_name: opportunity?.opportunity_name || '',
-        linkedEntityId: opportunity?.company_id?.toString() || '',
-        linkedEntityType: opportunity?.company?.company_type || '',
-        product: opportunity?.product_type || '',
-        amount: opportunity?.amount || '',
-        probability: opportunity?.probability || 50,
-        close_date: opportunity?.close_date || '',
-        status: opportunity?.status || 'iniciado',
-        notes: opportunity?.notes || '',
-        next_action: opportunity?.next_action || '',
-        next_action_date: opportunity?.next_action_date || '',
-        comercial_id: opportunity?.comercial_id || ''
+    const INITIAL_FORM_STATE = {
+        opportunity_name: '',
+        linkedEntityId: '',
+        linkedEntityType: '',
+        product: '',
+        amount: '',
+        probability: 10,
+        close_date: '',
+        status: 'iniciado',
+        notes: '',
+        next_action: '',
+        next_action_date: '',
+        comercial_id: ''
+    };
+
+    const [formData, setFormData] = useState(() => {
+        if (opportunity) {
+            return {
+                opportunity_name: opportunity.opportunity_name || '',
+                linkedEntityId: opportunity.company_id?.toString() || '',
+                linkedEntityType: opportunity.company?.company_type || '',
+                product: opportunity.product_type || '',
+                amount: opportunity.amount || '',
+                probability: opportunity.probability ?? statusProbabilityReference[opportunity.status] ?? 10,
+                close_date: opportunity.close_date || '',
+                status: opportunity.status || 'iniciado',
+                notes: opportunity.notes || '',
+                next_action: opportunity.next_action || '',
+                next_action_date: opportunity.next_action_date || '',
+                comercial_id: opportunity.comercial_id || ''
+            };
+        }
+        return INITIAL_FORM_STATE;
     });
+    const [hasDraft, setHasDraft] = useState(false);
 
     // Actualizar formData cuando cambia opportunity (para edit) o resetear para crear
     useEffect(() => {
@@ -47,7 +70,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 linkedEntityType: opportunity.company?.company_type || '',
                 product: opportunity.product_type || '',
                 amount: opportunity.amount || '',
-                probability: opportunity.probability || 50,
+                probability: opportunity.probability ?? statusProbabilityReference[opportunity.status] ?? 10,
                 close_date: opportunity.close_date || '',
                 status: opportunity.status || 'iniciado',
                 notes: opportunity.notes || '',
@@ -55,25 +78,26 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                 next_action_date: opportunity.next_action_date || '',
                 comercial_id: opportunity.comercial_id || ''
             });
-        } else {
-            // Reset para modo creación
-            setFormData({
-                opportunity_name: '',
-                linkedEntityId: '',
-                linkedEntityType: '',
-                product: '',
-                amount: '',
-                probability: 50,
-                close_date: '',
-                status: 'iniciado',
-                notes: '',
-                next_action: '',
-                next_action_date: '',
-                comercial_id: ''
-            });
+            setHasDraft(false);
         }
+        // In create mode, only reset if there's no draft
+        // (don't reset if user had unsaved data)
     }, [opportunity]);
 
+    // Check if form has meaningful data (draft detection)
+    const formHasData = !opportunity && (formData.opportunity_name || formData.linkedEntityId || formData.amount || formData.product);
+
+    const handleClose = () => {
+        if (formHasData) {
+            setHasDraft(true);
+        }
+        onClose();
+    };
+
+    const handleDiscardDraft = () => {
+        setFormData(INITIAL_FORM_STATE);
+        setHasDraft(false);
+    };
 
     if (!isOpen) return null;
 
@@ -94,7 +118,15 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
             ...(isAdmin && formData.comercial_id ? { comercial_id: formData.comercial_id } : {})
         };
 
-        onSave(submitData);
+        withGuard(async () => {
+            await onSave(submitData);
+
+            // Reset form after create (not edit)
+            if (!opportunity) {
+                setFormData(INITIAL_FORM_STATE);
+                setHasDraft(false);
+            }
+        });
     };
 
     const handleChange = (e) => {
@@ -102,10 +134,19 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Reverse map: probability → status
+    const probabilityToStatus = (prob) => {
+        if (prob === 0) return 'perdido';
+        if (prob <= 10) return 'iniciado';
+        if (prob <= 30) return 'presupuestado';
+        if (prob <= 60) return 'negociado';
+        if (prob < 100) return 'negociado';
+        return 'ganado';
+    };
+
     const handleStatusChange = (e) => {
         const newStatus = e.target.value;
-        // Sugerir probabilidad de referencia pero permitir que el usuario la cambie después
-        const suggestedProbability = statusProbabilityReference[newStatus] || 50;
+        const suggestedProbability = statusProbabilityReference[newStatus] || 10;
         setFormData(prev => ({
             ...prev,
             status: newStatus,
@@ -115,7 +156,8 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
 
     const handleProbabilityChange = (e) => {
         const value = parseInt(e.target.value);
-        setFormData(prev => ({ ...prev, probability: value }));
+        const derivedStatus = probabilityToStatus(value);
+        setFormData(prev => ({ ...prev, probability: value, status: derivedStatus }));
     };
 
     return (
@@ -125,10 +167,27 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                         {opportunity ? 'Editar Oportunidad' : 'Nueva Oportunidad'}
                     </h2>
-                    <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500">
+                    <button onClick={handleClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500">
                         <X size={24} />
                     </button>
                 </div>
+
+                {/* Draft Banner */}
+                {hasDraft && formHasData && (
+                    <div className="mx-6 mt-3 flex items-center justify-between gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl">
+                        <div className="flex items-center gap-2">
+                            <span className="text-amber-600 text-sm">⚠️</span>
+                            <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">Borrador pendiente de confirmar</span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleDiscardDraft}
+                            className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 underline transition-colors"
+                        >
+                            Descartar
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Información Básica */}
@@ -247,9 +306,9 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                                     onChange={handleStatusChange}
                                     className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option value="iniciado">🚀 Iniciado (10%)</option>
-                                    <option value="presupuestado">📋 Presupuestado (30%)</option>
-                                    <option value="negociado">🤝 Negociado (60%)</option>
+                                    <option value="iniciado">🚀 Iniciado (1-10%)</option>
+                                    <option value="presupuestado">📋 Presupuestado (11-30%)</option>
+                                    <option value="negociado">🤝 Negociado (31-99%)</option>
                                     <option value="ganado">✅ Ganado (100%)</option>
                                     <option value="perdido">❌ Perdido (0%)</option>
                                 </select>
@@ -270,7 +329,7 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                                     onChange={handleProbabilityChange}
                                     min="0"
                                     max="100"
-                                    step="5"
+                                    step="1"
                                     className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
                                     style={{
                                         background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${formData.probability}%, #e2e8f0 ${formData.probability}%, #e2e8f0 100%)`
@@ -328,16 +387,20 @@ export const SimpleOpportunityModal = ({ isOpen, onClose, onSave, opportunity = 
                     <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
                         <button
                             type="button"
-                            onClick={onClose}
+                            onClick={handleClose}
                             className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-4 py-2.5 btn-brand text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow-md"
+                            disabled={isSubmitting}
+                            className={`flex-1 px-4 py-2.5 rounded-lg font-semibold transition-all shadow-sm ${isSubmitting
+                                ? 'bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                                : 'btn-brand text-white hover:shadow-md'
+                                }`}
                         >
-                            {opportunity ? 'Actualizar' : 'Crear'}
+                            {isSubmitting ? 'Guardando...' : (opportunity ? 'Actualizar' : 'Crear')}
                         </button>
                     </div>
                 </form>
